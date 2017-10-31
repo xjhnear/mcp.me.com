@@ -1,0 +1,64 @@
+<!--{%extends 'base-layout'%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box box-bordered">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>用户组权限信息</h3>
+			</div>
+			<div class="box-content nopadding">
+				<form action="<!--{{url('admin/group/save-auth-node')}}-->" method="POST" class='form-horizontal form-bordered form-validate'>
+				<input name="group_id" type="hidden" value="<!--{{group.group_id}}-->" />
+				<div class="control-group">
+					<label for="description" class="control-label">组名称</label>
+					<div class="controls">
+						<input type="text" name="group_name" class="input-normal" value="<!--{{group.group_name}}-->" data-rule-required="true" data-msg-required="不能为空">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="description" class="control-label">描述</label>
+					<div class="controls">
+						<input type="text" name="group_desc" class="input-xxlarge" value="<!--{{group.group_desc}}-->" data-rule-required="true" data-msg-required="不能为空">
+					</div>
+				</div>
+				<!--{%for module in admin_all_menu%}-->
+				<!--{%if module.module_name=='admin' and current_user.group_id!=1%}-->
+				<!--{%else%}-->								
+				<div class="control-group">
+					<label for="textfield" class="control-label">
+					<!--{%if module.module_icon=='android'%}--><span class="cus-android"></span><!--{%endif%}-->
+					<!--{%if module.module_icon=='ios'%}--><span class="cus-ios"></span><!--{%endif%}-->
+					<!--{{module.module_alias}}-->
+					</label>
+					<div class="controls">
+					    <label><span class="badge badge-success">菜单</span></label>
+					    <!--{%for node in module.child_menu%}-->
+					    <label class="checkbox inline">
+					        <!--{{form_checkbox('node_id[]',node.url,in_array(node.url,nodelist))}}--><span><!--{{node.name}}--></span>					        					        
+					    </label>
+					    <!--{%endfor%}-->
+					</div>
+					<!--{%if module.extra_node%}-->
+					<div class="controls">
+					    <label><span class="badge badge-info">权限</span></label>					    
+					    <!--{%for node in module.extra_node%}-->
+					    <label class="checkbox inline">
+					        <!--{{form_checkbox('node_id[]',node.url,in_array(node.url,nodelist))}}--><span><!--{{node.name}}--></span>					        					        
+					    </label>
+					    <!--{%endfor%}-->
+					</div>
+					<!--{%endif%}-->
+				</div>
+				<!--{%endif%}-->
+				<!--{%endfor%}-->
+				<div class="control-group">
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					</div>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

@@ -1,0 +1,55 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i><!--{{nav_bar_title}}-->
+				</h3>				
+			</div>
+			<div class="box-content">
+			    
+			    <form action="<!--{{url('wcms/home/bgimage')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input name="position" type="hidden" value="<!--{{position}}-->" />
+			    <!--{%if setting.picUrl%}-->
+			    <div class="control-group">
+			        <label class="control-label">背景图</label>
+					<div class="controls">
+					    <input name="picUrl" type="hidden" value="<!--{{setting.picUrl}}-->" />
+					    <a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.picUrl}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">上传背景图</label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">选择图片</span><span class="fileupload-exists">Change</span><input type="file" name="filedata" /></span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>	    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){    
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});    
+</script>
+<!--{%endblock%}-->

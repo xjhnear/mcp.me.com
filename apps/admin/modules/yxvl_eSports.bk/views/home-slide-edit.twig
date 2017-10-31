@@ -1,0 +1,221 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/validationEngine.jquery.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i><!--{{nav_bar_title}}-->
+				</h3>				
+			</div>
+			<div class="box-content">			    
+			    <form id="form_slide" action="<!--{{url('wcms/home/slide-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <input name="position" type="hidden" value="<!--{{position}}-->"/>
+			    <div class="control-group">
+			        <label class="control-label">位置</label>
+					<div class="controls">
+					    <!--{{form_select('idx',idx_options,setting.idx)}}-->
+					</div>
+				</div>
+				<!--{%if setting.picUrl%}-->
+			    <div class="control-group">
+			        <label class="control-label">图片</label>
+					<div class="controls">
+					    <input name="picUrl" type="hidden" value="<!--{{setting.picUrl}}-->" />
+					    <a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.picUrl}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">上传图片</label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<input type="file" name="filedata" class="" data-errormessage-value-missing="请选择图片" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">类型</label>
+					<div class="controls">					    
+				        <label class="radio inline">
+				        <!--{{form_radio('type',1,setting.status==1,{'class':'select-type','id':'type-station'})}}-->站内					        					        
+				        </label>
+				        <label class="radio inline">
+				        <!--{{form_radio('type',2,setting.status==2,{'class':'select-type','id':'type-url'})}}-->站外					        					        
+				        </label>				        				        				     
+					</div>
+				</div>
+				<div class="control-group div-type-1">
+					<label class="control-label">关联文章</label>
+					<div class="controls">
+					    <div class="input-append">
+							<input id="article_id" type="text" name="articleId" class="input-medium validate[condRequired[type-station]]" value="<!--{{setting.articleId}}-->" data-errormessage-value-missing="请选择文章" /><span class="add-on select-pop-article">选择</span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group div-type-2">
+					<label class="control-label">标题</label>
+					<div class="controls">
+					    <div class=" input-append">
+							<input type="text" name="title" class="input-xxlarge validate[condRequired[type-url]]" value="<!--{{setting.title}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="control-group div-type-2">
+					<label class="control-label">摘要</label>
+					<div class="controls">
+					    <textarea name="summary" class="input-xxlarge validate[condRequired[type-url]]"><!--{{setting.summary}}--></textarea>
+					</div>
+				</div>
+				<div class="control-group div-type-2">
+					<label class="control-label">关联游戏</label>
+					<div class="controls">
+					    <div class="input-append">
+							<input type="text" id="web_game_id" name="gameId" class="input-medium" value="<!--{{setting.gameId}}-->" /><span class="add-on select-web-game">选择</span>
+						</div>
+					</div>
+				</div>
+				<!--{%if position=='one' %}-->
+				<div class="control-group div-type-2">
+					<label class="control-label">是否有视频</label>
+					<div class="controls">
+						<div class="checkbox inline">
+							<!--{{form_checkbox('containVideo',1,setting.containVideo==1)}}-->包含视频
+						</div>
+					</div>
+				</div>
+				<div class="control-group div-type-2">
+					<label class="control-label">是否自动播放</label>
+					<div class="controls">
+						<div class="checkbox inline">
+							<!--{{form_checkbox('autoPlay',1,setting.autoPlay==1)}}-->自动播放
+						</div>
+					</div>
+				</div>
+				<div class="control-group div-type-2">
+					<label class="control-label">视频URL</label>
+					<div class="controls">
+						<div class=" input-append">
+							<input type="text" name="videoUrl" class="input-xxlarge" value="<!--{{setting.videoUrl}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="control-group div-type-2">
+					<label class="control-label">上传视频</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<input type="file" name="filevideo" class="" data-errormessage-value-missing="请选择视频" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="control-group div-type-2">
+					<label class="control-label">播放时长</label>
+					<div class="controls">
+						<div class=" input-append">
+							<input type="text" name="videoTime" class="input-small" value="<!--{{setting.videoTime}}-->" />
+						</div>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group div-type-2">
+					<label class="control-label">跳转URL</label>
+					<div class="controls">
+					    <div class=" input-append">
+							<input type="text" name="url" class="input-xxlarge validate[condRequired[type-url]]" value="<!--{{setting.url}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>	    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+var set_selected_article = function(data_id){
+    $('#article_id').val(data_id);
+};
+
+var set_selected_web_game = function(game_id,game_name,game_icon){
+    $('#web_game_id').val(game_id);
+};    
+$(function(){   
+
+    $('input').iCheck({
+		checkboxClass: 'icheckbox_square-orange',
+		radioClass: 'iradio_square-orange',
+		increaseArea: '20%' // optional
+	});
+	
+	$('input[name="type"]').on('ifChecked', function(event){
+	    if($(this).val()==1){
+	        $('.div-type-1').show();
+	        $('.div-type-2').hide()
+	    }else{
+	        $('.div-type-1').hide();
+	        $('.div-type-2').show();
+	    }
+	});
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+    
+    
+    $('.select-pop-article').bind('click',function(){
+        alert("dd");
+        $.ajax({
+            url:'/wcms/api/pop-article-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-article-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });
+    });
+    
+    $('.select-web-game').bind('click',function(){
+        $.ajax({
+            url:'/wcms/api/pop-game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });
+    });
+    
+    var div_type = $('input[name="type"]:checked').val();
+    if(div_type==1){
+        $('.div-type-1').show();
+        $('.div-type-2').hide()
+    }else{
+        $('.div-type-1').hide();
+        $('.div-type-2').show();
+    }
+    
+    if($('input[name="picUrl"]').length>0){
+        $('input[name="filedata"]').removeClass('validate[required]');
+    }
+    
+    $('#form_slide').validationEngine({promptPosition : "topRight",autoPositionUpdate:true});
+});    
+</script>
+<!--{%endblock%}-->

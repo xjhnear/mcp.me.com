@@ -1,0 +1,56 @@
+<!--{%extends "sub-layout-activity.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					满分用户列表				
+				</h3>
+				
+				</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">ID</th>
+							<th class="col-150">用户昵称</th>
+							<th class="col-80">答题时间</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.user.nickname}}--></td>
+							<td><!--{{item.addtime|date('Y-m-d')}}--></td>
+							<td>
+							    						    						   
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

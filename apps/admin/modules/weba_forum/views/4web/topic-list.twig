@@ -1,0 +1,335 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					帖子列表
+					<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+					<form action="<!--{{url('weba_forum/topic/bbs-search')}}-->">
+                        <input type="hidden" name="fid" value="<!--{{search.fid}}-->"/>
+						<table class="table-filter">
+							<tr>
+								<td><input id="gameselect" name="game_id" data-from="android" type="hidden" value="<!--{{search.game_id}}-->" class="bigdrop select2-offscreen width_150" tabindex="-1"></td>
+								<td>
+									<div class="input-append date datepick" id="dpStart">
+										<input name="startdate" type="text" class="input-small" value="<!--{{search.startdate}}-->" readonly>
+										<span class="add-on"><i class="icon-calendar"></i></span>
+									</div>
+								</td>
+								<td>
+									<div class="input-append date datepick" id="dpEnd" data-date="">
+										<input name="enddate" type="text" class="input-small" value="<!--{{search.enddate}}-->" readonly>
+										<span class="add-on"><i class="icon-calendar"></i></span>
+									</div>
+								</td>
+								<td><!--{{form_select('keytype',{title:'标题',uid:'用户UID',tid:'帖子ID'},search.keytype,{'style':'width:80px;margin-bottom:0px'})}}--></td>
+								<td><input type="text" name="keyword" id="" class="input-small" placeholder="关键词" value="<!--{{search.keyword}}-->"/></td>
+								<td>
+									<label class='radio inline'><!--{{form_radio('sort','dateline',search.sort=='dateline')}}-->最新</label>
+								</td>
+								<td>
+									<label class='radio inline'><!--{{form_radio('sort','replies',search.sort=='replies')}}-->热门</label>
+								</td>
+								<td>
+									<label class='radio inline'><!--{{form_radio('sort','likes',search.sort=='likes')}}-->赞</label>
+								</td>
+								<td>
+									<label class='checkbox inline'><!--{{form_checkbox('recycle','1',search.recycle==1)}}-->回收站</label>
+								</td>
+								<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+				<table class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+						<th class="col-50">
+							<input type="checkbox" name="all" value="" /><div class="btn-group">
+								<a data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></a>
+								<ul class="dropdown-menu">
+									<li><a href="javascript:void(0);" data-act="del" class="ajax-del">删除</a></li>
+								</ul>
+							</div>
+						</th>
+						<th class="col-50">游戏</th>
+						<th>ID/标题</th>
+						<th class="col-100">版块</th>
+						<th class="col-100">发布时间</th>
+						<th class="col-60">回复</th>
+						<th class="col-60">赞</th>
+						<th class="col-100">发帖人</th>
+						<th class="col-60">状态</th>
+						<th class="table-btn-group">操作</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!--{%for item in datalist%}-->
+					<tr>
+						<td><input type="checkbox" name="tids" value="<!--{{item.tid}}-->" /></td>
+						<td class="user-avatar"><img title="<!--{{games[item.fid]['shorttitle']}}-->" src="<!--{{games[item.fid]['litpic']}}-->"/></td>
+						<td><!--{{item.tid}}--><br/><a target="_blank" href="http://forum.youxiduo.com/club/topic/<!--{{ item.tid }}-->"><!--{{item.subject}}--></a></td>
+						<td><!--{{bk_type[item.bid]}}--></td>
+						<td><!--{{item.createTime|date('Y-m-d H:i')}}--></td>
+						<td><!--{{item.replies}}--></td>
+						<td><!--{{ item.watchs }}--></td>
+						<td>
+							<!--{% if users[item.uid] %}-->
+							<span class="badge badge-info"><!--{{item.uid}}--></span><br/><a href="<!--{{url('user/users/edit',{'id':item.uid})}}-->" target="_blank"><!--{{users[item.uid]['nickname']}}--></a>
+							<!--{% else %}-->
+							<span style="color: red; ">该用户已删除</span>
+							<!--{% endif %}-->
+						</td>
+						<td>
+							<!--{%if item.isTop%}--><img alt="置顶" src="/static/img/common/pin.gif" /><!--{%endif%}-->
+							<!--{%if item.isGood%}--><img alt="精华" src="/static/img/common/digest.gif" /><!--{%endif%}-->
+						</td>
+						<td>
+							<a href="<!--{{url('weba_forum/topic/bbs-edit',{tid:item.tid})}}-->" class="btn btn-primary">编辑</a>
+
+							<div class="btn-group">
+								<a data-toggle="dropdown" class="btn  btn-primary dropdown-toggle"><span class="caret"></span></a>
+								<ul class="dropdown-menu dropdown-primary">
+									<li><a href="<!--{{url('weba_forum/topic/reply-list',{'tid':item.tid})}}-->" target="_blank">查看评论</a></li>
+									<!--{%if item.isGood%}-->
+									<li><a href="<!--{{url('weba_forum/topic/bbs-digest')}}-->" data-act="off" data-tid="<!--{{item.tid}}-->" class="ajax-digest">取消加精</a></li>
+									<!--{%else%}-->
+									<li><a href="<!--{{url('weba_forum/topic/bbs-digest')}}-->" data-act="on" data-tid="<!--{{item.tid}}-->" class="ajax-digest">加精</a></li>
+									<!--{%endif%}-->
+									<!--{%if item.isTop%}-->
+									<li><a href="<!--{{url('weba_forum/topic/bbs-stick')}}-->" data-act="off" data-tid="<!--{{item.tid}}-->" class="ajax-stick">取消置顶</a></li>
+									<!--{%else%}-->
+									<li><a href="<!--{{url('weba_forum/topic/bbs-stick')}}-->" data-act="on" data-tid="<!--{{item.tid}}-->" class="ajax-stick">置顶</a></li>
+									<!--{%endif%}-->
+									<li><a href="javascript:;" data-url="<!--{{url('weba_forum/topic/huifuedit',{'tid':item.tid})}}-->" tid="<!--{{item.tid}}-->" data-act="on" class="ajax-stick bianji">编辑帖子回复</a></li>
+								</ul>
+							</div>
+							<!--{%if search.recycle==1%}-->
+							<a href="#" class="btn btn-primary">恢复</a>
+							<!--{%else%}-->
+							<a href="<!--{{url('weba_forum/topic/bbs-del',{'tid':item.tid})}}-->" class="btn btn-primary ajax-del">删除</a>
+							<!--{%endif%}-->
+						</td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+				</table>
+				<div class="pagelink">
+					<!--{{pagelinks}}-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               编辑帖子回复
+            </h4>
+         </div>
+         <div class="modal-body">
+            <div id="box-content" class="box-content">
+            		<div class="control-group">
+						<label for="textfield" class="control-label">回复数限制</label>
+						<div class="controls">
+							<input id="limit" id="limit" type="text" name="limitNum" class="input-small" value="" />
+						</div>
+					</div>
+                	<div class="control-group">
+						<label for="textfield" class="control-label">回复关闭时间</label>
+						
+						    <div class="controls">
+								<div class="input-append date">
+									<input id="limitDeadline" name="limitDeadline" type="text" class="input-medium datetimepicker" value="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</div>
+						
+					</div>
+					<div class="control-group">
+						<label for="textfield" class="control-label">回复限制（秒）</label>
+						<div class="controls">
+							<input id="limit" id="limit" type="text" name="limitRate" class="input-small" value="" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="textfield" class="control-label">是否禁止回复</label>
+						<div class="controls">
+							<label class='radio inline'>
+                                   <input type="radio" id="n" value="0" name="limitStatus">不禁止
+                            </label>
+                            <label class='radio inline'>
+                                   <input type="radio" id="y" value="1" name="limitStatus">禁言
+                            </label>
+						</div>
+					</div>
+               
+            </div>              
+         </div>
+         <div id="modal-footer" class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <a href="javascript:;" id="go_" class="btn btn-primary"> 确定</a>
+         </div>
+      </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+
+<!--{%endblock%}-->
+
+
+<!--{%block footer_js%}-->
+<script>
+	$(function(){
+		$('a.ajax-del').bind('click',function(){
+			if(!confirm('确定要删除数据吗？')){
+				return false;
+			}
+			if($(this).attr('data-act')=='del'){
+				var tids = [];
+				$('input[name="tids"]:checked').each(function(){
+					tids.push($(this).val());
+				});
+				if(tids.length==0) return false;
+				$.ajax({
+					url:'<!--{{url('weba_forum/topic/bbs-del')}}-->',
+					type:'POST',
+					data:{'tids':tids},
+					dataType:'json',
+					success:function(data){
+						if(data.status){
+							alertify.success(data.msg);
+							window.location.href = window.location.href;
+						}else{
+							alertify.error(data.msg);
+						}
+					}
+				});
+			}
+		});
+
+		$('a.ajax-digest').bind('click',function(){
+			var url = $(this).attr('href');
+			$(this).attr('href','javascript:void(0);')
+			var act = $(this).attr('data-act');
+			var tid = $(this).attr('data-tid');
+			$.ajax({
+				url:url,
+				type:'POST',
+				data:{'act':act,'tid':tid},
+				dataType:'json',
+				success:function(data){
+					if(data.status){
+						alertify.success(data.msg);
+						window.location.href = window.location.href;
+					}else{
+						alertify.error(data.msg);
+					}
+				}
+			});
+			return false;
+		});
+
+		$('a.ajax-stick').bind('click',function(){
+			var url = $(this).attr('href');
+			$(this).attr('href','javascript:void(0);')
+			var act = $(this).attr('data-act');
+			var tid = $(this).attr('data-tid');
+			$.ajax({
+				url:url,
+				type:'POST',
+				data:{'act':act,'tid':tid},
+				dataType:'json',
+				success:function(data){
+					if(data.status){
+						alertify.success(data.msg);
+						window.location.href = window.location.href;
+					}else{
+						alertify.error(data.msg);
+					}
+				}
+			});
+			return false;
+		});
+
+		$('input[name="all"]').bind('click',function(){
+			if($(this).prop('checked')==true){
+				$('input[name="tids"]').prop('checked',true);
+			}else{
+				$('input[name="tids"]').prop('checked',false);
+			}
+		});
+
+		gameselect('#gameselect');
+	});
+
+	$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
+	$(".bianji").bind('click',function(){
+		var url_get="<!--{{url('weba_forum/topic/replylimitlist')}}-->",
+			    url=$(this).attr('data-url'),
+			    id=0,
+			    my_div=$("#box-content"),
+			    limitRate=my_div.find("[name='limitRate']"),
+                limitStatus=my_div.find("[name='limitStatus']"),
+                limitDeadline=my_div.find("[name='limitDeadline']"),
+                limitNum=my_div.find("[name='limitNum']"),
+				tid=$(this).attr('tid'),
+				targetType='TOPIC';
+		$.get(url_get,{'targetId':tid},function(data){
+			  if(data.error < 1 && typeof(data.result) != "undefined"){
+			  		if(typeof(data.result.id) != "undefined"){
+			  			id=data.result.id;
+			  		}
+			  		
+			  		if(data.result.limitRate){
+			  			limitRate.val(data.result.limitRate);
+			  		}
+			  		if(data.result.limitStatus){
+			  			
+						$("#y").attr("checked",true);
+					}else{
+						$("#n").attr("checked",true);
+			  		}
+			  		if(data.result.limitDeadline){
+			  			limitDeadline.val(data.result.limitDeadline);
+			  		}
+			  		if(data.result.limitNum){
+			  			limitNum.val(data.result.limitNum);
+			  		}
+			  		targetType=data.result.limitNum;
+			  }
+			  $("#myModal").modal("show");
+			  $("#go_").one('click',function(){ 
+                var limitRate_=limitRate.val(), 
+                    limitStatus_=my_div.find("[name='limitStatus']:checked").val(),
+                    limitDeadline_=limitDeadline.val(),
+                    limitNum_=limitNum.val();
+                   
+				$.post(url,{'id':id,'targetId':tid,'targetType':targetType,'limitNum':limitNum_,'limitRate':limitRate_,'limitStatus':limitStatus_,'limitDeadline':limitDeadline_},function(data){
+                		alert(data.text);
+                		 return false;
+                });
+                $("#myModal").modal("hide");
+                return false;
+        	});
+		});
+		
+	})
+</script>
+<!--{%endblock%}-->

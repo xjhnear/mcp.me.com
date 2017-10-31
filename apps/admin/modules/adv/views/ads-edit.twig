@@ -1,0 +1,169 @@
+<!--{%extends "sub-layout-adv.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i><!--{{advtype}}--></h3>
+			</div>
+			<div class="box-content">
+			    <form action="<!--{{url('adv/ads/save')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{adv.id}}-->" />								
+			    <input id="id" name="type" type="hidden" value="<!--{{adv.type|default(type)}}-->" />
+			    <div class="row-fluid">			    
+			    <div class="span4">
+					<div class="control-group">
+						<label class="control-label">应用</label>
+						<div class="controls">
+							<!--{{form_select('appname',applist,adv.appname)}}-->
+						</div>
+					</div>
+				</div>
+				<div class="span4">
+					<div class="control-group">
+						<label class="control-label">版本</label>
+						<div class="controls">
+							<!--{{form_select('version',versionlist,adv.version)}}-->
+						</div>
+					</div>
+				</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">广告标识</label>
+					<div class="controls">
+						<input type="text" name="aid" class="input-small" value="<!--{{adv.aid}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">广告位置</label>
+					<div class="controls">
+						<!--{{form_select('location',location,adv.location)}}-->
+					</div>
+				</div>
+				<!--{%if in_array(type,[2,3,6])%}-->
+				<div class="control-group">
+					<label class="control-label">广告名称</label>
+					<div class="controls">
+						<input type="text" name="advname" class="input-xxlarge" value="<!--{{adv.advname}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">广告介绍</label>
+					<div class="controls">
+						<input type="text" name="score" class="input-xxlarge" value="<!--{{adv.title}}-->" />
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<!--{%if in_array(type,[2,4,7])%}-->
+				<div class="control-group">
+					<label class="control-label">关联游戏</label>
+					<div class="controls">
+						<input type="text" name="gid" class="input-small" value="<!--{{adv.gid}}-->" />
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<!--{%if type != 4%}-->
+				<div class="control-group">
+					<label class="control-label">广告图</label>
+					<div class="controls">
+						<div class="uploader" id="uniform-fileInput"><input name="litpic" class="input-file uniform_on" id="litpic" type="file" size="19" style="opacity: 0; "></div>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<!--{%if type == 5%}-->
+				<div class="control-group">
+					<label class="control-label">广告图</label>
+					<div class="controls">
+						<div class="uploader" id="uniform-fileInput"><input name="bigpic" class="input-file uniform_on" id="bigpic" type="file" size="19" style="opacity: 0; "></div>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">跳转地址</label>
+					<div class="controls">
+						<input type="text" name="downurl" class="input-xxlarge" value="<!--{{adv.downurl}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">浏览器类型</label>
+					<div class="controls">
+						<input type="text" name="tosafari" class="input-xlarge" value="<!--{{adv.tosafari}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方地址</label>
+					<div class="controls">
+						<input type="text" name="url" class="input-xlarge" value="<!--{{adv.url}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方MAC</label>
+					<div class="controls">
+						<input type="text" name="sendmac" class="input-xlarge" value="<!--{{adv.sendmac}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方idfa</label>
+					<div class="controls">
+						<input type="text" name="sendidfa" class="input-xlarge" value="<!--{{adv.sendidfa}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方openudid</label>
+					<div class="controls">
+						<input type="text" name="openudid" class="input-xlarge" value="<!--{{adv.openudid}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方OS</label>
+					<div class="controls">
+						<input type="text" name="sendos" class="input-xlarge" value="<!--{{adv.sendos}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方PLAT</label>
+					<div class="controls">
+						<input type="text" name="sendplat" class="input-xlarge" value="<!--{{adv.sendplat}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方callback</label>
+					<div class="controls">
+						<input type="text" name="sendactive" class="input-xlarge" value="<!--{{adv.sendactive}}-->" />
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.uniform.min.js"></script>
+<script>
+var set_selected_game = function(game_id,game_name,icon){
+    $('#selected_game_id').val(game_id);
+    $('#selected_game_icon').attr('src',icon);
+    $('#selected_game_name').val(game_name);
+};
+$(function(){
+    $("input:file").uniform({'fileBtnText':'选择文件'});  
+    $('.select-pop-game').bind('click',function(){        
+        $.ajax({
+            url:'/game/api/game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });        
+    });    
+        
+});
+</script>
+<!--{%endblock%}-->

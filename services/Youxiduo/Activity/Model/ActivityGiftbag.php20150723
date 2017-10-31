@@ -1,0 +1,40 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: jfj
+ * Date: 2015/4/14
+ * Time: 10:38
+ */
+
+namespace Youxiduo\Activity\Model;
+use Youxiduo\Base\Model;
+use Youxiduo\Base\IModel;
+
+class ActivityGiftbag extends Model implements IModel
+{
+    public static function getClassName()
+    {
+        return __CLASS__;
+    }
+
+    /**
+     * 获取列表
+     * @return mixed
+     */
+    public static function getList(){
+        return self::db()->get();
+    }
+
+    /**
+     * 获取详情
+     * @param $id
+     * @return bool
+     */
+    public static function getDetail($id){
+        if(!$id) return false;
+        $result = self::db()->where('id',$id)->first();
+        return $result;
+
+    }
+
+}

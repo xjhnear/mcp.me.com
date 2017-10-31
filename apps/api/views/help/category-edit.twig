@@ -1,0 +1,39 @@
+<!--{%extends "help/base-help.twig"%}-->
+
+<!--{%block main_nav%}-->
+<header>
+	<div class="container navi-breadcrumb">
+		<ul class="breadcrumb">
+			<li> <a href="<!--{{url('doc/index')}}-->">项目列表</a> <span class="divider">/</span> </li>
+			<li><!--{{project.name}}--></li>
+		</ul>
+	</div>
+</header>
+<!--{%endblock%}-->
+
+<!--{%block main_content%}-->
+    <form action="<!--{{url('doc/category-save')}}-->" method="POST">
+    <input name="id" type="hidden" value="<!--{{category.id}}-->" />
+    <input name="project_id" type="hidden" value="<!--{{project.id}}-->" />
+    <legend>基本信息</legend>
+	<label for="">分类名称</label>
+	<input type="text" name="name" placeholder="必填" value="<!--{{category.name}}-->">
+	<label for="">所属项目</label>
+	<input type="text" name="project_name" placeholder="必填" value="<!--{{project.name}}-->">
+    </form>
+    <div class="row">
+		<div class="span4 offset4">
+			<a href="javascript:void(0);" class="btn btn-large btn-success interface-button" id="submit_button">提交项目</a>
+		</div>
+	</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $("#submit_button").click(function() {
+		$("form").submit()
+	});
+});
+</script>
+<!--{%endblock%}-->

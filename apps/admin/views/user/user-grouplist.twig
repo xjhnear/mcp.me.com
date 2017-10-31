@@ -1,0 +1,49 @@
+<!--{%extends "sub-user.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					用户组列表
+					<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+				    <a href="" class="btn btn-primary"></a>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>						    
+						    <th class="col-50">ID</th>
+							<th class="col-100">用户组名称</th>
+							<th class="col-60">用户组图标</th>
+							<th class="col-60">所属模块</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in grouplist%}-->
+						<tr>						    
+							<td><!--{{item.group_id}}--></td>
+							<td><!--{{item.group_name}}--></td>
+							<td><!--{%if item.group_icon%}--><img src="/static/img/common/group/<!--{{item.group_icon}}-->" /><!--{%endif%}--></td>
+							<td><!--{{item.app_name}}--></td>
+							<td>
+							    <a href="<!--{{url('user/group-info',{'group_id':item.group_id})}}-->" class="btn btn-primary">编辑</a>							    
+							    <a href="<!--{{url('user/group-authorize',{'group_id':item.group_id})}}-->" class="btn btn-primary">权限组配置</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->

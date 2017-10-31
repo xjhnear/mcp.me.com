@@ -1,0 +1,33 @@
+<!--{%extends "sub-user.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box box-bordered">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>用户组【<!--{{group_name}}-->】权限信息</h3>
+			</div>
+			<div class="box-content nopadding">
+				<form action="<!--{{url('user/save-group-authorize')}}-->" method="POST" class='form-horizontal form-bordered'>
+				<input name="group_id" type="hidden" value="<!--{{group_id}}-->" />
+				<!--{%for app in authlist%}-->								
+				<div class="control-group">
+					<label for="textfield" class="control-label"><!--{{app.name}}--></label>
+					<div class="controls">
+					    <!--{%for node in app.nodelist%}-->
+					    <label class="checkbox inline">
+					        <!--{{form_checkbox('node_id[]',node.id,in_array(node.id,group_nodelist))}}--><span class="<!--{%if node.module=='admin'%}-->fc-red<!--{%else%}--><!--{%endif%}-->"><!--{{node.ruleinfo}}--></span>					        					        
+					    </label>
+					    <!--{%endfor%}-->
+					</div>
+				</div>
+				<!--{%endfor%}-->
+				<div class="control-group">
+					<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

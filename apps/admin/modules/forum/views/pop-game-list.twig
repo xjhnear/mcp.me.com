@@ -1,0 +1,99 @@
+<div class="box">
+    <div class="actions">
+        <table class="table-filter">
+	        <tr>				            
+	            <td>
+	                <div class="controls">
+					    <label class="radio inline">
+				        <!--{{form_radio('keytype','id',keytype=='id')}}-->ID					        					        
+				        </label>
+				        <label class="radio inline">
+				        <!--{{form_radio('keytype','gname',keytype=='gname')}}-->名称					        					        
+				        </label>
+					</div>				                
+	            </td>
+	            <td>
+					<input id="keyword" type="text" class="input-medium" placeholder="" value="<!--{{keyword}}-->">								
+				</td>
+				<td>
+				    <a href="javascript:searchGame();" class="btn btn-teal">按条件搜索</a>
+				</td>
+			</tr>
+		</table>
+    </div>    
+    <table class="table table-hover table-nomargin">
+        <thead>
+			<tr>
+			    <th class="col-60">ID</th>
+			    <th class="col-80">图标</th>
+				<th class="col-150">游戏</th>
+				<th class="col-120">类型</th>				
+				<th class="table-btn-group">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+		    <!--{%for item in games%}-->
+			<tr>
+				<td><!--{{item.id}}--></td>
+				<td class="user-avatar"><img id="game_icon_<!--{{item.id}}-->" src="<!--{{imgurl}}--><!--{{item.ico}}-->" class="" /></td>
+				<td id="game_name_<!--{{item.id}}-->"><!--{{item.shortgname|default(item.gname)}}--></td>
+				<td><!--{{gametype[item.type]}}--></td>				
+				<td>
+				    <a href="javascript:void(0);" data-id="<!--{{item.id}}-->" class="btn btn-primary select-game-id">选择</a>				    							    
+				</td>
+			</tr>
+			<!--{%endfor%}-->
+		</tbody>
+    </table>
+    <div class="pagelink">
+        <!--{{pagelinks}}-->
+    </div>
+</div>    
+    <script>
+    function searchGame()
+    {
+        var keytype = $("input[name='keytype']:checked").val();
+        var keyword = $('#keyword').val();
+        $.ajax({
+            url:'/forum/api/game-search',
+            data:{keytype:keytype,keyword:keyword},
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog.list['pop-game-list'].content(html);		                
+            }
+        });
+    }
+    function init_page()
+    {
+        //
+        $('.select-game-id').each(function(){
+            $(this).click(function(){
+                var game_id = $(this).attr('data-id');
+                var game_name = $('#game_name_'+game_id).text();
+                var game_icon = $('#game_icon_'+game_id).attr('src');
+                set_selected_game(game_id,game_name,game_icon);
+                $.dialog.list['pop-game-list'].close();
+            });
+        });
+        //
+        $('.pagelink a').each(function(){
+            var url = $(this).attr('href');            
+            $(this).attr('href','javascript:void(0);');
+            $(this).click(function(){
+                $.ajax({
+                    url:url,
+                    dataType:'json',
+		            success:function(json){
+		                var html = '';
+		                html = json.html;
+		                $.dialog.list['pop-game-list'].content(html);		                
+		            }
+                });
+            });
+            
+        });
+    }
+    init_page();
+    </script>

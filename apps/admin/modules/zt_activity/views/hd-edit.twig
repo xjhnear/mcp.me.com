@@ -1,0 +1,354 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/js/plugins/plupload/jquery.plupload.queue/css/jquery.plupload.queue.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit">活动信息</i></h3>
+            </div>
+            <div class="box-content">
+                <form action="<!--{{url('zt_activity/hd/edit')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data" id="form1">
+                    <input type="hidden" name="id" value="<!--{{ result.id }}-->" />
+                    <div class="control-group">
+                        <label class="control-label">标题</label>
+                        <div class="controls">
+                            <input type="text" name="pagetitle" class="input-xxlarge" value="<!--{{result.pagetitle}}-->" data-rule-required="true" data-msg-required="公告不能为空" />
+                            <span class="help-inline" for="context">标题不能为空</span>
+                        </div>
+                    </div>
+                    <!--{%if result.pagebg%}-->
+                    <div class="control-group">
+                        <label class="control-label">活动背景<i class="tip-star">*</i></label>
+                        <div class="controls">
+                            <a href="#bigimg" data-toggle="modal"><img src="<!--{{result.pagebg}}-->" width="150px" /></a>
+                        </div>
+                    </div>
+                    <!--{%endif%}-->
+                    <div class="control-group">
+                        <label class="control-label">活动背景</label>
+                        <div class="controls">
+                            <input type="hidden" name="pagebg" class="input-xxlarge" value="<!--{{result.pagebg}}-->" />
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="input-append">
+                                    <input type="file" name="file_pagebg" class="" />
+                                </div>
+                            </div>
+                            <span class="help-inline">1920*1803px</span>
+                        </div>
+                    </div>
+                    <!--{%if result.gameicon%}-->
+                    <div class="control-group">
+                        <label class="control-label">游戏ICON<i class="tip-star">*</i></label>
+                        <div class="controls">
+                            <a href="#bigimg" data-toggle="modal"><img src="<!--{{result.gameicon}}-->" width="150px" /></a>
+                        </div>
+                    </div>
+                    <!--{%endif%}-->
+                    <div class="control-group">
+                        <label class="control-label">游戏ICON</label>
+                        <div class="controls">
+                            <input type="hidden" name="gameicon" class="input-xxlarge" value="<!--{{result.gameicon}}-->" />
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="input-append">
+                                    <input type="file" name="file_gameicon" class="" />
+                                </div>
+                            </div>
+                            <span class="help-inline">124*124px</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">游戏介绍</label>
+                        <div class="controls">
+                            <input type="text" name="gamedesc" class="input-xxlarge" value="<!--{{result.gamedesc}}-->" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">IOS下载地址</label>
+                        <div class="controls">
+                            <input type="text" name="iosdown" class="input-xxlarge" value="<!--{{result.iosdown}}-->" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">安卓下载地址</label>
+                        <div class="controls">
+                            <input type="text" name="anddown" class="input-xxlarge" value="<!--{{result.anddown}}-->" />
+                        </div>
+                    </div>
+                    <!--{%if result.videopic%}-->
+                    <div class="control-group">
+                        <label class="control-label">视频图片<i class="tip-star">*</i></label>
+                        <div class="controls">
+                            <a href="#bigimg" data-toggle="modal"><img src="<!--{{result.videopic}}-->" width="150px" /></a>
+                        </div>
+                    </div>
+                    <!--{%endif%}-->
+                    <div class="control-group">
+                        <label class="control-label">视频图片</label>
+                        <div class="controls">
+                            <input type="hidden" name="videopic" class="input-xxlarge" value="<!--{{result.videopic}}-->" />
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="input-append">
+                                    <input type="file" name="file_videopic" class="" />
+                                </div>
+                            </div>
+                            <span class="help-inline">620*376px</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">视频</label>
+                        <div class="controls">
+                            <input type="text" name="video" class="input-xxlarge" value="<!--{{result.video}}-->" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">活动介绍</label>
+                        <div class="controls">
+                            <script id="container" name="activitydesc" type="text/plain"><!--{{result.activitydesc}}--></script>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">选择奖品图片<i class="tip-star">*</i></label>
+                        <div class="controls">
+                            <div id="div-select-prize"><a href="javascript:void(0);" class="btn reselect">选择图片</a></div>
+                            <span class="help-inline">162*107px</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">奖品图片</label>
+                        <div class="controls">
+                            <div id="div-uploador-prize"><div id="pic-plupload-prize" style="width:520px;"></div></div>
+                            <div id="div-imgs-prize" class="img-list-wrap"></div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">参与地址</label>
+                        <div class="controls">
+                            <input type="text" name="partake" class="input-xxlarge" value="<!--{{result.partake}}-->" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">活动时间</label>
+                        <div class="controls">
+                            <div class="input-append date">
+                                <input name="pagedate" type="text" class="input-xxlarge" value="<!--{{result.pagedate}}-->">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">选择游戏图片<i class="tip-star">*</i></label>
+                        <div class="controls">
+                            <div id="div-select"><a href="javascript:void(0);" class="btn reselect">选择图片</a></div>
+                            <span class="help-inline">267*201px</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">游戏截图</label>
+                        <div class="controls">
+                            <div id="div-uploador"><div id="pic-plupload" style="width:520px;"></div></div>
+                            <div id="div-imgs" class="img-list-wrap"></div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">官方URL</label>
+                        <div class="controls">
+                            <input type="text" name="ofurl" class="input-xxlarge" value="<!--{{result.ofurl}}-->" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">专区URL</label>
+                        <div class="controls">
+                            <input type="text" name="zqurl" class="input-xxlarge" value="<!--{{result.zqurl}}-->" />
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                    </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/plupload/plupload.full.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/plupload/jquery.plupload.queue/jquery.plupload.queue.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script>
+    var multi_upload = function(plupload,div_select,div_imgs,image_input_name,image_data){
+        var self = this;
+        var preview_html = '';
+        var $el = $(plupload);
+        var init_plupload = function(){
+            $(div_select).hide();
+            preview_html = '';
+            $el.pluploadQueue({
+                runtimes : 'html5,gears,flash,silverlight,browserplus',
+                url : '/common/uploader/plupload',
+                file_data_name:'filedata',
+                max_file_size : '10mb',
+                chunk_size : '1mb',
+                unique_names : true,
+                rename: true,
+                //resize : {width : 320, height : 240, quality : 90},
+                filters : [
+                    {title : "Image files", extensions : "jpg,gif,png"}
+                ],
+                views:{list:true,thumbs:true,active:'thumbs'},
+                flash_swf_url : 'js/plupload/plupload.flash.swf',
+                silverlight_xap_url : 'js/plupload/plupload.silverlight.xap'
+            });
+            $(".plupload_header").remove();
+            var upload = $el.pluploadQueue();
+            upload.bind('FileUploaded',function(up,file,response){
+                if(response.status==200){
+                    var res = $.parseJSON(response.response);
+                    preview_html += make_img_html(res.file);
+                }
+            });
+            upload.bind('UploadComplete',function(up,files){
+                upload.refresh();
+                upload.destroy();
+                $(div_select).show();
+                $el.empty();
+                $(div_imgs).append(preview_html);
+                bind_drop();
+            });
+            upload.bind('Error',function(up,args){
+                console.log(args);
+                up.stop();
+            });
+        };
+
+        var make_img_html = function(file){
+            //file = 'http://www.youxiduo.com/ziframe/imgs/xjkz.jpg';
+            var html = '';
+            html += '<div class="img-list-box">';
+            html += '<div class="img-box"><img src="'+file+'"/><input name="'+image_input_name+'[]" type="hidden" value="'+file+'"/></div>';
+            html += '<div class="extras"><a href="javascript:void(0);"><i class="icon-trash"></i></a></div>';
+            html += '</div>';
+            return html;
+        };
+
+        $('.reselect').bind('click',function(){
+            $el.empty();
+            init_plupload();
+        });
+        //init_plupload();
+        var bind_drop = function(){
+            $(div_imgs+' .extras a').bind('click',function(){
+                $(this).parent('.extras').parent('.img-list-box').remove();
+            });
+        };
+
+        var pic_data = image_data;
+        if(pic_data){
+            var pic_view = '';
+            $.each(pic_data,function(i,o){
+                pic_view += make_img_html(o);
+            });
+            $(div_imgs).append(pic_view);
+            bind_drop();
+        }
+    };
+</script>
+<script>
+    $(function(){
+        UE.getEditor('container',{initialFrameHeight:100});
+        $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+
+
+        var $el = $('#pic-plupload');
+        var div_select = '#div-select';
+        var div_imgs = '#div-imgs';
+        var image_input_name = 'img_name';
+        var image_data = <!--{{pics}}-->;
+        var image_data_prize = <!--{{prizes}}-->;
+        //var preview_html = '';
+        multi_upload('#pic-plupload-prize','#div-select-prize','#div-imgs-prize','img_name_prize',image_data_prize);
+        multi_upload('#pic-plupload',div_select,div_imgs,image_input_name,image_data);
+        /*
+        var init_plupload = function(){
+            $(div_select).hide();
+            preview_html = '';
+            $el.pluploadQueue({
+                runtimes : 'html5,gears,flash,silverlight,browserplus',
+                url : '/common/uploader/plupload',
+                file_data_name:'filedata',
+                max_file_size : '10mb',
+                chunk_size : '1mb',
+                unique_names : true,
+                rename: true,
+                //resize : {width : 320, height : 240, quality : 90},
+                filters : [
+                    {title : "Image files", extensions : "jpg,gif,png"}
+                ],
+                views:{list:true,thumbs:true,active:'thumbs'},
+                flash_swf_url : 'js/plupload/plupload.flash.swf',
+                silverlight_xap_url : 'js/plupload/plupload.silverlight.xap'
+            });
+            $(".plupload_header").remove();
+            var upload = $el.pluploadQueue();
+            upload.bind('FileUploaded',function(up,file,response){
+                if(response.status==200){
+                    var res = $.parseJSON(response.response);
+                    preview_html += make_img_html(res.file);
+                }
+            });
+            upload.bind('UploadComplete',function(up,files){
+                upload.refresh();
+                upload.destroy();
+                $(div_select).show();
+                $el.empty();
+                $(div_imgs).append(preview_html);
+                bind_drop();
+            });
+            upload.bind('Error',function(up,args){
+                console.log(args);
+                up.stop();
+            });
+        };
+
+        var make_img_html = function(file){
+            //file = 'http://www.youxiduo.com/ziframe/imgs/xjkz.jpg';
+            var html = '';
+            html += '<div class="img-list-box">';
+            html += '<div class="img-box"><img src="'+file+'"/><input name="'+image_input_name+'[]" type="hidden" value="'+file+'"/></div>';
+            html += '<div class="extras"><a href="javascript:void(0);"><i class="icon-trash"></i></a></div>';
+            html += '</div>';
+            return html;
+        };
+
+        $('.reselect').bind('click',function(){
+            $el.empty();
+            init_plupload();
+        });
+        //init_plupload();
+        var bind_drop = function(){
+            $(div_imgs+' .extras a').bind('click',function(){
+                $(this).parent('.extras').parent('.img-list-box').remove();
+            });
+        };
+
+        var pic_data = image_data;
+        if(pic_data){
+            var pic_view = '';
+            $.each(pic_data,function(i,o){
+                pic_view += make_img_html(o);
+            });
+            $(div_imgs).append(pic_view);
+            bind_drop();
+        }
+        */
+    });
+
+
+
+</script>
+<!--{%endblock%}-->

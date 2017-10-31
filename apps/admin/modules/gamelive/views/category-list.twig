@@ -1,0 +1,67 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					TAG管理
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('gamelive/category/list')}}-->" class="">
+				    <table class="table-filter">
+				        <tr>				            				           
+				            <td>所属模型</td>
+				            <td><!--{{form_select('channel',{'article':'文章','video':'视频'},channel,{'style':'margin-top:10px'})}}--></td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+							<td><a href="<!--{{url('gamelive/category/add',{'channel':channel})}}-->" class="btn btn-teal"><i class="icon-plus"></i>添加TAG</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">idx</th>
+							<th>TAG</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.idx}}--></td>
+							<td>
+								<!--{{item.tag}}-->
+							</td>
+							<td>
+							    <a href="<!--{{url('gamelive/category/edit',{channel:channel,id:item.idx})}}-->" class="btn btn-primary">编辑</a>
+							    <a href="<!--{{url('gamelive/category/delete',{channel:channel,id:item.idx})}}-->" class="btn btn-primary ajax-del">删除</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>			    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){    
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});    
+</script>
+<!--{%endblock%}-->

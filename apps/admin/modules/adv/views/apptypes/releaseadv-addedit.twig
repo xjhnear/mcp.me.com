@@ -1,0 +1,340 @@
+<!--{%extends "sub-layout-adv.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>广告发布 IOS</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form-adv" action="<!--{{url('adv/releaseadv/releaseadv-add-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data" >
+			    <input id="id" name="Id" type="hidden" value="<!--{{adv.Id}}-->" />
+			    <input id="appname" name="appname" type="hidden" value="<!--{{adv.appname}}-->" />
+			    <input id="versionform" name="versionform" type="hidden" value="<!--{{adv.versionform}}-->" />
+			    <div class="control-group">
+						<label for="textfield" class="control-label">选择系统与版本<span class="nes-star">*</span></label>
+                        <div class="controls">
+                            <select  name="apptypes_id" data-rule-required="true" data-msg-required="系统与版本不能为空">
+                            	<option value=""></option>
+                            	<!--{%for item in apptypesselect%}-->
+									<option <!--{%if item.Id==adv.apptypes_id %}--> selected <!--{%endif%}-->value="<!--{{item.Id}}-->"><!--{{item.name}}--></option> 
+								<!--{%endfor%}-->
+                            </select>
+						</div>
+				</div>
+				
+				<div class="control-group">
+                    <label class="control-label">对应版本号</label>
+                    <div class="controls" id="version"></div>
+                </div>	
+               <div class="control-group">
+						<label for="textfield" class="control-label">广告类型</label>
+                        <div class="controls">
+                            <select id="nature" data-rule-required="true" data-msg-required="广告性质不能为空" name="nature_id">
+                            	<option value=""></option>
+                            	<!--{%for item in nature%}-->
+									<option  <!--{%if item.Id==adv.nature_id %}--> selected <!--{%endif%}--> value="<!--{{item.Id}}-->"><!--{{item.natureName}}--></option>
+								<!--{%endfor%}-->
+                            </select>
+						</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">广告位置<span class="nes-star">*</span></label>
+					<div class="controls" id="location">
+						<!--{%if location %}-->
+							<select name='location_id'>
+								<!--{%for item in location%}-->
+										<option <!--{%if item.Id==adv.location_id %}--> selected <!--{%endif%}-->value="<!--{{item.Id}}-->"><!--{{item.name}}--></option> 
+								<!--{%endfor%}-->
+							</select>
+						<!--{% endif %}-->
+					</div>
+				</div>
+				<div class="control-group">
+                    <label class="control-label">广告发布类型</label>
+                    <div class="controls" >
+                    	<select name="adv_type" id="adv_type">
+                    		<option value=""></option>
+                    		<!--{%for type_ in type%}-->
+                    			<option value="<!--{{type_}}-->"><!--{{type_}}--></option>
+                    		<!--{%endfor%}-->
+                    	</select>
+                    </div>
+                </div>
+
+				<div class="control-group">
+					<label class="control-label">广告标识<span class="nes-star">*</span></label>
+					<div class="controls">
+						<input type="text" name="aid" class="input-small"  data-rule-required="true" data-msg-required="广告标识不能为空"value="<!--{{adv.aid}}-->" />
+					</div>
+				</div>
+				
+				<div class="control-group" id="is_advname" style="display:none;">
+					<label class="control-label">广告名称</label>
+					<div class="controls">
+						<input type="text" name="advname" class="input-xxlarge" value="<!--{{adv.advname}}-->" />
+					</div>
+				</div>
+				<div class="control-group" id="is_title" style="display:none;">
+					<label class="control-label">广告介绍</label>
+					<div class="controls">
+						<input type="text" name="title" class="input-xxlarge" value="<!--{{adv.title}}-->" />
+					</div>
+				</div>
+				
+				<div class="control-group" id="downurl" >
+					<label class="control-label">跳转地址</label>
+					<div class="controls" id="downurl_controls">
+						<input type="text" id="downurlinput" name="downurl" class="input-xxlarge" value="<!--{{adv.downurl}}-->" />
+						 
+					</div>
+				</div>
+				<div class="control-group" id="tosafari" >
+					<label class="control-label">浏览器类型</label>
+					<div class="controls">
+                        <input type="radio" name="tosafari" value="0" <!--{% if adv.tosafari == 0 %}-->checked<!--{% endif %}-->/>内置浏览器
+                        <input type="radio" name="tosafari" value="1" <!--{% if adv.tosafari == 1 %}-->checked<!--{% endif %}-->/>Safari浏览器
+						<!--{{ errors.first('tosafari','<span class="text-error">:message</span>') }}-->
+					</div>
+				</div>
+
+				<div class="control-group" id="game_id" style="display:none;">
+						<label class="control-label">关联的游戏</label>
+						<div class="controls">
+							<div class="input-append">
+								<input id="selected_game_id" name="gid"  value="<!--{{adv.gid}}-->"  type="hidden"/>
+								<input id="game_icon" name="gicon" type="hidden"/>
+								<img id="selected_game_icon" alt=""  class="add-on" src="/static/img/wu_ss.gif" />
+								<input type="text" value="<!--{{adv.gamename}}-->" id="selected_game_name" name="gamename" readonly="readonly" class="input"  />
+								<span class="add-on select-pop-game">选择游戏</span>
+							</div>
+						</div>
+				</div>
+				
+			    <input type="hidden" name="litpic_" value="<!--{{ adv.litpic_ }}-->">
+				 <div class="control-group" id="mylitpic" style="display:none;" >
+                            <label class="control-label">广告图<span class="nes-star">*</span></label>
+                            <div class="controls">
+                                <div class="fileupload fileupload-new" data-provides="fileupload">
+                                    <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;">
+                                        <img id="listpic_img" src="<!--{% if adv.litpic %}-->http://img.youxiduo.com<!--{{adv.litpic}}--><!--{%else%}-->/static/img/nopic.gif<!--{%endif%}-->" />
+                                    </div>
+                                    <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;">
+                                    </div>
+                                    <div>
+                                        <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择广告图</span><span class="fileupload-exists">重新选择</span><input id="litpic" type="file" name="litpic"/></span>
+                                    </div>
+                                </div>
+                                <span class="help-inline"></span>
+                            </div>
+                         </div> 
+
+
+
+
+			    <input type="hidden" name="bigpic_" value="<!--{{ adv.bigpic_ }}-->">
+				<div class="control-group" id="bigpic_img" style="display:none;">
+					<label class="control-label">广告大图<span class="nes-star">*</span></label>
+					<div class="controls">
+						<div class="uploader" id="uniform-fileInput"><input name="bigpic" class="input-file uniform_on" id="bigpic" type="file" size="19" style="opacity: 0; "></div>
+						<!--{% if adv.bigpic %}-->
+						<a href="#bigimg" data-toggle="modal"><img style="height:32px;" src="http://img.youxiduo.com<!--{{ adv.bigpic }}-->"></a>
+						<!--{% endif %}-->
+						<!--{{ errors.first('bigpic','<span class="text-error">:message</span>') }}-->
+					</div>
+				</div>
+				
+				
+				<div class="control-group">
+					<label class="control-label">第三方地址</label>
+					<div class="controls">
+						<input type="text" name="url" class="input-xlarge" value="<!--{{adv.url}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方MAC</label>
+					<div class="controls">
+						<input type="text" name="sendmac" class="input-xlarge" value="<!--{{adv.sendmac}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方IDFA</label>
+					<div class="controls">
+						<input type="text" name="sendidfa" class="input-xlarge" value="<!--{{adv.sendidfa}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方OPENUDID</label>
+					<div class="controls">
+						<input type="text" name="sendudid" class="input-xlarge" value="<!--{{adv.sendudid}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方OS</label>
+					<div class="controls">
+						<input type="text" name="sendos" class="input-xlarge" value="<!--{{adv.sendos}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方PLAT</label>
+					<div class="controls">
+						<input type="text" name="sendplat" class="input-xlarge" value="<!--{{adv.sendplat}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">第三方CALLBACK</label>
+					<div class="controls">
+						<input type="text" name="sendactive" class="input-xlarge" value="<!--{{adv.sendactive}}-->" />
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.uniform.min.js"></script>
+<script>
+var set_selected_game = function(game_id,game_name,icon){
+    $('#selected_game_id').val(game_id);
+    $('#selected_game_icon').attr('src',icon);
+    $('#selected_game_name').val(game_name);
+};
+$(function(){
+	<!--{%if adv.apptypes_id %}--> 
+		 var id=<!--{{adv.apptypes_id}}-->;
+    	apptypes(id);
+	<!--{%endif%}-->
+	<!--{%if adv.nature_id %}--> 
+		 var id=<!--{{adv.nature_id}}-->;
+    	nature(id);
+	<!--{%endif%}-->
+	<!--{%if adv.adv_type %}--> 
+		$("#adv_type").val('<!--{{adv.adv_type}}-->');
+		adv_type('<!--{{adv.adv_type}}-->');
+	<!--{%endif%}-->
+	$("#adv_type").bind('click',function(){
+			if($(this).val() == '图片'){
+				$("#downurl_controls").html('<input type="text" id="downurlinput" name="downurl" class="input-xxlarge"  value="<!--{{adv.downurl}}-->" />');
+			}else{
+				$("#downurl_controls").html('<input type="text" id="downurlinput" name="downurl" class="input-xxlarge"  data-rule-required="true" data-msg-required="跳转地址不能为空"  value="<!--{{adv.downurl}}-->" />');
+			}
+
+	})
+
+
+	//data-rule-required="true" data-msg-required= 
+    $("input:file").uniform({'fileBtnText':'选择文件'});  
+    $('.select-pop-game').bind('click',function(){        
+        $.ajax({
+            url:'/game/api/game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });        
+    });
+    $("#form-adv").find("[name='apptypes_id']").change(function(){ 
+    	 var id=$(this).val();
+    	 $("#appname").val($(this).find("option:selected").text());  
+    	 apptypes(id);
+    });
+    $("#nature").change(function(){
+    	 var id=$(this).val();
+    	 nature(id);  
+    });
+
+
+});
+
+function apptypes(id){
+		
+    	 $("#version").html("数据准备中....");
+    	 $.ajax({
+            url:'/adv/releaseadv/versioninfo',
+            dataType:'json',
+            data:{id:id},
+            success:function(json){
+                 if(json.status == 1){
+                 		if(json.datainfo){
+                 			$("#version").html(json.datainfo);
+                 		}
+                 		if(json.type){
+                 			$("#advtype").html(json.type);
+                 		}
+                 }else{
+                 	$("#version,#advtype").html('请求完毕 没有数据');
+                 }
+            }
+        });  
+}
+
+
+function nature(id)
+{	
+	
+	if(!id){ $("#game_id,#bigpic_img").hide();   return false; }
+	$("#location").html("数据准备中....");
+    	 $.ajax({
+            url:'/adv/releaseadv/locationinfo',
+            dataType:'json',
+            data:{id:id},
+            success:function(json){
+                 if(json.status == 1 ||　json.datainfo　){
+                 	var html='';
+                 	for(var i in json.datainfo ){
+						html+="<option value="+json.datainfo[i].Id+">"+json.datainfo[i].name+"</option>";
+                    }
+                 	$("#location").html("<select name='location_id'>"+html+"</select>");
+                 
+                 }else{
+                 		$("#location").html('没有数据，请重新选择！没有广告位置将保存失败');
+                 		
+                 }
+            }
+        });
+ 	}
+ 	$("#adv_type").bind('change',function(){
+ 			$("#mylitpic,#advname,#is_title,#game_id,#mylitpic,#bigpic_img").hide();
+            adv_type($(this).val());
+
+        });
+     function adv_type(val)
+     {
+     		switch(val)
+			{
+				case '图片':
+				  $("#mylitpic").show();
+				break;
+				case '文字':
+				  $("#is_advname").show();
+				 break;
+				case '弹窗':
+				  $("#is_advname").show();
+				break;
+				case '轮播':
+				  $("#is_advname,#is_title,#mylitpic").show();
+				break;
+				case '条幅':
+				  $("#mylitpic,#is_advname").show();
+				break;
+				case '链接':
+				  $("#downurl,#game_id").show();
+				break;
+				case '游戏列表':
+				  $("#is_advname,#game_id").show();
+				break;
+				case '游戏信息':
+				  $("#is_advname,#is_title,#game_id").show();  
+				default:
+			}
+     }
+</script>
+<!--{%endblock%}-->

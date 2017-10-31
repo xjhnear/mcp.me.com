@@ -1,0 +1,81 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					首屏推荐游戏
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('wcms/home/game-list')}}-->" class="">
+				    <table class="table-filter">
+				        <tr>
+				        	<td>类型</td>				            
+				            <td><!--{{form_select('type',{'hot':'热门','ios':'网游','android':'单机','game':'电竞'},type,{'style':'width:100px;margin-top:10px;'})}}--></td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td> 				            
+							<td><a href="<!--{{url('wcms/home/add-game',{'type':type})}}-->" class="btn btn-teal"><i class="icon-plus"></i>添加游戏</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+				<form action="<!--{{url('wcms/home/game-sort')}}-->" method="POST">
+				<input name="type" type="hidden" value="<!--{{type}}-->"/>
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">idx</th>
+							<th>游戏名称</th>
+							<th class="col-150">游戏图片</th>
+							<th class="col-120">评分</th>
+							<th class="col-120">新位置</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.idx}}--></td>
+							<td>
+								<!--{{item.shortgname}}-->
+							</td>
+							<td class="table-list-img"><a href="#bigimg" data-toggle="modal"><img src="<!--{{item.picUrl}}-->" /></a></td>
+							<td><!--{{item.score}}--></td>
+							<td>
+								<input name="idx_<!--{{item.idx}}-->" type="text" class="input-small" value="<!--{{item.idx}}-->" />
+							</td>
+							<td>
+							    <a href="<!--{{url('wcms/home/edit-game',{'type':type})}}-->?idx=<!--{{item.idx}}-->" class="btn btn-primary">编辑</a>						    							    								
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存排序</button>
+					<a class="btn btn-primary" href="<!--{{url('wcms/home/recovery-game',{'type':type})}}-->">恢复数据</a>
+				</div>
+				</form>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>			    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){    
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});    
+</script>
+<!--{%endblock%}-->

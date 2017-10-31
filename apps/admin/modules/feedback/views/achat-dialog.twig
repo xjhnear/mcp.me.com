@@ -1,0 +1,75 @@
+<!--{%extends "sub-layout-chat.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					反馈列表
+				</h3>
+				<div class="actions"></div>
+			</div>
+			<div class="box-content nopadding scrollable">
+			    <ul class="messages">
+			        <!--{%for item in list%}-->
+			        <!--{% if item.is_admin == 0 %}-->
+			        <li class="left">
+						<div class="image">
+							<img src="<!--{{ users[item.uid]['avatar'] }}-->" alt="">
+						</div>
+						<div class="message">
+							<span class="caret"></span>
+							<span class="name"><!--{{ users[item.uid]['nickname'] }}--></span>
+							<p><!--{{item.feedback}}--></p>
+							<span class="time">
+								<!--{{item.addtime|date('Y-m-d H:i:s')}}-->
+							</span>
+						</div>
+					</li>
+					<!--{%else%}-->
+			        <li class="right">
+						<div class="image">
+							<img src="<!--{{ users[item.uid]['avatar'] }}-->" alt="">
+						</div>
+						<div class="message">
+							<span class="caret"></span>
+							<span class="name"><!--{{users[item.uid]['nickname'] }}--></span>
+							<p><!--{{ item.feedback }}--></p>
+							<span class="time">
+								<!--{{item.addtime|date('Y-m-d H:i:s')}}-->
+							</span>
+						</div>
+					</li>
+					<!--{%endif%}-->
+					<!--{%endfor%}-->
+			    </ul>			    
+			    <div class="pagelink">
+			        <!--{{pagination}}-->
+			    </div>
+			    <div class="control-group" style="margin-top: 100px;">
+			        <form action="<!--{{url('feedback/achat/send')}}-->" method="POST">
+			        <input name="pid" type="hidden" value="<!--{{ pid }}-->" />
+					<table class="table table-hover table-nomargin">
+					    <tr>
+					        <td class="col-50">
+					            <img width="80" src="<!--{{ users[to_uid]['avatar'] }}-->" alt="">
+					        </td>
+					        <td class="col-120">
+					            <p><!--{{ users[to_uid]['nickname'] }}--></p>
+					            <p><!--{{ users[to_uid]['level_name'] }}--></p>
+					        </td>
+					        <td><textarea name="message" class="input-block-level" style="height:90px;"></textarea></td>
+					        <td class="col-80">
+					            <button class="btn btn-primary" style="width:60px;height:60px;"><i class="icon-envelope"></i>发送</button>
+					        </td>
+					    </tr>
+					</table>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!--{%endblock%}-->

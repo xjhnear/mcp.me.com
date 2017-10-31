@@ -1,0 +1,48 @@
+<!--{%extends "sub-layout-game.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					修改游戏标签	
+				</h3>
+			</div>
+			<div class="box-content">
+				<form id="admin-edit" action="<!--{{url('game/gametype/edit/')}}-->" method="POST" class='form-horizontal form-validate'>
+				<input name="id" type="hidden" value="<!--{{type.id}}-->" />
+				
+				<div class="control-group">
+					<label class="control-label">游戏类型</label>
+					<div class="controls">
+					    <!--{{type.typename}}-->
+					</div>					
+				</div>
+				<div class="control-group">	
+					<label for="gamename" class="control-label">区分分类</label>
+					<div class="controls">
+						<textarea id="tags" class="row-fluid valid" name="tags" rows="5" cols="10">
+						    
+						</textarea>
+					</div>
+				</div>
+					
+				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+  <!--{% if gametype %}-->
+		$("#tags").html($.trim("<!--{{gametype}}-->"));
+	<!--{%endif%}-->
+</script>
+<!--{%endblock%}-->

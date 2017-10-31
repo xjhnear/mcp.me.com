@@ -1,0 +1,49 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>管理员信息</h3>
+			</div>
+			<div class="box-content">
+				<form id="admin-edit" action="<!--{{url('common/home/edit-profile')}}-->" method="POST" class='form-horizontal form-validate'>
+				<input name="id" type="hidden" value="<!--{{admininfo.id}}-->" />
+				
+				<div class="control-group">
+					<label for="username" class="control-label">用户名</label>
+					<div class="controls">
+					    <!--{%if admininfo.id%}-->
+						<label><!--{{admininfo.username}}--></label>
+						<!--{%else%}-->
+						<input type="text" name="username" class="input-normal" value="<!--{{admininfo.username}}-->" data-rule-required="true" data-msg-required="不能为空">
+						<!--{%endif%}-->
+					</div>
+				</div>				
+				<div class="control-group">
+					<label for="authorname" class="control-label">昵称</label>
+					<div class="controls">
+						<input id="authorname" type="text" name="authorname" class="input-normal" value="<!--{{admininfo.authorname}}-->" data-rule-required="true" data-msg-required="不能为空">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="realname" class="control-label">姓名</label>
+					<div class="controls">
+						<input id="realname" type="text" name="realname" class="input-normal" value="<!--{{admininfo.realname}}-->" data-rule-required="true" data-msg-required="不能为空">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="password" class="control-label">密码</label>
+					<div class="controls">
+						<input id="password" type="password" name="password" class="input-normal">
+					</div>
+				</div>							
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

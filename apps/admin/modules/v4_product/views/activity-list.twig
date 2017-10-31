@@ -1,0 +1,101 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					商品活动管理				
+				</h3>
+				<div class="actions">	
+				    <table class="table-filter">
+				        <tr>			
+				    		<td><a href="<!--{{url('v4product/goods/activity-add-edit')}}-->" class="btn btn-teal">添加商品活动</button></td>
+				        </tr>
+				    </table>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <!--<th class="col-60">ID</th>-->
+						    <th class="col-180">商品名称</th>
+						    <th class="col-60">优惠状态</th>
+							<th class="col-60">折扣价</th>							
+							<th class="col-180">优惠开始时间</th>
+							<th class="col-180">优惠结束时间</th>
+							<th class="col-60">是否限量</th>
+							<th class="col-180">发放总量/剩余量</th>
+							<th class="col-60">活动状态</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						    <!--{% if item.startTime < item.endTime%}-->
+								<tr>
+									<td>
+										<!--{{item.title}}-->
+									</td>
+									<td>
+										<!--{% if item.isDiscount==1 %}--> 
+									        优惠状态
+									    <!--{% else %}--> 
+									    	一般状态
+									    <!--{% endif %}--> 
+									</td>
+									<td>
+										<!--{{item.discountGamePrice}}-->
+									</td>
+									<td>
+										<!--{% if item.startTimeStr %}--> 
+									        <!--{{item.startTimeStr|date('Y-m-d H:m:s')}}-->
+									    <!--{% else %}--> 
+									    	没有开始优惠时间
+									    <!--{% endif %}--> 
+									</td>
+									<td>
+										<!--{% if item.endTimeStr %}--> 
+									        <!--{{item.endTimeStr|date('Y-m-d H:m:s')}}-->
+									    <!--{% else %}--> 
+									    	没有结束优惠时间
+									    <!--{% endif %}--> 
+									</td>
+									<td>
+										<!--{% if item.isProductLimit == 1 %}--> 
+									        限量
+									    <!--{% else %}--> 
+									    	没有限量
+									    <!--{% endif %}--> 
+									</td>
+									<td>
+										<!--{{item.totalNumber}}-->/<!--{{item.restNumber}}-->
+									</td>
+									<td>
+											<!--{%if item.onOrOff==1%}--><span class="badge badge-success">活动开启</span><!--{%else%}--><span class="badge badge-important">活动关闭</span><!--{%endif%}-->
+									</td>
+									</td>
+									<td>											    
+									    <a href="<!--{{url('v4product/goods/activity-add-edit',{id:item.activityId})}}-->" class="btn btn-primary">编辑</a>
+									    <!--{%if item.onOrOff==1%}-->
+									    	<a href="<!--{{url('v4product/goods/activity-close',{'id':item.activityId,'status':1})}}-->" class="btn btn-primary">关闭活动</a>
+									    <!--{%else%}-->		
+									    	<a href="<!--{{url('v4product/goods/activity-close',{'id':item.activityId,'status':0})}}-->" class="btn btn-primary">开启活动</a>
+									    <!--{%endif%}-->
+									</td>
+								</tr>
+							<!--{%endif%}-->
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->

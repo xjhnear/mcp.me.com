@@ -1,0 +1,76 @@
+<!--{%extends 'base-layout'%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-bordered">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>用户附加权限</h3>
+            </div>
+            <div class="box-content nopadding">
+                <form action="<!--{{url('admin/admin/permission')}}-->" method="POST" class='form-horizontal form-bordered form-validate'>
+                    <input name="admin_id" type="hidden" value="<!--{{admin_id}}-->" />
+                    <!--{%if current_user.group_id==1%}-->
+                    <div class="control-group">
+                        <label class="control-label">管理的权限组</label>
+                        <div class="controls">
+                            <!--{%for group in groups %}-->
+                            <label class="checkbox inline">
+                                <!--{{form_checkbox('group_id[]',group.group_id,in_array(group.group_id,group_ids))}}--><!--{{group.group_name}}-->
+                            </label>
+                            <!--{%endfor%}-->
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">管理的功能模块</label>
+                        <div class="controls">
+                            <!--{%for module in modules %}-->
+                            <label class="checkbox inline">
+                                <!--{{form_checkbox('module_id[]',module.id,in_array(module.id,module_ids))}}--><!--{{module.module_alias}}-->
+                            </label>
+                            <!--{%endfor%}-->
+                        </div>
+                    </div>
+                    <!--{%endif%}-->
+                    <!--{%for module in admin_all_menu%}-->
+                    <!--{%if module.module_name=='admin' and current_user.group_id!=1%}-->
+                    <!--{%else%}-->
+                    <!--{%if current_user.group_id==1 or in_array(module.id,can_module_ids)%}-->
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">
+                            <!--{%if module.module_icon=='android'%}--><span class="cus-android"></span><!--{%endif%}-->
+                            <!--{%if module.module_icon=='ios'%}--><span class="cus-ios"></span><!--{%endif%}-->
+                            <!--{{module.module_alias}}-->
+                        </label>
+                        <div class="controls">
+                            <label><span class="badge badge-success">菜单</span></label>
+                            <!--{%for node in module.child_menu%}-->
+                            <label class="checkbox inline">
+                                <!--{{form_checkbox('node_id[]',node.url,in_array(node.url,nodelist))}}--><span><!--{{node.name}}--></span>
+                            </label>
+                            <!--{%endfor%}-->
+                        </div>
+                        <!--{%if module.extra_node%}-->
+                        <div class="controls">
+                            <label><span class="badge badge-info">权限</span></label>
+                            <!--{%for node in module.extra_node%}-->
+                            <label class="checkbox inline">
+                                <!--{{form_checkbox('node_id[]',node.url,in_array(node.url,nodelist))}}--><span><!--{{node.name}}--></span>
+                            </label>
+                            <!--{%endfor%}-->
+                        </div>
+                        <!--{%endif%}-->
+                    </div>
+                    <!--{%endif%}-->
+                    <!--{%endif%}-->
+                    <!--{%endfor%}-->
+                    <div class="control-group">
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->

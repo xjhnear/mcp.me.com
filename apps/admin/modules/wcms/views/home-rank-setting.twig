@@ -1,0 +1,51 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>修改首页排行榜</h3>
+			</div>
+			<div class="box-content">
+				<form id="admin-add" action="<!--{{url('wcms/home/rank-setting')}}-->" method="POST" enctype="multipart/form-data" class='form-horizontal form-validate'>
+
+                <div class="control-group">
+                    <label class="control-label">IOS游戏排行榜Ids</label>
+                    <div class="controls">
+                        <input type="text" name="ios_ids" class="input-xxlarge" value="<!--{{result.ios_ids}}-->" data-rule-required="true" data-msg-required="Ids不能为空" />
+                        <span class="help-inline">此项不能为空，mobile 中的ID英文逗号分割 只能填写10个</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">安卓游戏排行榜Ids</label>
+                    <div class="controls">
+                        <input type="text" name="android_ids" class="input-xxlarge" value="<!--{{result.android_ids}}-->" data-rule-required="true" data-msg-required="Ids不能为空" />
+                        <span class="help-inline">此项不能为空，mobile 中的ID英文逗号分割 只能填写10个</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">网游期待榜Ids</label>
+                    <div class="controls">
+                        <input type="text" name="network_ids" class="input-xxlarge" value="<!--{{result.network_ids}}-->" data-rule-required="true" data-msg-required="Ids不能为空" />
+                        <span class="help-inline">此项不能为空，mobile 中的ID英文逗号分割 只能填写10个</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">单机期待榜Ids</label>
+                    <div class="controls">
+                        <input type="text" name="single_ids" class="input-xxlarge" value="<!--{{result.single_ids}}-->" data-rule-required="true" data-msg-required="Ids不能为空" />
+                        <span class="help-inline">此项不能为空，mobile 中的ID英文逗号分割 只能填写10个</span>
+                    </div>
+                </div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>完成</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+
+<!--{%endblock%}-->

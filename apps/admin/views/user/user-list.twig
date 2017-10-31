@@ -1,0 +1,105 @@
+<!--{%extends "sub-user.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					用户列表
+					<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+				    <form>
+				    <table class="table-filter">
+				        <tr>
+				            <td>
+				                <div class="input-append date datepick" id="dpStart" data-date="">
+									<input name="startdate" type="text" class="input-small" value="<!--{{search.startdate}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+				            </td>
+				            <td>
+				                <div class="input-append date datepick" id="dpEnd" data-date="">
+									<input name="enddate" type="text" class="input-small" value="<!--{{search.enddate}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</td>
+				            <td><input type="text" name="keyword" id="keyword" class="input-medium" placeholder="用户名" value="<!--{{search.keyword}}-->"/> </td>
+				            <td>
+				                <div class="check-demo-col">
+					                <div class="check-line">
+										<!--{{form_radio('sort','dateline',search.sort=='dateline',{'class':'icheck-me','data-skin':'flat','data-color':'orange'})}}--><label class='inline'>最新注册</label>
+									</div>
+								</div>
+				            </td>
+				            <td>
+				                <div class="check-demo-col">
+					                <div class="check-line">
+										<!--{{form_radio('sort','credit',search.sort=='credit',{'class':'icheck-me','data-skin':'flat','data-color':'orange'})}}--><label class='inline'>积分</label>
+									</div>
+								</div>
+				            </td>
+				            <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">
+						        <input type="checkbox" name="all" value="" /><div class="btn-group">
+							        <a data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></a>
+							        <ul class="dropdown-menu">
+							            <li><a href="">禁言</a></li>
+							            <li><a href="">禁用</a></li>
+							        </ul>
+							    </div>
+							</th>
+						    <th class="col-50">ID</th>
+							<th class="col-100">用户名</th>
+							<th class="col-60">头像</th>
+							<th class="col-80">用户组</th>
+							<th class="col-60">积分</th>
+							<th class="col-120">注册时间</th>
+							<th>状态</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in userlist%}-->
+						<tr>
+						    <td><input type="checkbox" name="ids" value="<!--{{item.uid}}-->" /></td>
+							<td><!--{{item.uid}}--></td>
+							<td><!--{{item.nickname}}--></td>
+							<td class="user-avatar"><img src="<!--{{item.avatar|default('/static/img/common/avatar.gif')}}-->" /></td>
+							<td><!--{{usergroups[item.uid]['group_name']}}--></td>
+							<td><!--{{item.credit}}--></td>
+							<td><!--{{item.dateline|date('Y-m-d')}}--></td>
+							<td></td>
+							<td>
+							    <a href="<!--{{url('user/info',{'uid':item.uid})}}-->" class="btn btn-primary">编辑</a>
+							    <div class="btn-group">
+							        <a data-toggle="dropdown" class="btn  btn-primary dropdown-toggle">屏蔽<span class="caret"></span></a>
+							        <ul class="dropdown-menu dropdown-primary">
+							            <li><a href="<!--{{url('user/shield-avatar',{'uid':item.uid})}}-->">屏蔽头像</a></li>
+							            <li><a href="<!--{{url('user/shield-nickname',{'uid':item.uid})}}-->">屏蔽昵称</a></li>
+							        </ul>
+							    </div>
+							    <a href="" class="btn btn-primary">禁言</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->

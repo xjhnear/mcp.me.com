@@ -1,0 +1,64 @@
+<!--{%extends "sub-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					游戏关系列表
+				</h3>
+				<div class="actions">
+                    <form action="<!--{{url('plat360/mapping/list')}}-->" class="">
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+                                    <!--{{form_select('type',cond.keytypes,cond.type,{'class':'input-small','style':'margin-top:10px'})}}-->
+                                </td>
+                                <td>
+                                    <input name="keyword" type="text" class="input-medium" placeholder="" value="<!--{{cond.keyword}}-->">
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                                <td><a class="btn btn-teal" href="<!--{{url('plat360/mapping/edit')}}-->">增加</a></td>
+                            </tr>
+                        </table>
+                    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-50">ID</th>
+							<th class="col-100">游戏名</th>
+							<th class="col-100">Android ID</th>
+							<th class="col-80">Web站ID</th>
+							<th class="col-120">360平台ID</th>
+
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in result%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.gname}}--></td>
+							<td><!--{{item.wid}}--></td>
+							<td><!--{{item.mid}}--></td>
+							<td><!--{{item.qid}}--></td>
+							<td>
+							    <a href="<!--{{url('plat360/mapping/edit',{'id':item.id})}}-->" class="btn btn-primary">编辑</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->

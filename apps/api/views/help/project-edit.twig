@@ -1,0 +1,58 @@
+<!--{%extends "help/base-help.twig"%}-->
+
+<!--{%block main_nav%}-->
+<header>
+	<div class="container navi-breadcrumb">
+		<ul class="breadcrumb">
+			<li> <a href="<!--{{url('doc/index')}}-->">项目列表</a> <span class="divider">/</span> </li>
+			<!--{%if project%}-->
+			<li><!--{{project.name}}--></li>
+			<!--{%else%}-->
+			<li>新建项目</li>
+			<!--{%endif%}-->
+		</ul>
+	</div>
+</header>
+<!--{%endblock%}-->
+
+<!--{%block main_content%}-->
+    <form action="<!--{{url('doc/project-save')}}-->" method="POST">
+    <input name="id" type="hidden" value="<!--{{project.id}}-->" />
+    <div class="row">
+    <div class="span6">
+        <legend>基本信息</legend>
+		<label for="">项目名称</label>
+		<input type="text" name="name" placeholder="必填" value="<!--{{project.name}}-->">
+		<label for="">项目状态</label>
+		<!--{{form_select('status',statuslist,item.status)}}-->
+	</div>
+	<div class="span6">	
+		<legend>服务器地址</legend>
+		<label for="">开发服务器</label>
+		<input type="text" name="host_develop" class="input-xlarge" placeholder="选填" value="<!--{{project.host_develop}}-->">
+		<label for="">测试服务器</label>
+		<input type="text" name="host_test" class="input-xlarge" placeholder="选填" value="<!--{{project.host_test}}-->">
+		<label for="">正式服务器</label>
+		<input type="text" name="host_product" class="input-xlarge" placeholder="选填" value="<!--{{project.host_product}}-->">				
+		<p><i class="icon-exclamation-sign"></i>必须以http://开头, 可以包含API路径</p>
+	</div>	
+	</div>
+		<legend>项目说明</legend>
+		<textarea name="project_detail" id="" rows="20"><!--{{project.summary}}--></textarea>
+    </form>
+    <div class="row">
+		<div class="span4 offset4">
+			<a href="javascript:void(0);" class="btn btn-large btn-success interface-button" id="submit_button">提交项目</a>
+		</div>
+	</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $("#submit_button").click(function() {
+		$("form").submit()
+	});
+});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,65 @@
+<!--{%extends 'base-layout'%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box box-bordered">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>模块信息</h3>
+			</div>
+			<div class="box-content nopadding">
+			    <!--{%if module%}-->
+				<form action="<!--{{url('admin/module/install')}}-->" method="POST" class='form-horizontal form-bordered form-validate'>
+				<input name="module_name" type="hidden" value="<!--{{module.module_name}}-->" />
+				<input name="module_type" type="hidden" value="<!--{{module.module_type}}-->" />
+				<input name="sort" type="hidden" value="<!--{{module.sort}}-->" />
+				<div class="control-group">
+					<label for="description" class="control-label">模块标识</label>
+					<div class="controls">
+						<span><!--{{module.module_name}}--></span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="description" class="control-label">模块类型</label>
+					<div class="controls">
+						<span><!--{{module.module_type}}--></span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="description" class="control-label">模块名称</label>
+					<div class="controls">
+						<input type="text" name="module_alias" class="input-normal" value="<!--{{module.module_alias}}-->" data-rule-required="true" data-msg-required="不能为空">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="description" class="control-label">描述</label>
+					<div class="controls">
+						<input type="text" name="module_desc" class="input-xxlarge" value="<!--{{module.module_desc}}-->" data-rule-required="true" data-msg-required="不能为空">
+					</div>
+				</div>
+				<!--{%if module.id is null%}-->
+				<div class="control-group">
+					<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>
+				<!--{%endif%}-->    
+				</form>
+				<!--{%else%}-->
+				<form action="<!--{{url('admin/module/find')}}-->" method="POST" class='form-horizontal form-bordered form-validate'>
+				<div class="control-group">
+					<label for="description" class="control-label">模块标识</label>
+					<div class="controls">
+						<input type="text" name="module_name" class="input-normal" value="<!--{{module.module_name}}-->" data-rule-required="true" data-msg-required="不能为空">
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>查找</button>
+				</div>    
+				</form>
+				<!--{%endif%}-->
+				
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

@@ -1,0 +1,130 @@
+<!--{%extends "sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>礼包信息</h3>
+			</div>
+			<div class="box-content">
+			    <form action="<!--{{url('a_giftbag/gift/save')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{gift.id}}-->" />
+				<div class="control-group">
+					<label class="control-label">标题</label>
+					<div class="controls">
+						<input type="text" name="title" class="input-xxlarge" value="<!--{{gift.title}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">礼包来源</label>
+					<div class="controls">
+						<label class="radio inline"><!--{{form_radio('from_type','1',gift.from_type==1)}}-->商务</label>
+						<label class="radio inline"><!--{{form_radio('from_type','2',gift.from_type==2)}}-->自购</label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">所属游戏</label>
+					<div class="controls">
+					    <input id="gameselect" name="game_id" data-from="android" type="hidden" value="<!--{{gift.game_id}}-->" class="bigdrop select2-offscreen" style="width:200px" tabindex="-1">
+					</div>					
+				</div>
+				<!--{#				
+				<div class="control-group">
+					<label class="control-label">列表图</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="fileupload-new thumbnail btn-file" style="max-width: 60px; max-height: 60px;"><img src="<!--{%if ask.listpic%}--><!--{%endif%}--><!--{{ask.listpic|default('/static/img/nopic.gif')}}-->" /><input type="file" name='listpic' /></div>
+						</div>
+					</div>
+				</div>
+				#}-->
+				<div class="row-fluid">	
+				    <div class="span4">			
+						<div class="control-group">
+							<label class="control-label">开始时间</label>
+							<div class="controls">
+								<div class="input-append date">
+									<input name="starttime" type="text" class="input-medium datetimepicker" value="<!--{{gift.starttime|date('Y-m-d H:i')}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="span4">						
+						<div class="control-group">
+							<label class="control-label">结束时间</label>
+							<div class="controls">
+								<div class="input-append date">
+									<input name="endtime" type="text" class="input-medium datetimepicker" value="<!--{{gift.endtime|date('Y-m-d H:i')}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</div>
+						</div>
+				    </div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label">排序</label>
+					<div class="controls">
+						<input type="text" name="sort" class="input-small" value="<!--{{gift.sort|default('50')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">属性</label>
+					<div class="controls">					    
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_hot',1,gift.is_hot==1)}}-->热门					        					        
+				        </label>
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_top',1,gift.is_top==1)}}-->置顶					        					        
+				        </label>
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_show',1,gift.is_show==1)}}-->显示					        					        
+				        </label>
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_activity',1,gift.is_activity==1)}}-->活动					        					        
+				        </label>	
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_appoint',1,gift.is_appoint==1)}}-->专属			        					        
+				        </label>	
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('show_at_client',1,gift.show_at_client==1)}}-->显示在客户端			        					        
+				        </label>
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('show_at_suspendsion',1,gift.show_at_suspendsion==1)}}-->显示在悬浮			        					        
+				        </label>		        				       
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">所需游币</label>
+					<div class="controls">
+						<input type="text" name="score" class="input-small" value="<!--{{gift.condition.score|default('0')}}-->" />
+					</div>
+				</div>								
+				<div class="control-group">
+					<label for="textfield" class="control-label">内容</label>
+					<div class="controls">
+					    <script id="container" name="content" type="text/plain"><!--{{gift.content}}--></script>
+					</div>
+				</div>							
+			    <div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script>
+$(function(){
+    var editor = UE.getEditor('container');
+    gameselect('#gameselect');
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+});
+</script>
+<!--{%endblock%}-->

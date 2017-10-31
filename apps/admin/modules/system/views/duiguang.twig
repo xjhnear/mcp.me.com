@@ -1,0 +1,67 @@
+<!--{%extends "sub-layout-system.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>签到设置</h3>
+			</div>
+			<div class="box-content">
+				<form action="<!--{{url('system/task/save-checkin')}}-->" method="POST" class='form-horizontal'>								
+				<div class="control-group">
+					<label for="textfield" class="control-label">第一天签到奖励游币</label>
+					<div class="controls">
+					    <input name="first_day" type="text" class="input-small" value="<!--{{checkin.first_day|default('0')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">连续二天签到奖励游币</label>
+					<div class="controls">
+					    <input name="second_day" type="text" class="input-small" value="<!--{{checkin.second_day|default('0')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">连续三天签到奖励游币</label>
+					<div class="controls">
+					    <input name="third_day" type="text" class="input-small" value="<!--{{checkin.third_day|default('0')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">连续四天签到奖励游币</label>
+					<div class="controls">
+					    <input name="fourth_day" type="text" class="input-small" value="<!--{{checkin.fourth_day|default('0')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">连续五天签到奖励游币</label>
+					<div class="controls">
+					    <input name="fifth_day" type="text" class="input-small" value="<!--{{checkin.fifth_day|default('0')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">连续六天签到奖励游币</label>
+					<div class="controls">
+					    <input name="sixth_day" type="text" class="input-small" value="<!--{{checkin.sixth_day|default('0')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">连续七天签到奖励游币</label>
+					<div class="controls">
+					    <input name="seventh_day" type="text" class="input-small" value="<!--{{checkin.seventh_day|default('0')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">连续七天以上奖励游币</label>
+					<div class="controls">
+					    <input name="greater_seven_day" type="text" class="input-small" value="<!--{{checkin.greater_seven_day|default('0')}}-->" />
+					</div>
+				</div>				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

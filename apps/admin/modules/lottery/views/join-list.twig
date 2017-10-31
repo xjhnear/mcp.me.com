@@ -1,0 +1,218 @@
+<!--{%extends "sub-layout-lottery.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					参与者列表
+				</h3>
+				<div class="actions">
+					<button class="btn btn-teal" id="push-result" data="<!--{{ actid }}-->">推送中奖结果</button>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+				<table class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+						<th class="col-10">ID</th>
+						<th class="col-20">头像</th>
+						<th class="col-50">用户</th>
+						<th class="col-40">抽奖类型</th>
+						<th class="col-20">中奖状态</th>
+						<th class="col-40">奖项名称</th>
+						<th class="col-80">奖项内容</th>
+						<th class="col-40">参与时间</th>
+						<th class="col-40">消息发送</th>
+						<th class="col-40">代充完成</th>
+						<th class="col-80 table-btn-group">操作</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!--{%for item in list%}-->
+					<tr>
+						<td><!--{{item.join_id}}--></td>
+						<td class="user-avatar"><img src="<!--{{item.uinfo.avatar|default('/static/img/common/avatar.gif')}}-->" /></td>
+						<td><!--{{item.uinfo.nickname}}--><br/><span class="badge badge-warning"><!--{{ item.uinfo.uid }}--></span></td>
+						<td>
+							<!--{% if item.lot_type == 1 %}-->
+							<span class="badge badge-info">随时</span>
+							<!--{% else %}-->
+							<span class="badge badge-success">定时
+								<!--{% if lotinfo.prize_way == 1 %}-->
+								(自动
+								<!--{% if lotinfo.loted %}-->
+								[已开奖]
+								<!--{% else %}-->
+								[未开奖]
+								<!--{% endif %}-->
+								)
+								<!--{% else %}-->
+								（手动）
+								<!--{% endif %}-->
+							</span>
+							<!--{% endif %}-->
+						</td>
+						<td><!--{% if item.if_win %}--><span class="badge badge-success">中奖</span><!--{% else %}--><span class="badge badge-important">没中</span><!--{% endif %}--></td>
+						<td><!--{{ item.prize_name }}--></td>
+						<td><!--{{ item.prize_des }}--></td>
+						<td><!--{{ item.add_time|date('Y-m-d H:i') }}--></td>
+						<td><!--{% if item.msg_send %}--><span class="badge badge-success">消息已发</span><!--{% else %}--><span class="badge badge-important">消息未发</span><!--{% endif %}--></td>
+						<td><!--{% if item.recharge_msg %}--><span class="badge badge-success">代充已发</span><!--{% else %}--><span class="badge badge-important">代充未发</span><!--{% endif %}--></td>
+						<td>
+							<div class="btn-group">
+							     <a data-toggle="dropdown" href="#" class="btn btn-primary dropdown-toggle">操作<span class="caret"></span></a>
+							    <ul class="dropdown-menu dropdown-primary">
+							     <!--{% if lotinfo.prize_way == 2 %}-->
+								    <!--{% if item.msg_send == 0 %}-->
+							        <li>
+										<a class="set-win"  data="<!--{{ item.join_id }}-->" href="#setprize" data-toggle="modal" role="button">中奖设置</a>
+									</li>
+								    <!--{% endif %}-->
+								 <!--{% endif %}-->
+							     <!--{% if item.sub_info %}-->
+							        <li>
+							         	<a class="information" joinid="<!--{{item.join_id}}-->"  dataid="<!--{{item.activity_id}}-->" href="#setuserinfo" data-toggle="modal" role="button">代充资料</a>
+      								</li>
+      						    <!--{% endif %}-->
+								<!--{% if item.sub_info %}-->
+								    <!--{% if item.recharge_msg == 0 %}-->
+								    <li>
+									    <a class="recharged" data="<!--{{item.join_id}}-->" href="javascript:void(0);">已充通知</a>
+      								</li>
+								    <!--{% endif %}-->
+								<!--{% endif %}-->
+							    </ul>
+							 </div>
+						</td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+				</table>
+				<div class="pagelink">
+					<!--{{ pagination }}-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="setprize" class="modal hide fade" style="width:auto;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header" style="width:240px;">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="myModalLabel">设置中奖信息</h3>
+	</div>
+	<div style="text-align:center;padding:20px;" id="prize-list"></div>
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close"
+				        data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					代充资料
+				</h4>
+			</div>
+			<div  id="modal-body" class="modal-body">
+
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default"
+				        data-dismiss="modal">关闭
+				</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+	$(function(){
+		$('.set-win').bind('click',function(){
+			var jid = $(this).attr('data');
+			$.get('/lottery/inscharge/prize-list',{'jid':jid},function(resp){
+				var html = '<select id="select-prize"><option value="-1">撤销中奖</option>';
+				for(var i in resp){
+					html += '<option value="'+i+'">'+resp[i].title+'</option>'
+				}
+				html += '</select><br/>';
+				html += '<input class="button btn btn-primary" data="'+jid+'" type="button" value="确定" id="set-prize-submit">'
+				$('#prize-list').html(html);
+			},'json');
+		});
+
+		$('.recharged').click(function(){
+			var join_id = $(this).attr('data');
+			$.get('/lottery/inscharge/set-recharge',{'join_id':join_id},function(resp){
+				if(resp.status){
+					alertify.success(resp.msg);
+					setTimeout(function(){
+						location.reload();
+					},1000);
+				}else{
+					alertify.error(resp.msg);
+				}
+			});
+		});
+
+		$(document).on('click','#set-prize-submit',function(){
+			var prize_id = $('#select-prize').val();
+			var join_id = $(this).attr('data');
+			$.get('/lottery/inscharge/set-win',{'join_id':join_id,'prize_id':prize_id},function(resp){
+				if(resp.status){
+					$('#setprize').modal('toggle');
+					alertify.success(resp.msg);
+					setTimeout(function(){
+						location.reload();
+					},1000);
+				}else{
+					alertify.error(resp.msg);
+				}
+			});
+		});
+
+		$('#push-result').bind('click',function() {
+			var actid = $(this).attr('data');
+			alertify.confirm('确定推送么？', function (e) {
+				if(e){
+					$.get('/lottery/inscharge/push-win-msg', {'actid': actid}, function (resp) {
+						if(resp.state){
+							alertify.success(resp.msg);
+							setTimeout(function () {
+								location.reload();
+							}, 1000);
+						}else{
+							alertify.error(resp.msg);
+						}
+					},'json')
+				}
+			});
+		});
+		//代充资料
+		$('.information').on('click',function(){
+			var aid=$(this).attr('dataid'),joinid=$(this).attr('joinid');
+			$.get('/lottery/inscharge/charge-information',{'actid':aid,'joinid':joinid},function(resp){
+					resp=eval(resp);
+					var arrtable=new Array();
+					if(resp.state == 1){
+						for(var i in resp.msg){ 
+							arrtable.push("<span >"+i+":</span><span  style='margin-left:10px;'>"+resp.msg[i]+"</span></br></br>");
+						}
+					 	$("#modal-body").html(arrtable.join(''));
+					}else{
+						$("#modal-body").html(resp.msg);
+					}
+					$("#myModal").modal();
+				  	 
+			},'json');
+		});
+  });
+</script>
+<!--{%endblock%}-->

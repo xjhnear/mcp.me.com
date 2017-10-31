@@ -1,0 +1,174 @@
+<!--{%extends "sub-layout-chat.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					活动信息		
+				</h3>
+			</div>
+		<div class="box-content">
+		    <form id="form-activity" action="<!--{{url('chat/chatactivity/edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{activity.id}}-->" />
+				<div class="control-group">
+					<label class="control-label">活动标题</label>
+					<div class="controls">
+						<input type="text" name="name" class="input-xxlarge" value="<!--{{activity.name}}-->" data-rule-required="true" data-msg-required="标题不能为空" />
+						<span class="help-inline">活动题目不要超过15个汉字</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">关联BEST后台活动ID</label>
+					<div class="controls">
+					    <div class="input-append">
+					        <input id="selected_activity_aid" name="aid" type="hidden" value="<!--{{activity.aid}}-->" />
+							<span id="selected_activity_title" class="input-xlarge uneditable-input"></span>
+							<span class="add-on select-pop-activity" data-no="2">选择活动</span>
+							<a class="add-on" href="<!--{{url('a_activity/activity/edit')}}-->" target="_blank">添加新活动</a>
+						</div>
+					</div>					
+				</div>
+				<div class="control-group">
+					<label class="control-label">所属游戏</label>
+					<div class="controls">
+					    <input id="gameselect" name="gid" data-from="android" type="hidden" value="<!--{{activity.gid}}-->" class="bigdrop select2-offscreen" style="width:200px" tabindex="-1">
+					</div>					
+				</div>
+				<div class="control-group">
+					<label class="control-label">关联礼包</label>
+					<div class="controls">
+					    <div class="input-append">
+					        <input id="selected_giftbag_aid" name="giftbagId" type="hidden" value="<!--{{activity.giftbagId}}-->" />
+							<span id="selected_giftbag_title" class="input-xlarge uneditable-input"></span>
+							<span class="add-on select-pop-giftbag" data-no="2">选择礼包</span>
+							<a class="add-on" href="<!--{{url('a_giftbag/gift/add')}}-->" target="_blank">添加新礼包</a>
+						</div>
+					</div>					
+				</div>
+				<div class="control-group">
+					<label class="control-label">回复暗语</label>
+					<div class="controls">
+					    <input name="keyword" type="text" value="<!--{{activity.keyword}}-->" class="input-xlarge">
+					</div>					
+				</div>
+				<div class="control-group">
+					<label class="control-label">中奖规则</label>
+					<div class="controls">
+					    <div class="input-append">
+						    <span class="add-on">概率</span>
+					        <input type="text" name="chance" class="input-min" value="<!--{{activity.chance}}-->" />
+					        <span class="add-on">%</span>
+				        </div>
+				        <span class="help-inline">最大值100,可以带小数点,例如：万分之一为0.01</span>
+					</div>					
+				</div>
+				<div class="control-group">
+					<label class="control-label">开始时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input name="startTime" type="text" class="input-medium datetimepicker" value="<!--{{activity.startTime|date('Y-m-d H:i')}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input name="endTime" type="text" class="input-medium datetimepicker" value="<!--{{activity.endTime|date('Y-m-d H:i')}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label">状态</label>
+					<div class="controls">					    
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('onOrOff',1,activity.onOrOff==true)}}-->开启					        					        
+				        </label>				        				       
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			</form>
+		</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+//选择活动
+var set_selected_activity = function(id,title){
+    $('#selected_activity_aid').val(id);
+    $('#selected_activity_title').text(title);
+};
+
+//选择礼包
+var set_selected_giftbag = function(id,title){
+    $('#selected_giftbag_aid').val(id);
+    $('#selected_giftbag_title').text(title);
+};
+
+$(function(){
+    gameselect('#gameselect');
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+    //选择活动弹窗
+	$('.select-pop-activity').bind('click',function(){
+        var no = $(this).attr('data-no');
+        var url =  '/a_activity/activity/pop-search/'+ no;        
+        $.ajax({
+            url:url,
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-data-list',title:'提示',padding:2,content:html,width:600});
+            }
+        });        
+    }); 
+    //初始化活动
+    if($('#selected_activity_aid').val()>0){
+        $.ajax({
+            url:'/a_activity/activity/pop-info/'+$('#selected_activity_aid').val(),
+            dataType:'json',
+            success:function(json){
+                $('#selected_activity_title').html(json.activity.title);
+            },
+            error:function(err){alert(err);}
+        });
+    } 
+    
+    //选择礼包弹窗
+	$('.select-pop-giftbag').bind('click',function(){
+        var no = $(this).attr('data-no');
+        var url =  '/a_giftbag/gift/pop-search/'+ no;        
+        $.ajax({
+            url:url,
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-data-list',title:'提示',padding:2,content:html,width:600});
+            }
+        });        
+    }); 
+    //初始化礼包
+    if($('#selected_giftbag_aid').val()>0){
+        $.ajax({
+            url:'/a_giftbag/gift/pop-info/'+$('#selected_giftbag_aid').val(),
+            dataType:'json',
+            success:function(json){
+                $('#selected_giftbag_title').html(json.giftbag.title);
+            },
+            error:function(err){alert(err);}
+        });
+    } 
+});
+</script>
+<!--{%endblock%}-->

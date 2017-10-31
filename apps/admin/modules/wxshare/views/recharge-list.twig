@@ -1,0 +1,59 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					代充产品管理				
+				</h3>
+				<div class="actions">
+				    <table class="table-filter">
+				        <tr>				            
+				            <td>
+				            <a href="<!--{{url('wxshare/recharge/edit')}}-->" class="btn btn-teal">添加代充产品</button></td>
+				        </tr>
+				    </table>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">ID</th>
+							<th class="col-150">代充产品</th>
+                            <th class="col-150">游戏</th>
+							<th class="col-60">状态</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td>
+								<!--{{item.title}}-->
+							</td>
+							<td class="user-avatar"><img src="<!--{{config('app.image_url')}}--><!--{{item.ico}}-->"/><!--{{item.game_name}}--></td>							
+							<td><!--{%if item.is_show==1%}--><span class="badge badge-success">显示</span><!--{%else%}--><span class="badge badge-important">隐藏</span><!--{%endif%}--></td>
+							<td>
+							    <a href="<!--{{url('wxshare/recharge/edit',{id:item.id})}}-->" class="btn btn-primary">编辑</a>
+							    <a href="<!--{{url('wxshare/recharge/pricelist',{id:item.id})}}-->" class="btn btn-primary">充值面值</a>							    
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<!--{%endblock%}-->

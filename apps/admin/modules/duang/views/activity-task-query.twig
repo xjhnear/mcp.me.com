@@ -1,0 +1,78 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    活动任务查询
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('duang/variation/query-task-report')}}-->" method="GET">
+                        <input name="task_id" type="hidden" value="<!--{{task_id}}-->"/>
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+
+                                    <div class="input-append">
+                                        V3分享活动的ID<input name="activity_id" type="text" class="input-xlarge" value="<!--{{activity_id}}-->" /><span class="add-on select-pop-variation" data-no="2">选择活动</span>
+                                    </div>
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>查询</button></td>
+                            </tr>
+                        </table>
+                    </form>
+
+                </div>
+            </div>
+            <div class="box-content">
+                <div>
+                    <form action="<!--{{url('duang/variation/save-query-task-report')}}-->" method="POST">
+                        <input name="activity_id" type="hidden" value="<!--{{activity_id}}-->"/>
+                        <div class="control-group">
+                            <label class="control-label"></label>
+                            <div class="controls">
+                                <textarea name="reward_uids" class="input-xxlarge" rows="20"><!--{{uids_str}}--></textarea>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">数量</label>
+                            <div class="controls">
+                                <!--{{uids_count}}-->
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    function set_selected_variation(activity_id,share_title,share_pic,share_des,share_url){
+        $("input[name='activity_id']").val(activity_id);
+        $("#share_img").attr("src",share_pic);
+    }
+    $(function(){
+
+
+        //选择活动弹窗
+        $('.select-pop-variation').live('click',function(){
+            var url =  '/duang/variation/variation-search';
+            $.ajax({
+                url:url,
+                dataType:'json',
+                success:function(json){
+                    var html = '';
+                    html = json.html;
+                    $.dialog({id:'pop-variation-list',title:'提示',padding:2,content:html,width:600});
+                }
+            });
+        });
+    });
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,24 @@
+.loading{
+    position:absolute;
+    top:30%;left:24%;
+    z-index:999999;
+    width:50%;height:50%;
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=80);
+    opacity: 0.8;
+    background-color:gray;
+    display:none;
+}
+.loadingimg{
+    height: 100px;
+    left: 41%;
+    position: absolute;
+    top: 40%;
+    width: 100px;
+}
+.loadingfort{
+   color: #FFFFFF;
+    left: 35%;
+    position: absolute;
+    top: 26%;
+    fort-size:15px;
+}

@@ -1,0 +1,66 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>卡密导入</h3>
+            </div>
+            <div class="box-content">
+                <form  action="<!--{{url('v4aproduct/goods/import')}}-->" method="POST" id="card_import" class='form-horizontal form-validate' enctype="multipart/form-data">
+                <input type="hidden" name="cardCode"  value="<!--{{card.cardCode}}-->"/>
+                   <div class="control-group">
+                        <label class="control-label">卡密导入说明</label>
+                        <div class="controls">
+                            <span class="label">EXCLE文件导入</span>
+                            <p>请将要导入的卡密号写入一个TXT文件！</p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">卡密文件</label>
+                        <div class="controls">
+                            <div class="uploader" id="uniform-fileInput"><input name="importFile" class="input-file uniform_on" id="file_upload" type="file" size="19" style="opacity: 0; "></div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                            <label class="control-label">导入描述</label>
+                            <div class="controls">
+                                    <input type="text" name="importDesc" id="importDesc"  class="input-xlarge" value="" />
+                            </div>
+                    </div>
+                    <div class="control-group">
+                            <label class="control-label">卡密面额</label>
+                            <div class="controls">
+                                    <input type="text" name="cardAmountStr" data-rule-digits="true"  data-msg-digits="请填写数字" id="cardAmountStr"  class="input-xlarge" value="" />
+                            </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">卡密过期时间</label>
+                        <div class="controls">
+                                <div class="input-append date">
+                                    <input name="expTimeStr" type="text" class="input-medium datetimepicker" value="" readonly="">
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>导入</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.uniform.min.js"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+    $(function(){
+        $("input:file").uniform({'fileBtnText':'选择文件'});
+    });
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
+</script>
+<!--{%endblock%}-->

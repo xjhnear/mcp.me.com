@@ -1,0 +1,74 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    虚拟商品卡密（包括礼包）列表  卡密种类编号:<!--{{datalist.0.cardCode}}-->
+                </h3>
+                <div class="actions">
+                    <table class="table-filter">
+                        <tr>
+                            <td><a href="<!--{{url('v4product/goods/card-list')}}-->" class="btn btn-teal">返回卡密种类列表</a></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th >卡密具体信息</th>
+                        <th >金额</th>
+                        <th >导入时间</th>
+                        <th >卡密状态</th>
+                        <th>卡密有效期限</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{% for key,item in datalist%}-->
+                        <tr>
+                            <td><!--{{item.cardInfo}}--></td>
+                            <td><!--{{item.cardAmount}}--></td>
+                            <td><!--{{item.addTimeStr}}--></td>
+                            <td> 
+                                <!--{% if item.cardStatus == 0%}-->
+                                    未使用（库存中) 
+                                <!--{% elseif item.cardStatus == 1 %}-->
+                                    使用中
+                                <!--{% elseif item.cardStatus == 2 %}-->
+                                    已使用(平台已发放）
+                                <!--{% elseif item.cardStatus == 3 %}-->
+                                    过期无效
+                                <!--{% endif %}-->
+                            </td>
+                            <td><!--{{item.expTimeStr}}--></td>
+                            <td>
+                                <!--{% if item.cardStatus != 4%}-->
+                                    <a href="<!--{{url('v4product/goods/card-del',{cardinfoId:item.id,cardcode:datalist.0.cardCode})}}-->" class="btn btn-primary">删除</a>
+                                <!--{% endif %}-->
+                            </td>
+                       </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    $(function(){
+
+    });
+</script>
+<!--{%endblock%}-->

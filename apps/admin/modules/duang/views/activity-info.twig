@@ -1,0 +1,183 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>活动信息</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form-activity" action="<!--{{url('duang/activity/edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{activity.id}}-->" />
+				<div class="control-group">
+					<label class="control-label">活动标题</label>
+					<div class="controls">
+						<input type="text" name="title" class="input-xxlarge" value="<!--{{activity.title}}-->" data-rule-required="true" data-msg-required="标题不能为空" />
+						<span class="help-inline">活动题目不要超过15个汉字</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">开始时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input name="starttime" type="text" class="input-medium datetimepicker" value="<!--{{activity.starttime|date('Y-m-d H:i')}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input name="endtime" type="text" class="input-medium datetimepicker" value="<!--{{activity.endtime|date('Y-m-d H:i')}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">所属游戏</label>
+                    <div class="controls">
+                        <input id="gameselect" data-from="android" name="game_id" type="hidden" value="<!--{{activity.game_id}}-->" class="bigdrop select2-offscreen" style="width:200px;" tabindex="-1">
+                        <input id="game_name" name="game_name" type="hidden" value="<!--{{activity.game_name}}-->" >
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">完成次数</label>
+                    <div class="controls">
+                        <input type="text" name="need_times" class="input-small" value="<!--{{activity.need_times}}-->" data-rule-required="true" data-msg-required="次数不能为空" />
+                        <span class="help-inline">此值为分享者分享的链接达到此值，获得奖励</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">分享者描述</label>
+                    <div class="controls">
+                        <input type="text" name="share_prize_des" class="input-xxlarge" value="<!--{{activity.share_prize_des}}-->" data-rule-required="true" data-msg-required="次数不能为空" />
+                        <span class="help-inline">恭喜您，您在 XXX 活动中获得了 <span class="nes-star">XXXXXXXX</span> 礼包一份。礼包码为：XXXX</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">限制次数</label>
+                    <div class="controls">
+                        <input type="text" name="limit_times" class="input-small" value="<!--{{activity.limit_times}}-->" data-rule-required="true" data-msg-required="次数不能为空" />
+                        <span class="help-inline">每个分享者链接只能多少人拿到礼包</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">被分享者描述</label>
+                    <div class="controls">
+                        <input type="text" name="prize_des" class="input-xxlarge" value="<!--{{activity.prize_des}}-->" data-rule-required="true" data-msg-required="次数不能为空" />
+                        <span class="help-inline">恭喜您，您在 XXX 活动中获得了 <span class="nes-star">XXXXXXXX</span> 礼包一份。礼包码为：XXXX</span>
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">是否开启</label>
+					<div class="controls">					    				        
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_show',1,activity.is_show==1)}}-->是
+				        </label>					        			        	        				     
+					</div>
+				</div>
+                <div class="control-group">
+                    <label class="control-label">描述</label>
+                    <div class="controls">
+                        <textarea name="summary" class="input-xxlarge" data-rule-required="true" data-msg-required="描述不能为空"><!--{{activity.summary}}--></textarea>
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">关联BEST后台活动ID</label>
+					<div class="controls">
+					    <div class="input-append">
+					        <input id="selected_activity_aid" name="article_id" type="hidden" value="<!--{{ activity.article_id }}-->"/>
+							<span id="selected_activity_title" class="input-xlarge uneditable-input"></span>
+							<span class="add-on select-pop-activity" data-no="2">选择活动</span>
+							<a class="add-on" href="<!--{{url('a_activity/activity/edit')}}-->" target="_blank">添加新活动</a>
+						</div>
+					</div>
+				</div>
+			    <div class="control-group">
+					<label class="control-label">分享标题</label>
+					<div class="controls">
+						<input type="text" name="share_title" class="input-xxlarge" value="<!--{{activity.share_title}}-->"/>
+						<span class="help-inline">分享标题不要超过15个汉字</span>
+					</div>
+				</div>
+			    <div class="control-group">
+					<label class="control-label">分享Logo</label>
+					<div class="controls">
+						<div data-provides="fileupload" class="fileupload fileupload-new">
+							<input name="haspic" type="hidden" value="<!--{% if activity.share_pic %}-->1<!--{% else %}-->0<!--{% endif %}-->">
+							<div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail"><img <!--{% if activity.share_pic %}-->src="<!--{{ activity.share_pic }}-->"<!--{% else %}-->src="/static/img/wu_ss.gif"<!--{% endif %}-->></div>
+							<div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+							<div>
+								<span class="btn btn-file"><i class="icon-picture"></i>
+									<span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+									<input type="file" name="share_pic">
+								</span>
+								<a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			    <div class="control-group">
+                    <label class="control-label">分享描述</label>
+                    <div class="controls">
+                        <textarea name="share_des" class="input-xxlarge"><!--{{activity.share_des}}--></textarea>
+                        <span class="help-inline"></span>
+                    </div>
+                </div>
+				
+				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+//选择活动
+var set_selected_activity = function(id,title){
+	$('#selected_activity_aid').val(id);
+	$('#selected_activity_title').text(title);
+};
+
+$(function(){
+    gameselect('#gameselect');
+    $('#gameselect').change(function(){
+        var gamename = $('#s2id_gameselect a span').text();
+        $('#game_name').val(gamename);
+    });
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+	//选择活动弹窗
+	$('.select-pop-activity').bind('click',function(){
+        var no = $(this).attr('data-no');
+        var url =  '/a_activity/activity/pop-search/'+ no;
+        $.ajax({
+            url:url,
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-data-list',title:'提示',padding:2,content:html,width:600});
+            }
+        });
+    });
+    //初始化活动
+    if($('#selected_activity_aid').val()>0){
+        $.ajax({
+            url:'/a_activity/activity/pop-info/'+$('#selected_activity_aid').val(),
+            dataType:'json',
+            success:function(json){
+                $('#selected_activity_title').html(json.activity.title);
+            },
+            error:function(err){alert(err);}
+        });
+    }
+});
+</script>
+<!--{%endblock%}-->

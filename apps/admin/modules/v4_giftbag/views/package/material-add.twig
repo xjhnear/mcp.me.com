@@ -1,0 +1,134 @@
+<!--{%extends "../sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>实物导入</h3>
+            </div>
+            <div class="box-content">
+                <form id="card_from" action="<!--{{url('v4giftbag/package/add-material')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+
+                    <div class="control-group">
+                        <label class="control-label">数量</label>
+                        <div class="controls">
+                            <input type="text" name="materialStock" id="cardDesc" data-rule-required="true" data-msg-required="请填写礼包库名称"  class="input-large" value="" />
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">礼包库名称</label>
+                        <div class="controls">
+                            <input type="text" name="materialDesc" id="cardDesc" data-rule-required="true" data-msg-required="请填写礼包库名称"  class="input-large" value="" />
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">用途</label>
+                        <div class="controls">
+                            <!--{{form_select('materialUse',materialUse,search.materialUse,{'id':'materialUse','style':'margin-top:10px;width:100px'})}}-->
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*关联游戏</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="selected_game_id" name="game_id" type="hidden" value="<!--{{atask.gid}}-->"/>
+                                <input type="text" readonly id="selected_game_name" name="game_name" class="input-medium" data-rule-required="true" data-msg-required="请选择游戏" value="<!--{{ atask.typeCondition['gameName'] }}-->" />
+                                <span class="add-on select-pop-game">选择游戏</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">详情大图</label>
+                        <div class="controls">
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img id="listpic_img" src="<!--{%if goods.bigpic_1%}--><!--{%endif%}--><!--{{goods.bigpic_1|default('/static/img/nopic.gif')}}-->" /></div>
+                                <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+                                <div>
+                                    <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择照片</span><span class="fileupload-exists">重新选择</span><input id="bigpic_1" type="file" name='bigpic_1' /></span>
+                                </div>
+                            </div>
+                            <span class="help-inline">图片最佳尺寸:640*334</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">列表小图</label>
+                        <div class="controls">
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img id="listpic_img" src="<!--{%if goods.listPic%}--><!--{%endif%}--><!--{{goods.listPic|default('/static/img/nopic.gif')}}-->" /></div>
+                                <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+                                <div>
+                                    <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择照片</span><span class="fileupload-exists">重新选择</span><input id="listpic" type="file" name='listpic' /></span>
+                                </div>
+                            </div>
+                            <span class="help-inline">图片最佳尺寸:294*190</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">商品说明</label>
+                        <div class="controls">
+                            <!--
+                 <script id="productSummary" name="productSummary" type="text/plain"><!--{{goods.productSummary }}--></script>
+                            -->
+                            <textarea id="productSummary" name="productSummary" style="width:544px;height:200px;"><!--{{goods.productSummary}}--></textarea>
+                            </div>
+                            </div>
+                            <div class="control-group">
+                            <label class="control-label">使用说明</label>
+                            <div class="controls">
+                            <!--
+                            <script id="productInstruction" name="productInstruction" type="text/plain"><!--{{goods.productInstruction }}--></script>
+                            -->
+                            <textarea id="productInstruction" name="productInstruction" style="width:544px;height:200px;"><!--{{goods.productInstruction}}--></textarea>
+                        </div>
+                    </div>
+
+                    <div id="clone_" >
+                        <input type="hidden" name="tmp" id="tmp" value="">
+                        <input type="hidden" name="filename" id="filename" value="">
+                        <!--
+                                                <input name="importFile2" class="input-file uniform_on" id="importFile2" type="file" size="19" >
+-->
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>提交入库</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.uniform.min.js"></script>
+<script src="/static/js/ajaxfileupload.js"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+    $(function(){
+        $('#is-append').bootstrapSwitch();
+
+        $('.select-pop-game').bind('click', function () {
+            $.ajax({
+                url: '/game/api/game-search',
+                dataType: 'json',
+                success: function (json) {
+                    var html = json.html;
+                    $.dialog({id: 'pop-game-list', title: '提示', padding: 2, content: html, width: 600, height: 580});
+                }
+            });
+        });
+
+    });
+    var set_selected_game=function(game_id,game_name,icon){
+        $('#selected_game_id').val(game_id);
+        $('#selected_game_name').val(game_name);
+    }
+</script>
+<!--{%endblock%}-->

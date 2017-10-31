@@ -1,0 +1,59 @@
+<!--{%extends "sub-layout-adv.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>广告地址</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form-activity" action="<!--{{url('adv/location/location-add-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <input id="Id" name="Id" type="hidden" value="<!--{{datainfo.Id}}-->" />
+					<div class="control-group">
+						<label class="control-label">广告地址</label>
+						<div class="controls">
+							<input type="text" name="name" class="input-xlarge" value="<!--{{datainfo.name}}-->" data-rule-required="true" data-msg-required="广告地址不能为空" />
+							
+						</div>
+					</div>				
+					<div class="control-group">
+                        <label for="textfield" class="control-label">选择广告类型</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="selected_nature_id" name="nature_id" type="hidden" value="<!--{{datainfo.nature_id}}-->" />
+                                <input type="text" id="selected_nature_name" readonly  class="input-xlarge" value="<!--{{datainfo.natureName}}-->" data-rule-required="true" data-msg-required="请选择广告类型" />
+                                <span class="add-on select-pop-select">请选择广告类型</span>
+                            </div>
+                        </div>
+                	</div> 
+				    <div class="form-actions">
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					</div> 
+				 </from>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+var set_selected_nature = function(ids,names){
+ 	$('#selected_nature_id').val(ids);
+    $('#selected_nature_name').val(names);
+};
+$(function(){
+	$('.select-pop-select').on('click',function(){    
+		$.ajax({
+	        url:'/adv/location/nature-select',
+	        dataType:'json',
+	        success:function(json){
+	            var html = '';
+	            html = json.html;
+	            $.dialog({id:'pop-alert-list',title:'提示',padding:2,content:html,width:600,height:580});
+	        }
+	    });
+	});
+});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,86 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					礼包列表
+				</h3>
+				<div class="actions">
+					<form action="<!--{{url('duang/gbdepot/cardlist')}}-->/<!--{{ search.depot_id }}-->">
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+                                    <input type="text" class="input-small" name="uid" placeholder="领取人UID" value="<!--{{ search.uid }}-->">
+                                </td>
+
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                            </tr>
+                        </table>
+                    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">ID</th>
+							<th class="col-150">卡号</th>
+                            <th class="col-150">初领时间</th>
+                            <th class="col-150">发送时间</th>
+							<th class="col-150">领取人</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{% for item in list %}-->
+						<tr>
+							<td><!--{{ item.list_id }}--></td>
+							<td><!--{{ item.cardno }}--></td>
+							<td><!--{% if item.gettime %}--><!--{{ item.gettime|date('Y-m-d H:i:s') }}--><!--{% endif %}--></td>
+							<td><!--{% if item.updatetime %}--><!--{{ item.updatetime|date('Y-m-d H:i:s') }}--><!--{% endif %}--></td>
+                            <td>
+							<!--{% if item.uinfo %}-->
+	                            <span class="label label-success"><!--{{item.uinfo.uid}}--></span><br/>
+                                <span class="label label-primary"><!--{{item.uinfo.mobile}}--></span><br/>
+                                <span class="label label-warning"><!--{{item.uinfo.nickname}}--></span>
+							<!--{% endif %}-->
+                            </td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+				    <!--{{ pagination }}-->
+			    </div>
+
+			    <div class="modal fade" id="share_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" id="myModalLabel">分享的URL</h4>
+				      </div>
+				      <div class="modal-body">
+				      	  <span id="share_url"></span>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+});
+</script>
+<!--{%endblock%}-->

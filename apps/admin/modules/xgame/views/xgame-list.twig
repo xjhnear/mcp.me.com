@@ -1,0 +1,77 @@
+<!--{%extends "sub-layout-xgame.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					游戏列表
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('xgame/forum/index')}}-->" class="">
+				    <table class="table-filter">
+				        <tr>				            
+				            <td>
+				                <div class="controls">
+								    <label class="radio inline">
+							        <!--{{form_radio('keytype','id',cond.keytype=='id')}}-->ID					        					        
+							        </label>
+							        <label class="radio inline">
+							        <!--{{form_radio('keytype','gname',cond.keytype=='gname')}}-->名称					        					        
+							        </label>
+								</div>				                
+				            </td>
+				            <td>
+								<input name="keyword" type="text" class="input-medium" placeholder="" value="<!--{{cond.keyword}}-->">								
+							</td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">
+						        
+							</th>
+						    <th class="col-50">ID</th>
+							<th class="col-100">游戏名</th>
+							<th class="col-60">缩略图</th>
+							<th class="col-80">类别</th>							
+							<th class="col-120">游戏短语</th>
+							<th class="col-60">游戏地址</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in games%}-->
+						<tr>
+						    <td></td>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.gamename}}--></td>
+							<td class="user-avatar"><img src="<!--{{item.litpic|default('/userdirs/common/avatar@2x.png?v=3')}}-->" /></td>
+							<td><!--{{item.typename}}--></td>
+							<td><!--{{item.phrase}}--></td>
+							<td><!--{{item.gameaddress}}--></td>
+							<td>
+							    <a href="<!--{{url('xgame/forum/edit',{'id':item.id})}}-->" class="btn btn-primary">编辑</a>
+							    <a href="<!--{{url('xgame/forum/edit-pic',{'gid':item.id})}}-->" class="btn btn-primary">关联图</a>
+							    <a href="<!--{{url('xgame/forum/del',{'id':item.id})}}-->" class="btn btn-primary">删除</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->

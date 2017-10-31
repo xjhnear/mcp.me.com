@@ -1,0 +1,64 @@
+<div class="box">
+    <div class="actions">
+        <!--{% if searchhtml %}-->
+          <form id="mysearchfrom" action="#">
+            <table id="table-filter" class="table-filter">
+                 <tr>   
+                        <!--{% for key,html in searchhtml%}-->
+                        <td>
+                            <!--{{html}}-->
+                        </td>
+                        <!--{%endfor%}-->
+                        <td>
+                            <a href="javascript:;" id="mysearch" class="btn btn-teal ">按条件搜索</a>
+                        </td>
+                 </tr>
+            </table>
+          </form>
+        <!--{%endif%}-->
+    </div>
+    <table id="mytable_" class="table table-hover table-nomargin">
+    	<!--{% if threadth %}-->
+	        <thead>
+	        <tr>
+	        	<!--{% for key,item in threadth%}-->
+	        		<th style="width:<!--{% if trWidth[key] %}--><!--{{trWidth[key]}}--><!--{%else%}-->100<!--{% endif %}-->px"><!--{{item}}--></th>
+	            <!--{%endfor%}-->
+				<th class="table-btn-group" style="width:70px;">操作</th>
+	        </tr>
+	        </thead>
+	    <!--{%endif%}-->
+	    <!--{% if datalist %}-->
+        <tbody id="tbody">
+        	<!--{% for key,item in datalist %}-->
+        		<tr  id="tr_<!--{{item[primarykey]}}-->">
+        			<!--{% for key_,item_ in selectkey %}-->
+			            <td <!--{% if in_array(item_,returnField) %}--> id="<!--{{item_}}-->_<!--{{item[primarykey]}}-->" data-value='<!--{{item[item_]}}-->'<!--{%endif%}-->>
+                                <!--{% if tbodytd[key_] == 'img' %}-->
+                                    <img src="http://img.youxiduo.com/<!--{{item[item_]}}-->" width="30" height='40' />
+                                <!--{%else%}-->
+                                    <!--{{item[item_]}}-->
+                                <!--{%endif%}-->
+                        </td>
+			        <!--{% endfor %}-->
+		            <td>
+                       <a href="javascript:void(0);" data-id="<!--{{item[primarykey]}}-->"  class="btn btn-primary select-id">选择</a>
+            		</td>
+        		</tr>
+        	<!--{% endfor %}-->	
+        </tbody>
+        <!--{%endif%}-->
+    </table> 
+    <div id="pagelink" totalCount='<!--{{totalCount}}-->' class="pagelink" style="display:block;">
+        
+    </div>
+    <!--{% if is_checkboxs %}-->
+        </br></br>
+        <div id='is_checkboxs' style="widht:100%; word-break: break-all;word-wrap:break-word;" >所选择的将在此处显示
+        </div>
+        </br></br>
+        <div style="float: right; margin-right: 30px; display:none" id="select-div">
+            <a id="select-ok" href="javascript:void(0);" data-id="<!--{{item[primarykey]}}-->"  class="btn btn-primary ">确定</a>
+        </div>
+    <!--{%endif%}-->
+</div>

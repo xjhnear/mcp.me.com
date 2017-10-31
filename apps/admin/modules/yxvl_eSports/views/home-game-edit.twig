@@ -1,0 +1,99 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/validationEngine.jquery.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+				</h3>				
+			</div>
+			<div class="box-content">
+			    
+			    <form id="form_game" action="<!--{{url('wcms/home/edit-game')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <div class="control-group">
+			        <label class="control-label">类型</label>
+					<div class="controls">
+					    <!--{{form_select('type',{'hot':'热门','ios':'网游','android':'单机','game':'电竞'},setting.type)}}-->
+					</div>
+				</div>
+				<div class="control-group">
+			        <label class="control-label">位置</label>
+					<div class="controls">
+					    <!--{{form_select('idx',idx_options,setting.idx)}}-->
+					</div>
+				</div>
+			    <!--{%if setting.picUrl%}-->
+			    <div class="control-group">
+			        <label class="control-label">图片</label>
+					<div class="controls">
+					    <input name="picUrl" type="hidden" value="<!--{{setting.picUrl}}-->" />
+					    <a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.picUrl}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">上传图片</label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<!--{%if setting.picUrl%}-->
+								<input type="file" class="" name="filedata" />
+								<!--{%else%}-->
+								<input type="file" class="validate[required]" name="filedata" />
+								<!--{%endif%}-->
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="control-group div-type-2">
+					<label class="control-label">关联游戏</label>
+					<div class="controls">
+					    <div class="input-append">
+							<input type="text" id="web_game_id" name="gameId" class="input-medium validate[required]" value="<!--{{setting.gameId}}-->" /><span class="add-on select-web-game">选择</span>
+						</div>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>	    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+var set_selected_web_game = function(game_id,game_name,game_icon){
+    $('#web_game_id').val(game_id);
+};
+$(function(){    
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+    
+    $('.select-web-game').bind('click',function(){        
+        $.ajax({
+            url:'/wcms/api/pop-game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });        
+    });
+
+	$('#form_game').validationEngine({promptPosition : "topRight",autoPositionUpdate:true});
+});    
+</script>
+<!--{%endblock%}-->

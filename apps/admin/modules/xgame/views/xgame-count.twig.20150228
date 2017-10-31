@@ -1,0 +1,72 @@
+<!--{%extends "sub-layout-xgame.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					游戏统计
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('xgame/forum/xgame-count')}}-->" class="">
+				    <table class="table-filter">
+				        <tr>				            
+				            <td>
+								游戏ID<input name="gid" type="text" class="input-small" placeholder="" value="<!--{{cond.gid}}-->">	
+							</td>
+							<td>
+								来源<!--{{form_select('type',cond.keytypes,cond.type,{'class':'input-small','style':'margin-top:10px'})}}-->							
+							</td>
+							<td>
+				                <div class="input-append date datepick" id="dpStart" data-date="">
+									<input name="begin" type="text" class="input-small" value="<!--{{cond.begin}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+				            </td>
+				            <td>
+				                <div class="input-append date datepick" id="dpEnd" data-date="">
+									<input name="after" type="text" class="input-small" value="<!--{{cond.after}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-50">ID</th>
+							<th class="col-100">游戏名</th>
+							<th class="col-60">点击量</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in result%}-->
+						<tr>
+							<td><!--{{item.gid}}--></td>
+							<td><!--{{item.gamename}}--></td>
+							<td><!--{{item.c}}--></td>
+						</tr>
+						<!--{%endfor%}-->
+						
+						<tr>
+							<td></td>
+							<td></td>
+							<td>总浏览量：<!--{{totalSum}}--></td>
+						</tr>
+					</tbody>
+			    </table>
+			</div>
+			<div class="pagelink">
+			    <!--{{pagelinks}}-->
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->

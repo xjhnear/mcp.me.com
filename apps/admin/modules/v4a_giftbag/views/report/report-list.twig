@@ -1,0 +1,82 @@
+<!--{%extends "../sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    礼包领取报表
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('v4agiftbag/report/list')}}-->" class="">
+                        <table class="table-filter">
+                            <tr>
+
+                                <td>
+
+                                    <!--{{form_select('isBelongUs',{'':'全部','false':'商务','true':'自购'},inputinfo.isBelongUs,{'style':'width:80px;margin-bottom:0px;'})}}-->
+
+                                </td>
+                                <td>
+                                    <input type="text" name="timeBegin" id="datetime" class="input-small datetime" placeholder="开始时间" value="<!--{{inputinfo.timeBegin}}-->"/>
+                                <td>
+                                    <input type="text" name="timeEnd" id="datetime2" class="input-small datetime" placeholder="结束时间" value="<!--{{inputinfo.timeEnd}}-->"/>
+                                </td>
+
+                                <td>总领取量:<span class="badge badge-important"><!--{{opercount}}--></span></td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>查询</button></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-120">游戏</th>
+                        <th>礼包名称</th>
+                        <th class="col-60">领取量</th>
+                        <!--{#<th class="col-150">时间段内发放量</th>#}-->
+                        <th class="col-150">总发放量</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for item in datalist.sList%}-->
+                    <tr>
+                        <td><!--{{item.gname}}--></td>
+                        <td><!--{{item.productName}}--></td>
+                        <td><!--{{item.exchangeStock}}--></td>
+                        <td><!--{{item.addStock}}--></td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/laydate/laydate.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/MyHelp.js')}}-->"></script>
+<script>
+    var setting= {
+        elem:'#datetime',
+        start: '2015-12-01 24:00:00',    //开始日期
+    };
+    getLaydate(setting);
+    var setting= {
+        elem:'#datetime2',
+        start: '2015-12-01 23:59:59',    //开始日期
+    };
+    //file:///Users/fujiajun/Downloads/4.0%E7%AE%A1%E7%90%86%E5%90%8E%E5%8F%B01207%202/index.html#p=%E9%A6%96%E9%A1%B5%E5%BC%B9%E7%AA%97%E5%B9%BF%E5%91%8A
+    //http://admin.youxiduo.dev/v4adv/popup/list
+    getLaydate(setting);
+</script>
+<!--{%endblock%}-->

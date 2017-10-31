@@ -1,0 +1,69 @@
+<!--{%extends "sub-layout-adv.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					推荐类型列表(推荐只针对广告类型中的推荐模式)	
+				</h3>
+				<div class="actions">
+					<form action="<!--{{url('adv/recommend/list')}}-->">
+						<table class="table-filter" >
+							<tbody>
+							<tr>
+								<td><input type="text" name="%name" id=""  placeholder="推荐名" value="<!--{{search.name}}-->"/></td>
+								<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+								<td><td><a href="<!--{{url('adv/recommend/recommend-add-edit')}}-->" class="btn btn-teal">添加推荐类型</a></td>
+							</tr>
+							</tbody>
+						</table>
+					</form>
+				</div>
+			</div>	
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">Id</th>
+						    <th class="col-60">推荐类型名称</th>
+							<th class="col-150">系统与版本管理</th>
+							<th class="table-btn-group-mini">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+							<tr>
+								<td><!--{{item.Id}}--></td>
+								<td><!--{{item.name}}--></td>
+								<td><!--{{item.aname}}--></td>
+								<td>
+									<a href="<!--{{url('adv/recommend/recommend-add-edit',{'Id':item.Id})}}-->" class="btn btn-primary">编辑</a>
+									<a href="<!--{{url('adv/recommend/recommend-delect',{'Id':item.Id})}}-->" class="btn btn-primary">删除</a>
+								</td>
+							</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>	
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

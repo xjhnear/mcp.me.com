@@ -1,0 +1,178 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>视频信息</h3>
+			</div>
+			<div class="box-content">
+
+				<form action="<!--{{url('cms/gamevideo/save')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data" id="form1">
+			    <input name="id" type="hidden" value="<!--{{result.id}}-->" />
+			    <input type="hidden" name="gametype" value="<!--{{result.gametype}}-->"> 
+			    <input name="editor" type="hidden" value="<!--{{editor}}-->" />
+			    <input name="dosave" type="hidden" value="<!--{{dosave}}-->" />
+			    <div class="tab-content padding tab-content-inline tab-content-bottom">
+					<div class="control-group">
+						<label class="control-label">标题<span class="nes-star">*</span></label>
+						<div class="controls">
+							<input type="text" id="title" name="title" data-msg-required="标题不能为空" data-rule-required="true" class="input-xlarge" value="<!--{{result.title}}-->" />
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label">视频类型<span class="nes-star">*</span></label>
+						<div class="controls">
+							<!--{{form_select('type',type,result.type,{'class':'input-small','id':'type'})}}-->
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">缩略图<span class="nes-star">*</span></label>
+						<div class="controls">
+							<div class="fileupload fileupload-new" data-provides="fileupload">
+								<div class="fileupload-new thumbnail" style="max-width: 60px; max-height: 60px;"><!--{%if result.ico == '' or result.ico == '0'%}--><img src="/static/img/common/avatar.gif" /><!--{%else%}--><img src="<!--{{result.oldico}}-->" /><!--{%endif%}--></div>
+								<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 60px; max-height: 60px; line-height: 20px;"></div><!--{{ errors.first('ico','<span class="text-error">:message</span>') }}-->
+								<div>
+									<span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">Change</span><input type="file" name='ico' value=""/><input type="hidden" name='oldico' value="<!--{{result.ico}}-->"/></span>
+									<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="game-group">
+						<!--{%if result.gametype == 'ios' %}-->
+						<div id="ios" class="control-group">
+							<label class="control-label">IOS游戏ID</label>
+							<div class="controls">
+								<div class="input-append">
+									<input id="selected_game_id" name="gid" type="hidden" value="<!--{{result.gid}}-->" />
+									<img id="selected_game_icon" alt=""  class="add-on" src="/static/img/wu_ss.gif" />
+									<input type="text" id="selected_game_name" name="igame_name" class="input-medium" value="<!--{{result.gamename}}-->"/>
+									<span class="add-on select-pop-game" id="select-pop-game">选择游戏</span>
+								</div>
+							</div>
+						</div>
+						<!--{%endif%}-->
+						<!--{%if result.gametype == 'android' %}-->
+						<div id="android" class="control-group">
+							<label class="control-label">Android游戏ID</label>
+							<div class="controls">
+								<div class="input-append">
+									<input id="selected_agame_id" name="agid" type="hidden" value="<!--{{result.agid}}-->" />
+									<img id="selected_agame_icon" alt=""  class="add-on" src="/static/img/wu_ss.gif" />
+									<input type="text" id="selected_agame_name" name="agame_name" class="input-medium" value="<!--{{result.gamename}}-->"/>
+									<span class="add-on select-pop-game" id="select-pop-agame">选择游戏</span>
+								</div>
+							</div>
+						</div>
+						<!--{%endif%}-->
+					</div>
+					<div class="control-group">
+						<label class="control-label">作者<span class="nes-star">*</span></label>
+						<div class="controls">
+							<input type="text" name="writer" data-msg-required="作者不能为空" data-rule-required="true" class="input-small" value="<!--{{result.writer}}-->" />
+						</div>
+					</div>
+				    <div class="control-group">
+						<label class="control-label">时长</label>
+						<div class="controls">
+							<input type="text" name="duration" class="input-small" value="<!--{{ result.duration }}-->"/>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label">游戏视频<span class="nes-star">*</span></label>
+						<div class="controls">
+							<textarea name="video" data-msg-required="文档摘要不能为空" data-rule-required="true" class="input-xlarge"><!--{{result.video}}--></textarea>
+							<!--{{ errors.first('video','<span class="text-error">:message</span>') }}-->
+						</div>
+					</div>
+				    <div class="form-actions">
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					</div>
+				</div>
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script>
+$(function(){
+    var editor = UE.getEditor('container');
+    gameselect('#gameselect');
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+});
+
+
+
+var set_selected_game = function(game_id,game_name,icon){
+    $('#selected_game_id').val(game_id);
+    $('#selected_game_icon').attr('src',icon);
+    $('#selected_game_name').val(game_name);
+};
+$(function(){
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+    $('#select-pop-game').bind('click',function(){        
+        $.ajax({
+            url:'/game/api/game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                console.log(json);
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'IOS游戏',padding:2,content:html,width:600,height:580});
+            }
+        });        
+    });         
+});
+var set_selected_agame = function(game_id,game_name,icon){
+    $('#selected_agame_id').val(game_id);
+    $('#selected_agame_icon').attr('src',icon);
+    $('#selected_agame_name').val(game_name);
+};
+$(function(){
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+    $('#select-pop-agame').bind('click',function(){        
+        $.ajax({
+            url:'/a_game/api/game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'Android游戏',padding:2,content:html,width:600,height:580});
+            }
+        });        
+    });            
+});
+
+
+$(function(){
+	if($('#iosType').attr('checked')){
+		$("#ios").show();
+    	$("#android").hide();
+	}
+	if($('#androidType').attr('checked')){
+		$("#androidType").show();
+    	$("#ios").hide();
+	}
+    $('#iosType').bind('click',function(){        
+    	$("#ios").show();
+    	$("#android").hide();
+    });  
+    $('#androidType').bind('click',function(){        
+    	$("#ios").hide();
+    	$("#android").show();
+    }); 
+});
+
+
+
+
+</script>
+<!--{%endblock%}-->

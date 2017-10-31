@@ -1,0 +1,50 @@
+<!--{%extends "sub-layout-system.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					任务管理
+				</h3>				
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-50">ID</th>
+							<th class="col-80">任务类型</th>
+							<th>任务名称</th>
+							<th>任务详情</th>
+							<th class="col-80">完成人数</th>
+							<th>奖励</th>
+							<th>状态</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in tasklist%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.typename}}--></td>
+							<td><!--{{item.step_name}}--></td>
+							<td><!--{{item.step_desc}}--></td>
+							<td><!--{%if tasknum[item.id]%}--><!--{{tasknum[item.id]}}--><!--{%else%}-->0<!--{%endif%}--></td>
+							<td>游币+<!--{{item.reward.score|default(0)}}-->经验+<!--{{item.reward.experience|default(0)}}--></td>
+							<td><!--{%if item.condition.closed%}-->关闭<!--{%else%}-->开启<!--{%endif%}--></td>
+							<td>
+							    <a href="<!--{{url('system/task/edit',{'id':item.id})}}-->" class="btn btn-primary"><i class="icon-edit"></i>编辑</a>							    
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->

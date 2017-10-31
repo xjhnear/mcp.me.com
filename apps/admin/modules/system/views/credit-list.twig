@@ -1,0 +1,65 @@
+<!--{%extends "sub-layout-system.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					积分规则
+				</h3>
+				<div class="actions">
+				    <!--{#
+				    <form>
+				    <table class="table-filter">
+				        <tr>				            
+				            <td><a href="<!--{{url('system/credit-edit')}}-->" class="btn btn-teal"><i class="icon-plus"></i>添加规则</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				    #}-->
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40"><input type="checkbox" name="all" value="" /></th>
+						    <th class="col-50">ID</th>
+							<th class="col-80">名称</th>
+							<th>别名</th>
+							<th class="col-80">类型</th>
+							<th class="col-80">周期</th>
+							<th class="col-80">次数</th>
+							<th class="col-80">游币</th>
+							<th class="col-80">经验</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in creditlist%}-->
+						<tr>
+						    <td><input type="checkbox" name="ids" value="<!--{{item.id}}-->" /></td>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.name}}--></td>
+							<td><!--{{item.alias}}--></td>
+							<td><!--{{item.type}}--></td>
+							<td><!--{{crcletype[item.crcletype]}}--></td>
+							<td><!--{%if item.rewardnum==0%}-->无限<!--{%else%}--><!--{{item.rewardnum}}--><!--{%endif%}--></td>
+							<td><!--{{item.score}}--></td>
+							<td><!--{{item.experience}}--></td>
+							<td>
+							    <a href="<!--{{url('system/credit/edit',{'id':item.id})}}-->" class="btn btn-primary"><i class="icon-edit"></i>编辑</a>							    
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->

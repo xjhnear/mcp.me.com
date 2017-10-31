@@ -1,0 +1,136 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/validationEngine.jquery.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>首页轮播图
+				</h3>				
+			</div>
+			<div class="box-content">			    
+			    <form id="form_slide" action="<!--{{url('gamelive/home/slide-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <div class="control-group">
+			        <label class="control-label">位置</label>
+					<div class="controls">
+					    <!--{{form_select('idx',idx_options,setting.idx)}}-->
+					</div>
+				</div>
+				<!--{%if setting.picUrl%}-->
+			    <div class="control-group">
+			        <label class="control-label">图片<i class="tip-star">*</i></label>
+					<div class="controls">
+					    <input name="picUrl" type="hidden" value="<!--{{setting.picUrl}}-->" />
+					    <a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.picUrl}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">上传图片</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<input type="file" name="filedata" class="" data-errormessage-value-missing="请选择图片" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--{%else%}-->
+				<div class="control-group">
+					<label class="control-label">上传图片<i class="tip-star">*</i></label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<input type="file" name="filedata" class="" data-errormessage-value-missing="请选择图片" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<!--{%if setting.picMin%}-->
+				<div class="control-group">
+					<label class="control-label">缩略图<i class="tip-star">*</i></label>
+					<div class="controls">
+						<input name="picMin" type="hidden" value="<!--{{setting.picMin}}-->" />
+						<a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.picMin}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">上传缩略图</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<input type="file" name="filemin" class="" data-errormessage-value-missing="请选择图片" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--{%else%}-->
+				<div class="control-group">
+					<label class="control-label">上传缩略图<i class="tip-star">*</i></label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<input type="file" name="filemin" class="" data-errormessage-value-missing="请选择图片" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group div-type-2">
+					<label class="control-label">标题<i class="tip-star">*</i></label>
+					<div class="controls">
+					    <input name="summary" type="text" class="input-xxlarge" value="<!--{{setting.summary}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">直播代码</label>
+					<div class="controls">
+						<div class=" input-append">
+							<textarea type="text" name="videoLive" class="input-xxlarge"><!--{{setting.videoLive}}--></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">视频URL</label>
+					<div class="controls">
+						<div class=" input-append">
+							<textarea name="videoUrl" class="input-xxlarge" rows="6"><!--{{setting.videoUrl}}--></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">图片跳转URL</label>
+					<div class="controls">
+						<div class=" input-append">
+							<input type="text" name="picAtt" class="input-xxlarge" value="<!--{{setting.picAtt}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>	    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+
+$(function(){
+    
+    if($('input[name="picUrl"]').length>0){
+        $('input[name="filedata"]').removeClass('validate[required]');
+    }
+    
+    $('#form_slide').validationEngine({promptPosition : "topRight",autoPositionUpdate:true});
+});    
+</script>
+<!--{%endblock%}-->

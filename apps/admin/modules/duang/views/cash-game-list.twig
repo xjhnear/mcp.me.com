@@ -1,0 +1,96 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					返现管理
+				</h3>
+				<div class="actions">
+                    <form action="<!--{{url('duang/cash/list')}}-->">
+                        <table class="table-filter">
+                            <tr>
+                                <td><!--{{form_select('type',cond.types,cond.type,{'style':'margin-bottom:0px;width:80px;'})}}--></td>
+                                <td>
+                                   <input id="gameselect" data-from="android" name="gid" type="hidden" value="<!--{{cond.gid}}-->" class="bigdrop select2-offscreen" style="top:5px;" tabindex="-1">
+                                   <input id="game_name" name="game_name" type="hidden" value="<!--{{cond.game_name}}-->" >
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                                <td><a href="<!--{{url('duang/cash/edit')}}-->" class="btn btn-teal">添加游戏</a></td>
+                            </tr>
+                        </table>
+                    </form>
+
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">ID</th>
+							<th class="col-180">游戏</th>
+                            <th class="col-100">游戏短语</th>
+							<th class="col-100">类别</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.gname}}--></td>
+							<td><!--{{item.phrase}}--></td>
+							<td><!--{%if item.type==1%}--><span class="badge badge-success">热门</span><!--{%endif%}--><!--{%if item.type==2%}--><span class="badge badge-important">其他</span><!--{%endif%}--></td>
+							<td>
+                                <!--{%if item.id!=''%}-->
+							    <a href="<!--{{url('duang/cash/edit',{id:item.id})}}-->" class="btn btn-primary">编辑</a>
+                                <a href="javascript:void(0);" class="btn btn-primary ajax-del" data="<!--{{ item.id }}-->">删除</a>
+                                <!--{%else%}-->
+                                <a href="<!--{{url('duang/cash/edit-game',{id:item.gid})}}-->" class="btn btn-primary">编辑</a>
+                                <!--{%endif%}-->
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+
+			    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    $('a.ajax-del').bind('click',function(){
+        var act_id = $(this).attr('data');
+        alertify.confirm('确定删除数据么？',function(e){
+            if(e){
+                $.get('/duang/cash/del/'+act_id,{},function(resp){
+                    if(resp.state){
+                        alertify.success(resp.msg);
+                        setTimeout(function(){
+                            location.reload();
+                        },1000);
+                    }else{
+                        alertify.error(resp.msg);
+                    }
+                },'json')
+            }
+        });
+    });
+    $(function(){
+        gameselect('#gameselect');
+        $('#gameselect').change(function(){
+            var gamename = $('#s2id_gameselect a span').text();
+            $('#game_name').val(gamename);
+        });
+    });
+</script>
+<!--{%endblock%}-->

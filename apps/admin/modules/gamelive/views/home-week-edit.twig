@@ -1,0 +1,168 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="/static/css/plugins/jquery-ui/jquery-ui-timepicker-addon.css">
+<style>
+    #ui-datepicker-div.ui-widget-content {
+        background-color: #F6F6F6;
+        border: 0 none;
+    }
+</style>
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>首页排期表</h3>
+                <div class="actions">
+                    <a href="javascript:void(0)" class="btn btn-teal top-submit"><i class="icon-ok"></i>保存</a>
+                </div>
+            </div>
+            <div class="box-content">
+                <form action="<!--{{url('gamelive/home/week-edit')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+                <input name="day" type="hidden" value="<!--{{week.day}}-->"/>
+                    <input name="idx" type="hidden" value="<!--{{week.idx}}-->"/>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <h3>直播节目一</h3>
+                        <div class="control-group">
+                            <label class="control-label">标题<i class="tip-star">*</i></label>
+                            <div class="controls">
+                                <input name="title[]" type="text" class="input-xlarge" value="<!--{{ one.title }}-->" />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">简介<i class="tip-star">*</i></label>
+                            <div class="controls">
+                                <input name="summary[]" type="text" class="input-xlarge" value="<!--{{ one.summary }}-->" />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">时间<i class="tip-star">*</i></label>
+                            <div class="controls">
+                                <input name="starttime[]" type="text" class="input-medium datetimepicker" value="<!--{{ one.starttime|date('Y-m-d H:i') }}-->" /><input name="endtime[]" type="text" class="input-medium datetimepicker" value="<!--{{ one.endtime|date('Y-m-d H:i') }}-->" />
+                            </div>
+                        </div>
+                        <!--{#<div class="control-group">
+                            <label class="control-label">标签</label>
+                            <div class="controls">
+                                <input name="tag[]" type="text" class="input-xlarge" value="<!--{{ one.tag|join(',') }}-->" />
+                            </div>
+                        </div>#}-->
+                        <div class="control-group">
+                            <label class="control-label">所属栏目<i class="tip-star">*</i></label>
+                            <div class="controls">
+                                <!--{{form_select('columnId[]',columns,one.columnId)}}-->
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">关联视频ID</label>
+                            <div class="controls">
+                                <input name="videoId[]" type="text" class="input-medium" value="<!--{{ one.videoId }}-->" />
+                            </div>
+                        </div>
+
+                        <!--{%if one.picUrl%}-->
+                        <div class="control-group">
+                            <label class="control-label">图片</label>
+                            <div class="controls">
+                                <input name="picUrl[]" type="hidden" value="<!--{{one.picUrl}}-->" />
+                                <a href="#bigimg" data-toggle="modal"><img src="<!--{{one.picUrl}}-->" width="150px" /></a>
+                            </div>
+                        </div>
+                        <!--{%endif%}-->
+                        <div class="control-group">
+                            <label class="control-label">图片<i class="tip-star">*</i></label>
+                            <div class="controls">
+                                <input name="filedata[]" type="file" value="" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <h3>直播节目二</h3>
+                        <div class="control-group">
+                            <label class="control-label">标题</label>
+                            <div class="controls">
+                                <input name="title[]" type="text" class="input-xlarge" value="<!--{{ two.title }}-->" />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">简介</label>
+                            <div class="controls">
+                                <input name="summary[]" type="text" class="input-xlarge" value="<!--{{ two.summary }}-->" />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">时间</label>
+                            <div class="controls">
+                                <input name="starttime[]" type="text" class="input-medium datetimepicker" value="<!--{{ two.starttime|date('Y-m-d H:i') }}-->" /><input name="endtime[]" type="text" class="input-medium datetimepicker" value="<!--{{ two.endtime|date('Y-m-d H:i') }}-->" />
+                            </div>
+                        </div>
+                        <!--{#<div class="control-group">
+                            <label class="control-label">标签</label>
+                            <div class="controls">
+                                <input name="tag[]" type="text" class="input-xlarge" value="<!--{{ two.tag|join(',') }}-->" />
+                            </div>
+                        </div>#}-->
+                        <div class="control-group">
+                            <label class="control-label">所属栏目<i class="tip-star">*</i></label>
+                            <div class="controls">
+                                <!--{{form_select('columnId[]',columns,two.columnId)}}-->
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">关联视频ID</label>
+                            <div class="controls">
+                                <input name="videoId[]" type="text" class="input-medium" value="<!--{{ two.videoId }}-->" />
+                            </div>
+                        </div>
+
+                        <!--{%if one.picUrl%}-->
+                        <div class="control-group">
+                            <label class="control-label">图片</label>
+                            <div class="controls">
+                                <input name="picUrl[]" type="hidden" value="<!--{{two.picUrl}}-->" />
+                                <a href="#bigimg" data-toggle="modal"><img src="<!--{{two.picUrl}}-->" width="150px" /></a>
+                            </div>
+                        </div>
+                        <!--{%endif%}-->
+                        <div class="control-group">
+                            <label class="control-label">图片</label>
+                            <div class="controls">
+                                <input name="filedata[]" type="file" value="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('http://libs.baidu.com/jqueryui/1.10.0/jquery-ui.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-timepicker-addon.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/datepicker-zh-CN.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-timepicker-zh-CN.js')}}-->"></script>
+<script>
+
+    $(function(){
+
+        //$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+
+        $('input.datetimepicker').datetimepicker({dateFormat:'yy-mm-dd',hourText:'小时',minuteText:'分钟'});
+        $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
+        //$('input.datetimepicker').timepicker();
+        $('.top-submit').bind('click',function(){
+            $('form').submit();
+        });
+    });
+</script>
+<!--{%endblock%}-->

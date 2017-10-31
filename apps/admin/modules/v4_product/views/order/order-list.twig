@@ -1,0 +1,214 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    订单管理
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('/v4product/order/list')}}-->">
+                        <table class="table-filter" style="margin-left:10px; ">
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td><input type="text" class="input-medium" placeholder="搜索订单号" name="orderId" value="<!--{{inputinfo.orderId}}-->"></td>
+                                <td><input type="text" class="input-medium" placeholder="搜索订单用户" name="biller" value="<!--{{inputinfo.billerName}}-->"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" class="input-medium" placeholder="搜索商品" name="orderSmsInfo" value="<!--{{inputinfo.orderSmsInfo}}-->">
+                                </td>
+                                <td>
+                                    <input id="StartDate" type="text" class="input-medium"  placeholder="开始时间" name="billTimeBegin" value="<!--{{inputinfo.billTimeBegin}}-->">
+                                </td>
+                                <td>
+                                    <input id="EndDate" type="text"  class="input-medium"  placeholder="结束时间" name="billTimeEnd"   value="<!--{{inputinfo.billTimeEnd}}-->">
+                                </td>
+                                <td colspan="1">
+                                    是否发放
+                                    <div class="input-append">
+                                        <!--
+                                        <input  name="orderStatus" data-on-color="success" data-on-text="已发放" data-off-color="danger" data-off-text="未发放" class="input-medium switchbox" type="checkbox" <!--{{inputinfo.orderStatus ? 'checked' : '' }}-->/>
+                                        -->
+                                        <select name="orderStatus" id="orderStatus" class="input-small" >
+                                            <option value="">全部</option>
+                                            <option value="2">已发放</option>
+                                            <option value="1">未发放</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-120">订单号</th>
+                        <th class="col-80">订单用户</th>
+                        <th class="col-60">下单时间</th>
+                        <th class="col-80">商城类型</th>
+                        <th class="col-100">商品名称</th>
+                        <th class="col-80">商品种类</th>
+                        <th class="col-80">发放人</th>
+                        <th class="col-120">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{% for key,item in datalist%}-->
+                    <tr  data-id="<!--{{item.orderId}}-->" data-info='<!--{{item.address}}-->' >
+                        <td style="width:8%"><a href="javascript:;" class="orderall"><!--{{item.orderId}}--></a></td>
+                        <td>
+                            <span class="label label-success"><!--{{item.biller}}--></span><br/>
+                            <span class="label label-primary"><!--{{userinfo[item.biller].nickname}}--></span><br/>
+                            <span class="label label-warning"><!--{{userinfo[item.biller].mobile}}--></span>
+                        </td>
+                        <td style="width:20%">
+                            <!--{{item.billTimeStr|date('y-m-d H:i')}}-->
+                        </td>
+                        <td><!--{{item.payType?'钻石商城':'游币商城'}}--></td>
+                        <td><!--{{item.items.0.productName}}--></td>
+                        <td><!--{{item.items.0.categoryName}}--></td>
+                        <td><!--{{item.modifier}}--></td>
+                        <td>
+                            <!--{% if item.orderStatus==1 %}-->
+                                <a href="javascript:;" url="<!--{{url('v4product/order/set',{type:'update_order'})}}-->" data='{"orderId":"<!--{{item.orderId}}-->","modifier":"<!--{{uid}}-->"}'   class="btn btn-primary fafang">发放</a>
+
+                                <a href="javascript:;"  class="btn btn-primary caozuo">修改</a>
+                            <!--{% endif %}-->
+                            <a  href="javascript:;" url="<!--{{url('v4product/order/set',{type:'edit',method:'post'})}}-->" data='{"orderId":"<!--{{item.orderId}}-->","Active":"false"}' class="btn btn-primary del">删除</a>
+
+                        </td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    表单信息
+                </h4>
+            </div>
+            <form id="myform" >
+                <input type="hidden" name="orderId" id="orderId" value="">
+                <div class="modal-body">
+                    <div class="box-content">
+                        <table class="table"  id="table_from">
+                        </table>
+                    </div>
+                </div>
+            </form>
+            <div id="modal-footer" class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">关闭
+                </button>
+                <a href="javascript:;" id="go_" url="<!--{{url('v4product/order/set',{type:'edit',method:'post'})}}-->" class="btn btn-primary"> 确定</a></div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+    <!--{%endblock%}-->
+
+    <!--{%block footer_js%}-->
+    <script src="/static/js/laydate/laydate.js"></script>
+    <script src="<!--{{asset('/static/js/MyHelp.js')}}-->"></script>
+    <script>
+        $(function(){
+            <!--{% if inputinfo.orderStatus %}-->
+                $("#orderStatus").val("<!--{{inputinfo.orderStatus}}-->");
+            <!--{% endif %}-->
+
+            $("a.caozuo").on('click',function(){
+
+                var tr=$(this).parents("tr"),
+                    id=tr.attr('data-id'),
+                  data=jQuery.parseJSON(tr.attr('data-info'));
+                if(data){
+                    $("#myModal").modal("show");
+                    $("#modal-footer").show();
+                    $("#orderId").val(id);
+                    setHTML_(data);
+                    var settion= {
+                        elem: '#go_',
+                        url: $(this).attr('url'),
+                        data: 'myform',
+                        isReload:true,
+                    };
+                    ajaxCZ(settion);
+                }else{
+                    alertify.error("抱歉，此数据没有订单信息");
+                }
+                return ;
+            });
+            var settion= {
+                elem: 'a.fafang,a.del',
+                isReload:true,
+            };
+            ajaxCZ(settion);
+
+
+            $("a.orderall").on('click',function(){
+
+                var tr=$(this).parents("tr"),
+                    id=tr.attr('data-id'),
+                    data=jQuery.parseJSON(tr.attr('data-info'));
+                if(data){
+                    $("#myModal").modal("show");
+                    $("#modal-footer").hide();
+                    $("#orderId").val(id);
+                    setHTML(data);
+                }else{
+                    alertify.error("抱歉，此数据没有订单信息");
+                }
+                return ;
+            });
+        });
+        function setHTML(data){
+            var html='<body>';
+            $.each(data,function(idx,item){
+                html+="<tr><td>"+idx+":</td><td>"+item+"</td></tr>";
+            });
+            html+='</body>';
+            $("#table_from").html(html);
+        }
+        function setHTML_(data){
+            var html='<body>';
+            $.each(data,function(idx,item){
+                /***
+                if(item){
+                    html+="<tr><td>"+idx+":</td><td><input type='text' name='"+idx+"' class='input-medium'  value='"+item+"'></td></tr>";
+                }else{
+                    html+="<tr><td>"+idx+":</td><td><input type='text' class='input-medium' name='"+idx+"'  value='"+item+"'></td></tr>";
+                }
+                 ***/
+                html+="<tr><td>"+idx+":</td><td><input type='text' name='"+idx+"' class='input-medium'  value='"+item+"'></td></tr>";
+
+            });
+            html+='</body>';
+            $("#table_from").html(html);
+        }
+        getStart_End_date('search');
+    </script>
+    <!--{%endblock%}-->

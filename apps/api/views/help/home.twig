@@ -1,0 +1,36 @@
+<!--{%extends "help/base-help.twig"%}-->
+
+<!--{%block main_nav%}-->
+<!--{%endblock%}-->
+
+<!--{%block main_content%}-->
+    <div class="row">
+    	<a href="<!--{{url('doc/project-create')}}-->" class="btn" style="margin-top:20px">新增项目</a>
+	</div>
+	
+	<!--{%for item in projects%}-->
+	<div class="row border-table-row">
+		<div class="span2 project-preview">
+			<a href="<!--{{url('doc/project-info',[1])}}-->">
+    			<img src="/docs/img/project.png" class="img-polaroid" alt="">
+			</a>
+		</div>
+		<div class="span6 project-info">
+			<p><span class="lead"><!--{{item.name}}--></span>
+				<a href="<!--{{url('doc/project-info',[item.id])}}-->" class=""><i class="icon-check"></i>查看</a>
+				<a href="<!--{{url('doc/project-edit',[item.id])}}-->" class=""><i class="icon-edit"></i>编辑</a>
+			</p>
+			<p class="project-subinfo"><i class="icon-time"></i>创建时间:<!--{{item.ctime|date('Y-m-d')}}--></p>
+			<p class="project-subinfo"><i class="icon-eye-open"></i>项目状态: <!--{{item.status}}--></p>
+			<p class="project-subinfo">
+				<i class="icon-tag"></i>				
+					现有接口: <a href="<!--{{url('doc/interface-list',[item.id])}}-->"><!--{{item.interface_num|default(0)}}--></a> 
+				
+			</p>
+		</div>
+		<div class="span2" style="margin-top:140px">
+			
+		</div>
+	</div>
+	<!--{%endfor%}-->
+<!--{%endblock%}-->

@@ -1,0 +1,80 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					web社区轮播
+				</h3>
+				<div class="actions">
+					<table class="table-filter">
+					<tbody><tr>
+						<td><a class="btn btn-teal" href="http://mcp.youxiduo.dev/forum/bbs/add-banner">新增</a></td>
+					</tr>
+					</tbody></table>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+				<table class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+						<th class="col-60">ID</th>
+						<th class="col-60">图片</th>
+						<th class="col-150">地址</th>
+						<th class="col-100">添加时间</th>
+						<th class="col-80">排序</th>
+						<th class="col-100">是否显示</th>
+						<th class="table-btn-group">操作</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!--{%for item in banners%}-->
+					<tr>
+						<td><!--{{item.bbs_banner_id}}--></td>
+						<td class="user-avatar"><a href="#bigimg" data-toggle="modal"><img src="<!--{{item.img_path}}-->" class="" /></a></td>
+						<td><!--{{ item.url_path }}--></td>
+						<td><!--{{ item.add_time|date('Y-m-d H:i:s') }}--></td>
+						<td><!--{{ item.sort }}--></td>
+						<td><!--{% if item.is_show == 1 %}-->显示<!--{% else %}-->隐藏<!--{% endif %}--></td>
+						<td>
+							<a href="<!--{{url('forum/bbs/edit-banner',item.bbs_banner_id)}}-->" class="btn btn-primary">编辑</a>
+							<a href="javascript:void(0);" data="<!--{{ item.bbs_banner_id }}-->" class="btn btn-primary ajax-del">删除</a>
+						</td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+				</table>
+				<div class="pagelink">
+					<!--{{ pagination }}-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+	$(function(){
+		$('a.ajax-del').bind('click',function(){
+			var banner_id = $(this).attr('data');
+			alertify.confirm('确定删除数据么？',function(e){
+				if(e){
+					$.get('/forum/bbs/del-banner/'+banner_id,{},function(resp){
+						if(resp.state){
+							alertify.success(resp.msg);
+							setTimeout(function(){
+								location.reload();
+							},2000);
+						}else{
+							alertify.error(resp.msg);
+						}
+					},'json')
+				}
+			});
+		});
+	});
+</script>
+<!--{%endblock%}-->

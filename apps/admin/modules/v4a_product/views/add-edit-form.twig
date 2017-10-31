@@ -1,0 +1,229 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>增加商品收货信息表单模板</h3>
+			</div>
+			<div class="box-content">
+					<form id="myform"  action="<!--{{url('v4aproduct/goods/')}}-->" ></form>
+					<form  id="form-product" action="<!--{{url('v4aproduct/goods/form-save')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+					<input type="hidden" id="templateId" name="templateId" value="<!--{{templateId}}-->">
+					<div class="control-group">
+                        <label class="control-label">表单名称</label>
+                        <div class="controls">
+                            <input type="text" id="templateName" name="templateName"  class="input-xlarge" value="<!--{{templateName}}-->" />
+                        </div>
+                    </div>
+			   		   <table class="table"  id="input_params_table">
+			    	    	<thead>
+								<tr>
+									<td>标题</td>
+									<td>是否为空</td>
+									<td>是否需要加密</td>
+									<td>排序</td>
+									<td>
+										<a class="add_input_param_button"><i class="icon-plus"></i></a>
+									</td>
+								</tr>
+							</thead>
+						<tbody id="tbody">
+							<!--{% if info%}--> 
+								<!--{% for key,item in info%}--> 
+								    <tr id="edit_<!--{{item.detailId}}-->">
+								    	<input type="hidden" name="detailId[]" value="<!--{{item.detailId}}-->"/>
+								    	<td><input type="text" placeholder="必填" name="input_name[]" value="<!--{{item.detailKey}}-->"></td>
+										<td>
+											<input type="hidden"  name="notNull[]"  value="<!--{% if item.notNull == 1 %}-->1<!--{% else %}-->0<!--{% endif %}--> ">
+											<input id="notNull"  data-on-color="success" data-on-text="不为空" data-off-color="danger" data-off-text="为空" class="switchbox" type="checkbox"
+											<!--{% if item.notNull == 1 %}--> 
+									         checked
+									   		<!--{% endif %}--> />
+									   	</td>
+										<td>
+											<input type="hidden"  name="needEncrypt[]"  value="<!--{% if item.needEncrypt == 1 %}-->1<!--{% else %}-->0<!--{% endif %}--> ">
+											<input id="needEncrypt"  data-on-color="success" data-on-text="需要" data-off-color="danger" data-off-text="不需要" class="switchbox" type="checkbox"
+											<!--{% if item.needEncrypt == 1 %}--> 
+									         checked
+									   		<!--{% endif %}--> />
+									   	</td>
+										<td>	
+										   	<input type="text" placeholder="必填" name="sort[]" value="<!--{{item.sort}}-->">
+										</td>
+										
+										<td>
+											<a class="delete_param_button"><i class="icon-minus"></i></a> 
+										</td>
+									</tr>
+								<!--{%endfor%}-->
+							<!--{%endif%}-->
+						</tbody>
+					 </table>
+					 <div class="form-actions">
+					 	<input type="hidden" name="count" value="<!--{{count}}-->" >
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					</div>    
+				</form>	
+			</div>   
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script id="tpl_input_param" type="text/html">
+	
+</script>
+<script>
+$(function(){
+	function getOutTpl(){
+        var html = template.render('tpl_out_param');
+        return html;
+    }
+    
+    function getErrorTpl(){
+        var html = template.render('tpl_error_param');
+        return html;
+    }
+    
+    $('.switchbox').bootstrapSwitch();
+   
+	$('.switchbox').bind('switchChange.bootstrapSwitch', function (e, data) {
+	    e.preventDefault();
+	    var value=$(this).parent().parent().parent().find('input');
+	    value.val('0');
+    	if(data){
+			value.val('1');
+		}
+	});
+
+    $("table td a").click(function() {
+        var row = $(this).parents("tr");
+        if ($(this).hasClass("delete_param_button")) {
+            row.remove();
+        }else{
+            var table = $(this).parents("table");
+            if($(this).hasClass("add_input_param_button")){
+                addAfterTableRow(this,getInputTpl);
+            }else if($(this).hasClass("add_out_param_button")){
+                addAfterTableRow(this,getOutTpl);
+            }else if($(this).hasClass("add_error_param_button")){
+                addAfterTableRow(this,getErrorTpl);
+            }
+        }
+    	$('.switchbox').bootstrapSwitch();
+    	$('.switchbox').bind('switchChange.bootstrapSwitch', function (e, data) {
+		    e.preventDefault();
+		    var value=$(this).parent().parent().parent().find('input');
+		    value.val('0');
+	    	if(data){
+				value.val('1');
+			}
+		});
+    });
+});
+
+function getInputTpl(){
+		i=0;
+		var html =new Array();
+        	html['0']="<tr id='add_"+i+"'><input type='hidden' name='detailId[]' value=''/>";
+        	html['1']="<td><input type='text' placeholder='必填' name='input_name[]' value='' /></td>";	
+        	html['2']="<td><input type='hidden' name='notNull[]' value='0'/><input data-on-color='success' data-on-text='不为空' data-off-color='danger' data-off-text='为空' class='switchbox' type='checkbox'/></td>";
+			html['3']="<td><input type='hidden' name='needEncrypt[]' value='0'/><input data-on-color='success' data-on-text='需要' data-off-color='danger' data-off-text='不需要' class='switchbox' type='checkbox'/></td>";			
+			html['4']="<td><input type='text' placeholder='必填' name='sort[]' value=''></td><td><a class='delete_param_button'><i class='icon-minus'></i></a> </td>";			
+			html['5']="</tr>";
+		return html.join('');
+}
+/***
+	<td><a href='javascript:;' onclick='add_edit(this,\"add_"+i+"\");return false;' class='btn btn-primary'>添加</a></td>
+***/
+
+function addAfterTableRow(a, rowStringFunc) {
+	var row = $(a).parents("tr");
+	//row.appendTo(table.find("tbody"));
+	var table = $(a).parents("table");
+	row.after(rowStringFunc());
+	row.next().find("a").click(function() {
+		if($(this).hasClass('delete_param_button')){
+			deleteTableRow($(this).parent().parent());
+		}else if($(this).hasClass('add_input_param_button') || $(this).hasClass('add_out_param_button') || $(this).hasClass('add_error_param_button')){
+			addAfterTableRow(this,rowStringFunc)
+		}
+		
+	})
+	return row
+}
+
+function deleteTableRow(row) {
+	row.remove();
+}
+/****
+var count=0,i=0;
+function  add_edit(obj,trid)
+{		
+	if(count < 1){
+		count=<!--{{count}}-->*1+1;
+	}else{
+		count=count*1+1;
+	}
+    var tr=$("#"+trid),
+        input_name=tr.find("[name='input_name']").val(),
+        notNull=tr.find("[name='notNull']").attr('checked'),
+        needEncrypt=tr.find("[name='needEncrypt']").attr('checked'),
+        templateName=$("#templateName").val(),
+        templateId=$("#templateId").val(),
+          detailId=$(obj).attr('data-id');
+          
+    if(!input_name){
+    	alert('标题不能为空');
+    	return false;
+    }
+    if(!templateName)
+    {
+    	alert('模版名称不能为空');
+    	return false;
+    }
+    if(notNull == 'checked'){
+    	notNull='true';
+    }else{
+    	notNull='false';
+    }
+    if(needEncrypt == 'checked'){
+		needEncrypt='true';
+    }else{
+    	needEncrypt='false';
+    }
+    $.ajax({
+        url:'/v4aproduct/goods/form-save',  
+        dataType:'json',
+        type:"POST",
+        data:{'templateId':templateId,'sort':count,'notNull':notNull,'needEncrypt':needEncrypt,'input_name':input_name,'templateName':templateName,'detailId':detailId},
+        success:function(json){
+        	switch(json.error)
+			{
+			 	case 0:
+					 i=0;
+			 		 alert("操作成功");
+			 		 if(!templateId){
+			 		 	window.location.href=$("#myform").attr('action')+'/form'; //  
+			 		 }else{
+			 		 	window.location.reload();
+			 		 }
+			 	 	 
+			  	break;
+				case 1:
+			  		alert("参数丢失");
+			  	break;
+			  	case 2:
+			  		alert("操作失败");
+			  	break;
+				default:
+			  		alert("操作失败");
+			  	}
+			}
+    });
+}
+****/
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,97 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>添加开测表</h3>
+			</div>
+			<div class="box-content">
+				<form id="form-activity" action="<!--{{url('a_game/premiere/add')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+					<div class="control-group">
+						<label class="control-label">标识名称</label>
+						<div class="controls">
+							<input type="text" name="title" value="<!--{{ input_old('title') }}-->" data-rule-required="true" data-msg-required="请填写标识名称">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">关联游戏</label>
+						<div class="controls">
+							<div class="input-append">
+								<input id="selected_game_id" name="agid" type="hidden" value="<!--{{ input_old('agid') }}-->"/>
+								<img id="selected_game_icon" alt=""  class="add-on" src="/static/img/wu_ss.gif"/>
+								<input type="text" id="selected_game_name" name="game_name" class="input-medium" readonly data-rule-required="true" data-msg-required="关联游戏不能为空" />
+								<span class="add-on select-pop-game">选择游戏</span>
+							</div>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">游戏状态</label>
+						<div class="controls">
+							<input type="text" value="<!--{{ input_old('state') }}-->" name="state" data-rule-required="true" data-msg-required="请填写游戏状态">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">新游公测预告</label>
+						<div class="controls">
+							<input type="text" value="<!--{{ input_old('openbeta') }}-->" name="openbeta" data-rule-required="true" data-msg-required="请填写新游公测预告">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">开测时间</label>
+						<div class="controls">
+							<div class="input-append date">
+								<input name="addtime" type="text" class="input-medium datetimepicker" value="<!--{{ input_old('addtime') }}-->" data-rule-required="true" data-msg-required="请选择开测时间" readonly="">
+								<span class="add-on"><i class="icon-calendar"></i></span>
+							</div>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">是否置顶</label>
+						<div class="controls">
+							<input name="istop" <!--{% if(input_old('istop')) %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="是" data-off-color="danger" data-off-text="否" class="switchbox" type="checkbox" checked/>
+							<span class="add-on text-error">列表页推荐</span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">是否首发</label>
+						<div class="controls">
+							<input name="isfirst" <!--{% if(input_old('isfirst')) %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="是" data-off-color="danger" data-off-text="否" class="switchbox" type="checkbox" checked/>
+						</div>
+					</div>
+
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+	$('.switchbox').bootstrapSwitch();
+	$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+	function set_selected_agame(game_id,game_name,icon){
+		$('#selected_game_id').val(game_id);
+		$('#selected_game_icon').attr('src',icon);
+		$('#selected_game_name').val(game_name);
+		$("input[name='name']").val(game_name);
+	};
+	$(function(){
+		$('.select-pop-game').bind('click',function(){
+			$.ajax({
+				url:'/a_game/api/game-search',
+				dataType:'json',
+				success:function(json){
+					var html = '';
+					html = json.html;
+					$.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+				}
+			});
+		});
+	});
+</script>
+<!--{%endblock%}-->

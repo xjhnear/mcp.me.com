@@ -1,0 +1,100 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3>
+					<i class="icon-edit"></i>
+					添加web社区推荐帖子
+				</h3>
+				<div class="actions">
+				</div>
+			</div>
+			<div class="box-content">
+				<form id="form-activity" action="<!--{{url('web_forum/bbs/add-rctopic')}}-->" method="POST" class="form-horizontal form-validate">
+					<div class="control-group">
+						<label class="control-label">帖子ID</label>
+						<div class="controls">
+							<input type="text" name="tid" class="input" data-rule-required="true" data-msg-required="帖子ID不能为空" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">标题</label>
+						<div class="controls">
+							<input type="text" name="title" class="input" data-rule-required="true" data-msg-required="标题不能为空" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">短标题</label>
+						<div class="controls">
+							<input type="text" name="short" class="input" data-rule-required="true" data-msg-required="短标题不能为空"/>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">地址</label>
+						<div class="controls">
+							<input type="text" name="action_url" class="input" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">排序</label>
+						<div class="controls">
+							<input type="text" name="sort" class="input" data-rule-digits="true" data-msg-digits="请填写整数" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">是否显示</label>
+						<div class="controls">
+							<input name="show" data-on-color="success" data-on-text="显示" data-off-color="danger" data-off-text="不显示" class="my-checkbox" type="checkbox" checked/>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label"></label>
+						<div class="controls">
+							<input type="submit" value="确认添加" class="btn btn-primary">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$('input').iCheck({
+	checkboxClass: 'icheckbox_square-orange',
+	radioClass: 'iradio_square-orange',
+	increaseArea: '20%' // optional
+});
+$("[class='my-checkbox']").bootstrapSwitch();
+var set_selected_game = function(game_id,game_name,icon){
+	$.get('/web_forum/bbs/check-game-has-bbs',{'gid':game_id},function(resp){
+		if(resp.state){
+			$('#selected_game_id').val(game_id);
+			$('#selected_game_icon').attr('src',icon);
+			$('#selected_game_name').val(game_name);
+		}else{
+			alertify.error(resp.msg);
+		}
+	},'json');
+
+};
+$(function(){
+    $('.select-pop-game').bind('click',function(){
+        $.ajax({
+            url:'/game/api/game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });
+    });
+});
+</script>
+<!--{%endblock%}-->

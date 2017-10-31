@@ -1,0 +1,77 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					视频类型
+				</h3>
+				<div class="actions">
+				    <table class="table-filter">
+				        <tr>
+				            <td><a href="<!--{{url('cms/vtype/add')}}-->" class="btn btn-teal">添加类型</a></td>
+				        </tr>
+				    </table>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">ID</th>
+						    <th class="col-160">名称</th>
+							<th class="col-80">是否置顶</th>
+							<th class="col-60">排序</th>
+							<th class="col-80">平台</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in list%}-->
+						<tr>
+							<td><!--{{item.type_id}}--></td>
+							<td><!--{{item.type_name}}--></td>
+							<td><!--{{item.is_top ? '置顶' : '非置顶'}}--></td>
+							<td><!--{{item.sort}}--></td>
+							<td><!--{{item.platform}}--></td>
+							<td>
+								<a href="<!--{{url('cms/vtype/edit',{'type_id':item.type_id})}}-->" class="btn btn-primary">编辑</a>
+								<a href="javascript:void(0);" data="<!--{{ item.type_id }}-->" class="btn btn-primary ajax-del">删除</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagination}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+	$('a.ajax-del').bind('click',function(){
+		var type_id = $(this).attr('data');
+		alertify.confirm('确定删除数据么？',function(e){
+			if(e){
+				$.get('/cms/vtype/del',{'type_id':type_id},function(resp){
+					if(resp.state){
+						alertify.success(resp.msg);
+						setTimeout(function(){
+							location.reload();
+						},1000);
+					}else{
+						alertify.error(resp.msg);
+					}
+				},'json')
+			}
+		});
+	});
+});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,139 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/plugins/tagsinput/jquery.tagsinput.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>修改视频</h3>
+			</div>
+			<div class="box-content">
+			    <form action="<!--{{url('wcms/video/edit')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input name="id" type="hidden" value="<!--{{article.id}}-->"/>
+				<div class="control-group">
+					<label class="control-label">标题<i class="tip-star">*</i></label>
+					<div class="controls">
+					    <div class=" input-append">
+							<input type="text" name="title" class="input-xxlarge" value="<!--{{article.title}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label"></label>
+					<div class="controls">
+					    <div class="input-prepend">
+							<span class="add-on">短标题<i class="tip-star">*</i></span><input type="text" name="subtitle" class="input-xlarge" value="<!--{{article.subTitle}}-->" />
+						</div>
+					</div>
+				</div>
+				<!--{#
+				<div class="control-group">
+					<label class="control-label"></label>
+					<div class="controls">
+					    <div class="input-prepend">
+							<span class="add-on">来源</span><input type="text" name="source" class="input-medium" value="<!--{{article.source}}-->" /><span class="add-on">作者</span><input type="text" name="author" class="input-medium" value="<!--{{article.author}}-->" />
+						</div>
+					</div>
+				</div>
+				#}-->
+				<!--{%if article.titlePic%}-->
+				<div class="control-group">
+					<label class="control-label">图片<i class="tip-star">*</i></label>
+					<div class="controls">
+						<input name="titlePic" type="hidden" value="<!--{{article.titlePic}}-->" />
+						<a href="#bigimg" data-toggle="modal"><img src="<!--{{article.titlePic}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">上传图片<i class="tip-star">*</i></label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">选择图片</span><span class="fileupload-exists">Change</span><input type="file" name="filedata" /></span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>				
+				<div class="control-group">
+					<label class="control-label">关联游戏</label>
+					<div class="controls">
+					    <div class="input-append">
+							<input type="text" id="web_game_id" name="gameId" class="input-medium" value="<!--{{article.gameId}}-->" /><span class="add-on select-web-game">选择</span>
+						</div>
+					</div>
+				</div>				
+				<div class="control-group">
+					<label class="control-label">所属分类<i class="tip-star">*</i></label>
+					<div class="controls">
+					    <!--{{form_select('catalog',catalogs,article.catalogUrl)}}-->
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">发布时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input name="publishTime" type="text" class="input-medium datetimepicker" value="<!--{{article.publishTime|date('Y-m-d H:i:s')}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">标签</label>
+					<div class="controls">
+						<div class="span9"><input type="text" name="tags" id="tags" class="tagsinput" value="<!--{{article.tags}}-->"></div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">摘要<i class="tip-star">*</i></label>
+					<div class="controls">
+					    <textarea name="summary" class="input-xxlarge"><!--{{article.summary}}--></textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">视频链接<i class="tip-star">*</i></label>
+					<div class="controls">
+					    <textarea name="content" class="input-xxlarge"><!--{{article.content}}--></textarea>
+					</div>
+				</div>									
+			    <div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script>
+var set_selected_web_game = function(game_id,game_name,game_icon){
+    $('#web_game_id').val(game_id);
+};
+$(function(){
+    gameselect('#gameselect');
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+    if($(".tagsinput").length > 0){
+		$('.tagsinput').tagsInput({width:'auto', height:'auto',autocomplete_url:'<!--{{url('wcms/api/tags')}}-->'});
+	}
+	
+	$('.select-web-game').bind('click',function(){        
+        $.ajax({
+            url:'/wcms/api/pop-game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });        
+    });
+});
+</script>
+<!--{%endblock%}-->

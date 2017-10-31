@@ -1,0 +1,70 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>游戏平台信息</h3>
+			</div>
+			<div class="box-content">
+			    <form action="<!--{{url('a_game/platform/save')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input name="id" type="hidden" value="<!--{{platform.id}}-->" />
+			    <input name="game_id" type="hidden" value="<!--{{platform.game_id|default(game_id)}}-->" />
+				<div class="control-group">
+					<label class="control-label">分发渠道</label>
+					<div class="controls">
+					    <!--{{form_select('platform_id',platform_list,platform.platform_id)}}-->
+					</div>
+				</div>	
+				<div class="control-group">
+					<label class="control-label">下载地址</label>
+					<div class="controls">
+						<input type="text" name="download_url" class="input-xxlarge" value="<!--{{platform.download_url}}-->" />
+					</div>
+				</div>								
+				<div class="control-group">
+					<label for="textfield" class="control-label">大小</label>
+					<div class="controls">
+					    <input type="text" name="size" class="input-small" value="<!--{{platform.size}}-->" />
+					</div>
+				</div>	
+				<div class="control-group">
+					<label for="textfield" class="control-label">版本</label>
+					<div class="controls">
+					    <input type="text" name="version" class="input-small" value="<!--{{platform.version}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">包名</label>
+					<div class="controls">
+					    <input type="text" name="packagename" class="input-xlarge" value="<!--{{platform.packagename}}-->" />
+					</div>
+				</div>															
+				<div class="control-group">
+					<label class="control-label">排序</label>
+					<div class="controls">
+						<input type="text" name="sort" class="input-small" value="<!--{{platform.sort|default('0')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">属性</label>
+					<div class="controls">					    				        
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_top',1,platform.is_top==1)}}-->置顶					        					        
+				        </label>
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_show',1,platform.is_show==1)}}-->显示					        					        
+				        </label>				       		        				      
+					</div>
+				</div>
+					
+									
+			    <div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

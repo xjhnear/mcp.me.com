@@ -1,0 +1,188 @@
+<!--{%extends "../sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					天天彩
+				</h3>
+				<div class="actions">
+					
+						<table class="table-filter">
+							<tr>
+								<td></td>
+								<td></td>
+								<input type="hidden" name="dicId" id="dicId" value="<!--{{each_lottery_prize.dicId}}-->">
+								<td><span><!--{{prizeStr}}--></span></td>
+								<input type="hidden" name="dicId2" id="dicId2" value="<!--{{user_max_purchase_number.dicId}}-->">
+								<td>当前个人最大购买数量:<span id="user_max_purchase_number"><!--{{user_max_purchase_number.dicValue}}--></span></td>
+							</tr>
+							<tr>
+								<td>当前期数：<!--{{periodId}}--></td>
+								<td>
+									<input type="hidden" id="periodId" name="periodId" value="<!--{{periodId}}-->">
+										<div class="input-append">
+									         <input name="lotteryNumber" id="zjhm"  placeholder="中奖号码" style="width:100px;" type="text" class="input-small"  value="" >
+									         <span  class="add-on" id="zj" >设置中奖号码</span>
+									    </div>
+								</td>
+								
+								<td>	
+									<div class="input-append">
+
+								         <input name="Dzzj" id="Dzzj"  placeholder="单注中奖金额" style="width:100px;" type="text" class="input-small" value="" />
+								         <span>单注发送金额：</span>
+								         <!--{{form_select('name',select,'',{'class':'input-small','id':'select_zj'})}}-->
+								         <span  class="add-on" id="setje" >设置金额</span>
+								    </div>
+								</td>
+								<td>
+									<div class="input-append">
+								         <input name="Gms" id="Gms"  placeholder="个人最大购买数量" style="width:100px;" type="text" class="input-small" value="" >
+								         <span  class="add-on" id="setGms">设置购买数</span>
+								    </div> 
+								</td>
+							</tr>
+							
+						</table>
+					</form>
+				</div>
+			</div>
+
+			<div class="box-content nopadding">
+				<table class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+						<th >期数</th>
+						<th >中奖人数</th>
+						<th >总发放游币数</th>
+						<th >中奖号码显示</th>
+						<th >中奖名单细节</th>
+						<th >最后操作人</th>
+						<th >最后操作时间</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!--{% for key,item in datalist%}-->
+					<tr>
+						<td><!--{{item.periodId}}--></td>
+						<td><!--{{item.winningNumber}}--></td>
+						<td><!--{{item.totalBonus}}--></td>
+						<td><!--{{item.isRun?item.lotteryNumber:'未开奖'}}--></td>
+						<td>
+							<a href="<!--{{url('v4lotteryproduct/lottery/users',{periodId:item.periodId})}}-->" class="btn btn-primary">第<!--{{item.periodId}}-->中奖名单</a>
+						</td>
+						<td><!--{{item.modifier}}--></td>
+						<td><!--{{item.modifyTime}}--></td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+				</table>
+				<div class="pagelink">
+					<!--{{pagelinks}}-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close"
+				        data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					导出
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="box-content">
+					<div id="modal-footer" class="modal-footer">
+						<button type="button" class="btn btn-default"
+						        data-dismiss="modal">关闭
+						</button>
+						<a href="javascript:;" id="go_" class="btn btn-primary"> 确定</a>
+					</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+
+<script>
+	$(function(){
+		//中奖号码
+		//**
+		$("#zj").bind('click',function(){
+            alertify.confirm('确认设置中奖号码？',function(e){
+                if(e){
+                    var zjhm=$("#zjhm").val(),periodId=$("#periodId").val();
+                    if(!periodId || !zjhm){
+                        alertify.error('设置失败');
+                        return false;
+                    }
+                    $.post('/v4lotteryproduct/lottery/zjhm',{'periodId':periodId,'lotteryNumber':zjhm},function(data){
+                        data.errorCode == 1 ? alertify.error(data.msg) : alertify.success(data.msg);
+                        return ;
+                    },'json');
+                }
+
+            });
+
+		});
+
+		//设置单注中奖金额
+		$("#setje").bind('click',function(){
+            alertify.confirm('确认设置金额？',function(e){
+                if(e) {
+                    var Dzzj=$("#Dzzj").val(),
+                            dicId=$("#dicId").val(),
+                            id=$("#select_zj").val();
+                    if(!Dzzj || !id ){
+                        alertify.error('设置失败');
+                        return false;
+                    }
+                    $.post('/v4lotteryproduct/lottery/zjje',{'prizeId':id,'bonus':Dzzj},function(data){
+                        if(data.errorCode == 1){
+                            alertify.error(data.msg);
+                        }else{
+                            $("#prize_"+id).html(data.value);
+                            alertify.success(data.msg)
+                        }
+                        return true;
+                    },'json');
+                }
+             });
+
+		});
+
+		$("#setGms").bind('click',function(){
+            alertify.confirm('确认设置购买数？',function(e){
+                if(e) {
+                    var Gms = $("#Gms").val(), id = $("#dicId2").val();
+                    if (!Gms || !id) {
+                        alertify.error('设置失败');
+                        return false;
+                    }
+                    $.post('/v4lotteryproduct/lottery/updatedic', {'dicValue': Gms, 'dicId': id}, function (data) {
+                        if (data.errorCode == 1) {
+                            alertify.error(data.msg);
+                        } else {
+                            $("#user_max_purchase_number").html(data.value);
+                            alertify.success(data.msg);
+                        }
+                        return true;
+                    }, 'json');
+                }
+            });
+		});
+		 
+	});
+</script>
+<!--{%endblock%}-->

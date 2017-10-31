@@ -1,0 +1,67 @@
+<!--{%extends "sub-layout-user.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>用户信息</h3>
+			</div>
+			<div class="box-content">
+				<form id="form-user" action="<!--{{url('user/users/create')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户头像</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="fileupload-new thumbnail" style="max-width: 200px; max-height: 150px;"><img src="<!--{{user.avatar|default('/static/img/common/avatar.gif')}}-->" /></div>
+							<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+							<div>
+								<span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span><input type="file" name='avatar' /></span>
+								<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>				
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户邮箱</label>
+					<div class="controls">
+						<input type="text" name="email" id="email" class="input-xlarge" data-rule-required="true" data-msg-required="邮箱不能为空">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户手机</label>
+					<div class="controls">
+						<input type="text" name="mobile" id="mobile" class="input-xlarge" data-rule-required="true" data-msg-required="手机号不能为空">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户昵称</label>
+					<div class="controls">
+						<input type="text" name="nickname" id="nickname" class="input-xlarge" data-rule-required="true" data-msg-required="用户昵称不能为空">
+					</div>
+				</div>	
+				<div class="control-group">
+					<label for="textfield" class="control-label">登录密码</label>
+					<div class="controls">
+						<input type="password" name="password" id="password" class="input-xlarge" data-rule-required="true" data-msg-required="密码不能为空">
+					</div>
+				</div>			
+								
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户组</label>
+					<div class="controls">
+					    <!--{%for group in grouplist%}-->
+					    <label class="radio inline">
+					        <!--{{form_radio('group_id',group.group_id,group.group_id==5)}}--><!--{{group.group_name}}-->					        					        
+					    </label>
+					    <!--{%endfor%}-->			                
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

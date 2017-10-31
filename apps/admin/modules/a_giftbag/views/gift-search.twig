@@ -1,0 +1,200 @@
+<!--{%extends "sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					礼包管理<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('a_giftbag/gift/search')}}-->" class="">
+				    <table class="table-filter">
+				        <tr>	
+				            <td>
+				                <!--{{form_select('from_type',{'0':'全部','1':'商务','2':'自购'},search.from_type,{'style':'width:80px;margin-bottom:0px;'})}}-->
+				            </td>			            
+				            <td>
+				                <div class="controls">
+							        <label class="radio inline">ID/标题</label>
+								</div>				                
+				            </td>				            
+				            <td>
+								<input name="keyword" type="text" class="input-medium" placeholder="ID/关键字" value="<!--{{search.keyword}}-->">								
+							</td>
+							<td>
+				            	<label class="checkbox inline">
+						        <!--{{form_checkbox('is_activity',1,search.is_activity==1)}}-->活动					        					        
+						        </label>
+						    </td>
+						    <td>	
+						        <label class="checkbox inline">
+						        <!--{{form_checkbox('is_appoint',1,search.is_appoint==1)}}-->专属			        					        
+						        </label>
+				            </td>
+							<td><input id="gameselect" name="game_id" data-from="android" type="hidden" value="<!--{{search.game_id}}-->" class="bigdrop select2-offscreen width_150" tabindex="-1"></td>							
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				            <td><a href="<!--{{url('a_giftbag/gift/add')}}-->" class="btn btn-teal">添加礼包</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">ID</th>							
+							<th class="col-150">活动标题</th>							
+                            <th class="col-150">游戏</th>
+                            <th class="col-60">来源</th>
+							<th class="col-80">开始时间</th>
+							<th class="col-80">结束时间</th>
+							<th class="col-60">状态</th>
+							<th class="col-80">进度</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td>
+								<!--{%if item.is_appoint == 1%}-->
+									<span class="badge badge-warning" style="margin-left:-48px;">专属</span>
+								<!--{%endif%}-->
+								<!--{%if item.is_activity == 1%}-->
+									<span class="badge badge-warning" style="margin-left:-48px;">活动</span>
+								<!--{%endif%}-->
+								<!--{{item.title}}-->
+							</td>
+							<td><!--{{item.game.shortgname}}--></td>
+							<td>
+							    <!--{%if item.from_type == 1%}-->
+									<span class="badge badge-warning">商务</span>
+								<!--{%endif%}-->
+								<!--{%if item.from_type == 2%}-->
+									<span class="badge badge-warning">自购</span>
+								<!--{%endif%}-->
+							</td>
+							<td><!--{{item.starttime|date('Y-m-d')}}--></td>
+							<td><!--{{item.endtime|date('Y-m-d')}}--></td>
+							<td><!--{%if item.is_show==1%}--><span class="badge badge-success">显示</span><!--{%else%}--><span class="badge badge-important">隐藏</span><!--{%endif%}--></td>
+							<td><!--{{item.last_num}}-->/<!--{{item.total_num}}--></td>
+							<td>
+							    <a href="<!--{{url('a_giftbag/gift/edit',{id:item.id})}}-->" class="btn btn-primary">编辑</a>
+							    <!--{%if item.is_appoint==0%}-->							    
+							    <div class="btn-group">
+							        <a data-toggle="dropdown" class="btn  btn-primary dropdown-toggle">卡号<span class="caret"></span></a>
+							        <ul class="dropdown-menu dropdown-primary">
+							            <li><a href="<!--{{url('a_giftbag/giftcard/import',{id:item.id})}}-->">导入卡号</a></li>
+							            <li><a href="<!--{{url('a_giftbag/giftcard/list',{id:item.id})}}-->">卡号列表</a></li>
+							            <li><a href="<!--{{url('a_giftbag/giftcard/clear',{id:item.id})}}-->" class="ajax-del">清空卡号</a></li>
+							            <li><button class="btn btn-sm export_btn" gfid="<!--{{item.id}}-->" data-target="#export_modal" data-toggle="modal">导出未领取卡号</button></li>
+							        </ul>
+							    </div>
+							    <!--{%endif%}-->
+							    <!--{%if item.is_appoint == 1%}-->
+									<a href="<!--{{url('a_giftbag/gift/appoint-user',{id:item.id})}}-->" class="btn btn-primary">专属用户</a>
+								<!--{%endif%}-->							    
+							    <!--{#<a href="<!--{{url('a_giftbag/gift/delete',{id:item.id})}}-->" class="btn btn-primary">删除</a>#}-->
+							    <!--{%if item.is_send==0%}--><a href="<!--{{url('a_giftbag/gift/push',{id:item.id})}}-->" class="btn btn-primary">推送</a><!--{%endif%}-->
+							    <!--{#%if item.is_send==1%}--><a href="<!--{{url('a_giftbag/gift/push',{id:item.id})}}-->" class="btn btn-primary">再次推送</a><!--{%endif%#}-->							    							    						  
+								
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			    
+			    <div class="modal fade" id="export_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" id="myModalLabel">导出卡号</h4>
+				      </div>
+				      <div class="modal-body">
+				      	  <form action="<!--{{url('a_giftbag/giftcard/export-card')}}-->" class="">
+				      	      <input id="giftbag_id" name="giftbag_id" type="hidden" value="" />
+				      	      <table class="table-filter">
+						          <tr>				            
+						              <td>数量</td>
+						              <td><input name="number" type="text" class="input-small" /></td>
+						              <td><button class="btn">导出未领取的卡号</button></td>
+						          </tr>
+						      </table>
+				      	  </form>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+			    
+			    <div class="modal fade" id="add-uid" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" id="myModalLabel">添加用户ID</h4>
+				      </div>
+				      <div class="modal-body">
+				      	<div class="input-prepend">
+				      		<span class="add-on">用户ID</span>
+				      		<textarea id="userids" cols="20" rows="5" class="form-control"></textarea>
+				      		<span class="add-on">注：每个ID间请用<b style="color:red">逗号（英文）</b>分割</span>
+				      	</div>
+				      </div>
+				      <div class="modal-footer">
+				      	<button id="save-apint-uids" type="button" class="btn btn-success">保存</button>
+				        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    gameselect('#gameselect');
+    $(".add-uid").click(function(){
+    	$("#save-apint-uids").attr("gb-id",$(this).attr("gb-id"));
+    	$.get("/a_giftbag/gift/ajax-appoint-uids",{"giftbag_id":$(this).attr("gb-id")},function(data){
+    		if(data){
+    			$("#userids").html(data);
+        	}else{
+        	    $("#userids").html('');
+        	}
+    	})
+    });
+    
+    $('.export_btn').click(function(){
+        $('#giftbag_id').val($(this).attr('gfid'));
+        console.log($(this).attr('gfid'));
+    });
+    
+    $("#save-apint-uids").click(function(){
+    	$.post("/a_giftbag/gift/ajax-appoint-uids-save",{"giftbag_id":$(this).attr("gb-id"),"uids_str":$("#userids").val()},function(data){
+    		alert(data.msg);
+    	})
+    });
+    
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});    
+</script>
+<!--{%endblock%}-->

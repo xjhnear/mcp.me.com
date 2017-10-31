@@ -1,0 +1,96 @@
+<!--{%extends "sub-layout-statistics.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					监控配置列表
+					<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('statistics/monitor/config-list')}}-->" method="GET">
+				    <table class="table-filter">
+				        <tr>
+				            <td>所属频道</td>
+				            <td><!--{{form_select('channel_id',channel_list,search.channel_id)}}--></td>		
+				            <td>配置ID</td>		            
+				            <td><input name="config_id" type="text" class="input-small" value="<!--{{search.config_id}}-->" ></td>
+				            <td>配置名</td>
+							<td><input name="config_name" type="text" class="input-small" value="<!--{{search.config_name}}-->" ></td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>检索</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">配置标识</th>						    
+							<th class="col-150">配置名称</th>
+							<th class="col-80">PV</th>
+							<th class="col-80">UV</th>
+							<th class="col-80">激活量</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.CONFIG_ID}}--></td>							
+							<td><!--{{item.CONFIG_NAME}}--></td>
+							<td><!--{{item.CLICK_COUNT}}--></td>							
+							<td><!--{{item.USER_COUNT}}--></td>
+							<td><!--{{item.ACTIVE_COUNT}}--></td>
+							<td>
+							    <a class="btn btn-primary" href="<!--{{url('statistics/monitor/click-list')}}-->?config_id=<!--{{item.CONFIG_ID}}-->">查看点击报表</a>
+							    <a class="btn btn-primary" href="<!--{{url('statistics/monitor/active-list')}}-->?config_id=<!--{{item.CONFIG_ID}}-->">查看激活报表</a>
+							    <button class="btn btn-primary btn-sm monitor_btn" monitor-url="http://statistic.youxiduo.com/click/<!--{{item.CONFIG_ID}}-->" data-target="#monitor_modal" data-toggle="modal">监控URL</button>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			    
+			    <div class="modal fade" id="monitor_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" id="myModalLabel">监控URL</h4>
+				      </div>
+				      <div class="modal-body">
+				      	  <span id="monitor_url"></span>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+			    
+			</div>						
+	    </div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+
+<script src="/static/js/plugins/multiselect/bootstrap-multiselect.js"></script>
+<script>
+$(function(){
+    $('.switchbox').bootstrapSwitch();
+    
+    $(".monitor_btn").click(function(){
+        $('#monitor_url').html($(this).attr('monitor-url'));
+    });
+});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,111 @@
+<!--{%extends "sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>批量发卡号</h3>
+			</div>
+			<div class="box-content">
+				<form id="form-message" action="<!--{{url('a_giftbag/gift/add-appoint-user')}}-->" method="POST" class="form-horizontal form-validate">
+				<input name="giftbag_id" type="hidden" value="<!--{{giftbag_id}}-->" />
+				<table class="table table-hover table-nomargin" id="input_push_user">
+			        <thead>
+						<tr>
+						    <th class="col-250">接收者</th>
+							<th>内容</th>
+							<th class="col-50"><a class="add_input_param_button js_click"><i class="icon-plus"></i></a></th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+					    <tr>
+					       <td><span class="label label-info">用户ID</span><input name="uid[]" type="text" class="input-small" value="<!--{{item.uid}}-->"  /></td>
+					       <td><span class="label label-info">卡密</span><input name="message[]" type="text" class="input-xxlarge" value="<!--{{item.message}}-->"  /></td>
+					       <td><a class="delete_param_button js_click"><i class="icon-minus"></i></a></td>
+					    </tr>
+					    <!--{%endfor%}-->
+					</tbody>
+			    </table>
+				<div class="control-group">
+				    <label class="control-label">消息模板</label>
+				    <div class="controls">
+				        <textarea name="template" class="input-xlarge"></textarea>
+				        <span class="help-block badge badge-warning">卡密变量为<b class="badge badge-success">{cardno}</b></span>
+				    </div>
+				</div>
+				<div class="form-actions">
+					<button id="submit-btn" type="submit" class="btn btn-primary"><i class="icon-ok"></i>发送</button>
+				</div>												   
+				</form>
+				<!--{%if datalist%}-->
+				
+				<form action="<!--{{url('message/push/import')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+				<div class="control-group">
+					<label class="control-label">TXT文件</label>
+					<div class="controls">
+					    <div class="uploader" id="uniform-fileInput"><input name="filedata" class="input-file uniform_on" id="file_upload" type="file" size="19" style="opacity: 0; "></div>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>导入</button>
+				</div>
+				</form>
+				<!--{%endif%}-->
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+
+<script src="/static/js/jquery.validationEngine.js" ></script>
+<script src="/static/js/jquery.validationEngine-en.js" ></script>
+<script src="/static/js/jquery.uniform.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    function getInputTpl(){
+        var html = '';
+        html += '<tr>';
+		html += '    <td><span class="label label-info">用户ID</span><input name="uid[]" type="text" class="input-small" value=""  /></td>';
+		html += '    <td><span class="label label-info">卡密</span><input name="message[]" type="text" class="input-xxlarge" value=""  /></td>';
+		html += '    <td><a class="delete_param_button js_click"><i class="icon-minus"></i></a></td>';
+		html += '</tr>';
+        return html;
+    }
+    function addTableRow(table, rowStringFunc) {
+		last_id = table.find("tbody tr:last").attr("id"); 
+		new_id = null;
+		if (last_id) {
+			new_id = parseInt(last_id) + 1;
+		} else {
+			new_id = 0;
+		}
+		var row = $(rowStringFunc(new_id));
+		row.appendTo(table.find("tbody"));
+		row.find("a").click(function() {
+			deleteTableRow($(this).parent().parent());
+		})
+		return row
+	}
+	
+	function deleteTableRow(row) {
+		row.remove();
+	}
+    $("table a.js_click").click(function() {
+        var row = $(this).parents("tr");
+        if ($(this).hasClass("delete_param_button")) {
+            row.remove();
+        }else{
+            var table = $(this).parents("table");
+            
+            if($(this).hasClass("add_input_param_button")){
+                addTableRow(table,getInputTpl);
+            }
+        }
+    
+    });
+    $("input:file").uniform({'fileBtnText':'选择文件'});   
+});
+</script>
+<!--{%endblock%}--> 

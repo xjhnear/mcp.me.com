@@ -1,0 +1,80 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>三屏视频直播
+				</h3>				
+			</div>
+			<div class="box-content">
+			    
+			    <form action="<!--{{url('wcms/home/live-code')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <!--{%if setting.picUrl%}-->
+			    <div class="control-group">
+			        <label class="control-label">背景图</label>
+					<div class="controls">
+					    <input name="bgPicUrl" type="hidden" value="<!--{{setting.bgPicUrl}}-->" />
+					    <a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.bgPicUrl}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">上传背景图</label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">选择图片</span><span class="fileupload-exists">Change</span><input type="file" name="filedata_bg" /></span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--{%if setting.picUrl%}-->
+			    <div class="control-group">
+			        <label class="control-label">视频展示图</label>
+					<div class="controls">
+					    <input name="picUrl" type="hidden" value="<!--{{setting.picUrl}}-->" />
+					    <a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.picUrl}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">上传视频展示图</label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">选择图片</span><span class="fileupload-exists">Change</span><input type="file" name="filedata" /></span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">视频HTML代码</label>
+					<div class="controls">
+					    <textarea name="liveVideo" class="input-xxlarge"><!--{{setting.liveVideo}}--></textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">直播排期HTML代码</label>
+					<div class="controls">
+					    <textarea name="announce" class="input-xxlarge"><!--{{setting.announce}}--></textarea>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>	    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){    
+        
+});    
+</script>
+<!--{%endblock%}-->

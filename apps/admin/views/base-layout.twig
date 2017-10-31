@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+	<title>游戏多管理中心</title>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+	<!-- Bootstrap responsive -->
+	<link rel="stylesheet" href="/static/css/bootstrap-responsive.min.css">
+	<!-- jQuery UI -->
+	<link rel="stylesheet" href="/static/css/plugins/jquery-ui/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="/static/css/plugins/jquery-ui/smoothness/jquery.ui.theme.css">
+	<!-- PageGuide -->
+	<link rel="stylesheet" href="/static/css/plugins/pageguide/pageguide.css">
+	<!-- Fullcalendar -->
+	<link rel="stylesheet" href="/static/css/plugins/fullcalendar/fullcalendar.css">
+	<link rel="stylesheet" href="/static/css/plugins/fullcalendar/fullcalendar.print.css" media="print">
+	
+	<link rel="stylesheet" href="/static/css/plugins/gritter/jquery.gritter.css">
+	<!-- chosen -->
+	<link rel="stylesheet" href="/static/css/plugins/chosen/chosen.css">
+	<!-- select2 -->
+	<link rel="stylesheet" href="/static/css/plugins/select2/select2.css">
+	<!-- icheck -->
+    <link rel="stylesheet" href="/static/css/plugins/icheck/square/orange.css">
+	<!-- Theme CSS -->
+	<link rel="stylesheet" href="/static/css/style.css">
+	<link rel="stylesheet" href="/static/css/plugins/jquery.datetimepicker.css">
+	<link rel="stylesheet" href="/static/js/skins/default.css">
+	<!-- Color CSS -->
+	<link rel="stylesheet" href="/static/css/themes.css">
+	<link rel="stylesheet" href="/static/css/uniform.aristo.css">
+	<link rel="stylesheet" href="/static/css/admin.css">
+	<!-- Switch CSS -->
+	<link rel="stylesheet" href="/static/css/bootstrap-switch.min.css">
+	<link rel="stylesheet" href="/static/css/alertify.core.css">
+	<link rel="stylesheet" href="/static/css/alertify.default.css">
+	
+	<!--{%block header_css%}-->
+	<!--{%endblock%}-->
+</head>
+
+<body>
+    <div id="navigation">
+        <div class="container-fluid">            
+            <a href="javascript:void(0);" class="toggle-nav" rel="tooltip" data-placement="bottom" title="显示/隐藏左侧导航"><i class="icon-reorder"></i></a>
+            <ul class="main-nav">
+                <!--{%for item in admin_menu%}-->
+                <!--{%if loop.index<16%}-->
+				<li class="<!--{{request_segment(1) == item.default_url|split('/')[0] ? 'active' : ''}}-->">
+				    <a href="<!--{{url(item.default_url)}}-->" class='dropdown-toggle' data-toggle="dropdown">
+				    <!--{%if item.module_icon=='android'%}--><span class="cus-android"></span><!--{%endif%}-->
+				    <!--{%if item.module_icon=='ios'%}--><span class="cus-ios"></span><!--{%endif%}-->
+				    <span><!--{{item.module_alias}}--></span><span class="caret"></span>
+				    </a>
+				    <ul class="dropdown-menu">
+				        <!--{%for child in item['child_menu']%}-->
+						<li><a href="<!--{{url(child.url)}}-->"><!--{{child.name}}--></a></li>
+						<!--{%endfor%}-->
+				    </ul>
+				</li>
+				<!--{%else%}-->
+				<!--{%if loop.index==16%}-->
+				<li>
+				    <a href="#" class='dropdown-toggle' data-toggle="dropdown"><span>更多</span><span class="caret"></span></a>
+				    <ul class="dropdown-menu">
+				<!--{%endif%}-->				    
+				        <li class="dropdown-submenu">
+						    <a href="<!--{{url(item.default_url)}}-->" class='dropdown-toggle' data-toggle="dropdown">
+						    <!--{%if item.module_icon=='android'%}--><span class="cus-android"></span><!--{%endif%}-->
+						    <!--{%if item.module_icon=='ios'%}--><span class="cus-ios"></span><!--{%endif%}-->
+						    <!--{{item.module_alias}}-->
+						    </a>
+						    <ul class="dropdown-menu">
+						        <!--{%for child in item['child_menu']%}-->
+								<li><a href="<!--{{url(child.url)}}-->"><!--{{child.name}}--></a></li>
+								<!--{%endfor%}-->
+						    </ul>
+						</li>				    
+				<!--{%if loop.index>16 and loop.last%}-->
+				    </ul>
+				</li>
+				<!--{%endif%}-->
+				<!--{%endif%}-->
+				<!--{%endfor%}-->              				
+		    </ul>
+		    <div class="user">
+		        <ul class="icon-nav">
+		            <li></li>
+		        </ul>
+		        <div class="dropdown">
+					<a href="javascript:void(0);" class='dropdown-toggle' data-toggle="dropdown"><!--{{current_user.realname}}--><img src="http://img.youxiduo.com/userdirs/common/yxd_logo.png?v=1" width="25px" /></a>
+					<ul class="dropdown-menu pull-right">	
+					    <li>
+							<a href="<!--{{url('common/home/edit-profile')}}-->">修改资料</a>
+						</li>					
+						<li>
+							<a href="<!--{{url('login/logout')}}-->">安全退出</a>
+						</li>
+					</ul>
+				</div>
+		    </div>
+        </div>
+    </div>
+    <div class="container-fluid" id="content">
+        <div id="left">
+            
+            <div class="subnav">
+			    <div class="subnav-title">
+					<a href="#" class='toggle-subnav'><i class="icon-angle-down"></i><span><!--{{admin_menu[module_name]['module_alias']}}--></span></a>
+				</div>
+				<ul class="subnav-menu">
+				<!--{%for item in admin_menu[module_name]['child_menu']%}-->
+				<li class="<!--{{url_current() == url(item.url) ? 'active' : ''}}-->"><a href="<!--{{url(item.url)}}-->"><!--{{item.name}}--></a></li>
+				<!--{%endfor%}-->
+				</ul>
+			</div>				
+			
+        </div>
+        <div id="main">
+            <div class="container-fluid">
+                <!--{%block main_content%}-->
+                
+                <!--{%endblock%}-->
+            </div>
+        </div>
+
+	    <!-- 大图预览开始 -->
+	    <div id="bigimg" class="modal hide fade" style="left:40%;width:auto;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		    <div class="modal-header" style="min-width:130px;">
+			    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			    <h3 id="myModalLabel">大图预览</h3>
+		    </div>
+		    <div style="text-align:center;">
+			    <img id="big-img" src="" style="max-width:1024px;max-height: 500px;"/>
+		    </div>
+	    </div>
+	    <!-- 大图预览结束 -->
+    </div>
+</body>
+    <!-- jQuery -->
+	<script src="/static/js/jquery.js"></script>
+	<script src="/static/js/template.min.js"></script>
+	<!-- Mobile nav swipe -->
+	<script src="/static/js/plugins/touchwipe/touchwipe.min.js"></script>
+	<!-- Nice Scroll -->
+	<script src="/static/js/plugins/nicescroll/jquery.nicescroll.min.js"></script>
+	<!-- jQuery UI -->
+	<script src="/static/js/plugins/jquery-ui/jquery.ui.core.min.js"></script>
+	<script src="/static/js/plugins/jquery-ui/jquery.ui.widget.min.js"></script>
+	<script src="/static/js/plugins/jquery-ui/jquery.ui.mouse.min.js"></script>
+	<script src="/static/js/plugins/jquery-ui/jquery.ui.draggable.min.js"></script>
+	<script src="/static/js/plugins/jquery-ui/jquery.ui.resizable.min.js"></script>
+	<script src="/static/js/plugins/jquery-ui/jquery.ui.sortable.min.js"></script>
+	<!-- Touch enable for jquery UI -->
+	<script src="/static/js/plugins/touch-punch/jquery.touch-punch.min.js"></script>
+	<!-- slimScroll -->
+	<script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<!-- Bootstrap -->
+	<script src="/static/js/bootstrap.min.js"></script>	
+	<!-- Bootbox -->
+	<script src="/static/js/plugins/bootbox/jquery.bootbox.js"></script>
+	<!-- Flot -->
+	<script src="/static/js/plugins/flot/jquery.flot.min.js"></script>
+	<script src="/static/js/plugins/flot/jquery.flot.bar.order.min.js"></script>
+	<script src="/static/js/plugins/flot/jquery.flot.pie.min.js"></script>
+	<script src="/static/js/plugins/flot/jquery.flot.resize.min.js"></script>
+	<!-- imagesLoaded -->
+	<script src="/static/js/plugins/imagesLoaded/jquery.imagesloaded.min.js"></script>
+	<!-- Datepicker -->
+	<script src="/static/js/plugins/datepicker/bootstrap-datepicker.js"></script>
+	<script src="/static/js/plugins/datepicker/locales/bootstrap-datepicker.zh-CN.js"></script>
+	<!-- Timepicker -->
+	<script src="/static/js/plugins/timepicker/bootstrap-timepicker.min.js"></script>
+	<!-- Colorpicker -->
+	<script src="/static/js/plugins/colorpicker/bootstrap-colorpicker.js"></script>
+	<!-- PageGuide -->
+	<script src="/static/js/plugins/pageguide/jquery.pageguide.js"></script>
+	<!-- FullCalendar -->
+	<script src="/static/js/plugins/fullcalendar/fullcalendar.min.js"></script>
+	<!-- Chosen -->
+	<script src="/static/js/plugins/chosen/chosen.jquery.min.js"></script>
+	<!-- select2 -->
+	<script src="/static/js/plugins/select2/select2.min.js"></script>
+	<!-- icheck -->
+	<script src="/static/js/plugins/icheck/jquery.icheck.min.js"></script>
+	<!-- Form -->
+	<script src="/static/js/plugins/form/jquery.form.min.js"></script>
+	
+	<script src="/static/js/plugins/validation/jquery.validate.min.js"></script>
+	<script src="/static/js/plugins/validation/additional-methods.min.js"></script>
+	<!-- Wizard -->		
+	<script src="/static/js/plugins/wizard/jquery.form.wizard.min.js"></script>	
+	<script src="/static/js/plugins/gritter/jquery.gritter.min.js"></script>
+	<!--/File Upload/-->
+	<script src="/static/js/plugins/fileupload/bootstrap-fileupload.min.js"></script>	
+	<script src="/static/js/plugins/jquery.datetimepicker.js"></script>	
+	<script src="/static/js/jquery.artDialog.js"></script>
+	<!-- Theme framework -->
+	<script src="/static/js/eakroko.js"></script>
+	<!-- Theme scripts -->
+	<script src="/static/js/application.js"></script>
+	
+	<script src="<!--{{asset('static/js/admin.js')}}-->"></script>
+	<!-- Switch js -->
+	<script src="/static/js/bootstrap-switch.min.js"></script>
+	<script src="/static/js/alertify.js"></script>
+	<!-- Just for demonstration -->
+	<script>
+	$(function(){
+    <!--{%if global_tips%}-->
+
+    //$.gritter.add({
+    //    title:'操作完成',
+    //    text:'<!--{{global_tips}}-->',
+    //    time:3000
+    //});
+
+	alertify.log('<!--{{ global_tips }}-->');
+    <!--{%endif%}-->
+	//input、checkbox标签美化
+	/*
+    $('input').iCheck({
+        checkboxClass: 'icheckbox_square-orange',
+        radioClass: 'iradio_square-orange',
+        increaseArea: '20%' // optional
+    });
+    */
+    /**
+     *  全部页面的图片，如需大图预览
+     *  只需在图片外面包此 a 标签即可
+     *  <a href="#bigimg" data-toggle="modal"></a>
+     */
+	$("img").click(function(){
+		$("#big-img").attr("src",$(this).attr('src'));
+	});
+	});
+	</script>
+<!--{%block footer_js%}-->
+<!--{%endblock%}-->
+</html>

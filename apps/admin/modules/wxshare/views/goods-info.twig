@@ -1,0 +1,75 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>实物信息</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form-activity" action="<!--{{url('wxshare/goods/edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{goods.id}}-->" />
+				<div class="control-group">
+					<label class="control-label">名称</label>
+					<div class="controls">
+						<input type="text" name="title" id="name" class="input-xlarge" value="<!--{{goods.title}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">列表小图</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img id="listpic_img" src="<!--{%if goods.litpic%}-->http://img.youxiduo.com<!--{%endif%}--><!--{{goods.litpic|default('/static/img/nopic.gif')}}-->" /></div>
+							<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+							<div>
+								<span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择照片</span><span class="fileupload-exists">重新选择</span><input id="litpic" type="file" name='litpic' /></span>
+							</div>
+						</div>
+						<span class="help-inline">图片最佳尺寸:294*190</span>
+					</div>
+				</div>				
+				
+				<div class="control-group">
+					<label class="control-label">价格</label>
+					<div class="controls">
+						<input type="text" name="price" id="score" class="input-small" value="<!--{{goods.price}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">数量</label>
+					<div class="controls">
+						<input type="text" name="total_num" id="tota_lnum" class="input-small" value="<!--{{goods.total_num}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">属性</label>
+					<div class="controls">					    				        
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_show',1,goods.is_show==1)}}-->显示					        					        
+				        </label>					        			        	        				     
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">排序</label>
+					<div class="controls">
+						<input type="text" name="sort" class="input-small" value="<!--{{goods.sort|default('50')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">说明</label>
+					<div class="controls">
+						<textarea id="summary" name="summary" style="width:544px;height:200px;"><!--{{goods.summary}}--></textarea>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<!--{%endblock%}-->

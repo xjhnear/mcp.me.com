@@ -1,0 +1,59 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					社区列表
+					<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+					<table class="table-filter">
+					<tbody><tr>
+						<td><a class="btn btn-teal" href="/weba_forum/bbs/add-forum">添加论坛</a></td>
+					</tr>
+					</tbody></table>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+				<table class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+						<th class="col-100">论坛名称</th>
+						<th class="col-200">论坛Logo</th>
+						<th class="col-150">论坛帖子数</th>
+						<th class="col-150">论坛人数</th>
+						<th class="table-btn-group">操作</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!--{%for item in forumlist%}-->
+					<tr>
+						<td><!--{{item.name}}--></td>
+						<td class="user-avatar"><img title="<!--{{item.icon_img}}-->" src="<!--{{item.icon_img}}-->"/></td>
+						<td><!--{{item.threads}}--></td>
+						<td><!--{{item.people}}--></td>
+						<td>
+							<a href="<!--{{url()}}-->" class="btn btn-primary">编辑</a>
+						</td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+				</table>
+				<div class="pagelink">
+					<!--{{paginator}}-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+	$(function(){
+	});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,142 @@
+<!--{%extends "sub-layout-adv.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>广告类型</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form-activity" action="<!--{{url('adv/nature/nature-add-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+				    <input id="Id" name="Id" type="hidden" value="<!--{{datainfo.Id}}-->" />
+					<div class="control-group">
+						<label class="control-label">广告类型标题</label>
+						<div class="controls">
+							<input type="text" name="natureName" class="input-xlarge" value="<!--{{datainfo.natureName}}-->" data-rule-required="true" data-msg-required="标题不能为空" />
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label">是否为推荐</label>
+						<div class="controls">
+							<!--{% if datainfo.Id %}-->
+								 <label class="inline"><!--{{datainfo.is_recommend}}--></label>
+								 <input type="hidden" name="is_recommend" value="<!--{{datainfo.is_recommend}}-->">
+	                        <!--{% else %}-->
+	                        	<label class="radio inline"><!--{{form_radio('is_recommend','推荐',datainfo.is_recommend=='推荐')}}-->推荐模式</label>
+	                             <label class="radio inline"><!--{{form_radio('is_recommend','广告模式',datainfo.is_recommend=='广告模式')}}-->广告模式</label>
+	                        <!--{% endif %}-->
+						</div>
+					</div>
+					<!-- 
+					<div id="guanggao">
+						<div class="control-group">
+							<label class="control-label">是否需要广告介绍</label>
+							<div class="controls">
+								 <label class="radio inline"><!--{{form_radio('is_title','需要',datainfo.is_title=='需要')}}-->需要</label>
+	                             <label class="radio inline"><!--{{form_radio('is_title','不需要',datainfo.is_title	=='不需要')}}-->不需要</label>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">是否需要广告名</label>
+							<div class="controls">
+								 <label class="radio inline"><!--{{form_radio('is_advname','需要',datainfo.is_advname =='需要')}}-->需要</label>
+	                             <label class="radio inline"><!--{{form_radio('is_advname','不需要',datainfo.is_advname	=='不需要')}}-->不需要</label>
+							</div>
+						</div>
+						<div class="control-group" >
+							<label class="control-label">是否关联游戏ID(针对广告模式)</label>
+							<div class="controls">
+								 <label class="radio inline"><!--{{form_radio('is_gid','需要',datainfo.is_gid=='需要')}}-->需要</label>
+	                             <label class="radio inline"><!--{{form_radio('is_gid','不需要',datainfo.is_gid=='不需要')}}-->不需要</label>
+							</div>
+						</div>
+
+						<div class="control-group">
+							<label class="control-label">是否需要广告大图(针对广告模式)</label>
+							<div class="controls">
+								 <label class="radio inline"><!--{{form_radio('is_bigtic','需要',datainfo.is_bigtic=='需要')}}-->需要</label>
+	                             <label class="radio inline"><!--{{form_radio('is_bigtic','不需要',datainfo.is_bigtic=='不需要')}}-->不需要</label>
+							</div>
+						</div>
+
+						<div class="control-group">
+							<label class="control-label">轮播图片是否需要字体介绍(针对安卓广告发布)</label>
+							<div class="controls">
+								 <label class="radio inline"><!--{{form_radio('is_jieshao','需要',datainfo.is_jieshao=='需要')}}-->需要</label>
+	                             <label class="radio inline"><!--{{form_radio('is_jieshao','不需要',datainfo.is_jieshao	=='不需要')}}-->不需要</label>
+							</div>
+						</div>
+						
+					 </div>
+					 -->
+					 <div id="tuijian" style="display:none">
+					 		<div class="control-group">
+							<label class="control-label">推荐对应类型</label>
+							<div class="controls">
+								<select name="recommend_type">
+									<option value="推荐位">推荐位</option> 
+                            		<option value="热门推荐">热门推荐</option>
+									<option value="热门推荐位">热门推荐位</option> 
+									<option value="游戏圈-热门推荐">游戏圈-热门推荐</option> 
+									<option value="游戏详情-猜你喜欢">游戏详情-猜你喜欢</option> 
+								</select>
+							</div>
+						</div>
+					 </div>
+
+					
+
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					</div>
+					
+					<!--{% if datainfo.nature %}-->
+                		<table id="version_table" class="table table-hover">
+						   <caption>对应广告地址</caption>
+						   <thead>
+						      <tr>
+						         <th class="col-120">Id</th>
+						         <th class="col-180">广告地址</th>
+						         <th class="col-180">添加时间</th>
+						      </tr>
+						   </thead>
+						   <tbody>
+						   	  <!--{%for item in datainfo.nature%}-->	
+							      <tr>
+							         <td><!--{{item.Id}}--></td>
+							         <td><!--{{item.name}}--></td>
+							         <td><!--{{item.createdatetime}}--></td>
+							      </tr>
+						      <!--{%endfor%}-->
+                            </tbody>
+						</table>
+					<!--{%endif%}-->
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+		$(function(){
+			<!--{% if datainfo.is_recommend == '推荐' %}-->
+			 	$("#tuijian").show();
+			 	//$("#guanggao").hide();
+			<!--{% endif %}-->
+			$("#form-activity").find("[name='is_recommend']").on('click',function(){
+				if($(this).val() == '推荐'){
+					$("#tuijian").show();
+					//$("#guanggao").hide();
+				}else{
+					//$("#guanggao").show();
+					$("#tuijian").hide();
+				}
+				//alert($(this).val());
+			})
+		})
+</script>
+<!--{%endblock%}-->

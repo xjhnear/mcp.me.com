@@ -1,0 +1,102 @@
+<!--{% extends "sub-layout-chat.twig" %}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/chatroom.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					<span class="g-circle"></span> 聊天记录
+				</h3>
+				<div class="actions">
+
+				</div>
+			</div>
+			<div class="box-content nopadding">
+				<div class="chat-content pull-left">
+				<!--{%if record%}-->
+					<!--{%for item in record%}-->
+						<div>
+							<div style="padding:25px;">
+							<!--{%if item.from == admin_hxid%}-->
+								<span class="user-avatar pull-right" style="padding:5px;margin-left:30px;"><img title="<!--{{item.user_name}}-->" alt="<!--{{item.user_name}}-->" src="<!--{{item.user_avatar}}-->"><strong class="u-name"><a class="u-name-a" href="/user/users/edit/<!--{{item.uid}}-->" target="_blank"><!--{{item.user_name}}--></a></strong></span>
+								<!--{%if item.msgBody.0.type == 'txt'%}-->
+									<p class="pull-right triangle-border right"><!--{{item.msgBody.0.msg}}--></p>
+									<span class="s-time-r"><!--{{item.sendTime}}--></span>
+								<!--{%elseif item.msgBody.0.type == 'audio'%}-->
+									<p class="pull-right triangle-border right" style="color:red;">这是音频（暂时无法网页播放）</p>
+									<span class="s-time-r"><!--{{item.sendTime}}--></span>
+								<!--{%elseif item.msgBody.0.type == 'img'%}-->
+									<p class="pull-right triangle-border right">
+									<a class="chat-img" title="" href="#bigimg" data-toggle="modal"><img width="100" src="<!--{{item.msgBody.0.url}}-->"></a></p>
+									<span class="s-time-r"><!--{{item.sendTime}}--></span>
+								<!--{%endif%}-->
+								<div class="clearfix"></div>
+							<!--{%else%}-->
+								<span class="user-avatar pull-left" style="padding:5px;text-align:center;"><img title="<!--{{item.user_name}}-->" alt="<!--{{item.user_name}}-->" src="<!--{{item.user_avatar}}-->"><strong class="u-name"><a class="u-name-a" href="/user/users/edit/<!--{{item.uid}}-->" target="_blank"><!--{{item.user_name}}--></a></strong></span>
+								<!--{%if item.msgBody.0.type == 'txt'%}-->
+									<p class="pull-left triangle-border left"><!--{{item.msgBody.0.msg}}--></p>
+									<span class="s-time-l"><!--{{item.sendTime}}--></span>
+								<!--{%elseif item.msgBody.0.type == 'audio'%}-->
+									<p class="pull-left triangle-border left" style="color:red;">这是音频（暂时无法网页播放）</p>
+									<span class="s-time-l"><!--{{item.sendTime}}--></span>
+								<!--{%elseif item.msgBody.0.type == 'img'%}-->
+									<p class="pull-left triangle-border left">
+									<a class="chat-img" title="" href="#bigimg" data-toggle="modal"><img alt="" width="100" src="<!--{{item.msgBody.0.url}}-->" /></a>
+									</p>
+									<span class="s-time-l"><!--{{item.sendTime}}--></span>
+								<!--{%endif%}-->
+								<div class="clearfix"></div>
+							<!--{%endif%}-->
+							</div>
+						</div>
+					<!--{%endfor%}-->
+				<!--{%else%}-->
+					<p style="text-align:center;color:red;">暂无数据</p>
+				<!--{%endif%}-->
+				<div class="pagination s_x_page">
+					<a class="btn btn-primary" href="<!--{{pre}}-->">上一页</a><span class="md-sp"></span>
+					<!--{%if record%}-->
+					<a class="btn btn-primary" href="<!--{{nex}}-->">下一页</a>
+					<!--{%else%}-->
+					<a class="btn btn-primary" href="#">下一页</a>
+					<!--{%endif%}-->
+					 跳到第 <input id="offset" type="text" /> 页 <a class="btn btn-success" id="jump_a" href="#">Go</a>
+				</div>
+				</div>
+				<div class="send-msg pull-right">
+					<form action="/chat/chatroom/send-group-msg/<!--{{ to_hxid }}-->/users" method="post">
+						<div class="col-lg-4 col-md-4 col-sm-5">
+						<textarea id="msg-txt" class=”form-control” name="message"></textarea>
+						</div>
+	    				<div><br/><button type="submit" class="btn btn-primary">发送</button></div>
+					</form>
+				</div>
+				<div class="clearfix"></div>
+				<div id="bigimg" class="modal hide fade" style="width:auto;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		            <div class="modal-header" style="min-width:130px;">
+		                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		                <h3 id="myModalLabel">大图预览</h3>
+		            </div>
+		            <div style="text-align:center;">
+		                <img id="big-img" src="#" style="max-width:500px;max-height:700px;"/>
+		            </div>
+		        </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script type="text/javascript">
+$(function(){
+	$("#offset").change(function(){
+		var b_url = "<!--{{base}}-->&page=";
+		$("#jump_a").attr("href",b_url+$("#offset").val());
+	});
+});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,68 @@
+<!--{%extends "sub-layout-system.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					权限节点
+				</h3>
+				<div class="actions">
+				    <form>
+				    <table class="table-filter">
+				        <tr>				            
+				            <td><a href="<!--{{url('system/authorize/add')}}-->" class="btn btn-teal"><i class="icon-plus"></i>添加节点</a></td>				            
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+							<th class="col-80">分组</th>
+							<th class="col-120">分组名称</th>
+							<th class="col-80">权限类型</th>
+							<th class="col-120">权限节点</th>
+							<th>权限节点描述</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in nodelist%}-->
+						<tr>
+							<td><!--{{item.appname}}--></td>
+							<td><!--{{item.appinfo}}--></td>
+							<td><!--{{item.module}}--></td>
+							<td><!--{{item.rule}}--></td>
+							<td><!--{{item.ruleinfo}}--></td>
+							<td>
+							    <a href="<!--{{url('system/authorize/edit',{'id':item.id})}}-->" class="btn btn-primary"><i class="icon-edit"></i>编辑</a>							    
+							    <a href="<!--{{url('system/authorize/delete',{'id':item.id})}}-->" class="btn btn-primary ajax-del"><i class="icon-trash"></i>删除</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }        
+    });
+});
+</script>    
+<!--{%endblock%}-->

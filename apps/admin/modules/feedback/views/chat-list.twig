@@ -1,0 +1,79 @@
+<!--{%extends "sub-layout-chat.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					用户列表					
+				</h3>
+				<div class="actions">
+				
+				</div>
+			</div>
+			<div class="box-content nopadding scrollable">
+			    <ul class="messages">
+			        <!--{%for item in datalist%}-->
+			        <!--{%if item.from_uid!=1%}-->
+			        <li class="left">
+						<div class="image">
+							<img src="http://img.youxiduo.com<!--{{item.from_user.avatar}}-->" alt="">
+						</div>
+						<div class="message">
+							<span class="caret"></span>
+							<span class="name"><!--{{item.from_user.nickname}}--></span>
+							<p><!--{%if item.pic%}--><img style="max-width:100px;" src="http://img.youxiduo.com<!--{{item.pic}}-->"/><!--{%endif%}--><!--{{item.message}}--></p>
+							<span class="time">
+								<!--{{item.addtime|date('Y-m-d H:i:s')}}-->
+							</span>
+						</div>
+					</li>
+					<!--{%endif%}-->
+					
+					<!--{%if item.from_uid==1%}-->
+			        <li class="right">
+						<div class="image">
+							<img src="http://img.youxiduo.com<!--{{item.from_user.avatar}}-->" alt="">
+						</div>
+						<div class="message">
+							<span class="caret"></span>
+							<span class="name"><!--{{item.from_user.nickname}}--></span>
+							<p><!--{%if item.pic%}--><img style="max-width:100px;" src="http://img.youxiduo.com<!--{{item.pic}}-->"/><!--{%endif%}--><!--{{item.message}}--></p>
+							<span class="time">
+								<!--{{item.addtime|date('Y-m-d H:i:s')}}-->
+							</span>
+						</div>
+					</li>
+					<!--{%endif%}-->
+					<!--{%endfor%}-->
+			    </ul>			    
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			    <div class="control-group">
+			        <form action="<!--{{url('feedback/chat/send')}}-->" method="POST">
+			        <input name="to_uid" type="hidden" value="<!--{{from_user.uid}}-->" />
+					<table class="table table-hover table-nomargin">
+					    <tr>
+					        <td class="col-50">
+					            <img src="http://img.youxiduo.com<!--{{from_user.avatar}}-->" alt="">					            
+					        </td>
+					        <td class="col-120">
+					            <p><!--{{from_user.nickname}}--></p>
+					            <p><!--{{from_user.level_name}}--></p>
+					        </td>
+					        <td><textarea name="message" class="input-block-level" style="height:90px;"></textarea></td>
+					        <td class="col-80">
+					            <button class="btn btn-primary" style="width:60px;height:60px;"><i class="icon-envelope"></i>发送</button>
+					        </td>
+					    </tr>
+					</table>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!--{%endblock%}-->

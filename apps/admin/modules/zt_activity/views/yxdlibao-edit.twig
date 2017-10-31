@@ -1,0 +1,96 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit">游戏多礼包活动信息</i></h3>
+			</div>
+			<div class="box-content">
+				<form action="<!--{{url('zt_activity/yxdlibao/edit')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data" id="form1">
+                    <input type="hidden" name="id" value="<!--{{ result.id }}-->" />
+                    <input type="hidden" name="tag" value="<!--{{ result.tag }}-->" />
+                    <div class="tab-content padding tab-content-inline tab-content-bottom">
+						<div class="control-group">
+							<label class="control-label">礼包标题<span class="nes-star">*</span></label>
+							<div class="controls">
+								<input type="text" id="title" name="title" data-msg-required="礼包标题不能为空" data-rule-required="true" class="input-xxlarge" value="<!--{{ result.title }}-->" />
+							</div>
+						</div>
+                        <div class="control-group">
+                            <label class="control-label">平台</label>
+                            <div class="controls">
+                                <input name="device" readonly data-on-color="success" data-on-text="android" data-off-color="danger" data-off-text="ios" <!--{{ result.plat == 'android' ? 'checked' : '' }}--> class="switchbox" type="checkbox"/>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">所属游戏</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="selected_game_id" name="gid" type="hidden" value="<!--{{ result.gid }}-->"/>
+                                    <img id="selected_game_icon" alt=""  class="add-on" src="<!--{{ result.icon ? result.icon : '/static/img/wu_ss.gif' }}-->"/>
+                                    <input type="text" id="selected_game_name" name="gname" readonly class="input-medium" value="<!--{{ result.gname }}-->" data-rule-required="true" data-msg-required="关联游戏不能为空" />
+                                    <span class="add-on select-pop-game">选择游戏</span>
+                                    <span class="add-on text-error">游戏搜索结果依平台而定</span>
+                                </div>
+                            </div>
+                        </div>
+
+						<div class="control-group">
+							<label for="textfield" class="control-label">内容</label>
+							<div class="controls">
+								<script id="container" name="content" type="text/plain"><!--{{ result.content }}--></script>
+							</div>
+						</div>
+
+						<div class="form-actions">
+							<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script>
+	$(function(){
+        UE.getEditor('container',{toolbars:[['undo', 'redo']],initialFrameHeight:100});
+		$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+	});
+
+    function set_selected_game(game_id,game_name,icon){
+        $('#selected_game_id').val(game_id);
+        $('#selected_game_icon').attr('src',icon);
+        $('#selected_game_name').val(game_name);
+        $("input[name='name']").val(game_name);
+    };
+    function set_selected_agame(game_id,game_name,icon){
+        $('#selected_game_id').val(game_id);
+        $('#selected_game_icon').attr('src',icon);
+        $('#selected_game_name').val(game_name);
+        $("input[name='name']").val(game_name);
+    };
+    $(function(){
+        $('.switchbox').bootstrapSwitch();
+        $('.select-pop-game').bind('click',function(){
+            if($("input[name='device']:checked").val()){
+                var url = '/a_game/api/game-search';
+            }else{
+                var url = '/game/api/game-search';
+            }
+            $.ajax({
+                url:url,
+                dataType:'json',
+                success:function(json){
+                    $.dialog({id:'pop-game-list',title:'提示',padding:2,content:json.html,width:600,height:580});
+                }
+            });
+        });
+    });
+</script>
+<!--{%endblock%}-->

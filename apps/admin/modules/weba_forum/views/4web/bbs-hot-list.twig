@@ -1,0 +1,89 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					热门论坛列表
+				</h3>
+
+			</div>
+			<div class="box-content nopadding">
+				<table id="bbstable" class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+						<th class="col-100">论坛Logo</th>
+						<th class="col-100">论坛名称</th>
+						<th class="col-150">总帖子数</th>
+						<th class="col-150">今日发帖数</th>
+						<th class="col-150">总回复数</th>
+						<th class="col-150">今日回复数</th>
+						<th class="table-btn-group">操作</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!--{% for key,item in datalist%}--> 
+					<tr>
+						<td class="user-avatar"><img  <!--{% if item.gname %}-->title="关联游戏:<!--{{item.gname}}-->"<!--{%endif%}--> src="<!--{{item.logo}}-->"/></td>
+						<td><!--{{item.fid}}--><br/><!--{{item.name}}--></td>
+						<td><!--{{item.totalTopicNumber}}--></td>
+						<td><!--{{item.todayTopicNumber}}--></td>
+						<td><!--{{item.totalReplyNumber}}--></td>
+						<td><!--{{item.todayReplyNumber}}--></td>
+						<td>
+							<div class="btn-group">
+								<a data-toggle="dropdown" href="#" class="btn btn-primary dropdown-toggle">关联<span class="caret"></span></a>
+								<ul class="dropdown-menu dropdown-primary">
+                                    <li><a href="#nogo" fid="<!--{{item.forumRecommendId}}-->" class="set_hot" >取消热门</a></li>
+									<li><a href="<!--{{url('weba_forum/topic/bbs-relation-ios',{id:item.fid})}}-->" >关联苹果游戏</a></li>
+									<li><a href="<!--{{url('weba_forum/topic/bbs-relation-android',{id:item.fid,game:item.gname,gid:item.gid})}}-->" >关联安卓游戏</a></li>
+								</ul>
+							</div>
+							<a href="<!--{{url('weba_forum/topic/bbs-add-edit',{id:item.fid})}}-->" class="btn btn-primary">编辑论坛</a>
+
+						</td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+	$(function(){
+		/**
+		$("#bbstable > tbody tr").find('td:first').find('img').on('mouseover',function(){
+			 var dataId=$(this).attr('data-id');
+			 $.get('forum-list-ajax',{"dataId":dataId},function(data){
+			 	$(this).attr("title",data);
+			 });
+		});
+		**/
+        $(".set_hot").click(function(){
+            obj = $(this);
+                if(confirm('确定要取消吗？')){
+                    var id = obj.attr('fid');
+                    var html = obj.html();
+                    var type = '-1';
+                    if(html == "设为热门"){
+                        type = '1';
+                    }
+                    $.post('<!--{{url('weba_forum/topic/set-hot')}}-->',{id:id,type:type},function(data){
+                        if(data.success=="true"){
+                            alert(data.mess);
+                            window.location.reload();
+                        }else{
+                            alert(data.mess);
+                        }
+                    },"json")
+                }
+        })
+	});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,40 @@
+<!--{%extends "help/base-help.twig"%}-->
+<!--{%block main_nav%}-->
+<header>
+	<div class="container navi-breadcrumb">
+		<ul class="breadcrumb">
+			<li> <a href="/">项目列表</a> <span class="divider">/</span> </li>
+			<li><a href="">游戏多3.0.0</a><span class="divider">/</span></li>
+			<li><a class="active" href="">接口列表</a><span class="divider">/</span></li>
+		</ul>
+	</div>
+</header>
+<!--{%endblock%}-->
+
+<!--{%block main_content%}-->
+    <legend>接口基本信息</legend>
+    <table class="table" id="input_params_table">
+	    <thead>
+			<tr>
+				<td>参数名称</td>
+				<td>输入值实例</td>
+				<td>说明</td>
+				<td>类型</td>
+				<td>
+					<a class="add_input_param_button"><i class="icon-plus"></i></a>
+				</td>
+			</tr>
+		</thead>
+		<tbody>							
+			<tr>
+				<td><input type="text" placeholder="必填" name="input_name[]" value="appname"></td>
+				<td><input type="text" placeholder="选填" name="input_sample[]" value="yxd"></td>
+				<td><input type="text" placeholder="选填" name="input_detail[]" value=""></td>
+				<td>string</td>
+				<td>
+					<a class="delete_param_button"><i class="icon-minus"></i></a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+<!--{%endblock%}-->

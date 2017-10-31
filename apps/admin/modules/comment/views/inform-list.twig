@@ -1,0 +1,64 @@
+<!--{%extends "sub-layout-comment.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					被举报评论列表					
+				</h3>
+				<div class="actions">				    
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th>ID</th>
+							<th>标题</th>
+							<th class="col-150">举报时间</th>
+							<th class="col-150">被举报用户</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<!--{%if item.type==1%}-->
+							<td><!--{{item.topic.subject}}--></td>
+							<!--{%else%}-->
+							<td><!--{{item.comment.format_content}}--></td>
+							<!--{%endif%}-->							
+							<td><!--{{item.addtime|date('Y-m-d H:i:s')}}--></td>
+							<td><!--{{item.user.nickname}}--></td>
+							<td>
+							    <a href="<!--{{url('forum/inform/do',{id:item.id})}}-->" class="btn btn-primary">处理</a>
+							    <a href="<!--{{url('forum/inform/ignore',{id:item.id})}}-->" class="btn btn-primary">忽略</a>							    
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

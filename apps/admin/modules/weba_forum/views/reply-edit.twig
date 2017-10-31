@@ -1,0 +1,56 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>回复编辑</h3>
+			</div>
+			<div class="box-content">
+				<form id="form-topic" action="<!--{{url('weba_forum/topic/edit-reply')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data">
+					<input name="id" type="hidden" value="<!--{{ data.id }}-->" />
+					<div class="control-group">
+						<label for="textfield" class="control-label">回帖人UID</label>
+						<div class="controls">
+							<input type="text" name="replier_id" class="input-small" value="<!--{{ data.replier }}-->" data-rule-required="true" data-msg-required="回帖人UID"/>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">发布平台</label>
+						<div class="controls">
+							<select class="input-medium" name="platform">
+								<option value="2">Android</option>
+								<option value="3">Web</option>
+							</select>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="textfield" class="control-label">内容</label>
+						<div class="controls">
+							<script id="container" name="message" type="text/plain"><!--{{ data.content }}--></script>
+						</div>
+					</div>
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditorbbs.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+$(function() {
+	UE.getEditor('container',{toolbars:[["undo","redo","insertunorderedlist","insertorderedlist","link","unlink","cleardoc",
+		"simpleupload","emotion","bold","italic","underline","strikethrough","forecolor","backcolor","justifyleft","justifycenter",
+		"justifyright","justifyjustify","fontfamily","fontsize"]],initialFrameHeight:200});
+});
+</script>
+<!--{%endblock%}-->

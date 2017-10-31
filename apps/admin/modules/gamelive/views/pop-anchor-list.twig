@@ -1,0 +1,85 @@
+<div class="box">
+    <div class="actions">
+        <table class="table-filter">
+            <tr>
+                <td>主播</td>
+                <td>
+                    <input id="keyword" type="text" class="input-medium" placeholder="" value="<!--{{keyword}}-->">
+                </td>
+                <td>
+                    <a href="javascript:searchAnchor();" class="btn btn-teal">按条件搜索</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table class="table table-hover table-nomargin">
+        <thead>
+        <tr>
+            <th class="col-60">ID</th>
+            <th class="col-80">图标</th>
+            <th class="col-150">名字</th>
+            <th class="table-btn-group col-60">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{%for item in datalist%}-->
+        <tr>
+            <td><!--{{item.id}}--></td>
+            <td class="user-avatar"><img id="anchor_icon_<!--{{item.id}}-->" src="<!--{{item.picUrl}}-->" class="" /></td>
+            <td id="anchor_name_<!--{{item.id}}-->"><!--{{item.name}}--></td>
+            <td>
+                <a href="javascript:void(0);" data-id="<!--{{item.id}}-->" class="btn btn-primary select-anchor-id">选择</a>
+            </td>
+        </tr>
+        <!--{%endfor%}-->
+        </tbody>
+    </table>
+    <div class="pagelink">
+        <!--{{pagelinks}}-->
+    </div>
+</div>
+<script>
+    function searchGame()
+    {
+        var keyword = $('#keyword').val();
+        $.ajax({
+            url:'/gamelive/api/pop-anchor-search',
+            data:{keyword:keyword},
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog.list['pop-anchor-list'].content(html);
+            }
+        });
+    }
+    function init_page()
+    {
+        //
+        $('.select-anchor-id').each(function(){
+            $(this).click(function(){
+                var anchor_id = $(this).attr('data-id');
+                set_selected_anchor(anchor_id);
+                $.dialog.list['pop-anchor-list'].close();
+            });
+        });
+        //
+        $('.pagelink a').each(function(){
+            var url = $(this).attr('href');
+            $(this).attr('href','javascript:void(0);');
+            $(this).click(function(){
+                $.ajax({
+                    url:url,
+                    dataType:'json',
+                    success:function(json){
+                        var html = '';
+                        html = json.html;
+                        $.dialog.list['pop-anchor-list'].content(html);
+                    }
+                });
+            });
+
+        });
+    }
+    init_page();
+</script>

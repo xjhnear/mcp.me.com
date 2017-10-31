@@ -1,0 +1,98 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    标签管理
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('/v4product/label/list')}}-->">
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+                                    <div class="input-append">
+                                        <input id="selected_categoryId" name="categoryId"   type="hidden" value="<!--{{inputinfo.categoryId}}-->" /><input type="text" placeholder="请选择商品种类" name="categoryName" id="selected_cate_name" readonly  style="width:120px" value="<!--{{inputinfo.categoryName}}-->" />
+                                        <span  class="add-on select-pop-cate">选择商品种类</span>
+
+                                    </div>
+                                </td>
+                                <td>
+                                <input name="tagName"  placeholder="请填写商品标签名称" style="width:177px;" type="text" class="input-small" value="<!--{{inputinfo.tagName}}-->" >
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                                <td><a href="<!--{{url('v4product/label/add')}}-->" class="btn btn-teal"><i class="icon-plus" title="添加标签"></i></a></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <!-- <th class="col-60">ID</th> -->
+                        <th class="col-80">标签名</th>
+                        <th class="col-80">商城类别</th>
+                        <th class="col-60">种类名</th>
+                        <th class="col-80">排序</th>
+                        <th class="table-btn-group">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{% for key,item in datalist%}-->
+                        <tr id="tr_<!--{{item.tagId}}-->">
+                            <td><!--{{item.tagName}}--></td>
+                            <td><!--{{item.currencyType?'钻石商城':'游币商城'}}--></td>
+                            <td><!--{{item.categoryName}}--></td>
+                            <td><!--{{item.tagSort}}--></td>
+                            <td>
+                                <a href="<!--{{url('v4product/label/edit',{id:item.tagId,key:'tagId'})}}-->"                           class="btn btn-primary">编辑</a>
+                                <a href="javascript:;"   url="<!--{{url('v4product/label/set',{type:'top'})}}-->"    data='{"tagId":"<!--{{item.tagId}}-->"}'   class="btn btn-primary caozuo">置顶</a>
+                                <a href="javascript:;" url="<!--{{url('v4product/label/set',{type:'edit',method:'post'})}}-->"  id="<!--{{item.tagId}}-->" data='{"tagId":"<!--{{item.tagId}}-->","active":"false"}' class="btn btn-primary del" >删除</a>
+                            </td>
+                        </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/MyHelp.js')}}-->"></script>
+<script>
+    $(function(){
+        var settion={
+            elem:'a.caozuo,a.del',
+            isReload:true,
+        };
+        ajaxCZ(settion);
+        $('span.select-pop-cate').on('click',function(){
+            $.ajax({
+                url:'/v4product/goods/cate-list-select',
+                dataType:'json',
+                success:function(json){
+                    var html = '';
+                    html = json.html;
+                    $.dialog({id:'pop-cate-list',title:'提示',padding:2,content:html,width:600,height:580});
+                }
+            });
+        });
+
+    });
+    var set_selected_cate = function(cate_id,cate_name){
+        $("#selected_categoryId").val(cate_id);
+        $("#selected_cate_name").val(cate_name);
+    };
+</script>
+<!--{%endblock%}-->

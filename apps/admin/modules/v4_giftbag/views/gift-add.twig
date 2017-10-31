@@ -1,0 +1,288 @@
+<!--{%extends "sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>礼包信息</h3>
+			</div>
+			<div class="box-content">
+			    <form id="gift-info-form" action="<!--{{url('v4giftbag/gift/add')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{gift.id}}-->" />
+				<div class="control-group">
+					<label class="control-label">标题</label>
+					<div class="controls">
+						<input type="text" name="title" class="input-xxlarge" value="<!--{{gift.title}}-->" />
+					</div>
+				</div>
+				<!--{#
+				<div class="control-group">
+					<label class="control-label">礼包类型</label>
+					<div class="controls">
+						<label class="checkbox inline"><!--{{form_checkbox('is_ios','1',gift.is_ios==1)}}-->IOS</label>
+						<label class="checkbox inline"><!--{{form_checkbox('is_android','1',gift.is_android==1)}}-->Android</label>
+					</div>
+				</div>
+				#}-->
+				<div class="control-group">
+					<label class="control-label">所属游戏</label>
+					<div class="controls">
+					    <input id="gameselect" name="game_id" type="hidden" value="<!--{{gift.game_id}}-->" class="bigdrop select2-offscreen" style="width:200px;" tabindex="-1">
+					</div>					
+				</div>
+				<!--{#				
+				<div class="control-group">
+					<label class="control-label">列表图</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="fileupload-new thumbnail btn-file" style="max-width: 60px; max-height: 60px;"><img src="<!--{%if ask.listpic%}--><!--{%endif%}--><!--{{ask.listpic|default('/static/img/nopic.gif')}}-->" /><input type="file" name='listpic' /></div>
+						</div>
+					</div>
+				</div>
+				#}-->
+
+				
+				<div class="control-group">
+					<label class="control-label">排序</label>
+					<div class="controls">
+						<input type="text" name="sort" class="input-small" value="<!--{{gift.sort|default('50')}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">属性</label>
+					<div class="controls">					    
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_hot',1,gift.is_hot==1)}}-->热门					        					        
+				        </label>
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_top',1,gift.is_top==1)}}-->置顶					        					        
+				        </label>
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_show',1,gift.is_show==1)}}-->显示					        					        
+				        </label>
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_appoint',1,false,{'id':'appoint'})}}-->专属
+				        </label>			        				       
+					</div>
+				</div>
+				<div id="exclusive" style="display: none;" class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">用户ID</label>
+						<div class="controls">
+							<input type="text" id="account_ids" name="account_ids" class="input-xlarge validate[condRequired[appoint]]" value="<!--{{gift.condition.account_ids|default('')}}-->" />
+							<label>注：每个ID间请用逗号<span class="text-warning">（英文）</span>分割</label>
+						</div>
+					</div>
+					<div class="control-group">
+						<div class="controls">
+							<label class="checkbox inline">
+								<!--{{form_checkbox('filter_device',1)}}-->过滤设备
+							</label>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">所需游币</label>
+					<div class="controls">
+						<input type="text" name="score" class="input-small" value="<!--{{gift.condition.score|default('0')}}-->" />
+					</div>
+				</div>								
+				<div class="control-group">
+					<label for="textfield" class="control-label">礼包描述</label>
+					<div class="controls">
+					    <script id="container" name="gift_content" type="text/plain"><!--{{gift.gift_content}}--></script>
+					</div>
+				</div>
+				<p class="text-info" style="margin-bottom:-30px;">以下为活动相关信息</p>
+			    <hr>
+			    <div class="row-fluid">
+				    <div class="span4">
+						<div class="control-group">
+							<label class="control-label">开始时间</label>
+							<div class="controls">
+								<div class="input-append date">
+									<input name="act_starttime" type="text" class="input-medium datetimepicker" value="<!--{{gift.starttime|date('Y-m-d H:i')}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="span4">
+						<div class="control-group">
+							<label class="control-label">结束时间</label>
+							<div class="controls">
+								<div class="input-append date">
+									<input name="act_endtime" type="text" class="input-medium datetimepicker" value="<!--{{gift.endtime|date('Y-m-d H:i')}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</div>
+						</div>
+				    </div>
+				</div>
+				<div class="control-group">
+				    <label for="act-sort" class="control-label">活动排序</label>
+				    <div class="controls">
+						<input id="act-sort" name="act_sort" class="input-small" type="text"/>
+						<span class="add-on text-warning">（越大越靠前）</span>
+				    </div>
+			    </div>
+			    <div id="exclusive" class="row-fluid">
+					<div class="span3">
+						<div class="control-group">
+							<label class="control-label">是否优惠</label>
+							<div class="controls">
+								<input id="discount" name="discount" data-on-color="success" data-on-text="优惠" data-off-color="danger" data-off-text="无" class="switchbox" type="checkbox"/>
+							</div>
+						</div>
+					</div>
+					<div class="span3 discount-price" style="display: none;">
+						<div class="control-group">
+							<label class="control-label">优惠价格（人民币 单位为分）</label>
+							<div class="controls">
+								<input name="discount_price" class="input-small" type="text"/>
+							</div>
+						</div>
+					</div>
+				    <div class="span3 discount-price" style="display: none;">
+						<div class="control-group">
+							<label class="control-label">优惠价格（游币）</label>
+							<div class="controls">
+								<input name="discount_game_price" class="input-small" type="text"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="exclusive" class="row-fluid">
+					<div class="span4">
+						<div class="control-group">
+							<label class="control-label">是否限量</label>
+							<div class="controls">
+								<input id="p-limit" name="p_limit" data-on-color="success" data-on-text="限量" data-off-color="danger" data-off-text="无" class="switchbox" type="checkbox"/>
+							</div>
+						</div>
+					</div>
+					<div  class="span4 limit-rele" style="display: none;">
+						<div class="control-group">
+							<label class="control-label">限量数目</label>
+							<div class="controls">
+								<input name="limit_total" class="input-small" type="text"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid limit-rele" style="display: none;">
+					<div class="span4">
+						<div class="control-group">
+							<label class="control-label">限量模式</label>
+							<div class="controls">
+								<label class="radio inline">
+									<!--{{ form_radio('p_limit_mode',1,false) }}-->每日
+								</label>
+								<label class="radio inline">
+									<!--{{ form_radio('p_limit_mode',2,false,{'id':'p-limit-mode','class':'validate[condRequired[p-limit]]'}) }}-->总量
+								</label>
+							</div>
+						</div>
+					</div>
+					<div id="update-time" class="span4" style="display: none;">
+						<div class="control-group">
+							<label class="control-label">更新剩余量时间</label>
+							<div class="controls">
+								<div class="input-append date">
+									<input name="update_rest_time" type="text" class="input-small">
+									<span class="add-on text-warning">时间格式为HH（小时）:ii（分钟）:ss（秒）</span>
+								</div>
+							</div>
+						</div>
+					</div>
+			    </div>
+			    <div class="control-group">
+				    <label class="control-label" for="on-or-off">是否开启</label>
+				    <div class="controls">
+						<input name="on_or_off" data-on-color="success" data-on-text="开启" data-off-color="danger" data-off-text="关闭" class="switchbox" type="checkbox" checked/>
+				    </div>
+			    </div>
+			    <div class="control-group">
+				    <label class="control-label" for="on-or-off">关联关闭</label>
+				    <div class="controls">
+						<input name="off_product" data-on-color="success" data-on-text="开启" data-off-color="danger" data-off-text="关闭" class="switchbox" type="checkbox"/>
+					    <span class="add-on text-warning">开启代表关闭活动的时候，相应商品（礼包）也会自动关闭</span>
+				    </div>
+			    </div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">活动描述</label>
+					<div class="controls">
+						<script id="activity-des" name="content" type="text/plain"><!--{{gift.content}}--></script>
+					</div>
+				</div>
+			    <div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+$(function(){
+    UE.getEditor('container');
+	UE.getEditor('activity-des');
+	$('.switchbox').bootstrapSwitch();
+    gameselect('#gameselect');
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+
+	//初始化显示
+	if($("input[name='is_appoint']").attr('checked')) $("#exclusive").show();
+	$("input[name='is_appoint']").click(function(){
+		if($(this).attr('checked')){
+			$("#exclusive").fadeIn();
+		}else{
+			$("#exclusive").fadeOut();
+		}
+	});
+
+	if($("input[name='discount']").attr('checked')) $(".discount-price").show();
+	$('#discount').on('switchChange.bootstrapSwitch', function (e, data) {
+		if(data){
+			$(".discount-price").fadeIn();
+		}else{
+			$(".discount-price").fadeOut();
+		}
+	});
+
+	if($("input[name='p_limit']").attr('checked')) $(".limit-rele").show();
+	$('#p-limit').on('switchChange.bootstrapSwitch', function (e, data) {
+		if(data){
+			$(".limit-rele").fadeIn();
+		}else{
+			$(".limit-rele").fadeOut();
+		}
+	});
+
+	$("input[name='p_limit_mode']").click(function(){
+		if($("input[name='p_limit_mode']:checked").val() == 1){
+			$("#update-time").fadeIn();
+		}else{
+			$("#update-time").fadeOut();
+		}
+	});
+
+	//关联验证
+	jQuery("#gift-info-form").validationEngine({'custom_error_messages':{
+		"#account_ids":{
+			"condRequired": {'message':'请填写用户ID'}
+		},
+		"#p-limit-mode":{
+			"condRequired": {'message':'<span style="margin-left:60px;top:-5px;position: relative;">请选择限量模式</span>'}
+		}
+	}});
+});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,112 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>商品信息</h3>
+            </div>
+            <div class="box-content">
+                <form  id="form-product" action="<!--{{url('v4aproduct/goods/recommend-add-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+                    <input id="recommendId" name="recommendId" type="hidden" value="<!--{{recommend.recommendId}}-->" />
+                    <div class="control-group">
+                        <label class="control-label">*商品代码</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="productCode" name="productCode" type="hidden" value="<!--{{recommend.productCode}}-->" />
+                                 <input type="text" id="productName"  data-rule-required="true" data-msg-required="请填写商品代码" readonly  class="input-xlarge" value="<!--{{recommend.product.productName}}-->" data-rule-required="true" data-msg-required="请选择商品"  />
+                                 <span class="add-on select-pop-cate" id="selectproduct" >选择商品</span>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="control-group"> 
+                        <label class="control-label">标题</label>
+                        <div class="controls">
+                            <input type="text" name="title" id="title"  value="<!--{{recommend.title}}-->" />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">*排序</label>
+                        <div class="controls">
+                            <input type="text" name="sort" id="sort" data-rule-required="true" data-msg-required="请填写排序"   value="<!--{{recommend.sort}}-->" />
+                        </div>
+                     </div>
+                     <div class="control-group">
+                        <label class="control-label">图片</label>
+                        <div class="controls">
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img id="listpic_img" src="<!--{%if recommend.imgUrl%}--><!--{%endif%}--><!--{{recommend.imgUrl|default('/static/img/nopic.gif')}}-->" /></div>
+                                <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+                                <div>
+                                    <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择照片</span><span class="fileupload-exists">重新选择</span><input id="imgUrl" type="file" name='imgUrl' /></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group ">
+                        <label class="control-label">是否特别推荐</label>
+                        <div class="controls">
+                            <input  name="isTop" <!--{{recommend.isTop ? 'checked' : '' }}--> data-on-color="success" data-on-text="特别" data-off-color="danger" data-off-text="普通" class="switchbox" type="checkbox"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group ">
+                        <label class="control-label">是否倒计时</label>
+                        <div class="controls">
+                            <input  name="showTime" <!--{{recommend.showTime ? 'checked' : '' }}--> data-on-color="success" data-on-text="是" data-off-color="danger" data-off-text="否" class="switchbox" type="checkbox"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group ">
+                        <label class="control-label">位置</label>
+                        <div class="controls">
+                            <!--{{form_select('location',{'mall_location':'商城','index_location':'首页'},recommend.location,{'style':'width:80px;margin-bottom:0px;'})}}-->
+                        </div>
+                    </div>
+
+
+
+
+                     <div class="control-group">
+                        <label for="textfield" class="control-label">描述</label>
+                        <div class="controls">
+                            <input type="text" name="description"  value="<!--{{recommend.description}}-->" />
+                            
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                    </div>
+
+        </form>
+    </div>
+</div>
+<div>
+    <div>
+
+        <!--{%endblock%}-->
+
+        <!--{%block footer_js%}-->
+        <script src="<!--{{asset('/static/js/xheditor/xheditor-1.1.14-zh-cn.min.js')}}-->"></script>
+
+        <script>
+                $('input.switchbox').bootstrapSwitch();
+                var set_selected_cate = function(productCode,productName){
+                    $('#productCode').val(productCode);
+                    $('#productName').val(productName);
+                };
+                $('.select-pop-cate').on('click',function(){        
+                        $.ajax({
+                            url:'/v4aproduct/goods/product-code2',
+                            dataType:'json',
+                            success:function(json){
+                                var html = '';
+                                html = json.html;   
+                                $.dialog({id:'pop-activity-list',title:'提示',padding:2,content:html,width:650,height:580});
+                            }
+                        });        
+                });
+        </script>
+        <!--{%endblock%}-->

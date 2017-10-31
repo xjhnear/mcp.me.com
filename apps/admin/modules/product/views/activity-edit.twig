@@ -1,0 +1,238 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>增加/修改商品活动信息</h3>
+			</div>
+			<div class="box-content">
+			    <form id="activity_from" action="<!--{{url('product/goods/activity-add-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    	<input id="activityId" name="activityId" type="hidden" value="<!--{{activity.activityId}}-->" />
+			    	<div id="exclusive" class="row-fluid">
+						<div class="span3">
+							<div class="control-group">
+								<label class="control-label">是否优惠</label>
+								<div class="controls">
+									<input id="discount" name="isDiscount" data-on-color="success" data-on-text="优惠" data-off-color="danger" data-off-text="无" class="switchbox" type="checkbox"
+									<!--{% if activity.isDiscount == 1 %}--> 
+							         checked
+							   		<!--{% endif %}--> />
+								</div>
+							</div>
+						</div>
+					</div>
+			    	<div id="date_time" style="display:none;" class="row-fluid">
+						<div class="span4">
+					    		<div class="control-group">
+									<label class="control-label">优惠价（单位为分）</label>
+									<div class="controls">
+										<div class="input-append date">
+												<input class="input-small" type="text" value="<!--{{activity.discountPrice}}-->" name="discountPrice">
+										</div>
+									</div>
+							    </div>
+						</div>
+						<div class="span4">
+					    		<div class="control-group">
+									<label class="control-label">优惠价（单位为游币）</label>
+									<div class="controls">
+										<div class="input-append date">
+												<input class="input-small" type="text" value="<!--{{activity.discountGamePrice}}-->" name="discountGamePrice">
+										</div>
+									</div>
+							    </div>
+						</div>
+						  
+					</div>
+					<div class="row-fluid">	
+						<div class="span4">	
+							<div class="control-group">
+								<label class="control-label">*优惠开始时间</label>
+								<div class="controls">
+										<div class="input-append date">
+												<input name="startTime" type="text" class="input-medium datetimepicker" value="<!--{{activity.startTimeStr|date('Y-m-d H:i:s')}}-->" readonly="">
+													<span class="add-on"><i class="icon-calendar"></i></span>
+										</div>
+								</div>
+							</div>
+						</div>
+						<div class="span4">						
+							<div class="control-group">
+								<label class="control-label">*优惠结束时间</label>
+								<div class="controls">
+										<div class="input-append date">
+											<input name="endTime" type="text"data-rule-required="true"  class="input-medium datetimepicker"  value="<!--{{activity.endTimeStr|date('Y-m-d H:i:s')}}-->" readonly="">
+												<span class="add-on"><i class="icon-calendar"></i></span>
+										</div>
+								</div>
+							</div>
+						</div>
+				    </div>
+                   
+					<div class="row-fluid">						
+							<div class="span4">
+							    <div class="control-group">
+									<label class="control-label">*商品</label>
+									<div class="controls">
+										<div class="input-append">
+											  <input id="productCode" name="productCode" type="hidden" value="
+											  <!--{{activity.productCode}}-->" />
+									    	  <input type="text" id="productName" readonly  class="input-xlarge" value="<!--{{activity.productName}}-->" data-rule-required="true" data-msg-required="请选择商品"  />
+											  <span class="add-on select-pop-cate" id="selectproduct" >选择商品</span>
+
+										</div>
+									</div>
+								</div>
+							</div>
+					</div>
+					 <div id="isProductLimit_" class="row-fluid">
+						<div class="span4">
+							<div class="control-group">
+								<label class="control-label">是否限量</label>
+								<div class="controls">
+									<input id="isProductLimit" name="isProductLimit" data-on-color="success" data-on-text="限量" data-off-color="danger" data-off-text="无" class="switchbox" type="checkbox"
+									<!--{% if activity.isProductLimit == 1 %}--> 
+							         checked
+							   		<!--{% endif %}--> 
+									/>
+								</div>
+							</div>
+						</div>
+					 </div>
+					 <div style="display:none;" id="totalNumber_" class="row-fluid">
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">限量模式</label>
+									<div class="controls">
+										<input id="limitMode" name="limitMode" data-on-color="success" data-on-text="每天限量" data-off-color="danger" data-off-text="全部限量" class="switchbox" type="checkbox"   
+										<!--{% if activity.limitMode == 1 %}--> 
+							         		checked
+							   			<!--{% endif %}--> 
+										/>
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+						 		<div class="control-group">
+						 			<label class="control-label">发放总量</label>
+						 			<div class="controls">
+						 				<input class="input-small" type="text" value="<!--{{activity.totalNumber}}-->" name="totalNumber">	
+						 			</div>
+						 		</div>
+					 		</div>
+					 </div>	
+					 <div style="display:none;" id="updateRestTime" class="row-fluid">
+					 		<div class="control-group">
+							<label class="control-label">更新剩余量时间</label>
+								<div class="controls">
+									<div class="input-append date">
+										<input class="input-small"data-rule-required="true" data-msg-required="请填写开始时间"  value="<!--{{activity.updateRestTime}}-->"  type="text" id="inputupdateRestTime" name="updateRestTime"  >
+										<span class="add-on text-warning">时间格式为HH（小时）:ii（分钟）:ss（秒）</span>
+									</div>
+								</div>
+							</div>
+					 </div>
+					<div  class="row-fluid">
+						<div class="span3">
+							<div class="control-group">
+								<label class="control-label" for="on-or-off">是否开启</label>
+							    <div class="controls">
+									<input name="onOrOff" id="onOrOff" data-on-color="success" data-on-text="开启" data-off-color="danger" data-off-text="关闭" class="switchbox" type="checkbox" 
+									<!--{% if activity.onOrOff == 1  or add ==  1%}--> 
+							         checked
+							   		<!--{% endif %}--> 
+									 />
+							    </div>
+							</div>
+						</div>
+					</div>
+					<div class="control-group">
+				    <label class="control-label" for="on-or-off">关联关闭</label>
+				    <div class="controls">
+						<input name="offProduct" id="offProduct" data-on-color="success" data-on-text="开启" data-off-color="danger" data-off-text="关闭" class="switchbox" type="checkbox"
+						<!--{% if activity.offProduct == 1 %}--> 
+							 checked
+						<!--{% endif %}--> 
+
+						/>
+					    <span class="add-on text-warning">开启代表关闭活动的时候，相应商品（礼包）也会自动关闭</span>
+				    </div>
+				    </div>
+					<div class="control-group">
+						<label for="textfield" class="control-label">活动描述</label>
+						<div class="controls">
+							<script id="activity-des" name="description" type="text/plain"><!--{{activity.description}}--></script>
+						</div>
+					</div>
+					 <div class="form-actions">
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					 </div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+	
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+<!--{% if add != 1 %}-->
+	$("#activity_from").append("<input name='limitMode' type='hidden' value='<!--{% if activity.limitMode == 1 %}-->on<!--{% endif %}-->'>");
+	$('#limitMode,#offProduct,#isProductLimit,#onOrOff,#productName').attr('disabled','disabled');
+	$('#selectproduct').remove();
+<!--{% endif %}-->
+
+$('.switchbox').bootstrapSwitch();
+$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
+UE.getEditor('activity-des');	
+var set_selected_cate = function(productCode,productName){
+    $('#productCode').val(productCode);
+    $('#productName').val(productName);
+};
+$('.select-pop-cate').on('click',function(){        
+        $.ajax({
+            url:'/product/goods/product-code',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;	
+                $.dialog({id:'pop-activity-list',title:'提示',padding:2,content:html,width:650,height:580});
+            }
+        });        
+});
+if($("#discount").attr('checked')) $("#date_time").show();
+	$('#discount').on('switchChange.bootstrapSwitch', function (e, data) {
+		if(data){
+			$("#date_time").fadeIn();
+		}else{
+			$("#date_time").fadeOut();
+		}
+});
+
+if($("input[name='isProductLimit']").attr('checked')) $("#totalNumber_").show();
+	$('#isProductLimit').on('switchChange.bootstrapSwitch', function (e, data) {
+		if(data){
+			$("#totalNumber_").fadeIn();
+		}else{
+			$("#totalNumber_").fadeOut();
+		}
+});
+
+if($("input[name='limitMode']").attr('checked')) $("#updateRestTime").show();
+	$('#limitMode').on('switchChange.bootstrapSwitch', function (e, data) {
+		if(data){
+			$("#updateRestTime").fadeIn();
+		}else{
+			$("#inputupdateRestTime").val('');
+			$("#updateRestTime").fadeOut();
+		}
+});  
+
+</script>
+<!--{%endblock%}-->

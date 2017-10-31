@@ -1,0 +1,93 @@
+<!--{%extends "sub-layout-topic.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					专题合集列表		
+				</h3>
+				<div class="actions">
+					<form action="<!--{{url('topic/topicinfo/list')}}-->">
+						<table class="table-filter">
+						<tbody>
+						<tr>
+							<td><input type="text" name="=ztitle" id=""  placeholder="标题名称" value="<!--{{search.ztitle}}-->"/></td>
+							<td>
+				        		<select id="apptype" name="=apptype" style="width:120px;margin-bottom:0px" >
+				        			<option selected="" value="0">所有</option>
+									<option value="1">IOS</option>
+									<option value="2">Android</option>
+								</select>
+				        	</td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+							<td><a href="<!--{{url('topic/topicinfo/view-add-edit')}}-->" class="btn btn-teal">添加</a></td>
+						</tr>
+						</tbody></table>
+					</form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">ID</th>
+						    <th class="col-150">标题</th>
+							<th class="col-120">编辑时间</th>
+							<th class="col-120">编辑人</th>
+							<th class="col-80">应用类型</th>
+							<th class="table-btn-group-mini">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+							<tr>
+								<td><!--{{item.id}}--></td>
+								<td><!--{{item.ztitle}}--></td>
+								<td><!--{{item.addtime|date('Y-m-d H:i')}}--></td> 
+								<td><!--{{item.authorname}}--></td>
+								<td>
+									<!--{% if item.apptype == 1 %}-->
+										IOS
+									<!--{% elseif item.apptype == 3%}-->
+										IOS,Android
+									<!--{% else %}-->
+									    Android
+									 <!--{% endif %}-->
+								</td>
+								<td>
+									<div class="btn-group">
+							    	 	<a data-toggle="dropdown" href="#" class="btn btn-primary dropdown-toggle">操作<span class="caret"></span></a>
+							    		<ul class="dropdown-menu dropdown-primary">
+							    			<li><a href="<!--{{url('topic/topicinfo/view-add-edit',{'id':item.id})}}-->">编辑</a></li>
+									        <li><a href="<!--{{url('topic/topicinfo/delect',{'id':item.id})}}-->" >删除</a></li>
+									        <li><a href="<!--{{url('topic/topicinfo/apptop',{'id':item.id,'apptop':item.isapptop})}}-->" ><!--{% if item.isapptop == 1 %}-->取消APP置顶<!--{%else%}-->APP置顶<!--{%endif%}--></a></li>
+							   			</ul>
+									</div>
+								</td>
+							</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,96 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>闪屏设置
+                </h3>
+            </div>
+            <div class="box-content">
+                <form id="form_slide" action="<!--{{url('wcms/home/shan')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+                    <div class="control-group">
+                        <label class="control-label">类型</label>
+                        <div class="controls">
+                            <label class="radio inline">
+                                <!--{{form_radio('type',1,setting.type==1,{'class':'select-type','id':'type-station'})}}-->swf
+                            </label>
+                            <label class="radio inline">
+                                <!--{{form_radio('type',2,setting.type==2,{'class':'select-type','id':'type-station'})}}-->flv
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">上传视频</label>
+                        <div class="controls">
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="input-append">
+                                    <input type="file" name="filedata" class="" data-errormessage-value-missing="请选择图片" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">视频地址</label>
+                        <div class="controls">
+                            <div class=" input-append">
+                                <input type="text" name="flashUrl" class="input-xxlarge" value="<!--{{setting.flashUrl}}-->" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">跳转URL</label>
+                        <div class="controls">
+                            <div class=" input-append">
+                                <input type="text" name="skipUrl" class="input-xxlarge" value="<!--{{setting.skipUrl}}-->" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">时长</label>
+                        <div class="controls">
+                            <div class=" input-append">
+                                <input type="text" name="closeTime" class="input-small" value="<!--{{setting.closeTime}}-->" /><span class="add-on">秒</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">自动关闭</label>
+                        <div class="controls">
+                            <label class="radio inline">
+                                <!--{{form_radio('autoClose',1,setting.autoClose=='true',{'class':'select-type','id':'type-station'})}}-->自动关闭
+                            </label>
+                            <label class="radio inline">
+                                <!--{{form_radio('autoClose',0,setting.autoClose=='false',{'class':'select-type','id':'type-station'})}}-->不自动关闭
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">是否启用</label>
+                        <div class="controls">
+                            <label class="radio inline">
+                                <!--{{form_radio('onOff','on',setting.onOff=='on',{'class':'select-type','id':'type-station'})}}-->启用
+                            </label>
+                            <label class="radio inline">
+                                <!--{{form_radio('onOff','off',setting.onOff=='off',{'class':'select-type','id':'type-station'})}}-->禁用
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    $(function(){
+
+    });
+</script>
+<!--{%endblock%}-->

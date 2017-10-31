@@ -1,0 +1,66 @@
+	<!--{%extends "../sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					中奖名单
+				</h3>
+				<div class="actions">
+					<form action="<!--{{url('/v4lotteryproduct/lottery/users',{id:periodId})}}-->">
+						<table class="table-filter">
+							<tr>
+								<td>
+									<select name="isOnshelf" style="width:180px;margin-bottom:0px">
+										<option value="0">所有名单</option>
+							 		    <option value="1">已发奖名单</option>
+										<option value="2">未发奖名单</option>
+									</select>
+								</td>
+								<td><a href="<!--{{url('/v4lotteryproduct/lottery/runlottery',{id:periodId})}}-->" class="btn btn-teal">补发奖</a></td>
+								<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+							</tr>
+							
+						</table>
+					</form>
+				</div>
+			</div>
+
+			<div class="box-content nopadding">
+				<table class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+						<th>用户名</th>
+						<th>中奖金额</th>
+						<th>中奖号码</th>
+						<th>购买类型</th>
+						<th>是否已发奖</th>
+					</tr>
+					</thead>
+					<tbody>
+						<!--{% for key,item in datalist%}-->
+							<tr>
+								<td><!--{{userinfo[item.uid].nickname}}--></td>
+								<td><!--{{item.totalBonus}}--></td>
+								<td><!--{{item.bettingNumber}}--></td>
+								<td><!--{{item.prizeLevel}}--></td>
+								<td><!--{{item.isSend ? '发奖' :'未发奖'}}--></td>
+							</tr>
+						<!--{%endfor%}-->
+					</tbody>
+				</table>
+				<div class="pagelink">
+					<!--{{pagelinks}}-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+ 
+</script>
+<!--{%endblock%}-->

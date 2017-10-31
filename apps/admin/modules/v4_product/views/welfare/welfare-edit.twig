@@ -1,0 +1,262 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>福利管理</h3>
+            </div>
+            <div class="box-content">
+                <form id="cate_my_from" action="<!--{{url('v4product/welfare/edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+                    <input type="hidden" name="kindId" value="<!--{{result.kindId}}-->">
+                    <div class="control-group">
+                        <label class="control-label">*标题</label>
+                        <div class="controls">
+                            <input type="text" name="kindName" id="kindName" data-rule-required="true" data-msg-required="请填写福利标题" class="input-xlarge" value="<!--{{result.kindName}}-->" />
+                        </div>
+                    </div>
+                </form>
+                    <div class="box-title">
+                        <h3>
+                            <i class="icon-table"></i>
+                            商城类别:
+                        </h3>
+                        <div class="actions">
+                                <table class="table-filter">
+                                    <tr>
+                                       <td><a href="javascript:;" id="add" class="btn btn-primary">添加</a></td>
+                                    </tr>
+                                </table>
+                        </div>
+                    </div>
+
+                    <div class="box-content nopadding">
+                        <table class="table table-hover table-nomargin">
+                            <thead>
+                            <tr>
+                                <th >排序</th>
+                                <th>商城类别</th>
+                                <th >类别名</th>
+                                <th >操作</th>
+                           </tr>
+                            </thead>
+                            <tbody id="mytbody">
+                            <!--{% for key,item in result.list%}-->
+                               <tr id="tr_<!--{{item.relevanceId}}-->">
+                                    <input type="hidden" id="relevanceId" name="relevanceId" value="<!--{{item.relevanceId}}-->">
+                                    <input type="hidden" id="kindSort" name="kindSort" value="<!--{{item.kindSort}}-->">
+                                    <td><!--{{item.kindSort}}--></td>
+
+                                   <td>
+                                       <input type="hidden" id="currencyType" name="currencyType" value="<!--{{item.currencyType}}-->">
+                                       <!--{{item.currencyType==1 ?'钻石商城':'游币商城'}}-->
+                                    </td>
+
+                                   <td>
+                                        <input type="hidden" id="categoryId" name="categoryId" value="<!--{{item.categoryId}}-->">
+                                        <input type="hidden" id="categoryName" name="categoryName" value="<!--{{item.categoryName}}-->">
+                                        <!--{{item.categoryName}}-->
+                                    </td>
+                                    <td>
+                                        <a href="javascript:;" trid="<!--{{item.relevanceId}}-->"  url="<!--{{url('v4product/welfare/set',{type:'editWelfare',method:'post'})}}-->" data='' class="btn btn-primary caozuo">编辑</a>
+                                        <a href="javascript:;" url="<!--{{url('v4product/welfare/set',{type:'editWelfare',method:'post'})}}-->" data='{"relevanceId":"<!--{{item.relevanceId}}-->","active":"false"}'   class="btn btn-primary del" >删除</a>
+                                    </td>
+
+                                </tr>
+                             </form>
+                             <!--{%endfor%}-->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" id="save" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close"
+                        data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    商城类别(商城类型-只为选择商品种类而存在不保存)
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div id="content_my" class="box-content">
+                    <form id="myform" >
+                        <input type="hidden" name="relevanceId" value="">
+                        <input type="hidden" name="kindId" value="<!--{{result.kindId}}-->">
+                        <!--
+                        <div class="control-group">
+                            <label class="control-label"></label>
+                            <div  class="controls" >
+
+                            </div>
+                        </div>
+                        -->
+                        <div class="control-group">
+                            <label class="control-label">商城类型</label>
+                            <div  class="controls" >
+                                <select name="currencyType" id="my_currencyType" class="input-small" >
+                                    <option value="0">游币商城</option>
+                                    <option value="1">钻石商城</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group" >
+                            <label class="control-label">选择类别:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input id="selected_categoryId_1" name="categoryId"   type="hidden" value="" /><input type="text" placeholder="请选择商品种类" name="categoryName" id="selected_cate_name_1" readonly  style="width:120px" value="" />
+                                    <span  class="add-on select-pop-cate">选择商品种类</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="control-group" >
+                            <label class="control-label">排序:</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input type="text"  id="kindSort" name="kindSort" class="input-medium" value="10" />
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="modal-footer" class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <a href="javascript:;" id="go_" class="btn btn-primary"> 确定</a></div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/MyHelp.js')}}-->"></script>
+<script>
+
+    $(function(){
+          $("a.caozuo").on('click',function(){
+                var $myfrom=$('#myform'),
+                    trid =$("#tr_"+$(this).attr('trid')),
+                    relevanceId=trid.find("[name='relevanceId']").val(),
+                    kindSort=trid.find("[name='kindSort']").val(),
+                    categoryId=trid.find("[name='categoryId']").val(),
+                    currencyType=trid.find("[name='currencyType']").val(),
+                    categoryName=trid.find("[name='categoryName']").val();
+                $myfrom.find("[name='relevanceId']").val(relevanceId);
+                $myfrom.find("[name='kindSort']").val(kindSort);
+                $myfrom.find("[name='categoryId']").val(categoryId);
+                $myfrom.find("[name='currencyType']").val(currencyType);
+                $myfrom.find("[name='categoryName']").val(categoryName);
+                $("#myModal").modal('show');
+                var settion= {
+                    elem: '#go_',
+                    url: $(this).attr('url'),
+                    data: 'myform',
+                    choose:function(data){
+                        data.errorCode == 1?alertify.error(data.msg):alertify.success(data.msg);
+                        window.location.reload();
+                    }
+                };
+                ajaxCZ(settion);
+
+          });
+
+          $("#add").bind('click',function(){
+              $("#myModal").modal('show');
+              $("#myform :input").not("[name='kindId']").val('');
+              var settion={
+                  elem: '#go_',
+                  url:'/v4product/welfare/set/add/post',
+                  data:'myform',
+                  isReload:true,
+                  /***
+                  choose:function(data){
+                      console.log(data);
+                      $("#myModal").modal('hide');
+                      data.errorCode == 1?alertify.error(data.msg):alertify.success(data.msg);
+                      sub = false;
+
+                      var html='<tr id="tr_'+data.result+'"><td>'+data.val.kindSort+'</td>';
+                          html+=data.val.currencyType==1 ?'<td>钻石商城</td>':'<td>游币商城</td>';
+                          html+='<td>'+data.val.categoryName+'</td>';
+                          html+="<td></td></tr>";
+                      $('#mytbody').prepend(html);
+
+                      window.location.reload()
+                      return sub;
+                  }***/
+              };
+              ajaxCZ(settion);
+          });
+        $("#save").bind('click',function(){
+             $("#cate_my_from").submit();
+        });
+    });
+    <!--{% if result.list%}-->
+        var settion={
+            elem: 'a.del',
+            /**
+             myval:function(data,_this){
+                            if(_this.attr('data') == '' || typeof(_this.attr('data'))=='undefined'){
+                                var     relevanceId=_this.attr('trid'),
+                                        trid=$("#tr_"+relevanceId),
+                                        selected_categoryId_1=trid.find("[name='categoryId']").val(),
+                                        selected_cate_name_1 =trid.find("[name='categoryName']").val(),
+                                                     kindSort=trid.find("[name='kindSort']").val(),
+                                                         data=$.parseJSON('{"relevanceId":"'+relevanceId+'","categoryId":"'+selected_categoryId_1+'","categoryName":"'+selected_cate_name_1+'","kindSort":"'+kindSort+'"}');
+                            }
+                            return data;
+                        }
+             ***/
+        };
+        ajaxCZ(settion);
+
+
+    <!--{%endif%}-->
+
+
+    $('span.select-pop-cate').on('click',function(){
+        var currencyType=$("#my_currencyType").val();
+        cate(currencyType);
+    });
+    function cate(currencyType)
+    {
+        $.ajax({
+            url:'/v4product/goods/cate-list-select/'+currencyType,
+            dataType:'json',
+            success:function(json){
+                var html = json.html;
+                $.dialog({id:'pop-cate-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });
+    }
+    var  tr_Id='';
+    $('span.select-pop-category').on('click',function(){
+        var currencyType=$("#my_currencyType").val();
+        cate(currencyType);
+
+    });
+    var set_selected_cate = function(cate_id,cate_name){
+        if(tr_Id != '')
+        {
+            $("#tr_"+tr_Id).find("[name='categoryId']").val(cate_id);
+            $("#tr_"+tr_Id).find("[name='categoryName']").val(cate_name);
+        }else{
+            $("#selected_categoryId_1").val(cate_id);
+            $("#selected_cate_name_1").val(cate_name);
+        }
+        tr_Id='';
+    };
+</script>
+<!--{%endblock%}-->

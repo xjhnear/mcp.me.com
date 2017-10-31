@@ -1,0 +1,57 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/plugins/tagsinput/jquery.tagsinput.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>保存用户</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form_column" action="<!--{{url('yxvl_eSports/VltvLive/user-save')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+
+
+                <div class="control-group">
+                    <label class="control-label">用户名</label>
+                    <div class="controls">
+                        <input type="text" name="account" class="input" value="<!--{{data.account}}-->" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">密码</label>
+                    <div class="controls">
+                        <input type="text" name="password" class="input" value="" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">是否开启</label>
+                    <div class="controls" style="height: 30px;">
+                        <input name="status" <!--{% if data.status==0  %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="开启" data-off-color="danger" data-off-text="关闭" class="switchbox" type="checkbox" />
+                    </div>
+                </div>
+
+			    <div class="form-actions">
+                    <input type="hidden" name="accountId" value="<!--{{data.accountId}}-->"/>
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script>
+$(function(){
+    $('.switchbox').bootstrapSwitch();
+});
+</script>
+<!--{%endblock%}-->

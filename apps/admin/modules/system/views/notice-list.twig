@@ -1,0 +1,56 @@
+<!--{%extends "sub-layout-system.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					通知设置
+				</h3>
+				<div class="actions">
+				    <form>
+				    <table class="table-filter">
+				        <tr>				            
+				            <td><a href="<!--{{url('system/notice/edit')}}-->" class="btn btn-teal"><i class="icon-plus"></i>添加设置项</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40"><input type="checkbox" name="all" value="" /></th>
+						    <th class="col-50">ID</th>
+							<th class="col-80">节点标识</th>
+							<th class="col-80">节点名称</th>
+							<th class="col-80">模块</th>
+							<th class="col-80">是否发邮件</th>
+							<th class="col-80">是否发消息</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+						    <td><input type="checkbox" name="ids" value="<!--{{item.id}}-->" /></td>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.app}}--></td>
+							<td><!--{{item.appinfo}}--></td>
+							<td><!--{{item.module}}--></td>
+							<td><!--{%if item.send_email==1%}--><i class="icon-ok"></i><!--{%else%}--><i class="icon-remove"></i><!--{%endif%}--></td>
+							<td><!--{%if item.send_message==1%}--><i class="icon-ok"></i><!--{%else%}--><i class="icon-remove"></i><!--{%endif%}--></td>
+							<td>
+							    <a href="<!--{{url('system/notice/edit',{'id':item.id})}}-->" class="btn btn-primary"><i class="icon-edit"></i>编辑</a>							    
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->

@@ -1,0 +1,70 @@
+<!--{%extends "sub-layout-statistics.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					监控渠道列表
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('statistics/monitor/channel-list')}}-->" method="GET">
+				    <table class="table-filter">
+				        <tr>				            
+							<td>渠道名<input name="channel_name" type="text" class="input-small" value="<!--{{search.channel_name}}-->" ></td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>检索</button></td>
+							<td><a href="<!--{{url('statistics/monitor/channel-edit')}}-->" class="btn">新建渠道</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">渠道标识</th>						    
+							<th class="col-150">渠道名称</th>
+							<th class="col-80">PV</th>
+							<th class="col-80">UV</th>
+							<th class="col-80">激活量</th>
+							<th>操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.CHANNEL_ID}}--></td>							
+							<td><!--{{item.CHANNEL_NAME}}--></td>
+							<td><!--{{item.CLICK_COUNT}}--></td>							
+							<td><!--{{item.USER_COUNT}}--></td>
+							<td><!--{{item.ACTIVE_COUNT}}--></td>
+							<td>
+							    <a class="btn btn-primary" href="<!--{{url('statistics/monitor/config-edit')}}-->?channel_id=<!--{{item.CHANNEL_ID}}-->">新建配置</a>
+							    <a class="btn btn-primary" href="<!--{{url('statistics/monitor/config-list')}}-->?channel_id=<!--{{item.CHANNEL_ID}}-->">查看配置</a>
+							    <!--{%if item.CLICK_COUNT>0 %}--><a class="btn btn-primary" href="<!--{{url('statistics/monitor/click-list')}}-->?channel_id=<!--{{item.CHANNEL_ID}}-->">查看点击报表</a><!--{%endif%}-->
+							    <!--{%if item.ACTIVE_COUNT>0 %}--><a class="btn btn-primary" href="<!--{{url('statistics/monitor/active-list')}}-->?channel_id=<!--{{item.CHANNEL_ID}}-->">查看激活报表</a><!--{%endif%}-->							    							   
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>						
+	    </div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+
+<script src="/static/js/plugins/multiselect/bootstrap-multiselect.js"></script>
+<script>
+$(function(){
+    $('.switchbox').bootstrapSwitch();
+});
+</script>
+<!--{%endblock%}-->

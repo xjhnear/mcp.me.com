@@ -1,0 +1,37 @@
+<?php
+return array(
+    'global'=>array('name'=>'全局(11xx)','items'=>array(        
+        '1101'=>array('code'=>'1101','error_code'=>'invalid_request','error_description'=>'请求参数丢失,请检查请求参数是否完整'),
+        '1102'=>array('code'=>'1102','error_code'=>'invalid_client','error_description'=>'无效的客户端'),
+        '1103'=>array('code'=>'1103','error_code'=>'unauthorized_client','error_description'=>'未认证的客户端'),
+        '1104'=>array('code'=>'1104','error_code'=>'invalid_access_token','error_description'=>'无效的令牌access_token'),
+        '1105'=>array('code'=>'1105','error_code'=>'invalid_signture','error_description'=>'无效的签名'),
+        '1106'=>array('code'=>'1106','error_code'=>'server_error','error_description'=>'服务器端错误'),
+    )),
+    
+    'user'=>array('name'=>'用户(12xx)','items'=>array(
+        '1201'=>array('code'=>'1201','error_code'=>'invalid_account','error_description'=>'无效的登录帐号'),
+        '1202'=>array('code'=>'1202','error_code'=>'invalid_password','error_description'=>'登录密码错误'),
+        '1203'=>array('code'=>'1203','error_code'=>'invalid_third_access_token','error_description'=>'第三方登录帐号尚未绑定'),
+        '1204'=>array('code'=>'1204','error_code'=>'account_disabled','error_description'=>'帐号被禁用'),
+        '1211'=>array('code'=>'1211','error_code'=>'invalid_email','error_description'=>'email格式错误'),
+        '1212'=>array('code'=>'1212','error_code'=>'email_exists','error_description'=>'Email已经被占用'),
+        '1213'=>array('code'=>'1213','error_code'=>'','error_description'=>''),
+        '1214'=>array('code'=>'1214','error_code'=>'','error_description'=>''),
+    )),
+    'forum'=>array('name'=>'论坛(13xx)','items'=>array(
+        '1301'=>array('code'=>'1301','error_code'=>'invalid_gid','error_description'=>'无效的论坛标志ID'),
+        '1302'=>array('code'=>'1302','error_code'=>'','error_description'=>''),
+        '1303'=>array('code'=>'1303','error_code'=>'','error_description'=>''),
+    )),
+    'relation'=>array('name'=>'关系(14xx)','items'=>array(
+        '1401'=>array('code'=>'','error_code'=>'','error_description'=>''),
+        '1402'=>array('code'=>'','error_code'=>'','error_description'=>''),
+        '1403'=>array('code'=>'','error_code'=>'','error_description'=>''),
+    )),
+    'favorites'=>array('name'=>'收藏(15xx)','items'=>array(
+        '1501'=>array('code'=>'','error_code'=>'','error_description'=>''),
+        '1502'=>array('code'=>'','error_code'=>'','error_description'=>''),
+        '1503'=>array('code'=>'','error_code'=>'','error_description'=>''),
+    )),
+);

@@ -1,0 +1,69 @@
+<!--{%extends "sub-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					直播游戏管理
+				</h3>
+				<div class="actions">
+                    <form action="<!--{{url('zhibo/game/list')}}-->" class="">
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+                                  游戏名  <input name="keyword" type="text" class="input-medium" placeholder="" value="<!--{{cond.keyword}}-->">
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                                <td><a class="btn btn-teal" href="<!--{{url('zhibo/game/edit')}}-->">增加</a></td>
+                            </tr>
+                        </table>
+                    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">游戏名</th>
+							<th class="col-120">游戏Icon</th>
+							<th class="col-160">游戏描述</th>
+							<th class="col-150 table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in result%}-->
+						<tr>
+							<td><!--{{item.gname}}--></td>
+                            <td><!--{%if item.icon%}--><img width="100" src="<!--{{item.icon}}-->" /><!--{%endif%}--></td>
+                            <td><!--{{item.description}}--></td>
+							<td>
+                                <a href="<!--{{url('zhibo/game/edit',{id:item.id})}}-->" class="btn btn-primary">编辑</a>
+                                <a href="<!--{{url('zhibo/game/del',{'id':item.id})}}-->" class="btn btn-primary ajax-del">删除</a>
+                            </td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    $(function() {
+        $('a.ajax-del').bind('click', function () {
+            if (!confirm('确定要删除数据吗？')) {
+                return false;
+            }
+        });
+    });
+</script>
+<!--{%endblock%}-->

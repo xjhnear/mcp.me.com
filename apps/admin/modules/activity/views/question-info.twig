@@ -1,0 +1,85 @@
+<!--{%extends "sub-layout-activity.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>问答信息</h3>
+			</div>
+			<div class="box-content">
+			    <form action="<!--{{url('activity/gameask/save-question')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{question.id}}-->" />
+			    <input id="ask_id" name="ask_id" type="hidden" value="<!--{{question.ask_id}}-->" />
+				<div class="control-group">
+					<label class="control-label">题目</label>
+					<div class="controls">
+						<input type="text" name="title" class="input-xlarge" value="<!--{{question.title}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">选项A</label>
+					<div class="controls">
+					    <div class="input-append">
+							<span class="add-on">A</span>
+							<input type="text" name="option_a" class="input-medium" value="<!--{{question.options.option_a}}-->" />
+							<label class="radio inline add-on"><!--{{form_radio('answer','a',question.answer=='a',{'style':'margin-left:0px'})}}-->设为答案</label>
+						</div>						
+					</div>					
+				</div>
+				<div class="control-group">
+					<label class="control-label">选项B</label>
+					<div class="controls">
+					    <div class="input-append">
+							<span class="add-on">B</span>
+							<input type="text" name="option_b" class="input-medium" value="<!--{{question.options.option_b}}-->" />
+							<label class="radio inline add-on"><!--{{form_radio('answer','b',question.answer=='b',{'style':'margin-left:0px'})}}-->设为答案</label>
+						</div>						
+					</div>					
+				</div>
+				<div class="control-group">
+					<label class="control-label">选项C</label>
+					<div class="controls">
+					    <div class="input-append">
+							<span class="add-on">C</span>
+							<input type="text" name="option_c" class="input-medium" value="<!--{{question.options.option_c}}-->" />
+							<label class="radio inline add-on"><!--{{form_radio('answer','c',question.answer=='c',{'style':'margin-left:0px'})}}-->设为答案</label>
+						</div>						
+					</div>					
+				</div>
+				<div class="control-group">
+					<label class="control-label">选项D</label>
+					<div class="controls">
+					    <div class="input-append">
+							<span class="add-on">D</span>
+							<input type="text" name="option_d" class="input-medium" value="<!--{{question.options.option_d}}-->" />
+							<label class="radio inline add-on"><!--{{form_radio('answer','d',question.answer=='d',{'style':'margin-left:0px'})}}-->设为答案</label>
+						</div>						
+					</div>					
+				</div>
+				<div class="control-group">
+					<label class="control-label">排序</label>
+					<div class="controls">
+					    <input type="text" name="sort" class="input-small" value="<!--{{question.sort|default(0)}}-->" />				        				       
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态</label>
+					<div class="controls">					    
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('status',1,question.status==1)}}-->显示					        					        
+				        </label>				        				       
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+
+<!--{%endblock%}-->

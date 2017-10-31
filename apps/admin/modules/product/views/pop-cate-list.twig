@@ -1,0 +1,92 @@
+<div class="box">
+    <div class="actions">
+        <table class="table-filter">
+	        <tr>				            
+	            <td>
+	                <div class="controls">
+					   <label class="radio inline"> 名称</label>
+					</div>				                
+	            </td>
+	            <td>
+					<input id="keyword" type="text" class="input-medium" placeholder="" value="<!--{{keyword}}-->">	
+                    </td>
+				<td>
+				    <a href="javascript:searchCate();" class="btn btn-teal">按条件搜索</a>
+				</td>
+			</tr>
+		</table>
+    </div>    
+    <table class="table table-hover table-nomargin">
+        <thead>
+			<tr>
+			    <th class="col-60">图片</th>
+                <th style="width:350px">名称</th>                         
+                <th style="width:60px">排序</th>			
+				<th class="table-btn-group" style="width:50px;">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+		    <!--{%for item in datalist%}-->
+			<tr>
+                <td class="user-avatar"><img src="<!--{{config('app.img_url')}}--><!--{{item.icon}}-->" class="" /></td>
+                <td id="cat_name_<!--{{item.id}}-->"><!--{{item.categoryName}}--></td>
+                <td><!--{{item.categorySort}}--></td>			
+				<td>
+				    <a href="javascript:void(0);" data-id="<!--{{item.id}}-->" class="btn btn-primary select-cate-id">选择</a>				    							    
+				</td>
+              </tr>
+			<!--{%endfor%}-->
+		</tbody>
+    </table>
+    <div class="pagelink">
+        <!--{{pagelinks}}-->
+    </div>
+</div>    
+    <script>
+    function searchCate()
+    {
+        //var keytype = $("input[name='keytype']:checked").val();
+        var keyword = $('#keyword').val();
+        $.ajax({
+            url:'/product/goods/cate-list-select',
+            data:{keyword:keyword},
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog.list['pop-cate-list'].content(html);		                
+            }
+        });
+    }
+    function init_page()
+    {
+        //
+        $('.select-cate-id').each(function(){
+            $(this).click(function(){
+                var cate_id = $(this).attr('data-id'),cate_name = $('#cat_name_'+cate_id).text();
+                set_selected_cate(cate_id,cate_name);
+                $.dialog.list['pop-cate-list'].close();
+            });
+        });
+        //
+        $('.pagelink a').each(function(){
+            var url = $(this).attr('href'); 
+            $(this).attr('href','javascript:void(0);');
+            $(this).click(function(){
+                $.ajax({
+                    url:url,
+                    dataType:'json',
+		            success:function(json){
+		                var html = '';
+		                html = json.html;
+		                $.dialog.list['pop-cate-list'].content(html);		                
+		            }
+                });
+            });
+            
+        });
+        //:
+        $('.aui_main').css({"display":"inline-block"});
+    }
+    init_page();
+    </script>

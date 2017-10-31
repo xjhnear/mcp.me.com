@@ -1,0 +1,77 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					已开放论坛列表				
+				</h3>
+				<div class="actions">				    
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">ID</th>
+						    <th class="col-60">图标</th>
+							<th class="col-150">游戏</th>
+							<th class="col-80">类型</th>
+							<th class="col-80">收费类型</th>
+							<th class="col-80">专区类型</th>
+							<!--{#
+							<th class="col-80">平台</th>
+							#}-->
+							<th class="col-80">编辑时间</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in games%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td class="user-avatar"><img src="<!--{{imgurl}}--><!--{{item.ico}}-->" class="" /></td>
+							<td><!--{{item.shortgname|default(item.gname)}}--></td>
+							<td><!--{{gametype[item.type]}}--></td>
+							<td><!--{{pricetype[item.pricetype]}}--></td>
+							<td><!--{{zonetype[item.zonetype]}}--></td>
+							<!--{#
+							<td>
+							    <!--{%if item.apptype==1%}--><img src="/static/img/iphoneIco.png" /><!--{%endif%}-->
+							    <!--{%if item.apptype==2%}--><img src="/static/img/androidIco.png" /><!--{%endif%}-->
+							    <!--{%if item.apptype==3%}--><img src="/static/img/iphoneIco.png" /><img src="/static/img/androidIco.png" /><!--{%endif%}-->
+							</td>
+							#}-->
+							<td><!--{{item.updatetime|date('Y-m-d')}}--></td>
+							<td>
+							    <a href="<!--{{url('forum/topic/search')}}-->?game_id=<!--{{item.id}}-->" class="btn btn-primary">帖子</a>							    						   
+							    <a href="<!--{{url('forum/channel/list')}}-->?game_id=<!--{{item.id}}-->" class="btn btn-primary">版块</a>
+							    <a href="<!--{{url('forum/game/close')}}-->?game_id=<!--{{item.id}}-->" class="btn btn-primary">关闭论坛</a>							    
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

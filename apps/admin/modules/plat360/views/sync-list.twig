@@ -1,0 +1,63 @@
+<!--{%extends "sub-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					地址操作列表
+				</h3>
+				<div class="actions">
+
+				</div>
+			</div>
+			<div class="box-content nopadding">
+
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">
+						        
+							</th>
+						    <th class="col-50">ID</th>
+							<th class="col-100">游戏名</th>
+							<th class="col-160">
+                                Old Address
+                                <hr/>
+                                New Address
+                            </th>
+                            <th class="col-50">
+                                类型<br/>
+                                W:best后台<br/>
+                                M:mobile后台
+                            </th>
+                            <th class="col-50">状态</th>
+
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in result%}-->
+						<tr>
+						    <td></td>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.gname}}--></td>
+							<td>
+                                <!--{{item.oldurl}}-->
+                                <hr/>
+                                <!--{{item.newurl}}-->
+                            </td>
+                            <td><!--{%if item.plat == 1%}-->W/360<!--{%else%}-->M/360<!--{%endif%}--></td>
+                            <td><!--{%if item.destroy == 1%}-->同步<!--{%else%}--><a href="<!--{{url('plat360/sync/back',{'id':item.id,'destroy':item.destroy})}}-->" class="btn btn-primary">回滚</a><!--{%endif%}--></td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->

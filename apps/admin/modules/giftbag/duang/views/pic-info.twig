@@ -1,0 +1,81 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>图片管理</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form-activity" action="<!--{{url('duang/pic/edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{result.id}}-->" />
+				<div class="control-group">
+					<label class="control-label">标题</label>
+					<div class="controls">
+						<input type="text" name="title" class="input-xxlarge" value="<!--{{result.title}}-->" data-rule-required="true" data-msg-required="标题不能为空" />
+						<span class="help-inline"></span>
+					</div>
+				</div>
+
+                <div class="control-group">
+                    <label class="control-label">图片链接</label>
+                    <div class="controls">
+                        <input type="text" name="url" class="input-xlarge" value="<!--{{result.url}}-->"  data-rule-url="true" data-msg-required="如：http://www.youxiduo.com" />
+                        <span class="help-inline">如：http://www.youxiduo.com</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="textfield" class="control-label">图片</label>
+                    <div class="controls">
+                        <div class="fileupload fileupload-new input-append" data-provides="fileupload">
+
+                            <input type="hidden" name="picname" value="<!--{{result.img}}-->">
+                            <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+                                <!--{%if result.img == '' or result.img == '0' %}-->
+                                <img src="/static/img/common/avatar.gif" />
+                                <!--{%else%}-->
+                                <img src="<!--{{result.img}}-->" />
+                                <!--{%endif%}-->
+
+                            </div>
+                            <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+                            <div>
+                                <span class="btn btn-file"><span class="fileupload-new">选择图片</span><span class="fileupload-exists">替换</span><input type="file" name='img' /></span>
+                                <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">删除</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+				<div class="control-group">
+					<label class="control-label">是否显示</label>
+					<div class="controls">					    				        
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_show',1,result.is_show==1)}}-->是
+				        </label>					        			        	        				     
+					</div>
+				</div>
+
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    gameselect('#gameselect');
+    $('#gameselect').change(function(){
+        var gamename = $('#s2id_gameselect a span').text();
+        $('#game_name').val(gamename);
+    });
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+});
+</script>
+<!--{%endblock%}-->

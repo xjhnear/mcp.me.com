@@ -1,0 +1,101 @@
+<div class="box">
+    <div class="actions">
+        <table class="table-filter">
+            <tr>
+                <td>
+                    <div class="controls">
+                        <label class="radio inline">标签名</label>
+                    </div>
+                </td>
+                <td>
+                    <input id="tagName" type="text" class="input-medium" placeholder="" value="<!--{{inputinfo.tagName}}-->">
+                </td>
+                <td>
+                    <a href="javascript:searchCate();" class="btn btn-teal">按条件搜索</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="checkview"></div>
+    <table class="table table-hover table-nomargin">
+        <thead>
+        <tr>
+
+            <th class="col-80">标签名</th>
+            <th class="col-80">商城类别</th>
+            <th class="col-60">种类名</th>
+            <th class="col-80">排序</th>
+            <th class="table-btn-group">操作</th>
+        </tr>
+        </thead>
+        <tbody id="trs">
+        <!--{%for item in datalist%}-->
+        <tr>
+
+            <td id="tagName_<!--{{item.tagId}}-->"><!--{{item.tagName}}--></td>
+            <td><!--{{item.currencyType?'钻石商城':'游币商城'}}--></td>
+            <td><!--{{item.categoryName}}--></td>
+            <td><!--{{item.tagSort}}--></td>
+            <td>
+                <a href="javascript:void(0);" data-id="<!--{{item.tagId}}-->" class="btn btn-primary select-cate-id">选择</a>
+            </td>
+        </tr>
+        <!--{%endfor%}-->
+        </tbody>
+    </table>
+    <div class="pagelink">
+        <!--{{pagelinks}}-->
+    </div>
+
+</div>
+<script>
+
+
+
+
+    function searchCate()
+    {
+        //var keytype = $("input[name='keytype']:checked").val();
+        var tagName = $('#tagName').val();
+        $.ajax({
+            url:'/v4product/label/label-list-select',
+            data:{tagName:tagName},
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog.list['pop-label-list'].content(html);
+
+            }
+        });
+    }
+    function init_page()
+    {
+        $('.select-cate-id').each(function(){
+            $(this).click(function(){
+                var id = $(this).attr('data-id'),tagName = $('#tagName_'+id).text();
+                set_selected_label(id,tagName);
+                $.dialog.list['pop-label-list'].close();
+            });
+        });
+        $('.pagelink a').each(function(){
+            var url = $(this).attr('href');
+            $(this).attr('href','javascript:void(0);');
+            $(this).click(function(){
+                $.ajax({
+                    url:url,
+                    dataType:'json',
+                    success:function(json){
+                        var html = '';
+                        html = json.html;
+                        $.dialog.list['pop-label-list'].content(html);
+                    }
+                });
+            });
+
+        });
+        //:
+        $('.aui_main').css({"display":"inline-block"});
+    }
+    init_page();
+</script>

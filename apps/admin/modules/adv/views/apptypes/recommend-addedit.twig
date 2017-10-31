@@ -1,0 +1,60 @@
+<!--{%extends "sub-layout-adv.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>广告推荐</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form-activity" action="<!--{{url('adv/recommend/recommend-add-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <input id="Id" name="Id" type="hidden" value="<!--{{datainfo.Id}}-->" />
+					<div class="control-group">
+						<label class="control-label">推荐类型名称</label>
+						<div class="controls">
+							<input type="text" name="name" class="input-xlarge" value="<!--{{datainfo.name}}-->" data-rule-required="true" data-msg-required="推荐类型名称不能为空" />
+							<span class="help-inline">推荐类型名称不要超过15个汉字</span>
+						</div>
+					</div>				
+					<div class="control-group">
+                        <label for="textfield" class="control-label">选择系统与版本</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="selected_apptypesId" name="apptypes_id" type="hidden" value="<!--{{datainfo.apptypes_id}}-->" />
+                                <input type="text" id="selected_apptypes_name" readonly  class="input-xlarge" value="<!--{{datainfo.apptypes_name}}-->" data-rule-required="true" data-msg-required="请选择选择系统与版本" />
+                                <span class="add-on select-pop-select">请选择选择系统与版本 </span>
+                            </div>
+                        </div>
+                	</div> 
+				    <div class="form-actions">
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					</div> 
+				 </from>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+var set_selected_apptypes = function(ids,names){
+ 	$('#selected_apptypesId').val(ids);
+    $('#selected_apptypes_name').val(names);
+};
+//http://admin.youxiduo.dev/adv/recommend/recommend-add-edit/apptypes-select
+$(function(){
+	$('.select-pop-select').on('click',function(){    
+		$.ajax({
+	        url:'/adv/recommend/apptypes-select',
+	        dataType:'json',
+	        success:function(json){
+	            var html = '';
+	            html = json.html;
+	            $.dialog({id:'pop-alert-list',title:'提示',padding:2,content:html,width:600,height:580});
+	        }
+	    });
+	});
+});
+</script>
+<!--{%endblock%}-->

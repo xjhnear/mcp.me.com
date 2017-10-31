@@ -1,0 +1,89 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					礼包卡列表				
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('duang/giftbag/cardlist')}}-->">
+				    <table class="table-filter">
+				        <tr>
+				            <td>
+				                <div class="input-append date datepick" id="dpStart" data-date="">
+									<input name="startdate" type="text" class="input-small" value="<!--{{search.startdate}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+				            </td>
+				            <td>
+				                <div class="input-append date datepick" id="dpEnd" data-date="">
+									<input name="enddate" type="text" class="input-small" value="<!--{{search.enddate}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</td>
+							<td>礼包ID<input type="text" name="giftbag_id" id="" class="input-small" placeholder="uid" value="<!--{{search.giftbag_id}}-->"/></td>
+				            <td>用户ID<input type="text" name="uid" id="" class="input-small" placeholder="uid" value="<!--{{search.uid}}-->"/></td>				          				            
+				            <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+            <div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">ID</th>
+							<th class="col-150">卡号</th>
+							<th class="col-80">是否领取</th>
+							<th class="col-120">领取时间</th>
+							<th>领取人</th>
+							<th>分享人</th>
+                            <th>礼包入库时间</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.cardno}}--></td>
+							<td><!--{%if item.is_send%}--><i class="icon-yes"></i>是<!--{%else%}--><i class="icon-unlock"></i>否<!--{%endif%}--></td>
+							<td><!--{%if item.gettime%}--><!--{{item.gettime|date('Y-m-d H:i:s')}}--><!--{%endif%}--></td>		
+							<td>
+                                <!--{%if item.user_id%}-->
+                                <a href="<!--{{url('chat/chatroom/my-message')}}-->?uid=<!--{{item.user_id}}-->" target="_blank"><span class="label label-success"><!--{{item.user_id}}--></span></a><br/>
+                                <a href="<!--{{url('chat/chatroom/my-message')}}-->?uid=<!--{{item.user_id}}-->" target="_blank"><span class="label label-primary"><!--{{users[item.user_id]['mobile']}}--></span></a><br/>
+                                <a href="<!--{{url('chat/chatroom/my-message')}}-->?uid=<!--{{item.user_id}}-->" target="_blank"><span class="label label-warning"><!--{{users[item.user_id]['nickname']}}--></span></a>
+                                <!--{%endif%}-->
+                            </td>
+							<td>
+                                <!--{%if fusers and fusers[item.user_id]%}-->
+                                <span class="label label-success"><!--{{fusers[item.user_id]['uid']}}--></span><br/>
+                                <span class="label label-primary"><!--{{fusers[item.user_id]['mobile']}}--></span><br/>
+                                <span class="label label-warning"><!--{{fusers[item.user_id]['nickname']}}--></span>
+                                <!--{%endif%}-->
+                            </td>
+							<td><!--{%if item.addtime%}--><!--{{item.addtime|date('Y-m-d H:i:s')}}--><!--{%endif%}--></td>
+							<td>
+							    <a href="<!--{{url('duang/giftbag/delete-cardno',{id:item.id,giftbag_id:item.giftbag_id})}}-->" class="btn btn-primary">删除</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+
+<!--{%endblock%}-->

@@ -1,0 +1,52 @@
+<!--{%extends "sub-layout-system.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>通知项设置</h3>
+			</div>
+			<div class="box-content">
+				<form action="<!--{{url('system/notice/save')}}-->" method="POST" class='form-horizontal'>
+				<input name="id" type="hidden" value="<!--{{setting.id}}-->" />				
+				<div class="control-group">
+					<label for="textfield" class="control-label">节点标识</label>
+					<div class="controls">
+					    <input name="app" id="app" type="text" class="input-xlarge" value="<!--{{setting.app}}-->" />
+					</div>
+				</div>				
+				<div class="control-group">
+					<label for="textfield" class="control-label">节点名称</label>
+					<div class="controls">
+					    <input name="appinfo" id="appinfo" type="text" class="input-xlarge" value="<!--{{setting.appinfo}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">模块</label>
+					<div class="controls">
+					    <input name="module" id="module" type="text" class="input-small" value="<!--{{setting.module}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">是否发邮件</label>
+					<div class="controls">
+					    <label class="radio inline"><!--{{form_radio('send_email',1,setting.send_email==1)}}-->发送</label>
+					    <label class="radio inline"><!--{{form_radio('send_email',0,setting.send_email==0)}}-->不发送</label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">是否发消息</label>
+					<div class="controls">
+					    <label class="radio inline"><!--{{form_radio('send_message',1,setting.send_message==1)}}-->发送</label>
+					    <label class="radio inline"><!--{{form_radio('send_message',0,setting.send_message==0)}}-->不发送</label>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

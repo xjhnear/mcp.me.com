@@ -1,0 +1,82 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>活动信息</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form-activity" action="<!--{{url('wxshare/activity/edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{activity.id}}-->" />
+				<div class="control-group">
+					<label class="control-label">活动标题</label>
+					<div class="controls">
+						<input type="text" name="title" class="input-xxlarge" value="<!--{{activity.title}}-->" data-rule-required="true" data-msg-required="标题不能为空" />
+						<span class="help-inline">活动题目不要超过15个汉字</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">开始时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input name="starttime" type="text" class="input-medium datetimepicker" value="<!--{{activity.starttime|date('Y-m-d H:i')}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input name="endtime" type="text" class="input-medium datetimepicker" value="<!--{{activity.endtime|date('Y-m-d H:i')}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">分享类型</label>
+					<div class="controls">					    				        
+				        <label class="radio inline">
+				        <!--{{form_radio('share_times',0,activity.share_times==1)}}-->多次					        					        				        
+				        </label>					        			        	        				     
+				        <label class="radio inline">
+				        <!--{{form_radio('share_times',1,activity.share_times==0)}}-->单次
+				        </label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">完成次数</label>
+					<div class="controls">
+						<input type="text" name="need_click_times" class="input-small" value="<!--{{activity.need_click_times}}-->" data-rule-required="true" data-msg-required="次数不能为空" />
+						<span class="help-inline">此值仅在分享类型为多次时有效</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">属性</label>
+					<div class="controls">					    				        
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('is_show',1,activity.is_show==1)}}-->显示					        					        
+				        </label>					        			        	        				     
+					</div>
+				</div>
+				
+				
+				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+});
+</script>
+<!--{%endblock%}-->

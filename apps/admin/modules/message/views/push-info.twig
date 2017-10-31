@@ -1,0 +1,79 @@
+<!--{%extends "sub-layout-message.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>通知信息</h3>
+			</div>
+			<div class="box-content">
+				<form id="form-message" action="<!--{{url('message/push/save')}}-->" method="POST" class="form-horizontal form-validate">
+				<input name="id" type="hidden" value="<!--{{notice.id}}-->" />										
+				<div class="control-group">
+					<label for="textfield" class="control-label">消息标题</label>
+					<div class="controls">
+						<input type="text" name="title" class="input-xxlarge" value="<!--{{notice.title}}-->" data-rule-required="true" data-msg-required="标题不能为空">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">消息内容</label>
+					<div class="controls">
+						<textarea id="notice" name="content" class="input-xxlarge" rows="5" data-rule-required="true" data-msg-required="内容不能为空"><!--{{notice.content}}--></textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">推送</label>
+					<div class="controls">
+					    <label class="checkbox inline"><!--{{form_checkbox('is_push',1,notice.is_push==1)}}-->消息推送</label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">链接类型</label>
+					<div class="controls">
+					    <!--{{form_select('linktype',linkTypeList,notice.linktype)}}-->
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">链接参数</label>
+					<div class="controls">
+						<input type="text" name="link" class="input-xxlarge" value="<!--{{notice.link}}-->">
+						<span class="help-block">当链接类型为游戏推荐时此处填游戏ID</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">
+					定向发送
+					<input name="msgtype" type="radio" class="validate[required]" value="1">
+					</label>
+					<div class="controls">
+						<textarea id="to_uids" name="to_uids" class="input-xxlarge" rows="3"></textarea>
+						<span class="help-inline">此处填写用户的UID,多个用户之间用<b style="color:red">逗号(英文)</b>分割</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">全局推送 <input name="msgtype" type="radio" class="validate[required]" value="2"></label>
+				</div>
+				<div class="form-actions">
+					<button id="submit-btn" type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.validationEngine.js" ></script>
+<script src="/static/js/jquery.validationEngine-en.js" ></script>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	// binds form submission and fields to the validation engine
+	jQuery("#form-message").validationEngine();
+	$("#submit-btn").click(function(){
+		if($("input[name='msgtype']:checked").val() == 1 && !$.trim($("#to_uids").val())){
+			alert("定向发送请填写用户UID");return false;
+		}
+	});
+});
+</script>
+<!--{%endblock%}-->   

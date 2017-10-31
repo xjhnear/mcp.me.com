@@ -1,0 +1,67 @@
+<!--{%extends "sub-user.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>用户组信息</h3>
+			</div>
+			<div class="box-content">
+				<form action="<!--{{url('user/save-group-info')}}-->" method="POST" class='form-horizontal'>
+				<input name="act" type="hidden" value="edit" />
+				<input name="group_id" type="hidden" value="<!--{{group.group_id}}-->" />				
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户组名称</label>
+					<div class="controls">
+						<input type="text" name="group_name" id="group_name" class="input-xlarge" value="<!--{{group.group_name}}-->">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户组图标</label>
+					<div class="controls">
+					    <label class="radio inline">					    
+					    <!--{{form_radio('group_icon','v_01.gif',group.group_icon=='v_01.gif')}}--><img src="/static/img/common/group/v_01.gif" />
+					    </label>
+					    <label class="radio inline">					    
+					    <!--{{form_radio('group_icon','v_02.gif',group.group_icon=='v_02.gif')}}--><img src="/static/img/common/group/v_02.gif" />
+					    </label>
+					    <label class="radio inline">
+					    <!--{{form_radio('group_icon','v_03.gif',group.group_icon=='v_03.gif')}}--><img src="/static/img/common/group/v_03.gif" />
+					    </label>
+					    <label class="radio inline">
+					    <!--{{form_radio('group_icon','v_04.gif',group.group_icon=='v_04.gif')}}--><img src="/static/img/common/group/v_04.gif" />
+					    </label>
+					    <label class="radio inline">
+					    <!--{{form_radio('group_icon','v_05.gif',group.group_icon=='v_05.gif')}}--><img src="/static/img/common/group/v_05.gif" />
+					    </label>
+					    <label class="radio inline">
+					    <!--{{form_radio('group_icon','v_06.gif',group.group_icon=='v_06.gif')}}--><img src="/static/img/common/group/v_06.gif" />
+					    </label>
+					    <label class="radio inline">
+					    <!--{{form_radio('group_icon','v_07.gif',group.group_icon=='v_07.gif')}}--><img src="/static/img/common/group/v_07.gif" />
+					    </label>
+					    <label class="radio inline">
+					    <!--{{form_radio('group_icon','v_08.gif',group.group_icon=='v_08.gif')}}--><img src="/static/img/common/group/v_08.gif" />
+					    </label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户组类型</label>
+					<div class="controls">
+					    <label class="radio inline">
+					    <!--{{form_radio('group_type','0',group.group_type==0)}}-->普通组
+					    </label>
+					    <label class="radio inline">
+					    <!--{{form_radio('group_type','1',group.group_type==1)}}-->特殊组
+					    </label>
+					</div>
+				</div>				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

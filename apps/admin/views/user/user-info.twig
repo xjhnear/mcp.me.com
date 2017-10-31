@@ -1,0 +1,91 @@
+<!--{%extends "sub-user.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>用户信息</h3>
+			</div>
+			<div class="box-content">
+				<form action="<!--{{url('user/save-info')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+				<input name="act" type="hidden" value="edit" />
+				<input name="uid" type="hidden" value="<!--{{user.uid}}-->" />
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户头像</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="fileupload-new thumbnail" style="max-width: 200px; max-height: 150px;"><img src="<!--{{user.avatar|default('/static/img/common/avatar.gif')}}-->" /></div>
+							<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+							<div>
+								<span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span><input type="file" name='avatar' /></span>
+								<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户邮箱</label>
+					<div class="controls">
+						<input type="text" name="email" id="email" class="input-xlarge" value="<!--{{user.email}}-->">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户昵称</label>
+					<div class="controls">
+						<input type="text" name="nickname" id="nickname" class="input-xlarge" value="<!--{{user.nickname}}-->">
+					</div>
+				</div>	
+				<div class="control-group">
+					<label for="textfield" class="control-label">登录密码</label>
+					<div class="controls">
+						<input type="password" name="password" id="password" class="input-xlarge" value="">
+					</div>
+				</div>			
+				<div class="control-group">
+					<label for="textfield" class="control-label">手机号码</label>
+					<div class="controls">
+						<input type="text" name="mobile" id="mobile" class="input-small" value="<!--{{user.mobile}}-->">
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">性别</label>
+					<div class="controls">
+					    <label class="radio inline">
+	                        <!--{{form_radio('sex','1',user.sex==1)}}-->男							    						
+					    </label>
+					    <label class="radio inline">
+	                        <!--{{form_radio('sex','2',user.sex==2)}}-->女							    						
+					    </label>
+					    <label class="radio inline">
+	                        <!--{{form_radio('sex','0',user.sex==0)}}-->保密							    						
+					    </label>			                
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">出生日期</label>
+					<div class="controls">
+						<div class="input-append date datepick" id="dpEnd" data-date="">
+							<input name="birthday" type="text" class="input-small" value="<!--{{user.birthday}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">用户组</label>
+					<div class="controls">
+					    <!--{%for group in grouplist%}-->
+					    <label class="radio inline">
+					        <!--{{form_radio('group_id',group.group_id,in_array(group.group_id,user.group_ids))}}--><!--{{group.group_name}}-->					        					        
+					    </label>
+					    <!--{%endfor%}-->			                
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

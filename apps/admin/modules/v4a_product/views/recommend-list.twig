@@ -1,0 +1,86 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					商品推荐管理
+				</h3>
+				<div class="actions">
+					<form action="<!--{{url('/v4aproduct/goods/recommend')}}-->">
+						<table class="table-filter">
+                            <tr>
+                                <td>
+                                    <select name="location" style="width:80px;margin-bottom:0px">
+                                        <option value="mall_location">商城</option>
+                                        <option value="index_location">首页</option>
+                                    </select>
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+					    		<td><a href="<!--{{url('v4aproduct/goods/recommend-add-edit')}}-->" class="btn btn-teal">添加商品推荐</button></td>
+					        </tr>
+				    	</table>
+					</from>	
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-100">商品代码</th>
+						    <th class="col-60">图片</th>
+							<th class="col-150">标题</th>
+							<th class="col-150">描述</th>							
+							<th class="col-60">排序</th>
+							<th class="col-60">激活</th>
+							<th class="col-80">绑定的商品</th>
+							<th class="col-60">操作</th>
+						</tr>
+					</thead>	
+					<tbody>
+						<!--{% for key,item in datalist%}--> 
+					    <tr>
+					    	<td><!--{{item.productCode}}--></td>
+							<td class="user-avatar"><img src='<!--{{item.imgUrl}}-->'/></td>
+							
+							<td><!--{{item.title}}--></td>							
+							<td><!--{{item.description}}--></td>
+							<td><!--{{item.sort}}--></td>
+							<td>
+							    <!--{%if item.isActive==1%}-->激活<!--{%else%}-->没激活<!--{%endif%}-->
+							</td>
+							<td>
+							   <!--{{item.product.productName}}-->
+							</td>
+							<td>
+							    <a href="<!--{{url('v4aproduct/goods/recommend-add-edit',{id:item.recommendId})}}-->" class="btn btn-primary">编辑</a>
+                                <a href="<!--{{url('v4aproduct/goods/recommend-delect',{id:item.recommendId})}}-->" class="btn btn-primary">删除</a>
+							    <div class="btn-group">
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

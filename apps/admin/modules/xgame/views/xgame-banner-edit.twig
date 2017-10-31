@@ -1,0 +1,70 @@
+<!--{%extends "sub-layout-xgame.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<form id="editbanner" action="<!--{{url('xgame/forum/edit-banner')}}-->" class=""  enctype="multipart/form-data" method="POST">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					benner编辑
+				</h3>
+				<div class="actions">
+					<div class="controls">
+				        	<button class="btn btn-teal js-submit" type="button">
+							<i class="icon-ok"></i>
+							保存
+							</button>				        					        
+				        	
+					</div>	
+				</div>
+			</div>
+			<div class="box-content nopadding">
+				<table class="table table-hover table-nomargin" >
+			        <thead>
+						<tr>
+							<th class="col-40">ID</th>
+							<th class="col-120">缩略图(<font style="color:red;">注意：1000*360</font>)</th>
+							<th class="col-40">标题</th>		
+							<th class="col-40">排序(<font style="color:red;">注意：数字</font>)</th>					
+							<th class="col-120">链接地址(<font style="color:red;">注意：地址需要带http  如：http://youxiduo.com</font>)</th>
+						</tr>
+					</thead>
+				    <tbody id="edit-item">
+				    	<!--{%for item in result%}-->
+						 <tr>
+							<td><input name="id[]" type="hidden" value="<!--{{item.id}}-->"><!--{{item.id}}--></td>
+							<td class="user-avatar">
+							<img src="<!--{{item.litpic|default('/userdirs/common/avatar@2x.png?v=3')}}-->" width="150" /><br/>
+							<input name="uploadinput[]" type="file"> 
+							<input name="uploadinputold[]" type="hidden"  value="<!--{{item.litpic}}-->">
+							</td>
+							<td><input name="title[]" type="text" value="<!--{{item.title}}-->"></td>
+							<td><input name="sort[]" type="text" value="<!--{{item.sort}}-->" style="width: 60px"></td>
+							<td><input data-rule-url="true" name="url[]" type="text" value="<!--{{item.linkurl}}-->"></td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+	$('button.js-submit').bind('click',function(){
+		var len = $('#edit-item tr').length;
+		if(len > 0){
+			 $('#editbanner').submit();
+		}else{
+			alert('没有上传请不要保存！');
+		}
+    });
+	
+});
+</script>
+<!--{%endblock%}-->    

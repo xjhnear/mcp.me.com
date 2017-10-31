@@ -1,0 +1,70 @@
+<!--{%extends "sub-layout-activity.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					ChinaJoy专题跑会管理
+				</h3>
+				<div class="actions">
+                    <form action="<!--{{url('zt_activity/chinajoy/guide')}}-->" class="">
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+                                    游戏名  <input name="keyword" type="text" class="input-medium" placeholder="" value="<!--{{cond.keyword}}-->">
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                                <td><a class="btn btn-teal" href="<!--{{url('/zt_activity/chinajoy/guide-edit')}}-->">增加</a></td>
+                            </tr>
+                        </table>
+                    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-20">ID</th>
+							<th class="col-120">标题</th>
+							<th class="col-80">主办方</th>
+							<th class="col-40">形式</th>
+                            <th class="col-20">规模</th>
+                            <th class="col-80">地点</th>
+                            <th class="col-40">缩略地图</th>
+							<th class="col-60">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in result%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.title}}--></td>
+							<td><!--{{item.organizer}}--></td>
+							<td><!--{{item.form}}--></td>
+                            <td><!--{{item.scale}}--></td>
+                            <td><!--{{item.address}}--></td>
+                            <td><!--{% if item.pics %}--><img src="<!--{{item.pics}}-->" width="100"><!--{% endif %}--></td>
+							<td>
+                                <a href="<!--{{url('zt_activity/chinajoy/guide-edit',{id:item.id})}}-->" class="btn btn-primary">编辑</a>
+                                <a href="<!--{{url('zt_activity/chinajoy/guide-del',{id:item.id})}}-->" class="btn btn-primary">删除</a>
+							</td>
+
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+
+<!--{%endblock%}-->

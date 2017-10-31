@@ -1,0 +1,63 @@
+<!--{%extends "sub-layout-activity.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					问答管理				
+				</h3>
+				<div class="actions">
+				    <a href="<!--{{url('activity/gameask/add-question',{'ask_id':ask_id})}}-->" class="btn btn-primary">增加题目</a>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">ID</th>
+							<th class="col-150">题目</th>
+							<th class="col-150">答案选项</th>
+							<th class="col-80">答案</th>
+							<th class="col-80">排序</th>
+							<th class="col-80">状态</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in questions%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.title}}--></td>
+							<td>
+							    <ul class="nav nav-tabs nav-stacked">
+							        <li>A:<!--{{item.options.option_a}}--></li>
+							        <li>B:<!--{{item.options.option_b}}--></li>
+							        <li>C:<!--{{item.options.option_c}}--></li>
+							        <li>D:<!--{{item.options.option_d}}--></li>
+							    </ul>
+							</td>
+							<td><!--{{item.answer|upper}}--></td>
+							<td><!--{{item.sort}}--></td>
+							<td><!--{%if item.status==1%}-->显示<!--{%else%}--><span class="badge badge-important">隐藏</span><!--{%endif%}--></td>
+							<td>
+							    <a href="<!--{{url('activity/gameask/edit-question',{id:item.id})}}-->" class="btn btn-primary">编辑</a>						    						   
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+
+<!--{%endblock%}-->

@@ -1,0 +1,70 @@
+<!--{%extends "sub-layout-system.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>任务设置</h3>
+			</div>
+			<div class="box-content">
+				<form action="<!--{{url('system/task/save')}}-->" method="POST" class='form-horizontal'>
+				<input name="id" type="hidden" value="<!--{{task.id}}-->" />				
+				<div class="control-group">
+					<label for="textfield" class="control-label">任务名称</label>
+					<div class="controls">
+					    <input name="step_name" id="step_name" type="text" class="input-xlarge" value="<!--{{task.step_name}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">描述</label>
+					<div class="controls">
+					    <input name="step_desc" id="step_desc" type="text" class="input-xlarge" value="<!--{{task.step_desc}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">类型</label>
+					<div class="controls">
+					    <!--{{form_select('type',tasktype,task.type,{'class':'input-xlarge'})}}-->
+					</div>
+				</div>				
+				<div class="control-group">
+					<label for="textfield" class="control-label">条件次数</label>
+					<div class="controls">
+					    <input name="action" type="hidden" class="input-small" value="<!--{{task.action}}-->" />
+					    <input name="condition_num" type="text" class="input-small" value="<!--{{task.condition[task.action]}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">最大奖励次数</label>
+					<div class="controls">
+					    <input name="action" type="hidden" class="input-small" value="<!--{{task.action}}-->" />
+					    <input name="max_times" type="text" class="input-small" value="<!--{{task.condition.max_times|default(1)}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">游币</label>
+					<div class="controls">
+					    <input name="score" id="score" type="text" class="input-small" value="<!--{{task.score}}-->" rel="tooltip" data-placement="right" data-original-title="正数为增加，负数为减少" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">经验</label>
+					<div class="controls">
+					    <input name="experience" id="experience" type="text" class="input-small" value="<!--{{task.experience}}-->" rel="tooltip" data-placement="right" data-original-title="正数为增加，负数为减少" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">是否关闭</label>
+					<div class="controls">
+					    <label class="checkbox inline"><!--{{form_checkbox('closed',1,task.condition.closed==1)}}-->关闭任务</label>
+					</div>
+				</div>				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

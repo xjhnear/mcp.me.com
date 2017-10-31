@@ -1,0 +1,143 @@
+.triangle-border.left:before {
+	border-color: transparent #5a8f00 transparent transparent;
+	border-style: solid;
+	border-width: 15px 30px;
+	bottom: auto;
+	left: -60px;
+	top: 10px;
+}
+
+.triangle-border.right:before {
+	border-color: transparent transparent transparent #5a8f00;
+	border-style: solid;
+	border-width: 15px 30px;
+	bottom: auto;
+	right: -60px;
+	top: 10px;
+}
+
+.triangle-border.right:after {
+	border-color: transparent transparent transparent #fff;
+	border-style: solid;
+	border-width: 9px 21px;
+	bottom: auto;
+	right: -40px;
+	top: 16px;
+}
+
+.right {
+	margin-right: 50px;
+}
+
+.triangle-border:before {
+	-moz-border-bottom-colors: none;
+	-moz-border-left-colors: none;
+	-moz-border-right-colors: none;
+	-moz-border-top-colors: none;
+	border-color: #5a8f00 transparent transparent;
+	border-image: none;
+	border-right: 20px solid transparent;
+	border-style: solid;
+	border-width: 20px;
+	bottom: -40px;
+	content: " ";
+	display: block;
+	height: 0;
+	position: absolute;
+	width: 0;
+}
+
+.triangle-border.left:after {
+	border-color: transparent #fff transparent transparent;
+	border-style: solid;
+	border-width: 9px 21px;
+	bottom: auto;
+	left: -42px;
+	top: 16px;
+}
+
+.triangle-border:after {
+	-moz-border-bottom-colors: none;
+	-moz-border-left-colors: none;
+	-moz-border-right-colors: none;
+	-moz-border-top-colors: none;
+	border-color: #fff transparent transparent;
+	border-image: none;
+	border-right: 13px solid transparent;
+	border-style: solid;
+	border-width: 13px;
+	bottom: -26px;
+	content: " ";
+	display: block;
+	height: 0;
+	position: absolute;
+	width: 0;
+}
+
+.triangle-border {
+	background: none repeat scroll 0 0 #fff;
+	border: 5px solid #5a8f00;
+	border-radius: 10px;
+	color: #333;
+	margin: -5px 0 0 30px;
+	padding: 15px;
+	position: relative;
+	max-width: 350px;
+	min-height: 20px;
+	word-wrap: break-word;
+	word-break: break-all;
+}
+
+.s_x_page {
+	text-align: center;
+}
+
+.md-sp {
+	padding: 0 25px;
+}
+
+.chat-content {
+	width: 60%;
+	min-height: 700px;
+	padding-left: 20px;
+	border-right: 3px solid gray;
+}
+
+#offset {
+	width: 15px;
+}
+
+.send-msg {
+	margin: 300px auto;
+	width: 35%
+}
+
+#msg-txt {
+	width: 350px;
+}
+
+.u-name {
+	display: block;
+}
+
+.u-name-a {
+	color: black;
+}
+
+.g-circle {
+	color: orange;
+}
+
+.s-time-l{
+	padding-top:10px;
+	margin-left:10px;
+	float:left;
+	color:brown;
+}
+
+.s-time-r{
+	padding-top:15px;
+	margin-right:-20px;
+	float:right;
+	color:brown;
+}

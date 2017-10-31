@@ -1,0 +1,88 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					商品管理				
+				</h3>
+				<div class="actions">
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <!-- <th class="col-60">ID</th> -->
+						    <th class="col-60">订单号</th>
+							<th class="col-150">下单人</th>
+							<th class="col-150">订单总额</th>
+							<th class="col-120">游戏币</th>
+							<th class="col-150">联系电话</th>
+							<th class="col-80">支付方式</th>
+							<th class="col-60">下单/支付时间</th>
+							<th class="col-60">状态</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>	
+					<tbody>
+						<!--{% for key,item in datalist%}--> 
+					    <tr>
+							<td style="width:8%"><!--{{item.orderId}}--></td>
+							<td><!--{{item.biller}}--></td>
+							<td><!--{{item.amount}}--></td>
+							<td><!--{{item.gameAmount}}--></td>						
+							<td><!--{{item.phone}}--></td>
+							<td style="width:8%"><!--{% if item.payType == 0 %}-->游币支付<!--{%else%}-->现金支付<!--{%endif%}--></td>
+							<td style="width:20%"><!--{{item.billTimeStr}}-->/<!--{{item.payTimeStr}}--></td>
+							<td style="width:15%">
+								<!--{% if item.orderStatus == 0 %}-->
+									买家未付款
+								<!--{% elseif item.orderStatus == 1 %}-->
+									买家已付款，卖家未发货 
+								<!--{% elseif item.orderStatus == 2 %}-->
+									买家已付款，确认收货
+								<!--{% elseif item.orderStatus == 3 %}-->
+									买家已收货
+								<!--{% elseif item.orderStatus == 4 %}-->
+									交易取消
+								<!--{% elseif item.orderStatus == 5 %}-->
+									买家发起退款，等待卖家受理
+								<!--{% elseif item.orderStatus == 6 %}-->
+									卖家受理 
+								<!--{% elseif item.orderStatus == 7 %}-->
+									卖家进行退款
+								<!--{% elseif item.orderStatus == 8 %}-->
+									交易完成
+								<!--{%endif%}-->
+							</td>   
+							<td >
+							    <a href="<!--{{url('product/goods/order-add-edit',{id:item.orderId})}}-->" class="btn btn-primary">编辑</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

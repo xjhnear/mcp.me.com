@@ -1,0 +1,64 @@
+<!--{%extends "sub-layout-activity.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					ChinaJoy专题专区管理
+				</h3>
+				<div class="actions">
+                    <form action="<!--{{url('zt_activity/chinajoy/manufacturers')}}-->" class="">
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+                                    游戏名  <input name="keyword" type="text" class="input-medium" placeholder="" value="<!--{{cond.keyword}}-->">
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                                <td><a class="btn btn-teal" href="<!--{{url('/zt_activity/chinajoy/manufacturers-edit')}}-->">增加</a></td>
+                            </tr>
+                        </table>
+                    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-20">ID</th>
+							<th class="col-120">厂商名</th>
+							<th class="col-80">关键词</th>
+                            <th class="col-40">ICON</th>
+							<th class="col-60">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in result%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td><!--{{item.title}}--></td>
+							<td><!--{{item.keyword}}--></td>
+                            <td><!--{% if item.icon %}--><img src="<!--{{item.icon}}-->" width="100"><!--{% endif %}--></td>
+							<td>
+                                <a href="<!--{{url('zt_activity/chinajoy/manufacturers-edit',{id:item.id})}}-->" class="btn btn-primary">编辑</a>
+                                <a href="<!--{{url('zt_activity/chinajoy/manufacturers-del',{id:item.id})}}-->" class="btn btn-primary">删除</a>
+							</td>
+
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+
+<!--{%endblock%}-->

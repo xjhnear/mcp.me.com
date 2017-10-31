@@ -1,0 +1,101 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					公告列表					
+				</h3>
+				<div class="actions">
+				    
+				    <form action="<!--{{url('forum/notice-list')}}-->">
+				    <table class="table-filter">
+				        <tr>
+				            <!--{#				            
+				            <td>
+				                <div class="input-append date datepick" id="dpStart" data-date="">
+									<input name="startdate" type="text" class="input-small" value="<!--{{search.startdate}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+				            </td>
+				            <td>
+				                <div class="input-append date datepick" id="dpEnd" data-date="">
+									<input name="enddate" type="text" class="input-small" value="" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+							#}-->
+							<td><a href="<!--{{url('forum/notice/list')}}-->?recycle=1" class="btn btn-teal"><i class="icon-search"></i>回收站</a></td>
+				            <td><a href="<!--{{url('forum/notice/add')}}-->" class="btn btn-teal">发布公告</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th>ID</th>
+							<th>标题</th>
+							<th>论坛</th>
+							<th>发布时间</th>
+							<th>显示</th>
+							<th>置顶版块</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.tid}}--></td>
+							<td><a href="<!--{{url('forum/topic/info',{'id':item.tid})}}-->" target="_blank"><!--{{item.subject}}--></a></td>
+							<td><!--{{games[item.gid]['shortgname']}}--></td>
+							<td><!--{{item.dateline|date('Y-m-d H:i:s')}}--></td>
+							<td>
+							    <!--{%if item.status==1%}-->
+							    <a href="<!--{{url('forum/notice/doshow',{id:item.tid,show:0})}}-->" class="btn btn-primary">显示</a>
+							    <!--{%else%}-->
+							    <a href="<!--{{url('forum/notice/doshow',{id:item.tid,show:1})}}-->" class="btn btn-primary">隐藏</a>
+							    <!--{%endif%}-->
+							</td>
+							<td><!--{{sticklist[item.cid]}}--></td>
+							<td>
+							    <!--{%if recycle==0%}--><a href="<!--{{url('forum/notice/edit',{id:item.tid})}}-->" class="btn btn-primary">编辑</a>
+							    <div class="btn-group">
+							        <a data-toggle="dropdown" class="btn  btn-primary dropdown-toggle"><span class="caret"></span></a>
+							        <ul class="dropdown-menu dropdown-primary">
+							            <li><a href="<!--{{url('forum/topic/export',{'tid':item.tid,'type':'reply_user'})}}-->">导出所有回帖的用户</a></li>
+							        </ul>
+							    </div>
+							    <a href="<!--{{url('forum/notice/delete',{id:item.tid})}}-->" class="btn btn-primary ajax-del"><i class="icon-trash"></i>删除</a><!--{%endif%}-->							    
+							    <!--{%if recycle==1%}--><a href="<!--{{url('forum/notice/restore',{id:item.tid})}}-->" class="btn btn-primary"><i class="icon-trash"></i>恢复</a><!--{%endif%}-->
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

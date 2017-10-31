@@ -1,0 +1,93 @@
+<!--{%extends "sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					礼包管理
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('v4agiftbag/gift/search')}}-->" class="">
+				    <table class="table-filter">
+				        <tr>				            
+				            <td>
+				                <div class="controls">
+							        <label class="radio inline">标题</label>
+								</div>				                
+				            </td>
+				            <td>
+								<input name="keyword" type="text" class="input-medium" placeholder="" value="<!--{{search.keyword}}-->">								
+							</td>
+							<td><input id="gameselect" name="game_id" type="hidden" value="<!--{{search.game_id}}-->" class="bigdrop select2-offscreen width_150" tabindex="-1"></td>							
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				            <td><a href="<!--{{url('v4agiftbag/gift/add')}}-->" class="btn btn-teal">添加礼包</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+							<th class="col-150">礼包名称</th>
+                            <th class="col-60">游戏</th>
+							<th class="col-80">开始时间</th>
+							<th class="col-80">结束时间</th>
+							<th class="col-60">状态</th>
+							<th class="col-60">激活</th>
+							<th class="col-80">剩余/总量</th>
+							<th class="col-100">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td>
+								<!--{%if item.isExclusive%}-->
+									<span class="badge badge-warning">专属</span>
+								<!--{%endif%}-->
+								<!--{{item.title}}-->
+							</td>
+							<td class="user-avatar"><img src="<!--{{ item.game_info.ico }}-->" title="<!--{{item.game_info.shortgname}}-->"></td>
+							<td><!--{{ item.startTimeStr }}--></td>
+							<td><!--{{ item.endTimeStr }}--></td>
+							<td><!--{{ item.isOnshelf ? '<span class="badge badge-success">上架</span>' : '<span class="badge badge-important">下架</span>' }}--></td>
+							<td><!--{%if item.isActive%}--><a href="<!--{{url('v4agiftbag/gift/open-or-close',{id:item.productId})}}-->" class="badge badge-success">有效</a><!--{%else%}--><a href="<!--{{url('v4agiftbag/gift/open-or-close',{id:item.productId})}}-->" class="badge badge-important">无效</a><!--{%endif%}--></td>
+							<td><!--{{item.restCount}}-->/<!--{{item.totalCount}}--></td>
+							<td>
+							    <a href="<!--{{url('v4agiftbag/gift/edit',{id:item.productId})}}-->" class="btn btn-primary">编辑</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    gameselect('#gameselect');
+    $(".add-uid").click(function(){
+    	$("#save-apint-uids").attr("gb-id",$(this).attr("gb-id"));
+    	$.get("/v4agiftbag/gift/ajax-appoint-uids",{"giftbag_id":$(this).attr("gb-id")},function(data){
+    	    $("#userids").val('');
+    		if(data){
+    			$("#userids").val(data);
+        	}else{
+        	    $("#userids").val('');
+        	}
+    	})
+    });
+});
+</script>
+<!--{%endblock%}-->

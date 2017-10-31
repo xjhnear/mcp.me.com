@@ -1,0 +1,109 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>四屏背景及游戏设置
+				</h3>				
+			</div>
+			<div class="box-content">
+			    
+			    <form action="<!--{{url('wcms/home/fourth-projection')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <!--{%if setting.bgPicUrl%}-->
+			    <div class="control-group">
+			        <label class="control-label">背景图</label>
+					<div class="controls">
+					    <input name="bgPicUrl" type="hidden" value="<!--{{setting.bgPicUrl}}-->" />
+					    <a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.bgPicUrl}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">上传背景图</label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">选择图片</span><span class="fileupload-exists">Change</span><input type="file" name="filedata" /></span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">关联游戏</label>
+					<div class="controls">
+					    <div class="input-append">
+							<input type="text" id="web_game_id" name="gameId" class="input-medium" value="<!--{{setting.gameId}}-->" /><span class="add-on select-web-game">选择</span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">官网URL</label>
+					<div class="controls">
+					    <div class=" input-append">
+							<input type="text" name="officialUrl" class="input-xxlarge" value="<!--{{setting.officialUrl}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">本站URL</label>
+					<div class="controls">
+					    <div class=" input-append">
+							<input type="text" name="url" class="input-xxlarge" value="<!--{{setting.url}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">专区URL</label>
+					<div class="controls">
+					    <div class=" input-append">
+							<input type="text" name="specialUrl" class="input-xxlarge" value="<!--{{setting.specialUrl}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">社区URL</label>
+					<div class="controls">
+					    <div class=" input-append">
+							<input type="text" name="communityUrl" class="input-xxlarge" value="<!--{{setting.communityUrl}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>	    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+
+var set_selected_web_game = function(game_id,game_name,game_icon){
+    $('#web_game_id').val(game_id);
+}; 
+$(function(){    
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+    
+    $('.select-web-game').bind('click',function(){        
+        $.ajax({
+            url:'/wcms/api/pop-game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });        
+    });
+});    
+</script>
+<!--{%endblock%}-->

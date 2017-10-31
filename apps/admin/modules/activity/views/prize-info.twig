@@ -1,0 +1,109 @@
+<!--{%extends "sub-layout-activity.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>奖品信息</h3>
+			</div>
+			<div class="box-content">
+			    <form action="<!--{{url('activity/prize/save')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{prize.id}}-->" />
+			    
+			    <div class="control-group">
+					<label class="control-label">奖品名称</label>
+					<div class="controls">
+						<input type="text" name="name" id="name" class="input-xlarge" value="<!--{{prize.name}}-->" />						
+					</div>
+				</div>	
+				<div class="control-group">
+					<label class="control-label">分类</label>
+					<div class="controls">
+						<!--{{form_select('shortname',cate,prize.shortname)}}-->
+					</div>
+				</div>			
+				<div class="control-group">
+					<label class="control-label">奖品图尺寸</label>
+					<div class="controls">
+					    <span class="help-inline badge badge-warning">寻宝箱奖品图最佳尺寸：160*120</span>
+						<span class="help-inline badge badge-warning">有奖问答奖品图最佳尺寸：192*162</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">奖品图</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="fileupload-new thumbnail" style="max-width: 140px; max-height: 140px;"><img src="<!--{%if prize.listpic%}--><!--{%endif%}--><!--{{prize.listpic|default('/static/img/nopic.gif')}}-->" /></div>
+							<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 140px; max-height: 140px; line-height: 20px;"></div>
+							<div>
+								<span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span><input type="file" name='listpic' /></span>
+								<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>						
+					</div>
+				</div>								
+				<div class="control-group">
+					<label class="control-label">奖品类型</label>
+					<div class="controls radio-line">
+						<label class="radio inline"><input id="credit" name="type" type="radio" checked value="1" />游币</label>
+						<label class="radio inline"><input id="gift" name="type" type="radio" value="2" />礼包</label>						
+						<label class="radio inline"><input id="goods" name="type" type="radio" value="3" />实物商品</label>
+					</div>
+				</div>
+				<div id="tab_goods" style="display:none">
+				<div class="control-group">
+					<label class="control-label">领取方式</label>
+					<div class="controls">
+						<input type="text" name="expense" class="input-xlarge" value="" />
+					</div>
+				</div>
+				</div>
+				<div id="tab_gift" style="display:none">
+				<div class="control-group">
+					<label class="control-label">礼包ID</label>
+					<div class="controls">
+						<input type="text" name="gift_id" class="input-small" value="<!--{{prize.name}}-->" />
+					</div>
+				</div>
+				</div>
+				<div id="tab_credit">
+				<div class="control-group">
+					<label class="control-label">游币数量</label>
+					<div class="controls">
+						<input type="text" name="score" class="input-small" value="" />
+					</div>
+				</div>
+				</div>
+			    <div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('input[name="type"]:radio').bind('click',function(){
+        var type = $(this).val();
+        if(type==1){
+            $('#tab_goods').hide();
+            $('#tab_gift').hide();
+            $('#tab_credit').show();
+        }else if(type==2){
+            $('#tab_goods').hide();
+            $('#tab_gift').show();
+            $('#tab_credit').hide();
+        }else if(type==3){
+            $('#tab_goods').show();
+            $('#tab_gift').hide();
+            $('#tab_credit').hide();
+        }
+    });
+});
+
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,59 @@
+<!--{%extends "sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>导入礼包卡</h3>
+			</div>
+			<div class="box-content">
+			    <form action="<!--{{url('a_giftbag/giftcard/import')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input name="giftbag_id" type="hidden" value="<!--{{gift.id}}-->" />
+				<div class="control-group">
+					<label class="control-label">所属礼包</label>
+					<div class="controls">
+						<!--{{gift.title}}-->
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">礼包卡类型</label>
+					<div class="controls">
+						<label class="checkbox inline"><!--{{form_checkbox('type_repeat','1',false)}}-->过滤重复的卡号</label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">礼包卡导入说明</label>
+					<div class="controls">
+						<span class="label">TXT文件导入</span>
+						<p>请将要导入的礼包卡号写入一个记事本文件，每个卡号单独一行，每行之间不要有空格！</p>
+						<span class="label">EXCLE文件导入</span>
+						<p>请将要导入的礼包卡号写入一个EXCLE文件！</p>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">礼包卡文件</label>
+					<div class="controls">
+					    <div class="uploader" id="uniform-fileInput"><input name="filedata" class="input-file uniform_on" id="file_upload" type="file" size="19" style="opacity: 0; "></div>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>导入</button>
+					<a href="<!--{{url('a_giftbag/giftcard/init-queue',{'giftbag_id':gift.id})}}-->" class="btn btn-primary">重置礼包队列</a>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.uniform.min.js"></script>
+<script>
+$(function(){
+    $("input:file").uniform({'fileBtnText':'选择文件'});    
+});
+    
+</script>
+<!--{%endblock%}-->

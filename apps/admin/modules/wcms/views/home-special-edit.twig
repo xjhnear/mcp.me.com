@@ -1,0 +1,96 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/validationEngine.jquery.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>新游专题
+				</h3>				
+			</div>
+			<div class="box-content">			    
+			    <form id="form_special" action="<!--{{url('wcms/home/edit-special')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input name="position" type="hidden" value="<!--{{position}}-->"/>
+			    <div class="control-group">
+			        <label class="control-label">位置</label>
+					<div class="controls">
+					    <!--{{form_select('idx',idx_options,setting.idx)}}-->
+					</div>
+				</div>
+				<!--{%if setting.picUrlS%}-->
+			    <div class="control-group">
+			        <label class="control-label">小图片</label>
+					<div class="controls">
+					    <input name="picUrlS" type="hidden" value="<!--{{setting.picUrlS}}-->" />
+					    <a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.picUrlS}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">上传小图片</label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">选择图片</span><span class="fileupload-exists">Change</span><input type="file" name="filedata_small" /></span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--{%if setting.picUrlB%}-->
+			    <div class="control-group">
+			        <label class="control-label">大图片</label>
+					<div class="controls">
+					    <input name="picUrlB" type="hidden" value="<!--{{setting.picUrlB}}-->" />
+					    <a href="#bigimg" data-toggle="modal"><img src="<!--{{setting.picUrlB}}-->" width="150px" /></a>
+					</div>
+				</div>
+				<!--{%endif%}-->
+				<div class="control-group">
+					<label class="control-label">上传大图片</label>
+					<div class="controls">
+					    <div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="input-append">
+								<div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">选择图片</span><span class="fileupload-exists">Change</span><input type="file" name="filedata_big" /></span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+							</div>
+						</div>
+					</div>
+				</div>								
+				<div class="control-group">
+					<label class="control-label">标题</label>
+					<div class="controls">
+					    <div class=" input-append">
+							<input type="text" name="title" class="input-xxlarge validate[required]" value="<!--{{setting.title}}-->" />
+						</div>
+					</div>
+				</div>				
+				<div class="control-group">
+					<label class="control-label">跳转URL</label>
+					<div class="controls">
+					    <div class=" input-append">
+							<input type="text" name="url" class="input-xxlarge validate[required]" value="<!--{{setting.url}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>	    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+
+$(function(){
+	$('#form_special').validationEngine({promptPosition : "topRight",autoPositionUpdate:true});
+});    
+</script>
+<!--{%endblock%}-->

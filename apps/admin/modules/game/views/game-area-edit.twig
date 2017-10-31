@@ -1,0 +1,52 @@
+<!--{%extends "sub-layout-game.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					游戏库				
+				</h3>
+			</div>
+			<div class="box-content">
+				<form id="admin-edit" action="<!--{{url('game/area/edit')}}-->" method="POST" class='form-horizontal form-validate'>
+				<input name="id" type="hidden" value="<!--{{area.id}}-->" />
+				
+				<div class="control-group">
+					<label class="control-label">所属游戏</label>
+					<div class="controls">
+					    <input id="gameselect" name="game_id" type="hidden" value="<!--{{area.game_id}}-->" class="bigdrop select2-offscreen" style="width:200px;" tabindex="-1">
+					</div>					
+				</div>
+				<div class="control-group">
+					<label for="gamename" class="control-label">区分分类</label>
+					<div class="controls">
+						<!--{{form_select('type',arealist,area.type,{'style':'width:120px'})}}-->
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="gamename" class="control-label">区分名称</label>
+					<div class="controls">
+						<input type="text" name="area_name" class="input-normal" value="<!--{{area.area_name}}-->" data-rule-required="true" data-msg-required="不能为空">
+					</div>
+				</div>				
+				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    gameselect('#gameselect');
+});
+</script>
+<!--{%endblock%}-->

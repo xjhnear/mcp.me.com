@@ -1,0 +1,155 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>商品信息</h3>
+			</div>
+			<div class="box-content">
+			    <form  id="form-product" action="<!--{{url('v4aproduct/goods/order-add-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+				    <input id="id" name="orderId" type="hidden" value="<!--{{goods.orderId}}-->" />
+				    	<div class="control-group">
+							<label class="control-label">订单编号</label>
+							<label class="control-label"><!--{{goods.orderId}}--></label>
+						</div>
+						<div class="control-group">
+							    <label class="control-label">下单人</label>
+								<label class="control-label"><!--{{goods.biller}}--></label>					
+						</div>
+					
+				        <div class="control-group">
+				        <label class="control-label">收货地址</label>
+							<div class="control-group">
+							   		 <input type="text" name="address" id="address"  class="input-xlarge" value="<!--{{goods.address}}-->" />
+							 </div>
+						</div>
+						
+				        <div class="control-group">
+				        	<label class="control-label">邮编</label>
+							<div class="control-group">
+							     <input type="text" name="postCode" id="postCode"  class="input-xlarge" value="<!--{{goods.postCode}}-->" />
+							  </div>
+						</div>
+					
+				        <div class="control-group">
+				        	 <label class="control-label">订单接收者联系电话</label>
+							 <div class="control-group">
+							    		<input type="text" name="phone" id="phone"  class="input-xlarge" value="<!--{{goods.phone}}-->" />
+							 </div>
+				        </div>
+				    
+				     
+				       <div class="control-group">
+							<label class="control-label">订单备注</label>
+							<div class="controls">
+									<script id="orderDesc" name="orderDesc" type="text/plain"><!--{{goods.orderDesc}}--></script>
+							</div>
+						</div>
+					 
+				        <div class="control-group">
+								<label class="control-label">订单总额</label>
+							    <div class="control-group">
+							    		<label class="control-label"><!--{{goods.amount}}--></label>					
+								</div>
+				        </div>
+						<div class="control-group">
+								<label class="control-label">游戏币</label>
+								<div class="control-group">
+							    	<label class="control-label"><!--{{goods.gameAmount}}--></label>					
+								</div>
+				        </div>
+				        <div class="control-group">
+								<label class="control-label">接收帐号</label>
+								<div class="control-group">
+							    	<label class="control-label"><!--{{goods.receiveAccount}}--></label>					
+								</div>
+				        </div>
+				        
+				         <div class="control-group">
+								 <label class="control-label">订单下单时间</label>
+								<div class="control-group">
+							   			<label class="control-label"><!--{{goods.billTimeStr}}--></label>					
+								</div>
+				        </div>
+				       <div class="control-group">
+								<label class="control-label">订单支付时间</label>
+								<div class="control-group">
+							    		<label class="control-label"><!--{{goods.payTimeStr}}--></label>					
+								</div>
+				        </div>
+				        <div class="control-group">
+									<label class="control-label">订单状态</label>
+								    <div class="control-group">
+								    	<label class="control-label">
+											<!--{% if item.orderStatus == 0 %}-->
+												买家未付款
+											<!--{% elseif item.orderStatus == 1 %}-->
+												买家已付款，卖家未发货 
+											<!--{% elseif item.orderStatus == 2 %}-->
+												买家已付款，确认收货
+											<!--{% elseif item.orderStatus == 3 %}-->
+												买家已收货
+											<!--{% elseif item.orderStatus == 4 %}-->
+												交易取消
+											<!--{% elseif item.orderStatus == 5 %}-->
+												买家发起退款，等待卖家受理
+											<!--{% elseif item.orderStatus == 6 %}-->
+												卖家受理 
+											<!--{% elseif item.orderStatus == 7 %}-->
+												卖家进行退款
+											<!--{% elseif item.orderStatus == 8 %}-->
+												交易完成
+											<!--{%endif%}-->
+									</label>					
+							</div>
+				        </div>
+					    <div class="form-actions">
+							<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+						</div> 		
+				 </form>
+				 <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+							<th class="col-180">商品名称</th>
+						    <th class="col-100">下单人</th>
+							<th class="col-100">单价</th>							
+							<th class="col-120">游戏币</th>
+							<th class="col-120">购买数量</th>
+							<th class="col-120">商品发货状态</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item_ in goods.items%}-->
+							<tr>
+									<td><!--{{item_.productName}}--></td>
+									<td><!--{{item_.purchaser}}--></td>
+									<td><!--{{item_.productPrice}}--></td>
+									<td><!--{{item_.productGamePrice}}--></td>
+									<td><!--{{item_.purchaseNumber}}--></td>
+									<td>
+										<!--{% if item_.deliverStatus == 0 %}-->
+												未发货
+										<!--{% elseif item_.deliverStatus == 1 %}-->
+												已发货
+									    <!--{% endif %}-->
+									</td>
+							</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			</div>
+		</div>
+	<div>
+<div>	
+			   
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script>
+UE.getEditor('orderDesc');
+</script> 
+<!--{%endblock%}-->

@@ -1,0 +1,66 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>主题帖信息</h3>
+			</div>
+			<form class="form-horizontal">
+			<div class="box-content">
+			    <div class="control-group">
+					<label for="textfield" class="control-label">发帖人</label>
+					<div class="controls">	
+					<img src="http://img.youxiduo.com<!--{{users[topic.author_uid]['avatar']}}-->" width="50" height="50" />
+					<a href="<!--{{url('user/users/info',{'id':topic.author_uid})}}-->" target="_blank"><!--{{users[topic.author_uid]['nickname']}}--></a>
+					<img src="http://img.youxiduo.com<!--{{users[topic.author_uid]['level_icon']}}-->"/>
+					<span class="label">游币：<!--{{users[topic.author_uid]['score']}}--></span>				    						
+					</div>
+				</div>			
+				<div class="control-group">
+					<label for="textfield" class="control-label">主题</label>
+					<div class="controls">
+					<!--{{topic.subject}}-->					    						
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">内容</label>
+					<div class="controls">					    	
+					<!--{{topic.format_message}}-->					
+					</div>
+					<!--{%if topic.gid>0 and topic.cid>0%}-->
+					<a href="<!--{{url('forum/topic/edit',{'id':topic.tid})}}-->"><span class="label label-important">编辑</span></a>
+					<a href="<!--{{url('forum/topic/del',{'id':topic.tid,'back':0})}}-->"><span class="label label-important">删除</span></a>
+					<!--{%endif%}-->
+					
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">回复</label>
+					<div class="controls">
+						<table class="table table-hover table-nomargin">
+						<!--{%for item in replies%}-->
+						<tr>						    
+						    <td>
+						        <img src="http://img.youxiduo.com<!--{{users[item.uid]['avatar']}}-->" width="50" height="50" /><br/>
+						        <span class="badge badge-info"><!--{{item.uid}}--></span><a href="<!--{{url('user/users/info',{'id':item.uid})}}-->" target="_blank"><!--{{users[item.uid]['nickname']}}--></a><br/>
+						        <img src="http://img.youxiduo.com<!--{{users[item.uid]['level_icon']}}-->"/><br/>
+					            <span class="label">游币：<!--{{users[item.uid]['score']}}--></span>	<br/>
+						    </td>
+						    <td>
+						        <!--{{item.format_content}}-->
+						    </td>
+						    <td><span class="label"><!--{{item.storey}}--></span><a href="<!--{{url('comment/comments/del',{'id':item.id})}}-->"><span class="label label-important">删除</span></a></td>
+						</tr>
+						<!--{%endfor%}-->
+						</table>
+					    <div class="pagelink">
+					        <!--{{pagelinks}}-->
+					    </div>					    									
+					</div>
+				</div>
+			</div>
+			</form>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

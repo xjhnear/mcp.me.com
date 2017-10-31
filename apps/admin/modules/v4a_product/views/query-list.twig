@@ -1,0 +1,92 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					交易明细
+				</h3>
+				<div class="actions">
+					<form action="<!--{{url('/v4aproduct/goods/query')}}-->">
+						<table class="table-filter">
+		        			<tr>
+								<td>
+								 	<input id="" class="input-small" type="text" value="" placeholder="账户ID" name="accountId">
+								</td>
+								<td>
+									<div class="input-append date datepick" id="dpStart">
+										<input name="addTimeBegin" placeholder="开始时间" type="text" class="input-small" value="<!--{{addTimeBegin}}-->" readonly>
+										<span class="add-on"><i class="icon-calendar"></i></span>
+									</div>
+								</td>
+								<td>
+									<div class="input-append date datepick" id="dpEnd" data-date="">
+										<input name="addTimeEnd"  placeholder="结束时间" type="text" class="input-small" value="<!--{{addTimeEnd}}-->" readonly>
+										<span class="add-on"><i class="icon-calendar"></i></span>
+									</div>
+								</td>
+								<td>
+								 	<input id="" type="text" value="" placeholder="人民币价格区间下限" name="productPriceBegin">
+								</td>
+								<td>
+								 	<input id="" type="text" value="" placeholder="人民币价格区间上限" name="productPriceEnd">
+								</td>
+								<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+						</table>
+					</from>	
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-150">productCode/账户ID</th>
+						    <th class="col-80">商品名称</th>
+							<th class="col-60">游币价格</th>
+							<th class="col-80">商品类型</th>
+							<th class="col-80">虚拟商品类型</th>
+							<th class="col-80">购买数量</th>
+							<th class="col-80">时间</th>
+							<th class="col-60">交易状态</th>
+							<th class="col-150">商品介绍</th>
+						</tr>
+					</thead>	
+					<tbody>
+						<!--{% for key,item in datalist%}--> 
+						    <tr>
+								<td><!--{{item.productCode}}--></br><!--{{item.accountId}}--></td>
+								<td><!--{{item.productName}}--></td>
+								<td><!--{{item.productGamePrice}}--></td>
+								<td><!--{% if item.productType == 1 %}-->实物<!--{%else%}-->虚拟<!--{%endif%}--></td>
+								<td><!--{% if item.inventedType == 1 %}-->礼包<!--{%else%}-->普通卡密<!--{%endif%}--></td>
+								<td><!--{{item.productNumber}}--></td>
+								<td><!--{{item.getTime}}--></td>
+								<td><!--{% if item.tradeStatus == 1 %}-->已经购买<!--{%else%}-->预约<!--{%endif%}--></td>
+								<td><!--{{item.productSummary}}--></td>
+							</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,209 @@
+<!--{%extends "sub-layout-activity.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>寻宝箱信息</h3>
+			</div>
+			<div class="box-content">
+			    <form id="hunt" action="<!--{{url('activity/hunt/save')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data">
+			    <input id="id" name="id" type="hidden" value="<!--{{hunt.id}}-->" />
+			    <div class="control-group">
+					<label class="control-label">宝箱名称</label>
+					<div class="controls">
+						<input type="text" name="name" id="name" class="input-xlarge" value="<!--{{hunt.name}}-->" data-rule-required="true" data-msg-required="宝箱名称不能为空" />
+					</div>
+				</div>												
+				<div class="control-group">
+					<label class="control-label">入口游戏ID</label>
+					<div class="controls">
+					    <div class="input-append">
+					        <input id="selected_game_id" name="game_id" type="hidden" value="<!--{{hunt.game_id}}-->" />
+						    <img id="selected_game_icon" alt=""  class="add-on" src="/static/img/wu_ss.gif" />
+							<input type="text" id="selected_game_name" name="game_name" class="input-small" value="<!--{{game.shortgname}}-->" data-rule-required="true" data-msg-required="请选择入口游戏" />
+							<span class="add-on select-pop-game">选择游戏</span>
+						</div>												
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">开始时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input id="startdate" name="startdate" type="text" class="input-medium datetimepicker" value="<!--{{hunt.startdate|date('Y-m-d H:i')}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input id="enddate" name="enddate" type="text" class="input-medium datetimepicker" value="<!--{{hunt.enddate|date('Y-m-d H:i')}}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">奖项一</label>
+					<div class="controls">
+					    <div class="input-append">
+					        <input id="selected_prize_id_1" name="prize_id_1" type="hidden" value="<!--{{hunt.first_prize.prize_id}}-->" />
+						    <img id="selected_prize_pic_1" alt=""  class="add-on" src="/static/img/wu_ss.gif" />
+							<span id="selected_prize_name_1" class="input-xlarge uneditable-input"><!--{{hunt.first_prize.prize_name}}--></span>
+							<span class="add-on select-pop-prize" data-no="1">选择奖品</span>
+						</div>						
+						<div class="input-append">
+						    <span class="add-on">数量</span>
+							<input type="text" name="num_1" class="input-min" value="<!--{{hunt.first_prize.num|default(0)}}-->" />
+						</div>
+						<div class="input-append">
+						    <span class="add-on">概率</span>
+					        <input type="text" name="probability_1" class="input-min" value="<!--{{hunt.first_prize.probability}}-->" />
+					        <span class="add-on">%</span>
+				        </div>
+					</div>
+				</div>				
+				<div class="control-group">
+					<label class="control-label">奖项二</label>
+					<div class="controls">
+					    <div class="input-append">
+					        <input id="selected_prize_id_2" name="prize_id_2" type="hidden" value="<!--{{hunt.second_prize.prize_id}}-->" />
+						    <img id="selected_prize_pic_2" alt=""  class="add-on" src="/static/img/wu_ss.gif" />
+							<span id="selected_prize_name_2" class="input-xlarge uneditable-input"><!--{{hunt.second_prize.prize_name}}--></span>
+							<span class="add-on select-pop-prize" data-no="2">选择奖品</span>
+						</div>						
+						<div class="input-append">
+						    <span class="add-on">数量</span>
+							<input type="text" name="num_2" class="input-min" value="<!--{{hunt.second_prize.num|default(1)}}-->" />
+						</div>
+						<div class="input-append">
+						    <span class="add-on">概率</span>
+					        <input type="text" name="probability_2" class="input-min" value="<!--{{hunt.second_prize.probability}}-->" />
+					        <span class="add-on">%</span>
+				        </div>
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label">奖项三</label>
+					<div class="controls">
+					    <div class="input-append">
+					        <input id="selected_prize_id_3" name="prize_id_3" type="hidden" value="<!--{{hunt.third_prize.prize_id}}-->" />
+						    <img id="selected_prize_pic_3" alt=""  class="add-on" src="/static/img/wu_ss.gif" />
+							<span id="selected_prize_name_3" class="input-xlarge uneditable-input"><!--{{hunt.third_prize.prize_name}}--></span>
+							<span class="add-on select-pop-prize" data-no="3">选择奖品</span>
+						</div>						
+						<div class="input-append">
+						    <span class="add-on">数量</span>
+							<input type="text" name="num_3" class="input-min" value="<!--{{hunt.third_prize.num|default(0)}}-->" />
+						</div>
+						<div class="input-append">
+						    <span class="add-on">概率</span>
+					        <input type="text" name="probability_3" class="input-min" value="<!--{{hunt.third_prize.probability}}-->" />
+					        <span class="add-on">%</span>
+				        </div>
+					</div>
+				</div>
+				<div class="control-group">
+				    <label class="control-label">中奖说明</label>
+				    <div class="controls">
+				        <span class="">
+				            <p>中奖概率指三个奖项中奖所占的比例:</p>
+				            <p><span class="badge warning">1</span>当三个奖项概率和为100时表示百分百中奖</p>
+				            <p><span class="badge warning">2</span>当三个奖项概率和不足100时，则表示有不中奖的情况.</p>
+				            <p><span class="badge warning">3</span>当某个奖项概率为0时，则表示该奖项永远无法中奖.</p>
+				        </span>
+				    </div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">状态</label>
+					<div class="controls">
+					    
+				        <label class="checkbox inline">
+				        <!--{{form_checkbox('status',1,hunt.status==1)}}-->开启					        					        
+				        </label>				        				       
+					</div>
+				</div>	
+				<div class="control-group">
+					<label class="control-label">点开帖子次数</label>
+					<div class="controls">
+				        <input name="clicktimes" type="text" class="input-small" value="<!--{{hunt.clicktimes|default('3')}}-->"/>	        				       
+					</div>
+				</div>							
+			    <div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+var set_selected_game = function(game_id,game_name,icon){
+    $('#selected_game_id').val(game_id);
+    $('#selected_game_icon').attr('src',icon);
+    $('#selected_game_name').val(game_name);
+};
+var set_selected_prize_1 = function(id,name,pic){
+    $('#selected_prize_id_1').val(id);
+    $('#selected_prize_pic_1').attr('src',pic);
+    $('#selected_prize_name_1').text(name);
+};
+
+var set_selected_prize_2 = function(id,name,pic){
+    $('#selected_prize_id_2').val(id);
+    $('#selected_prize_pic_2').attr('src',pic);
+    $('#selected_prize_name_2').text(name);
+};
+
+var set_selected_prize_3 = function(id,name,pic){
+    $('#selected_prize_id_3').val(id);
+    $('#selected_prize_pic_3').attr('src',pic);
+    $('#selected_prize_name_3').text(name);
+};
+$(function(){
+    
+    $('#startdate').datetimepicker({format:'Y-m-d H:i',lang:'ch',onShow:function(ct){
+            //var d = $('#enddate').val().substr(0,10);
+            //this.setOptions({maxDate:d|false,formatDate:'Y-m-d'});
+        },closeOnDateSelect:true,timepicker:true    
+    });
+    
+    $('#enddate').datetimepicker({format:'Y-m-d H:i',lang:'ch',onShow:function(ct){
+            //var d = $('#startdate').val().substr(0,10);
+            //this.setOptions({minDate:d|false,formatDate:'Y-m-d'});
+        },closeOnDateSelect:true,timepicker:true
+    });
+    
+    $('.select-pop-game').bind('click',function(){        
+        $.ajax({
+            url:'/forum/api/game-search',
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+            }
+        });        
+    }); 
+    
+    $('.select-pop-prize').bind('click',function(){
+        var no = $(this).attr('data-no');
+        var url =  '/activity/prize/search/'+ no;        
+        $.ajax({
+            url:url,
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-prize-list',title:'提示',padding:2,content:html,width:600});
+            }
+        });        
+    });   
+});
+</script> 
+<!--{%endblock%}-->

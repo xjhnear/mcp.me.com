@@ -1,0 +1,150 @@
+<!--{%extends "sub-layout-user.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					用户列表
+					<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('user/users/index')}}-->">
+				    <table class="table-filter">
+				        <tr>
+				            <td>
+				                <div class="input-append date datepick" id="dpStart" data-date="">
+									<input name="startdate" type="text" class="input-small" value="<!--{{search.startdate}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+				            </td>
+				            <td>
+				                <div class="input-append date datepick" id="dpEnd" data-date="">
+									<input name="enddate" type="text" class="input-small" value="<!--{{search.enddate}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</td>
+							<td><!--{{form_select('keytype',{nickname:'用户名',uid:'用户UID',email:'Email',mobile:'手机号'},search.keytype,{'style':'width:80px;margin-bottom:0px'})}}--></td>
+				            <td><input type="text" name="keyword" id="keyword" class="input-medium" placeholder="用户名" value="<!--{{search.keyword}}-->"/> </td>
+				            <td>
+				                <div class="check-demo-col">
+					                <div class="check-line">
+										<!--{{form_radio('sort','dateline',search.sort=='dateline')}}--><label class='inline'>最新注册</label>
+									</div>
+								</div>
+				            </td>
+				            <td>
+				                <div class="check-demo-col">
+					                <div class="check-line">
+										<!--{{form_radio('sort','score',search.sort=='score')}}--><label class='inline'>游币</label>
+									</div>
+								</div>
+				            </td>
+				            <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">
+						    						        
+							</th>
+						    <th class="col-50">ID</th>
+							<th class="col-100">用户名</th>
+							<th class="col-60">头像</th>
+							<!--{%if allow_ios_money==true%}-->
+							<th class="col-60"><span class="cus-ios"></span>游币</th>
+							<th class="col-60"><span class="cus-ios"></span>经验</th>
+							<!--{%endif%}-->
+							<!--{%if allow_android_money==true%}-->
+							<th class="col-60"><span class="cus-android"></span>游币</th>
+							<th class="col-80"><span class="cus-android"></span>经验/等级</th>
+							<!--{%endif%}-->
+							<th class="col-120">注册时间</th>
+							<th class="col-60">来源</th>
+							<th>状态</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+						    <td><a href="javascript:void(0);" class="select-uid-ajax" data-uid="<!--{{item.uid}}-->" data-nickname="<!--{{item.nickname}}-->">选定</a></td>
+							<td><!--{{item.uid}}--></td>
+							<td><!--{{item.nickname|replace({'玩家':'玩家5'})}}--></td>
+							<td class="user-avatar"><img src="<!--{{item.avatar|default('/userdirs/common/avatar@2x.png?v=3')}}-->" /></td>
+							<!--{#<td><!--{{usergroups[item.uid]['group_name']}}--></td>#}-->
+							<!--{%if allow_ios_money==true%}-->
+							<td><a href="<!--{{url('user/users/credit-history',{'uid':item.uid})}}-->"><!--{{item.score}}--></a></td>
+							<td><!--{{item.experience}}--></td>
+							<!--{%endif%}-->
+							<!--{%if allow_android_money==true%}-->
+
+                            <td><a href="<!--{{url('user/users/money-history',{'uid':item.uid})}}-->"><!--{{android_money[item['uid']]['balance']}}--></a></td>
+
+                            <td><!--{{item.experience}}-->/Lv.<!--{{item.level_name}}--></td>
+							<!--{%endif%}-->
+							<td><!--{{item.dateline|date('Y-m-d H:i:s')}}--></td>
+							<td><!--{%if item.client == 'android'%}--><span class="cus-android"></span><!--{%else%}--><span class="cus-ios"></span><!--{%endif%}--></td>
+							<td><!--{%if in_array(item.uid,bans)%}--><span class="label">禁用中</span><!--{%endif%}--><!--{%if item.vuser==1%}-->robot<!--{%endif%}--></td>
+							<td>
+							    <!--{%if allow_edit==true%}--><a href="<!--{{url('user/users/edit',{'uid':item.uid})}}-->" class="btn btn-primary">编辑</a><!--{%endif%}-->
+							    <!--{%if allow_shield_avatar==true or allow_shield_nickname==true%}-->
+							    <div class="btn-group">
+							        <a data-toggle="dropdown" class="btn  btn-primary dropdown-toggle">屏蔽<span class="caret"></span></a>
+							        <ul class="dropdown-menu dropdown-primary">
+							            <!--{%if allow_shield_avatar==true%}--><li><a href="<!--{{url('user/users/shield-avatar',{'uid':item.uid})}}-->">屏蔽头像</a></li><!--{%endif%}-->
+							            <!--{%if allow_shield_nickname==true%}--><li><a href="<!--{{url('user/users/shield-nickname',{'uid':item.uid})}}-->">屏蔽昵称</a></li><!--{%endif%}-->
+							        </ul>
+							    </div>
+							    <!--{%endif%}-->
+							    <!--{%if allow_ban==true or allow_clear==true or allow_pwd==true%}-->
+							    <div class="btn-group">
+							        <a data-toggle="dropdown" class="btn  btn-primary dropdown-toggle">禁言<span class="caret"></span></a>
+							        <ul class="dropdown-menu dropdown-primary">
+							            <!--{%if allow_pwd==true%}--><li><a href="<!--{{url('user/users/pwd',{'uid':item.uid})}}-->">修改密码</a></li><!--{%endif%}-->
+							            <!--{%if allow_ban==true%}--><li><a href="<!--{{url('user/users/ban',{'uid':item.uid,'time':1800})}}-->">禁言30分钟</a></li><!--{%endif%}-->
+							            <!--{%if allow_ban==true%}--><li><a href="<!--{{url('user/users/ban',{'uid':item.uid,'time':3600*24})}}-->">禁言24小时</a></li><!--{%endif%}-->
+							            <!--{%if allow_ban==true%}--><li><a href="<!--{{url('user/users/ban',{'uid':item.uid,'time':0})}}-->">永久禁言</a></li><!--{%endif%}-->
+							            <!--{%if allow_ban==true%}--><li><a href="<!--{{url('user/users/unban',{'uid':item.uid})}}-->">解除禁言</a></li><!--{%endif%}-->
+							            <!--{%if allow_clear==true%}--><li><a href="<!--{{url('user/users/clear-post',{'uid':item.uid})}}-->">删除用户所有发言</a></li><!--{%endif%}-->
+							            <!--{%if allow_android_money==true%}--><li><a href="<!--{{url('user/users/open-android-money',{'uid':item.uid})}}-->">开通安卓游币账号</a></li><!--{%endif%}-->
+							            <!--{%if item.mobile%}--><li><a href="<!--{{url('user/users/add-mobile-to-blacklist',{'mobile':item.mobile})}}-->">加入手机黑名单</a></li><!--{%endif%}-->
+							            <li><a href="<!--{{url('user/users/force-out',{'uid':item.uid})}}-->">强制下线</a></li>
+							        </ul>
+							    </div>
+							    <!--{%endif%}-->
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.select-uid-ajax').bind('click',function(){
+        var uid = $(this).attr('data-uid');
+        var nickname = $(this).attr('data-nickname');
+        $.get('<!--{{url('user/users/add-select-user')}}-->',{'uid':uid,'nickname':nickname},function(data){
+            var html = '<li><a href="javascript:void(0)" data-uid="'+uid+'" class="delete-selected-uid-ajax">'+nickname+'<i class="icon-trash"></i></a></li>';
+            $('#selected-pop-ul').prepend(html);
+            $('#selected-uids-count').text($('.delete-selected-uid-ajax').length);
+        });
+        
+    });
+});    
+</script>
+<!--{%endblock%}-->

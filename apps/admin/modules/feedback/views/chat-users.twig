@@ -1,0 +1,70 @@
+<!--{%extends "sub-layout-chat.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					用户列表					
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('feedback/chat/users')}}-->">
+				    <table class="table-filter">
+				        <tr>
+				            <td>
+				                <div class="controls">
+								    <label class="radio inline">
+							        <!--{{form_radio('keytype','uid',cond.keytype=='uid')}}-->UID					        					        
+							        </label>
+							        <label class="radio inline">
+							        <!--{{form_radio('keytype','nickname',cond.keytype=='nickname')}}-->昵称					        					        
+							        </label>
+								</div>				                
+				            </td>
+				            <td>
+								<input name="keyword" type="text" class="input-medium" placeholder="" value="<!--{{cond.keyword}}-->">								
+							</td>
+				            <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">ID</th>
+							<th class="col-150">用户</th>
+							<th>最后信息</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.id}}--></td>
+							<td>
+							    <p><span class="badge badge-info"><!--{{item.from_uid}}--></span></p>
+							    <p><a href="<!--{{url('user/users/edit',{'id':item.from_uid})}}-->" target="_blank"><!--{{item.from_user.nickname}}--></a></p>
+							    <p><!--{{item.from_user.level_name}}--></p>
+							    <p><!--{{item.last_time|date('Y-m-d H:i:s')}}--></p>
+							</td>
+							<td><div class="well"><!--{{item.last_message}}--></div></td>
+							<td>
+							    <a href="<!--{{url('feedback/chat/list',{id:item.from_uid})}}-->" class="btn btn-primary">查看</a>							    
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!--{%endblock%}-->

@@ -1,0 +1,189 @@
+<!--{%extends "sub-layout-lottery.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					代充列表
+				</h3>
+				<div class="actions">
+					<button class="btn btn-success" id="success-push"><span style="color: white; ">充值完成</span></button>
+					<button class="btn btn-danger" id="error-push"><span style="color: white; ">无法充值</span></button>
+					<button class="btn btn-warning" id="broken-push"><span style="color: white; ">信息有误</span></button>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+				<table class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+						<th class="col-10">
+							<input type="checkbox" name="all"/>
+						</th>
+						<th class="col-10">ID</th>
+						<th class="col-40">标识</th>
+						<th class="col-20">头像</th>
+						<th class="col-150">游戏</th>
+						<th class="col-150">账户</th>
+						<th class="col-150">个人</th>
+						<th class="col-60">通知状态</th>
+						<th class="col-50">操作</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!--{%for item in list%}-->
+					<tr>
+						<td>
+							<input type="checkbox" name="ids" uid="<!--{{ item.uid }}-->" gname="<!--{{ item.gname }}-->"
+							       gid="<!--{{ item.gid }}-->" value="<!--{{item.chargeId}}-->" error="<!--{{ item.isNotice }}-->"
+									success="<!--{{ item.isSuccess }}-->" broken="<!--{{ item.isBroken }}-->"/></td>
+						<td><!--{{item.chargeId}}--></td>
+						<td><!--{{item.gid}}--></td>
+						<td>
+							<img width="35" style="margin-left: 15px;" src="<!--{{users[item.uid]['avatar']|default('/static/img/common/avatar.gif')}}-->" /><br/>
+							<span class="badge badge-default"><!--{{ users[item.uid]['nickname'] }}--></span><br/>
+							<span class="badge badge-info"><!--{{ item.uid }}--></span>
+						</td>
+						<td>
+							<p>游戏名 ： <!--{{ item.gname }}--></p>
+							<p>渠道 ： <!--{{ item.gchannel }}--></p>
+							<p>角色名 ： <!--{{ item.roleName }}--></p>
+						</td>
+						<td>
+							<p>游戏区服 ： <!--{{ item.gamezone }}--></p>
+							<p>游戏账号 ： <!--{{ item.gameAccount }}--></p>
+							<p>游戏密码 ： <!--{{ item.gamePassword }}--></p>
+						</td>
+						<td>
+							<p>QQ号 ： <!--{{ item.qq }}--></p>
+							<p>手机号 ： <!--{{ item.mobile }}--></p>
+							<p>收货地址 ： <!--{{ item.address }}--></p>
+						<td>
+							<!--{% if item.isSuccess %}--><span title="充值成功" class="badge badge-success">充值成功</span>
+							<!--{% elseif item.isNotice %}--><span title="无法充值" class="badge badge-important">无法充值</span>
+							<!--{% else %}-->
+							<!--{% endif %}-->
+						</td>
+						<td>
+							<a class="btn btn-primary" href="<!--{{ url('lottery/inscharge/form-edit',{'id':item.chargeId}) }}-->">编辑</a>
+							<a class="btn btn-primary ajax-del" href="javascript:void(0);" data="<!--{{ item.chargeId }}-->">删除</a>
+						</td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+				</table>
+				<div class="pagelink">
+					<!--{{ pagination }}-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+	$(function(){
+		$('input[name="all"]').bind('click',function(){
+			if($(this).prop('checked')==true){
+				$('input[name="ids"]').prop('checked',true);
+			}else{
+				$('input[name="ids"]').prop('checked',false);
+			}
+		});
+		$('#success-push').bind('click',function(){
+			alertify.confirm('确认发送（已勾选用户）充值成功通知？',function(e){
+				if(e){
+					var datas = [];
+					$('input[name="ids"]:checked').each(function(){
+						datas.push({'id':$(this).val(),'uid':$(this).attr('uid'),'gid':$(this).attr('gid'),'gname':$(this).attr('gname'),
+						'success':$(this).attr('success'),'error':$(this).attr('error'),'broken':$(this).attr('broken')});
+					});
+					if(datas.length==0) {
+						alertify.error('请选择用户');
+						return false;
+					}
+					$.post('/lottery/inscharge/ajax-send-notice',{'data':datas,'type':'success'},function(resp){
+						if(resp.state){
+							alertify.success(resp.msg);
+							setTimeout(function(){
+								location.reload();
+							},1000);
+						}else{
+							alertify.error(resp.msg);
+						}
+					},'json')
+				}
+			});
+		});
+		$('#error-push').bind('click',function(){
+			alertify.confirm('确认发送（已勾选用户）暂无法充值通知？',function(e){
+				if(e){
+					var datas = [];
+					$('input[name="ids"]:checked').each(function(){
+						datas.push({'id':$(this).val(),'uid':$(this).attr('uid'),'gid':$(this).attr('gid'),'gname':$(this).attr('gname'),
+						'success':$(this).attr('success'),'error':$(this).attr('error'),'broken':$(this).attr('broken')});
+					});
+					if(datas.length==0) {
+						alertify.error('请选择用户');
+						return false;
+					}
+					$.post('/lottery/inscharge/ajax-send-notice',{'data':datas,'type':'error'},function(resp){
+						if(resp.state){
+							alertify.success(resp.msg);
+							setTimeout(function(){
+								location.reload();
+							},1000);
+						}else{
+							alertify.error(resp.msg);
+						}
+					},'json');
+				}
+			});
+		});
+		$('#broken-push').bind('click',function(){
+			alertify.confirm('确认发送（已勾选用户）信息有误通知？',function(e){
+				if(e){
+					var datas = [];
+					$('input[name="ids"]:checked').each(function(){
+						datas.push({'id':$(this).val(),'uid':$(this).attr('uid'),'gid':$(this).attr('gid'),'gname':$(this).attr('gname'),
+						'success':$(this).attr('success'),'error':$(this).attr('error'),'broken':$(this).attr('broken')});
+					});
+					if(datas.length==0) {
+						alertify.error('请选择用户');
+						return false;
+					}
+					$.post('/lottery/inscharge/ajax-send-notice',{'data':datas,'type':'broken'},function(resp){
+						if(resp.state){
+							alertify.success(resp.msg);
+							setTimeout(function(){
+								location.reload();
+							},1000);
+						}else{
+							alertify.error(resp.msg);
+						}
+					},'json');
+				}
+			});
+		});
+		$('.ajax-del').bind('click',function(){
+			var id = $(this).attr('data');
+			alertify.confirm('确认删除此条记录么？',function(e){
+				if(e){
+					$.get('/lottery/inscharge/ajax-form-del',{'charge_id':id},function(resp){
+						if(resp.state){
+							alertify.success(resp.msg);
+							setTimeout(function(){
+								location.reload();
+							},1000);
+						}else{
+							alertify.error(resp.msg);
+						}
+					},'json');
+				}
+			});
+		});
+  });
+</script>
+<!--{%endblock%}-->

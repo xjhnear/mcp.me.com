@@ -1,0 +1,319 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>增加活动</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form-activity" action="<!--{{url('duang/variation/add')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+				<div class="control-group">
+					<label class="control-label">活动标题</label>
+					<div class="controls">
+						<input type="text" name="title" class="input-large" value="<!--{{ input_old('title') }}-->" data-rule-required="true" data-msg-required="标题不能为空" />
+						<span class="add-on">活动题目不要超过15个汉字</span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">开始时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input name="starttime" type="text" class="input-medium datetimepicker" value="<!--{{ input_old('starttime') }}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间</label>
+					<div class="controls">
+						<div class="input-append date">
+							<input name="endtime" type="text" class="input-medium datetimepicker" value="<!--{{ input_old('endtime') }}-->" readonly="">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+					</div>
+				</div>
+			    <div class="row-fluid">
+				    <div class="span4">
+					    <div class="control-group">
+							<label class="control-label">新用户奖励</label>
+							<div class="controls">
+								<select id="director-muselect" multiple="multiple" name="director[]">
+									<!--{% for item in depots %}-->
+									<option <!--{% if input_old('director') == item.depot_id %}-->selected<!--{% endif %}--> value="<!--{{ item.depot_id }}-->"><!--{{ item.depot_id }}-->:<!--{{ item.name }}--></option>
+									<!--{% endfor %}-->
+								</select>
+							</div>
+						</div>
+				    </div>
+				    <div class="span5">
+					    <div class="control-group">
+						    <label class="control-label" style="width: 80px;"><input type="checkbox" id="ck-money" name="money" value="1" <!--{% if input_old('money') %}-->checked<!--{% endif %}-->> 游币</label>
+							<div class="controls" style="margin-left: 80px;">
+								<input type="text" class="input-small validate[condRequired[ck-money]]" id="ck-money-v" name="money_value" data-rule-min="1" data-msg-min="最小为1" data-rule-digits="true" data-msg-digits="游币数必须为整数" value="<!--{{ input_old('money_value') }}-->">
+								<span class="add-on text-error">游币和礼包卡选中数最多为4个</span>
+							</div>
+						</div>
+				    </div>
+			    </div>
+			    <div class="row-fluid">
+				    <div class="span4">
+					    <div class="control-group">
+							<label class="control-label">老用户奖励</label>
+							<div class="controls">
+								<select id="sharer-select" name="sharer[]" multiple="multiple">
+									<!--{% for item in depots %}-->
+									<option <!--{% if item.belong == 'sharer' and item.select %}-->selected<!--{% endif %}--> value="<!--{{ item.depot_id }}-->"><!--{{ item.depot_id }}-->:<!--{{ item.name }}--></option>
+									<!--{% endfor %}-->
+								</select>
+							</div>
+						</div>
+				    </div>
+				    <div class="span5">
+					    <div class="control-group">
+						    <label class="control-label" style="width: 80px;"><input type="checkbox" id="ck-s-money" name="s_money" value="1" <!--{% if info.s_money %}-->checked<!--{% endif %}-->> 游币</label>
+							<div class="controls" style="margin-left: 80px;">
+								<input type="text" class="input-small validate[condRequired[ck-s-money]]" id="ck-s-money-v" name="s_money_value" data-rule-min="1" data-msg-min="最小为1" data-rule-digits="true" data-msg-digits="游币数必须为整数" value="<!--{{ info.s_money }}-->">
+								<span class="add-on text-error">游币和礼包卡选中数最多为4个</span>
+							</div>
+						</div>
+				    </div>
+			    </div>
+                <div class="control-group">
+                    <label class="control-label">所需次数</label>
+                    <div class="controls">
+                        <input type="text" name="need_times" value="<!--{{ input_old('need_times') }}-->" class="input-small" data-rule-required="true" data-msg-required="次数不能为空" data-rule-digits="true" data-msg-digits="请填写整数"/>
+                        <span class="add-on">此值为分享者分享的链接达到此值，获得奖励</span>
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">是否开启</label>
+					<div class="controls">					    				        
+						<input name="is_show" <!--{% if(input_old('is_show')) %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="开启" data-off-color="danger" data-off-text="关闭" class="switchbox" type="checkbox" checked/>
+					</div>
+				</div>
+				 <div class="control-group">
+					<label class="control-label">开启推广</label>
+					<div class="controls">
+						<input id="spread" name="is_spread" <!--{% if(info.is_spread) == 1 %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="开启" data-off-color="danger" data-off-text="关闭" class="switchbox" type="checkbox"/>
+					</div>
+				</div>
+				<div class="row-fluid spread-set">
+					<div class="span4">
+						<div class="control-group">
+							<label class="control-label">每多完成</label>
+							<div class="controls">
+								<input type="text" id="more-newer" name="more_newer" value="<!--{{ info.more_newer }}-->" class="input-small validate[condRequired[spread]]"
+								       data-rule-digits="true" data-msg-digits="请填写整数"/> 人
+							</div>
+						</div>
+					</div>
+					<div class="span4">
+						<div class="control-group">
+							<label class="control-label">可获得</label>
+							<div class="controls">
+								<input type="text" id="more-coin" name="more_coin" value="<!--{{ info.more_coin }}-->" class="input-small validate[condRequired[spread]]"
+								       data-rule-digits="true" data-msg-digits="请填写整数"/> 游币奖励
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+                    <label class="control-label">活动奖励</label>
+                    <div class="controls">
+	                    <script id="reward" name="reward" type="text/plain"><!--{{ input_old('reward') }}--></script>
+                    </div>
+                </div>
+				<div class="control-group">
+                    <label class="control-label">参与方式</label>
+                    <div class="controls">
+	                    <script id="join" name="join" type="text/plain"><!--{{ input_old('join') }}--></script>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">活动规则</label>
+                    <div class="controls">
+	                    <script id="rule" name="rule" type="text/plain"><!--{{ input_old('rule') }}--></script>
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">BEST后台活动</label>
+					<div class="controls">
+					    <div class="input-append">
+					        <input id="selected_activity_aid" name="article_id" type="hidden" value="<!--{{ input_old('article_id') }}-->"/>
+							<span id="selected_activity_title" class="input-xlarge uneditable-input"></span>
+							<span class="add-on select-pop-activity" data-no="2">选择活动</span>
+							<a class="add-on" href="<!--{{url('a_activity/activity/edit')}}-->" target="_blank">添加新活动</a>
+						</div>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">微信分享Logo</label>
+					<div class="controls">
+						<div data-provides="fileupload" class="fileupload fileupload-new">
+							<div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+								<img src="/static/img/wu_ss.gif">
+							</div>
+							<div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+							<span class="btn btn-file"><i class="icon-picture"></i>
+								<span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+								<input type="file" name="share_pic" data-rule-required="true" data-msg-required="选择图片">
+							</span>
+							<a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+						</div>
+					</div>
+				</div>
+			    <div class="control-group">
+					<label class="control-label">微信分享标题</label>
+					<div class="controls">
+						<input type="text" name="share_title" value="<!--{{ input_old('share_title') }}-->" class="input-large" data-rule-required="true" data-msg-required="请输入分享标题"/>
+						<span class="add-on">分享标题不要超过15个汉字</span>
+					</div>
+				</div>
+			    <div class="control-group">
+                    <label class="control-label">微信分享描述</label>
+                    <div class="controls">
+                        <textarea name="share_des" class="input-large" data-rule-required="true" data-msg-required="请输入分享描述"><!--{{ input_old('share_des') }}--></textarea>
+                        <span class="add-on"></span>
+                    </div>
+                </div>
+				<div class="control-group">
+					<label class="control-label">顶部Banner图片</label>
+					<div class="controls">
+						<div data-provides="fileupload" class="fileupload fileupload-new">
+							<div style="max-width: 160px; max-height: 60px;" class="fileupload-new thumbnail">
+								<img src="http://share.youxiduo.com/share/static/img/topImg.jpg">
+							</div>
+							<div style="max-width: 160px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+							<span class="btn btn-file"><i class="icon-picture"></i>
+								<span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+								<input type="file" name="top_pic" data-rule-required="true" data-msg-required="选择图片">
+							</span>
+							<a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+							<span class="text-info">图片最佳尺寸375x140（<span class="text-error">不上传即为左边默认图</span>）</span>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditorbbs.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script src="/static/js/plugins/multiselect/bootstrap-multiselect.js"></script>
+<script>
+//选择活动
+var set_selected_activity = function(id,title){
+	$('#selected_activity_aid').val(id);
+	$('#selected_activity_title').text(title);
+};
+
+$(function(){
+	UE.getEditor('reward',{toolbars:[['undo', 'redo']],initialFrameHeight:100});
+	UE.getEditor('join',{toolbars:[['undo', 'redo']],initialFrameHeight:100});
+	UE.getEditor('rule',{toolbars:[['undo', 'redo']],initialFrameHeight:100});
+	$('input').iCheck({
+		checkboxClass: 'icheckbox_square-orange',
+		radioClass: 'iradio_square-orange',
+		increaseArea: '20%' // optional
+	});
+	$('#director-muselect,#sharer-select').multiselect({
+        includeSelectAllOption: true
+    });
+	$('.switchbox').bootstrapSwitch();
+    $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+	var money_ck = $("input[name='money']:checked").val();
+	var s_money_ck = $("input[name='s_money']:checked").val();
+
+	if(money_ck == 1){
+		$("input[name='money_value']").show();
+	}else{
+		$("input[name='money_value']").hide();
+	}
+	if(s_money_ck == 1){
+		$("input[name='s_money_value']").show();
+	}else{
+		$("input[name='s_money_value']").hide();
+	}
+	$("input[name='s_money']").on('ifChanged',function(e){
+		if($("input[name='s_money']:checked").val() == 1){
+			$("input[name='s_money_value']").fadeIn();
+		}else{
+			$("input[name='s_money_value']").fadeOut();
+		}
+	});
+	$("input[name='money']").on('ifChanged',function(e){
+		if($("input[name='money']:checked").val() == 1){
+			$("input[name='money_value']").fadeIn();
+		}else{
+			$("input[name='money_value']").fadeOut();
+		}
+	});
+	//关联验证
+	jQuery("#form-activity").validationEngine({'custom_error_messages':{
+		"#ck-money-v":{
+			"condRequired": {'message':'<span style="left:225px;position: absolute;width: 100px;">请填写游币数</span>'}
+		},
+		"#ck-s-money-v":{
+			"condRequired": {'message':'<span style="left:225px;position: absolute;width: 100px;">请填写游币数</span>'}
+		},
+		"#more-newer":{
+			"condRequired": {'message':'<span style="color:#b94a48;left:65px;position: absolute;width: 100px;">此处必填</span>'}
+		},
+		"#more-coin":{
+			"condRequired": {'message':'<span style="color:#b94a48;left:105px;position: absolute;width: 100px;">此处必填</span>'}
+		}
+	}});
+
+	//选择活动弹窗
+	$('.select-pop-activity').bind('click',function(){
+        var no = $(this).attr('data-no');
+        var url =  '/a_activity/activity/pop-search/'+ no;
+        $.ajax({
+            url:url,
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-data-list',title:'提示',padding:2,content:html,width:600});
+            }
+        });
+    });
+    //初始化活动
+    if($('#selected_activity_aid').val()>0){
+        $.ajax({
+            url:'/a_activity/activity/pop-info/'+$('#selected_activity_aid').val(),
+            dataType:'json',
+            success:function(json){
+                $('#selected_activity_title').html(json.activity.title);
+            },
+            error:function(err){alert(err);}
+        });
+    }
+	//推广
+	var spread = $("input[name='is_spread']:checked").val();
+	if(spread){
+		$(".spread-set").show();
+	}else{
+		$(".spread-set").hide();
+	}
+	$("input[name='is_spread']").on('switchChange.bootstrapSwitch',function(e,data){
+		if(data){
+			$(".spread-set").fadeIn();
+		}else{
+			$(".spread-set").fadeOut();
+		}
+	});
+});
+</script>
+<!--{%endblock%}-->

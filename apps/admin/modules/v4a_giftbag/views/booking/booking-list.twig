@@ -1,0 +1,70 @@
+<!--{%extends "../sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    礼包预约统计表
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('/v4agiftbag/booking/list/')}}-->">
+                        <table class="table-filter">
+                            <td>
+                                <input type="text" name="timeBegin" id="datetime" class="input-small datetime" placeholder="开始时间" value="<!--{{inputinfo.timeBegin}}-->"/>
+                            <td>
+                                <input type="text" name="timeEnd" id="datetime2" class="input-small datetime" placeholder="结束时间" value="<!--{{inputinfo.timeEnd}}-->"/>
+                            </td>
+
+                            <td>
+                                <input type="text" name="gname" id="" class="input-small" placeholder="游戏名称" value="<!--{{inputinfo.gname}}-->"/>
+                            </td>
+                            <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-80">游戏名称</th>
+                        <th class="col-80">预约人数</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{% for item in datalist %}-->
+                    <tr>
+                        <td game-id="<!--{{ item.gid }}-->"><!--{{ item.gname }}--></td>
+                        <td><!--{{ item.count }}--></td>
+
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/laydate/laydate.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/MyHelp.js')}}-->"></script>
+<script>
+    var setting= {
+        elem:'#datetime'
+    };
+    getLaydate(setting);
+    var setting= {
+        elem:'#datetime2'
+    };
+
+    getLaydate(setting);
+</script>
+<!--{%endblock%}-->

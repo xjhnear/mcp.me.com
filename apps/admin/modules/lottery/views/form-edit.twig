@@ -1,0 +1,99 @@
+<!--{%extends "sub-layout-lottery.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3>
+					<i class="icon-edit"></i>
+					编辑代充信息
+				</h3>
+				<div class="actions">
+				</div>
+			</div>
+			<div class="box-content">
+				<form id="form-activity" action="<!--{{url('lottery/inscharge/form-edit')}}-->" method="POST" class="form-horizontal form-validate">
+					<input type="hidden" name="chargeId" value="<!--{{ info.chargeId }}-->">
+					<input type="hidden" name="uid" value="<!--{{ info.uid }}-->">
+					<input type="hidden" name="createTime" value="<!--{{ info.createTime }}-->">
+					<div class="control-group">
+						<label class="control-label">标识</label>
+						<div class="controls">
+							<input type="text" name="gid" class="input" value="<!--{{ info.gid }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">游戏名</label>
+						<div class="controls">
+							<input type="text" name="gname" class="input" value="<!--{{ info.gname }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">渠道</label>
+						<div class="controls">
+							<input type="text" name="gchannel" class="input" value="<!--{{ info.gchannel }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">游戏区服</label>
+						<div class="controls">
+							<input type="text" name="gamezone" class="input" value="<!--{{ info.gamezone }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">游戏登录账号</label>
+						<div class="controls">
+							<input type="text" name="gameAccount" class="input" value="<!--{{ info.gameAccount }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">游戏登录密码</label>
+						<div class="controls">
+							<input type="text" name="gamePassword" class="input" value="<!--{{ info.gamePassword }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">角色名</label>
+						<div class="controls">
+							<input type="text" name="roleName" class="input" value="<!--{{ info.roleName }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">QQ号</label>
+						<div class="controls">
+							<input type="text" name="qq" class="input" value="<!--{{ info.qq }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">手机号</label>
+						<div class="controls">
+							<input type="text" name="mobile" class="input" value="<!--{{ info.mobile }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">收货地址</label>
+						<div class="controls">
+							<input type="text" name="address" class="input" value="<!--{{ info.address }}-->" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label"></label>
+						<div class="controls">
+							<input type="submit" value="确认保存" class="btn btn-primary">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+	$('input').iCheck({
+		checkboxClass: 'icheckbox_square-orange',
+		radioClass: 'iradio_square-orange',
+		increaseArea: '20%' // optional
+	});
+</script>
+<!--{%endblock%}-->

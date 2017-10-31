@@ -1,0 +1,80 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					管理员列表
+					<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('admin/admin/list')}}-->" class="">
+				    <table class="table-filter">				        
+				        <tr>
+							<!--{%if is_super==true%}-->
+				            <td><!--{{form_select('group_id',groups,search.group_id,{'style':'width:120px;margin-bottom:0px'})}}--></td>
+				            <td><input name="username" type="text" class="input-small" value="<!--{{search.username}}-->" /></td>
+				            <td>
+				                <div class="check-demo-col" style="width:160px;">
+					                <label class="checkbox inline">
+										<!--{{form_checkbox('showall','1',search.showall==1)}}-->显示禁用的账号
+									</label>
+								</div>
+				            </td>
+				            <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+							<!--{%endif%}-->
+				            <td><a href="<!--{{url('admin/admin/add')}}-->" class="btn btn-teal">添加人员</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">
+						        
+							</th>
+						    <th class="col-50">ID</th>
+							<th class="col-150">用户名</th>
+							<th class="col-150">姓名</th>
+							<th class="col-150">昵称</th>
+							<th class="col-150">角色</th>
+							<th class="col-150">是否启用</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					<!--{%for item in datalist%}-->
+					<tr>
+						<td></td>
+						<td><!--{{item.id}}--></td>
+						<td><!--{{item.username}}--></td>
+						<td><!--{{item.realname}}--></td>
+						<td><!--{{item.authorname}}--></td>
+						<td><!--{{groups[item.group_id]}}--></td>
+						<td><!--{%if item.isopen == 1%}-->已启用<!--{%else%}-->已禁用<!--{%endif%}--></td>
+						<td>
+							<a href="<!--{{url('admin/admin/edit',{'admin_id':item.id})}}-->" class="btn btn-primary">编辑</a>
+							<a href="<!--{{url('admin/admin/permission',{'admin_id':item.id})}}-->" class="btn btn-primary">编辑权限</a>
+							<!--{%if item.isopen == 1%}-->
+							<a href="<!--{{url('admin/admin/change-status',{'admin_id':item.id,'status':'2'})}}-->" class="btn btn-primary">设为禁用</a>
+							<!--{%else%}-->
+							<a href="<!--{{url('admin/admin/change-status',{'admin_id':item.id,'status':'1'})}}-->" class="btn btn-primary">设为启用</a>
+							<!--{%endif%}-->
+						</td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
