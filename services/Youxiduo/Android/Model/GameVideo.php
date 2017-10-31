@@ -48,11 +48,28 @@ final class GameVideo extends Model implements IModel
 		return self::db()->where('id','=',$id)->select($fields)->first();
 	}
 
-    public static function getGameVideos($gid)
+    public static function getGameVideos($gid,$key="agid")
     {
         $out = array();
         $fields = array('id','title','writer','ico','addtime');
-        $result = self::db()->where('agid','=',$gid)->where('type','=',1)->select($fields)->orderBy('id','desc')->take(3)->get();
+        $result = self::db()->where($key,'=',$gid)->where('type','=',1)->select($fields)->orderBy('id','desc')->take(3)->get();
+        if ($result) {
+            foreach ($result as $k => $v){
+                $out[$k]['gvid'] = $v['id'];
+                $out[$k]['title'] = $v['title'];
+                $out[$k]['editor'] = $v['writer'];
+                $out[$k]['img'] = Utility::getImageUrl($v['ico']);
+                $out[$k]['updatetime'] = date("Y-m-d H:i:s",$v['addtime']);
+            }
+        }
+        return $out;
+    }
+    
+    public static function getGameVideosbyGids($gids,$key="agid")
+    {
+        $out = array();
+        $fields = array('id','title','writer','ico','addtime');
+        $result = self::db()->whereIn($key,$gids)->where('type','=',1)->select($fields)->orderBy('id','desc')->take(3)->get();
         if ($result) {
             foreach ($result as $k => $v){
                 $out[$k]['gvid'] = $v['id'];

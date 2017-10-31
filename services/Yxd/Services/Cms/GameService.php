@@ -1,6 +1,8 @@
 <?php
 namespace Yxd\Services\Cms;
 
+use Yxd\Services\Models\GamesSchemes;
+
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\DB;
@@ -11,7 +13,25 @@ use Yxd\Modules\Core\CacheService;
 use Yxd\Services\Service;
 use Yxd\Models\Cms\Game;
 use Yxd\Services\ForumService;
-
+use Yxd\Services\Models\Games;
+use Youxiduo\V4\Game\Model\IosGame;
+use Yxd\Services\Models\Zt;
+use Yxd\Services\Models\ZtGames;
+use Yxd\Services\Models\GameDownloadCount;
+use Yxd\Services\Models\GameDownloadCountRetry;
+use Yxd\Services\Models\GameDownloadAdvCount;
+use Yxd\Services\Models\GamesTag;
+use Yxd\Services\Models\GameType;
+use Yxd\Services\Models\GameRecommend;
+use Yxd\Services\Models\GameMustPlay;
+use Yxd\Services\Models\Tag;
+use Yxd\Services\Models\GameCredit;
+use Yxd\Services\Models\NewGame;
+use Yxd\Services\Models\GameNotice;
+use Yxd\Services\Models\GameExpedition;
+use Yxd\Services\Models\Task;
+use Yxd\Services\Models\Recommend;
+//
 class GameService extends Service
 {
 	public static $languages = array('0'=>'未知','1'=>'中文','2'=>'英文','3'=>'其他');
@@ -26,7 +46,7 @@ class GameService extends Service
 		if(CLOSE_CACHE===false && CacheService::section($section)->has($cachekey)){
 			$games = CacheService::section($section)->get($cachekey);
 		}else{
-			$games = self::dbCmsSlave()->table('games')
+			$games = Games::db()
 		       ->where('isdel','=',0)
 		       ->forPage(1,12)
 		       ->orderBy('addtime','desc')
@@ -50,8 +70,8 @@ class GameService extends Service
 	 */
 	public static function getLastUpdate($page=1,$pagesize=10)
 	{
-		$total = self::dbCmsSlave()->table('games')->where('isdel','=',0)->count();
-		$games = self::dbCmsSlave()->table('games')
+		$total = Games::db()->where('isdel','=',0)->count();
+		$games = Games::db()
 		       ->where('isdel','=',0)
 		       ->forPage($page,$pagesize)
 		       ->orderBy('addtime','desc')
@@ -90,7 +110,7 @@ class GameService extends Service
 	{
 		if($page==1){
 			//今日推荐
-			$recommend = self::dbCmsSlave()->table('game_recommend')
+			$recommend = GameRecommend::db()
 			             ->select('games.*')
 			             ->where('game_recommend.type','=','h')
 			             ->leftJoin('games','game_recommend.gid','=','games.id')
@@ -98,7 +118,7 @@ class GameService extends Service
 			             ->get();
 			$recommend = array();             		             
 		}		
-		$games = self::dbCmsSlave()->table('games')
+		$games = Games::db()
 			->where('flag','=','1')
             ->where('isdel','=','0')
             ->orderBy('isapptop','desc')
@@ -111,12 +131,12 @@ class GameService extends Service
 			$games = array_merge($recommend,array_slice($games,$len));
 		}
 		//
-		$total = self::dbCmsSlave()->table('games')->where('isdel','=',0)->where('flag','=',1)->count();
+		$total = Games::db()->where('isdel','=',0)->where('flag','=',1)->count();
 		$gids = array();
 		foreach($games as $row){
 			$gids[] = $row['id'];
 		}
-		$game_credits = self::dbClubSlave()->table('game_credit')->whereIn('game_id',$gids)->lists('score','game_id');
+		$game_credits = GameCredit::db()->whereIn('game_id',$gids)->lists('score','game_id');
 								
 		$out = array();
 		foreach($games as $index=>$row){
@@ -132,6 +152,7 @@ class GameService extends Service
 			$out[$index]['desc'] = $row['shortcomt'];			
 			$out[$index]['adddate'] = date('Y-m-d',$row['recommendtime'] ? : $row['addtime']);
 			$out[$index]['score'] = $row['score'];
+			$out[$index]['language'] = self::$languages[$row['language']];
 			$out[$index]['status'] = '1';
 		}
 		return array('games'=>$out,'total'=>$total); 
@@ -142,8 +163,8 @@ class GameService extends Service
 	 */
 	public static function getMustPlay($page=1,$pagesize=10)
 	{
-		$total = self::dbCmsSlave()->table('game_mustplay')->where('gid','>',0)->count();
-		$games = self::dbCmsSlave()->table('game_mustplay')
+		$total = GameMustPlay::db()->where('gid','>',0)->count();
+		$games = GameMustPlay::db()
 		    ->where('gid','>',0)
 		    ->orderBy('sort','desc')
 		    ->orderBy('addtime','desc')
@@ -163,8 +184,8 @@ class GameService extends Service
 	 */
 	public static function getGameCollect($page=1,$pagesize=10)
 	{
-		$total = self::dbCmsSlave()->table('zt')->where('apptype','!=',2)->count();
-		$collect = self::dbCmsSlave()->table('zt')->where('apptype','!=',2)
+		$total = Zt::db()->where('apptype','!=',2)->count();
+		$collect = Zt::db()->where('apptype','!=',2)
 		    ->select('id as tid','ztitle as title','litpic as img','addtime')
 		    ->orderBy('isapptop','desc')
 		    ->orderBy('addtime','desc')
@@ -176,7 +197,7 @@ class GameService extends Service
 		foreach($collect as $row){
 			$zt_ids[] = $row['tid'];
 		}
-		$_collect_game = self::dbCmsSlave()->table('zt_games')->whereIn('zt_id',$zt_ids)->get();
+		$_collect_game = ZtGames::db()->whereIn('zt_id',$zt_ids)->get();
 		$collect_game = array();
 		foreach($_collect_game as $row){
 			$collect_game[$row['zt_id']][] = $row['gid'];
@@ -207,11 +228,11 @@ class GameService extends Service
 	public static function getGameCollectDetail($tid)
 	{
 		//$total = DB::connection(self::$CONN)->table('zt')->count();
-		$collect = self::dbCmsSlave()->table('zt')
+		$collect = Zt::db()
 		    ->where('id','=',$tid)
 		    ->first();
         //
-		$game_ids = self::dbCmsSlave()->table('zt_games')->where('zt_id','=',$tid)->where('gid','>',0)->orderBy('id','asc')->lists('gid');
+		$game_ids = ZtGames::db()->where('zt_id','=',$tid)->where('gid','>',0)->orderBy('id','asc')->lists('gid');
 		if(!$game_ids) return array();
 		$games = self::getGamesByIds($game_ids);
 		$out = array();
@@ -273,7 +294,7 @@ class GameService extends Service
 	protected static function getTodayTestTable($page=1,$pagesize=10)
 	{
 		//$total = DB::connection(self::$CONN)->table('newgame')->count();
-		$hotgame = self::dbCmsSlave()->table('newgame')->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','games.*','newgame.addtime','newgame.istop','newgame.isfirst')
+		$hotgame = NewGame::db()->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','games.*','newgame.addtime','newgame.istop','newgame.isfirst')
 		         ->leftJoin('games','newgame.gid','=','games.id')
 		         ->where('newgame.gid','>',0)
 		         ->where('newgame.istop','=',1)		         
@@ -285,7 +306,7 @@ class GameService extends Service
 		$start = mktime(0,0,0,date('m'),date('d'),date('Y'));
 		$end = mktime(23,59,59,date('m'),date('d'),date('Y'));
 		
-		$today = self::dbCmsSlave()->table('newgame')->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
+		$today = NewGame::db()->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
 		         ->leftJoin('games','newgame.gid','=','games.id')
 		         ->where('newgame.gid','>',0)
 		         ->where('newgame.istop','=',0)
@@ -298,7 +319,7 @@ class GameService extends Service
         $tomorrow = array();//明天
         $future_week = array();//未来一周
         $bygone_week = array();//过去一周
-        $tomorrow = self::dbCmsSlave()->table('newgame')->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
+        $tomorrow = NewGame::db()->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
 		         ->leftJoin('games','newgame.gid','=','games.id')
 		         ->where('newgame.gid','>',0)
 		         ->where('newgame.istop','=',0)
@@ -306,7 +327,7 @@ class GameService extends Service
 		         ->orderBy('newgame.addtime','desc')
 		         ->orderBy('newgame.id','desc')
 		         ->get();
-		$future_week = self::dbCmsSlave()->table('newgame')->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
+		$future_week = NewGame::db()->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
 		         ->leftJoin('games','newgame.gid','=','games.id')
 		         ->where('newgame.gid','>',0)
 		         ->where('newgame.istop','=',0)
@@ -315,7 +336,7 @@ class GameService extends Service
 		         ->orderBy('newgame.addtime','asc')
 		         ->orderBy('newgame.id','desc')
 		         ->get();
-		$bygone_week = self::dbCmsSlave()->table('newgame')->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
+		$bygone_week = NewGame::db()->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
 		         ->leftJoin('games','newgame.gid','=','games.id')
 		         ->where('newgame.gid','>',0)
 		         ->where('newgame.istop','=',0)
@@ -333,9 +354,9 @@ class GameService extends Service
 	{
 		$start = mktime(0,0,0,date('m'),date('d'),date('Y'));
 		$end = mktime(23,59,59,date('m'),date('d'),date('Y'));
-		$total = self::dbCmsSlave()->table('newgame')->where('newgame.gid','>',0)->where('addtime','>',$end)->count();
+		$total = NewGame::db()->where('newgame.gid','>',0)->where('addtime','>',$end)->count();
 		
-		$games = self::dbCmsSlave()->table('newgame')->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
+		$games = NewGame::db()->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
 		        
 		         ->leftJoin('games',function($join){
 		             $join->on('newgame.gid','=','games.id'); 
@@ -354,9 +375,9 @@ class GameService extends Service
 	{
 		$start = mktime(0,0,0,date('m'),date('d'),date('Y'));
 		$end = mktime(23,59,59,date('m'),date('d'),date('Y'));
-		$total = self::dbCmsSlave()->table('newgame')->where('gid','>',0)->where('istop','=',0)->where('addtime','<',$start)
+		$total = NewGame::db()->where('gid','>',0)->where('istop','=',0)->where('addtime','<',$start)
 		         ->count();
-		$games = self::dbCmsSlave()->table('newgame')->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
+		$games = NewGame::db()->select('newgame.gid','newgame.title','newgame.state','newgame.openbeta','newgame.istop','newgame.isfirst','games.*','newgame.addtime')
 		         ->leftJoin('games','newgame.gid','=','games.id')
 		         ->where('newgame.gid','>',0)
 		         //->where('newgame.istop','=',0)
@@ -379,7 +400,7 @@ class GameService extends Service
 		if(CLOSE_CACHE===false && CacheService::section($section)->has($cachekey_total)){
 			$total = CacheService::section($section)->get($cachekey_total);
 		}else{
-			$total = self::dbCmsSlave()->table('game_notice')->where('isshow','=',1)
+			$total = GameNotice::db()->where('isshow','=',1)
 				->where(function($query){
 				    $query = $query->where('apptype','=',1)->orWhere('apptype','=',3);
 				})
@@ -389,7 +410,7 @@ class GameService extends Service
 		if(CLOSE_CACHE===false && CacheService::section($section)->has($cachekey_list)){
 			$games = CacheService::section($section)->get($cachekey_list);
 		}else{
-			$games = self::dbCmsSlave()->table('game_notice')->where('isshow','=',1)
+			$games = GameNotice::db()->where('isshow','=',1)
 			    ->where(function($query){
 			        $query = $query->where('apptype','=',1)->orWhere('apptype','=',3);
 			    })	    		    
@@ -414,13 +435,13 @@ class GameService extends Service
 		if(CLOSE_CACHE===false && CacheService::section($section)->has($cachekey_list)){
 			$games = CacheService::section($section)->get($cachekey_list);
 		}else{
-		    $games = self::dbCmsSlave()->table('recommend')->where('apptype','=',1)->orWhere('apptype','=',3)->get();
+		    $games = Recommend::db()->where('apptype','=',1)->orWhere('apptype','=',3)->get();
 		    CLOSE_CACHE===false && CacheService::section($section)->forever($cachekey_list,$games);
 		}
 		if(CLOSE_CACHE===false && CacheService::section($section)->has($cachekey_total)){
 			$total = CacheService::section($section)->get($cachekey_total);
 		}else{
-		    $total = self::dbCmsSlave()->table('recommend')->where('apptype','=',1)->orWhere('apptype','=',3)->count();
+		    $total = Recommend::db()->where('apptype','=',1)->orWhere('apptype','=',3)->count();
 		    CLOSE_CACHE===false && CacheService::section($section)->forever($cachekey_total,$total);
 		}
 		return array('games'=>$games,'total'=>count($games));
@@ -454,7 +475,7 @@ class GameService extends Service
 		$cachekey = 'game::game_type';
 		$cache = null;//CacheService::get($cachekey);
 		if(!$cache){
-		    $cache = self::dbCmsSlave()->table('game_type')->orderBy('sort','desc')->lists('typename','id');
+		    $cache = GameType::db()->orderBy('sort','desc')->lists('typename','id');
 		    //CacheService::put($cachekey,$cache,30);
 		}
 		return $cache;
@@ -465,8 +486,8 @@ class GameService extends Service
 	 */
 	public static function getGameTypeList($hot=false,$uid=0)
 	{
-		$sum = self::dbCmsSlave()->table('games')->select(DB::raw('type,count(*) as total'))->where('isdel','=',0)->groupBy('type')->lists('total','type');
-		$types = self::dbCmsSlave()->table('game_type')
+		$sum = Games::db()->select(DB::raw('type,count(*) as total'))->where('isdel','=',0)->groupBy('type')->lists('total','type');
+		$types = GameType::db()
 		->orderBy('sort','desc')
 		->orderBy('isapptop','desc')
 		->orderBy('updatetime','desc')
@@ -493,7 +514,7 @@ class GameService extends Service
 	
 	public static function getGameTags()
 	{
-		$tags = self::dbCmsSlave()->table('tag')->get();
+		$tags = Tag::db()->get();
 		$gametype = self::getGameTypeOption();
 		$out = array();
 		foreach($tags as $row){
@@ -511,7 +532,7 @@ class GameService extends Service
 	public static function getGameTagsByGameId($ids)
 	{
 		if(!$ids) return array();
-		$_tags = self::dbCmsSlave()->table('games_tag')->whereIn('gid',$ids)->get();
+		$_tags = GamesTag::db()->whereIn('gid',$ids)->get();
 		$tags = array();
 		foreach($_tags as $row){
 			$tags[$row['gid']][] = $row['tag'];
@@ -521,7 +542,7 @@ class GameService extends Service
 	
 	public static function getGuessGames($type,$size=100)
 	{
-		$games = self::dbCmsSlave()->table('games')->where('isdel','=',0)
+		$games = Games::db()->where('isdel','=',0)
 		    ->where('type',$type)
 		    ->orderBy('score','desc')
 		    ->forPage(1,$size)
@@ -544,19 +565,19 @@ class GameService extends Service
 	    if($is_forum == 1){
 			$forum_gids = ForumService::getOpenForumGids();
 			if($forum_gids && count($forum_gids)){
-				$total = self::dbCmsSlave()->table('games')->where('isdel','=',0)->whereIn('id',$forum_gids)
+				$total = Games::db()->where('isdel','=',0)->whereIn('id',$forum_gids)
 			    ->where('type',$tid)
 		    	->count();
 			}else{
 				$total = 0;
 			}
 		}else{
-			$total = self::dbCmsSlave()->table('games')->where('isdel','=',0)
+			$total = Games::db()->where('isdel','=',0)
 		    ->where('type',$tid)
 		    ->count();
 		}	
 		
-		$_games = self::dbCmsSlave()->table('games')->where('isdel','=',0)
+		$_games = Games::db()->where('isdel','=',0)
 		    ->where('type',$tid)
 		    ->orderBy('score','desc')
 		    ->forPage($page,$pagesize)
@@ -586,7 +607,7 @@ class GameService extends Service
 	public static function getGamesByIds($ids)
 	{
 		if(!$ids) return array();
-		$_games = self::dbCmsSlave()->table('games')->whereIn('id',$ids)->where('isdel','=',0)->get();
+		$_games = Games::db()->whereIn('id',$ids)->where('isdel','=',0)->get();
 		$games = array();
 		foreach($_games as $row){
 			$games[$row['id']] = $row;
@@ -597,7 +618,7 @@ class GameService extends Service
 	
 	public static function getHotSearchGames()
 	{
-		return self::dbCmsSlave()->table('game_recommend')
+		return GameRecommend::db()
 			             ->select('games.*')
 			             ->where('game_recommend.type','=','h')
 			             ->leftJoin('games','game_recommend.gid','=','games.id')
@@ -614,7 +635,7 @@ class GameService extends Service
 			return array('games'=>array(),'total'=>0);
 		}
 		
-		$game_ids = self::dbCmsSlave()->table('games')->where('isdel','=',0)->where('shortgname','like','%'.$keyword . '%')->select('id')->lists('id');	    
+		$game_ids = Games::db()->where('isdel','=',0)->where('shortgname','like','%'.$keyword . '%')->select('id')->lists('id');	    
 		if($isforum==1){
 			$forum_gids = ForumService::getOpenForumGids();
 			$game_ids = array_intersect($game_ids,$forum_gids);
@@ -623,7 +644,7 @@ class GameService extends Service
 	    if(!$game_ids){
 			return array('games'=>array(),'total'=>0);
 		}
-		$games = self::dbCmsSlave()->table('games')->whereIn('id',$game_ids)->where('isdel','=',0)->forPage($page,$pagesize)->orderBy('score','desc')->get();
+		$games = Games::db()->whereIn('id',$game_ids)->where('isdel','=',0)->forPage($page,$pagesize)->orderBy('score','desc')->get();
 		
 		return array('games'=>$games,'total'=>$total);
 	}
@@ -636,7 +657,7 @@ class GameService extends Service
 	    if(empty($keyword)){
 			return array('games'=>array(),'total'=>0);
 		}
-		$game_ids = self::dbCmsSlave()->table('games')->where('isdel','=',0)->where('shortgname','like','%'.$keyword . '%')->select('id')->lists('id');	    
+		$game_ids = Games::db()->where('isdel','=',0)->where('shortgname','like','%'.$keyword . '%')->select('id')->lists('id');	    
 		if($isforum==1){
 			$forum_gids = ForumService::getOpenForumGids();
 			$game_ids = array_intersect($game_ids,$forum_gids);
@@ -645,7 +666,7 @@ class GameService extends Service
 		if(!$game_ids){
 			return array('games'=>array(),'total'=>0);
 		}
-		$games = self::dbCmsSlave()->table('games')->whereIn('id',$game_ids)->where('isdel','=',0)->forPage(1,10)->orderBy('score','desc')->get();		
+		$games = Games::db()->whereIn('id',$game_ids)->where('isdel','=',0)->forPage(1,10)->orderBy('score','desc')->get();		
 		
 		return array('games'=>$games,'total'=>$total);
 	}
@@ -655,7 +676,7 @@ class GameService extends Service
 	 */
 	public static function schemesurl()
 	{
-		$tb = self::dbCmsSlave()->table('games_schemes');
+		$tb = GamesSchemes::db();
 		$games = $tb->select('gid','schemesurl')->where('schemesurl','!=','')->get();
 		$out = array();
 		foreach($games as $index=>$row){
@@ -678,7 +699,7 @@ class GameService extends Service
 	 */
 	public static function getGamesByTag($tag)
 	{
-		$gids = self::dbCmsSlave()->table('games_tag')
+		$gids = GamesTag::db()
 		->where('tag','=',$tag)
 		->orderBy('id','desc')
 		->forPage(1,50)
@@ -697,7 +718,7 @@ class GameService extends Service
 	public static function getRelationGamesByID($game_id)
 	{
 		$game = self::getGameInfo($game_id);
-		$gids = self::dbCmsSlave()->table('games')->where('type','=',$game['type'])->where('isdel','=',0)->where('id','!=',$game_id)->forPage(1,50)->lists('id');
+		$gids = Games::db()->where('type','=',$game['type'])->where('isdel','=',0)->where('id','!=',$game_id)->forPage(1,50)->lists('id');
 		if(count($gids)>3){
 			$gids = array_rand($gids,3);
 		}elseif(!$gids){
@@ -711,8 +732,8 @@ class GameService extends Service
 	
 	public static function getExpeditionTearm($page=1,$pagesize=10)
 	{
-		$total = self::dbCmsSlave()->table('game_expedition')->count();
-		$games = self::dbCmsSlave()->table('game_expedition')->select('game_expedition.*','games.ico')->leftJoin('games','game_expedition.gid','=','games.id')
+		$total = GameExpedition::db()->count();
+		$games = GameExpedition::db()->select('game_expedition.*','games.ico')->leftJoin('games','game_expedition.gid','=','games.id')
 		->orderBy('sort','asc')->orderBy('addtime','desc')->forPage($page,$pagesize)->get();
 		return array('games'=>$games,'total'=>$total);
 	}
@@ -723,7 +744,7 @@ class GameService extends Service
 	public static function filterDownloadCredit($game_id,$uid,$default=0)
 	{		
 		//普通下载奖励
-		$task = self::dbClubSlave()->table('task')->where('action','=','download')->first();
+		$task = Task::db()->where('action','=','download')->first();
 		$dl_score = 0;$dl_experience = 0;		
 		if($task && isset($task['reward'])){
 			$credit = json_decode($task['reward'],true);
@@ -739,7 +760,7 @@ class GameService extends Service
 		
 		//广告奖励
 		$ad_score = 0;$ad_experience = 0;
-		$game_credit = self::dbClubSlave()->table('game_credit')->where('game_id','=',$game_id)->orderBy('id','desc')->first();
+		$game_credit = GameCredit::db()->where('game_id','=',$game_id)->orderBy('id','desc')->first();
 		if($game_credit && isset($game_credit['score'])){
 			$ad_score = (int)$game_credit['score'];
 			//$ad_experience = (int)$game_credit['experience'];
@@ -750,8 +771,8 @@ class GameService extends Service
 			//$game_download_times = (int)self::redis()->get('game::game_download_' . $game_id . '_' . $uid . '_times');
 			//$game_download_totaltimes = (int)self::redis()->get('game::game_download_'.$uid.'_totaltimes');
 			$start = mktime(0,0,0,date('m'),date('d'),date('Y'));
-			$game_download_times = self::dbClubSlave()->table('game_download_count')->where('game_id','=',$game_id)->where('uid','=',$uid)->count();
-			$game_download_totaltimes = self::dbClubSlave()->table('game_download_count')->where('uid','=',$uid)->where('lastupdatetime','>',$start)->count();
+			$game_download_times = GameDownloadCount::db()->where('game_id','=',$game_id)->where('uid','=',$uid)->count();
+			$game_download_totaltimes = GameDownloadCount::db()->where('uid','=',$uid)->where('lastupdatetime','>',$start)->count();
 			if($game_download_times > 0){
 				$dl_score= 0;
 			}
@@ -760,7 +781,7 @@ class GameService extends Service
 			}
 			//广告下载
 			//$game_ad_download_times = (int)self::redis()->get('game::game_ad_download_' . $game_credit['id'] . '_' . $uid . '_times');
-			$game_ad_download_times = self::dbClubSlave()->table('game_download_adv_count')->where('adv_id','=',$game_credit['id'])->where('uid','=',$uid)->count();
+			$game_ad_download_times = GameDownloadAdvCount::db()->where('adv_id','=',$game_credit['id'])->where('uid','=',$uid)->count();
 			if($game_ad_download_times > 0){
 				$ad_score = 0;
 			}
@@ -840,11 +861,11 @@ class GameService extends Service
         $start = mktime(0,0,0,date('m'),date('d'),date('Y'));
         $expire = $end - time();
 
-        $game_download_times = self::dbClubSlave()->table('game_download_count')->where('game_id','=',$game_id)->where('uid','=',$uid)->count();
-        $game_download_totaltimes = self::dbClubSlave()->table('game_download_count')->where('uid','=',$uid)->where('lastupdatetime','>',$start)->count();        
+        $game_download_times = GameDownloadCount::db()->where('game_id','=',$game_id)->where('uid','=',$uid)->count();
+        $game_download_totaltimes = GameDownloadCount::db()->where('uid','=',$uid)->where('lastupdatetime','>',$start)->count();        
         
         if($game_download_times==0){
-        	self::dbClubMaster()->table('game_download_count')->insert(array('game_id'=>$game_id,'uid'=>$uid,'times'=>1,'lastupdatetime'=>time()));
+        	GameDownloadCount::db()->insert(array('game_id'=>$game_id,'uid'=>$uid,'times'=>1,'lastupdatetime'=>time()));
         }
         
         //条件限制
@@ -857,7 +878,7 @@ class GameService extends Service
 
         //广告奖励
         $ad_score = 0;$ad_experience = 0;
-        $game_credit = self::dbClubSlave()->table('game_credit')->where('game_id','=',$game_id)->first();
+        $game_credit = GameCredit::db()->where('game_id','=',$game_id)->first();
         if($game_credit && isset($game_credit['score'])){
             $ad_score = (int)$game_credit['score'];
            // self::redis()->incr('game::game_ad_download_' . $game_credit['id'] . '_' . $uid . '_times');
@@ -872,13 +893,13 @@ class GameService extends Service
         if($ad_score){
         	
             //$game_ad_download_times = (int)self::redis()->get('game::game_ad_download_' . $game_credit['id'] . '_' . $uid . '_times');
-            $game_ad_download_times = self::dbClubSlave()->table('game_download_adv_count')->where('adv_id','=',$game_credit['id'])->where('uid','=',$uid)->count();
+            $game_ad_download_times = GameDownloadAdvCount::db()->where('adv_id','=',$game_credit['id'])->where('uid','=',$uid)->count();
             
             if($game_ad_download_times == 0){
                 $info = '下载游戏奖励' . $ad_score . '游币';
                 CreditService::handOpUserCredit($uid, $ad_score,0,'download_game',$info);
                 $score = (isset($dl_score)&&is_numeric($dl_score)) ? $dl_score + $ad_score : $ad_score;
-                self::dbClubMaster()->table('game_download_adv_count')->insert(
+                GameDownloadAdvCount::db()->insert(
                     array('adv_id'=>$game_credit['id'],'uid'=>$uid,'times'=>1,'lastupdatetime'=>time())
                 );
             }
@@ -891,12 +912,14 @@ class GameService extends Service
 	public static function download($game_id,$uid=0)
 	{
 		if(!$game_id) return false;
+		$game = IosGame::getInfoById($game_id);
+		if($game['isup']!=1) return false;
 		self::updateDownloadCountByRemote($game_id);
-		$num = rand(1,5);
+		$num = rand(1,10);
 		$sql = "update m_games set downtimes=downtimes+".$num.",weekdown=weekdown+".$num.",realdown=realdown+1 where id=".$game_id;
 		//self::dbCmsMaster()->table('games')->where('id','=',$game_id)->update(DB::raw($sql));
 		self::dbCmsMaster()->update($sql);
-		$tb = self::dbCmsMaster()->table('game_download_count')->where('gid','=',$game_id)->where('down_time','=',mktime(0,0,0,date('m'),date('d'),date('Y')));
+		$tb = GameDownloadCount::db()->where('gid','=',$game_id)->where('down_time','=',mktime(0,0,0,date('m'),date('d'),date('Y')));
 		if($tb->count()>0){
 			$tb->increment('number');
 		}else{
@@ -905,7 +928,7 @@ class GameService extends Service
 			    'down_time'=>mktime(0,0,0,date('m'),date('d'),date('Y')),
 			    'number'=>1
 			);
-			self::dbCmsMaster()->table('game_download_count')->insertGetId($data);
+			GameDownloadCount::db()->insertGetId($data);
 		}
 	}
 	
@@ -917,7 +940,7 @@ class GameService extends Service
 		$result = \CHttp::request($url,$params,'POST');
 		if(!is_array($result)){			
 			$data = array('game_id'=>$game_id,'ctime'=>time());
-			self::dbCmsMaster()->table('game_download_count_retry')->insert($data);
+			GameDownloadCountRetry::db()->insert($data);
 			Log::error($result);
 		}
 	}

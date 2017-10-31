@@ -16,20 +16,21 @@
             <div class="box-title">
                 <h3><i class="icon-edit"></i>首页排期表</h3>
                 <div class="actions">
-                    <a href="javascript:void(0)" class="btn btn-teal top-submit"><i class="icon-ok"></i>保存</a>
                 </div>
             </div>
             <div class="box-content">
                 <form action="<!--{{url('gamelive/home/week-edit')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
                 <input name="day" type="hidden" value="<!--{{week.day}}-->"/>
-                    <input name="idx" type="hidden" value="<!--{{week.idx}}-->"/>
-                <div class="row-fluid">
-                    <div class="span6">
-                        <h3>直播节目一</h3>
+                <input name="idx" type="hidden" value="<!--{{week.idx}}-->"/>
+                <div class="row-fluid" style="overflow: auto">
+                    <!--{% if week.result %}-->
+                    <!--{%for one in week.result%}-->
+                    <div  >
+                        <h3>直播节目<span class="sort" uid="<!--{{ one.uid }}-->"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button class="add_after badge badge-info" >添加</button> <button class="save badge badge-info" >保存</button> <button class="del badge badge-info" >删除</button></h3>
                         <div class="control-group">
                             <label class="control-label">标题<i class="tip-star">*</i></label>
                             <div class="controls">
-                                <input name="title[]" type="text" class="input-xlarge" value="<!--{{ one.title }}-->" />
+                                <input name="title[]" type="text" class="input-xlarge" data-rule-required="true" data-msg-required="请填写标题" value="<!--{{ one.title }}-->" />
                             </div>
                         </div>
                         <div class="control-group">
@@ -44,12 +45,6 @@
                                 <input name="starttime[]" type="text" class="input-medium datetimepicker" value="<!--{{ one.starttime|date('Y-m-d H:i') }}-->" /><input name="endtime[]" type="text" class="input-medium datetimepicker" value="<!--{{ one.endtime|date('Y-m-d H:i') }}-->" />
                             </div>
                         </div>
-                        <!--{#<div class="control-group">
-                            <label class="control-label">标签</label>
-                            <div class="controls">
-                                <input name="tag[]" type="text" class="input-xlarge" value="<!--{{ one.tag|join(',') }}-->" />
-                            </div>
-                        </div>#}-->
                         <div class="control-group">
                             <label class="control-label">所属栏目<i class="tip-star">*</i></label>
                             <div class="controls">
@@ -57,54 +52,68 @@
                             </div>
                         </div>
                         <div class="control-group">
-                            <label class="control-label">关联视频ID</label>
+                            <label class="control-label">关联主播<i class="tip-star">*</i></label>
                             <div class="controls">
-                                <input name="videoId[]" type="text" class="input-medium" value="<!--{{ one.videoId }}-->" />
+                                <div class="input-append">
+                                    <input type="hidden"  name="peoples[]" class="input-xlarge anchor_id" value="<!--{{one.peoples}}-->"/>
+                                    <input type="hidden"  class="tagsinput o_people" value="<!--{{one.peopleNames}}-->" />
+                                    <input type="text"  class="tagsinput people" value="<!--{{one.peopleNames}}-->" /><span class="add-on select-anchor">选择</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">关联视频</label>
+                            <div class="controls">
+                                <div class="input-append">
+                                    <input name="videoId[]" type="hidden" class="input-medium video" value="<!--{{ one.videoId }}-->" />
+                                    <input type="text"  class="tagsinput videoName" value="<!--{{ one.videoName }}-->" /><span class="add-on select-video">选择</span>
+                                </div>
                             </div>
                         </div>
 
-                        <!--{%if one.picUrl%}-->
                         <div class="control-group">
                             <label class="control-label">图片</label>
-                            <div class="controls">
-                                <input name="picUrl[]" type="hidden" value="<!--{{one.picUrl}}-->" />
-                                <a href="#bigimg" data-toggle="modal"><img src="<!--{{one.picUrl}}-->" width="150px" /></a>
-                            </div>
-                        </div>
-                        <!--{%endif%}-->
-                        <div class="control-group">
-                            <label class="control-label">图片<i class="tip-star">*</i></label>
-                            <div class="controls">
-                                <input name="filedata[]" type="file" value="" />
+                            <div class="controls" >
+                                <div data-provides="fileupload" class="fileupload fileupload-new">
+                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                        <img id="selected_game_icon" src="<!--{{one.picUrl|default('/static/img/wu_ss.gif')}}-->">
+                                    </div>
+                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                                    <span class="btn btn-file"><i class="icon-picture"></i>
+                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                                        <input  name="picUrl[]" type="hidden" value="<!--{{one.picUrl}}-->"/>
+                                        <input type="file"  name="filedata[]" class="myfile" />
+                                    </span>
+                                    <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                                    <input type="button" class="del_img" value="删除"/>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="span6">
-                        <h3>直播节目二</h3>
+                    <!--{%endfor%}-->
+                    <!--{% else %}-->
+                    <div >
+                        <h3>直播节目<span class="sort" uid=""></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button class="add_after badge badge-info" >添加</button> <button class="save badge badge-info" >保存</button> <button class="del badge badge-info" >删除</button></h3>
                         <div class="control-group">
                             <label class="control-label">标题</label>
                             <div class="controls">
-                                <input name="title[]" type="text" class="input-xlarge" value="<!--{{ two.title }}-->" />
+                                <input name="title[]" type="text" class="input-xlarge" data-rule-required="true" data-msg-required="请填写标题" value="" />
                             </div>
                         </div>
                         <div class="control-group">
                             <label class="control-label">简介</label>
                             <div class="controls">
-                                <input name="summary[]" type="text" class="input-xlarge" value="<!--{{ two.summary }}-->" />
+                                <input name="summary[]" type="text" class="input-xlarge" value="" />
                             </div>
                         </div>
                         <div class="control-group">
                             <label class="control-label">时间</label>
                             <div class="controls">
-                                <input name="starttime[]" type="text" class="input-medium datetimepicker" value="<!--{{ two.starttime|date('Y-m-d H:i') }}-->" /><input name="endtime[]" type="text" class="input-medium datetimepicker" value="<!--{{ two.endtime|date('Y-m-d H:i') }}-->" />
+                                <input name="starttime[]" type="text" class="input-medium datetimepicker" value="" />
+                                <input name="endtime[]" type="text" class="input-medium datetimepicker" value="" />
                             </div>
                         </div>
-                        <!--{#<div class="control-group">
-                            <label class="control-label">标签</label>
-                            <div class="controls">
-                                <input name="tag[]" type="text" class="input-xlarge" value="<!--{{ two.tag|join(',') }}-->" />
-                            </div>
-                        </div>#}-->
                         <div class="control-group">
                             <label class="control-label">所属栏目<i class="tip-star">*</i></label>
                             <div class="controls">
@@ -112,31 +121,48 @@
                             </div>
                         </div>
                         <div class="control-group">
-                            <label class="control-label">关联视频ID</label>
+                            <label class="control-label">关联主播<i class="tip-star">*</i></label>
                             <div class="controls">
-                                <input name="videoId[]" type="text" class="input-medium" value="<!--{{ two.videoId }}-->" />
+                                <div class="input-append">
+                                    <input type="hidden"  name="peoples[]" class="input-xlarge anchor_id" value=""/>
+                                    <input type="hidden"  class="tagsinput o_people" value="<!--{{one.peopleNames}}-->" />
+                                    <input type="text"  class="tagsinput people" value="" /><span class="add-on select-anchor">选择</span>
+                                </div>
                             </div>
                         </div>
-
-                        <!--{%if one.picUrl%}-->
                         <div class="control-group">
-                            <label class="control-label">图片</label>
+                            <label class="control-label">关联视频</label>
                             <div class="controls">
-                                <input name="picUrl[]" type="hidden" value="<!--{{two.picUrl}}-->" />
-                                <a href="#bigimg" data-toggle="modal"><img src="<!--{{two.picUrl}}-->" width="150px" /></a>
+                                <div class="input-append">
+                                <input name="videoId[]" type="hide" class="input-medium video" value="" />
+                                <input type="text" class="input-medium videoName" value="" /><span class="add-on select-video">选择</span>
+                                </div>
                             </div>
                         </div>
-                        <!--{%endif%}-->
                         <div class="control-group">
                             <label class="control-label">图片</label>
-                            <div class="controls">
-                                <input name="filedata[]" type="file" value="" />
+                            <div class="controls" >
+                                <div data-provides="fileupload" class="fileupload fileupload-new">
+                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                        <img id="selected_game_icon" src="<!--{{one.picUrl|default('/static/img/wu_ss.gif')}}-->">
+                                    </div>
+                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                                    <span class="btn btn-file"><i class="icon-picture"></i>
+                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                                        <input  name="picUrl[]" type="hidden" value="<!--{{one.picUrl}}-->"/>
+                                        <input type="file"  name="filedata[]"  class="myfile">
+                                    </span>
+                                    <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                                    <input type="button" class="del_img" value="删除"/>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <!--{% endif %}-->
+
                 </div>
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
                 </div>
                 </form>
             </div>
@@ -147,22 +173,275 @@
 <!--{%endblock%}-->
 
 <!--{%block footer_js%}-->
+<script src="/static/js/ajaxfileupload.js"></script>
 <script src="<!--{{asset('http://libs.baidu.com/jqueryui/1.10.0/jquery-ui.min.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-timepicker-addon.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/plugins/jquery-ui/datepicker-zh-CN.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-timepicker-zh-CN.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
 <script>
+    var img_path = "";
+    var day = "<!--{{week.day}}-->";
+    var idx = "<!--{{week.idx}}-->";
+    var peopleArr = new Array();
+    var btn;
+    var btn_video;
+
+    var set_selected_anchor = function(anchor_id,anchor_name){
+
+        var people = btn.siblings('.people').val();
+        if(people.length>0){
+            var a = people.split(',');
+            if(a.indexOf(anchor_name)!=-1){
+                alert(anchor_name+" 已在列表中！");return false;
+            }
+            a.push(anchor_name);
+            var b = a.join(',');
+            //console.log(b);
+            btn.siblings('.people').val(b);
+        }else{
+            btn.siblings('.people').val(anchor_name);
+        }
+
+        var anchor_ids = btn.siblings('.anchor_id').val();
+        if(anchor_ids.length>0){
+            var a = anchor_ids.split(',');
+            a.push(anchor_id);
+            var b = a.join(',');
+            //console.log(b);
+            btn.siblings('.anchor_id').val(b);
+        }else{
+            btn.siblings('.anchor_id').val(anchor_id);
+        }
+        peopleArr[anchor_name] = anchor_id;
+
+    };
+
+    var set_selected_video = function(vid,vname){
+        btn_video.siblings(".video").val(vid);
+        btn_video.siblings(".videoName").val(vname);
+    }
 
     $(function(){
 
-        //$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+        function setArr(obj){
+            var anchor_ids = obj.siblings('.anchor_id').val();
+            var people = obj.siblings('.o_people').val();
 
+            var anchorIdArr = anchor_ids.split(',');
+            var anchorNameArr = people.split(',');
+            $.each(anchorNameArr,function(n,val){
+                peopleArr[val] = anchorIdArr[n];
+            })
+        }
+
+
+
+        $('.select-anchor').live('click',function(){
+            btn = $(this);
+            setArr(btn);
+            $.ajax({
+                url:'/gamelive/api/pop-anchor-search',
+                dataType:'json',
+                success:function(json){
+                    var html = '';
+                    html = json.html;
+                    $.dialog({id:'pop-anchor-list',title:'提示',padding:2,content:html,width:600,height:580});
+                }
+            });
+        });
+        //选择视频
+        $('.select-video').live('click',function(){
+            btn_video = $(this);
+            $.ajax({
+                url:'/gamelive/api/pop-video-search',
+                dataType:'json',
+                success:function(json){
+                    var html = '';
+                    html = json.html;
+                    $.dialog({id:'pop-video-list',title:'提示',padding:2,content:html,width:600,height:580});
+                }
+            });
+        });
+
+        //$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
         $('input.datetimepicker').datetimepicker({dateFormat:'yy-mm-dd',hourText:'小时',minuteText:'分钟'});
         $.datepicker.setDefaults($.datepicker.regional['zh-CN']);
         //$('input.datetimepicker').timepicker();
         $('.top-submit').bind('click',function(){
             $('form').submit();
         });
+        var html = '<div >\
+                <h3>直播节目<span class="sort" uid=""></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <button class="add_after badge badge-info" >添加</button> <button class="save badge badge-info" >保存</button> <button class="del badge badge-info" >删除</button></h3>\
+        <div class="control-group">\
+        <label class="control-label">标题</label>\
+        <div class="controls">\
+        <input name="title[]" type="text" class="input-xlarge" data-rule-required="true" data-msg-required="请填写标题" value="" />\
+        </div>\
+        </div>\
+        <div class="control-group">\
+        <label class="control-label">简介</label>\
+        <div class="controls">\
+        <input name="summary[]" type="text" class="input-xlarge" value="" />\
+        </div>\
+        </div>\
+        <div class="control-group">\
+        <label class="control-label">时间</label>\
+        <div class="controls">\
+        <input name="starttime[]" type="text" class="input-medium datetimepicker" value="" />\
+        <input name="endtime[]" type="text" class="input-medium datetimepicker" value="" />\
+        </div>\
+        </div>\
+        <div class="control-group">\
+        <label class="control-label">所属栏目<i class="tip-star">*</i></label>\
+        <div class="controls">\
+            <!--{{form_select('columnId[]',columns,two.columnId)}}-->\
+        </div>\
+        </div>\
+        <div class="control-group">\
+        <label class="control-label">关联主播<i class="tip-star">*</i></label>\
+        <div class="controls">\
+        <div class="input-append">\
+        <input type="hidden"  name="peoples[]" class="input-xlarge anchor_id" value=""/>\
+        <input type="hidden"  class="tagsinput o_people" value="<!--{{one.peopleNames}}-->" />\
+        <input type="text"  class="tagsinput people" value="" /><span class="add-on select-anchor">选择</span>\
+        </div>\
+        </div>\
+        </div>\
+        <div class="control-group">\
+        <label class="control-label">关联视频</label>\
+        <div class="controls">\
+        <div class="input-append">\
+        <input name="videoId[]" type="hidden" class="input-medium video" value="" />\
+        <input type="text" class="input-medium videoName" value="" /><span class="add-on select-video">选择</span>\
+        </div>\
+        </div>\
+        </div>\
+        <div class="control-group">\
+        <label class="control-label">图片</label>\
+        <div class="controls" >\
+        <div data-provides="fileupload" class="fileupload fileupload-new">\
+        <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">\
+        <img id="selected_game_icon" src="<!--{{one.picUrl|default('/static/img/wu_ss.gif')}}-->">\
+        </div>\
+        <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>\
+        <span class="btn btn-file"><i class="icon-picture"></i>\
+        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>\
+        <input  name="picUrl[]" type="hidden" value="<!--{{one.picUrl}}-->"/>\
+        <input type="file"  name="filedata[]" class="myfile" />\
+        </span>\
+        <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>\
+        <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>\
+        <input type="button" class="del_img" value="删除"/>\
+        </div>\
+        </div>\
+        </div>\
+        </div>';
+        $(".add_after").click(function(){
+            $(this).parent().parent().parent().append(html);
+            $('input.datetimepicker').datetimepicker({dateFormat:'yy-mm-dd',hourText:'小时',minuteText:'分钟'});
+            return false;
+        });
+        $(".del").live('click',function(){
+            var obj = $(this);
+            if(confirm("确定删除吗？")){
+                var uid = obj.siblings(".sort").attr("uid");
+                if(uid){
+                    $.post('<!--{{url('gamelive/home/ajax-week-del')}}-->',{uid:uid,day:day,idx:idx},function(data){
+                        if(data.success){
+                            obj.parent().parent().remove();
+                        }else{
+                            alert(data.error);
+                        }
+                    },"json");
+                }
+
+            }
+            return false;
+        });
+        $(".save").live('click',function(){
+
+            var obj = $(this).parent().siblings().children();
+            var uid = $(this).siblings(".sort").attr("uid");
+            var title = obj.children("[name='title[]']").val();
+            if(!title){
+                alert("请填写标题");return false;
+            }
+            var summary = obj.children("[name='summary[]']").val();
+            var picUrl = obj.children().children().children("[name='picUrl[]']").val()?obj.children().children().children("[name='picUrl[]']").val():img_path;
+//            var tag = obj.children("[name='tag[]']").val();
+//            var url = obj.children("[name='url[]']").val();
+            var starttime = obj.children("[name='starttime[]']").val();
+            var endtime = obj.children("[name='endtime[]']").val();
+            var videoName = obj.children().children(".videoName").val();
+            if(videoName){
+                var videoId = obj.children().children("[name='videoId[]']").val();
+            }else{
+                var videoId = "";
+            }
+            var columnId = obj.children("[name='columnId[]']").val();
+            //处理关联主播
+            setArr(obj.children().children('.select-anchor'));
+            var anchor_ids = "";
+            var people = obj.children().children('.people').val();
+            if(people){
+                var anchorNameArr = people.split(',');
+                $.each(anchorNameArr,function(n,val){
+                    if(peopleArr[val]){
+                        anchor_ids += peopleArr[val]+",";
+                    }
+                })
+                anchor_ids = anchor_ids.substr(0,anchor_ids.length-1);
+                if(!anchor_ids){
+                    anchor_ids = obj.children().children('.anchor_id').val();
+                }
+            }
+
+//            $('#anchor_id').val(anchor_ids);
+
+
+            if(title){
+                $.post('<!--{{url('gamelive/home/ajax-week-save')}}-->',{uid:uid,title:title,summary:summary,picUrl:picUrl,starttime:starttime,endtime:endtime,videoId:videoId,columnId:columnId,peoples:anchor_ids,day:day,idx:idx},function(data){
+                    if(data.success){
+                        alert("保存成功");
+                    }else{
+                        alert(data.error);
+                    }
+                },"json");
+            }
+            return false;
+        })
+
+        $(document).on('change','input.myfile',function(){
+            if(day){
+                var timestamp = new Date().getTime();
+                var img_id = "id"+timestamp;
+                $(this).attr("id",img_id);
+                var obj = $(this);
+                obj.siblings("[name='picUrl[]']").val("");
+                $.ajaxFileUpload
+                (
+                        {
+                            url:'/gamelive/home/ajax-upload-img', //你处理上传文件的服务端
+                            type : 'post',
+                            fileElementId:img_id,
+                            dataType: 'json',
+                            success: function (data)
+                            {
+                                if(data.success=="true"){
+                                    img_path = data.data;
+
+                                }else{
+                                    alert(data.data);
+                                }
+                            }
+                        }
+                );
+            }
+        })
+
+
     });
 </script>
 <!--{%endblock%}-->

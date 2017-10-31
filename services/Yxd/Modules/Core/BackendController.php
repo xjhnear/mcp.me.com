@@ -15,8 +15,6 @@ use Yxd\Modules\System\OperatorService;
 use Doctrine\Tests\Common\Annotations\Null;
 use Yxd\Modules\System\PermissionService;
 use Youxiduo\System\AuthService;
-use Youxiduo\System\OperationLogService;
-use Youxiduo\Helper\Utility;
 include_once(base_path().'/libraries/convert.php');
 
 class BackendController extends Controller
@@ -43,6 +41,7 @@ class BackendController extends Controller
         View::share('current_user',$this->current_user);
 	    if(method_exists($this,'_initialize')){
 	    	$this->_initialize();
+            //echo $this->current_module;exit;
 	    	View::share('module_name',$this->current_module);
 			$menu = AuthService::getAdminMenu();//当前账号拥有的菜单
 			View::share('admin_menu',$menu);
@@ -135,7 +134,7 @@ class BackendController extends Controller
 			}
 		}
 		if(!empty($this->current_module))View::addLocation(app_path() . '/modules/' . $this->current_module . '/views');
-		return View::make($file,$data);
+        return View::make($file,$data);
 	}
 
     /**
@@ -206,13 +205,23 @@ class BackendController extends Controller
 		return Request::segment(1).'/'.Request::segment(2);
 	}
 
-	/**
-	 * 记录操作日志
-	 * @param $info
-	 */
-	public function recordLog($info)
-	{
-		$ip = Utility::get_real_ip();
-		OperationLogService::recordLog($this->current_module,$info,$ip);
-	}
+    public function block_($type_,$Description,$url='')
+    {
+        if(empty($Description))
+            $Description='发生错误';
+        switch($type_){
+            case 'del':
+                return Redirect::back()->with('global_tips',$Description);
+            break;
+            case 'ByView':
+                return Redirect::back()->withInput()->with('global_tips',$Description);
+            break;
+            case 'Bypost':
+                return  self::redirect($url,$Description);
+            break;
+        }
+    }
+
+
+
 }

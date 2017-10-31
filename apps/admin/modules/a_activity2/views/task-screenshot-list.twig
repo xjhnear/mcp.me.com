@@ -1,0 +1,11 @@
+<table class="table table-hover table-nomargin">       
+	<tr>
+	    <!--{%for item in datalist%}-->
+	    <!--{%if strpos('screenshot',item.img) is same as(false)%}-->
+	    <td><a href="http://img.youxiduo.com<!--{{item.img}}-->" target="_blank"><img src="http://img.youxiduo.com<!--{{item.img}}-->" /></a></td>
+	    <!--{%else%}-->
+		<td><a href="http://android.api.youxiduo.com<!--{{item.img}}-->" target="_blank"><img src="http://android.api.youxiduo.com<!--{{item.img}}-->" /></a></td>
+		<!--{%endif%}-->
+		<!--{%endfor%}-->				
+	</tr>			
+</table>

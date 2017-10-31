@@ -10,6 +10,10 @@ use Yxd\Services\UserService;
 
 use Yxd\Modules\Core\BaseModel;
 
+use Yxd\Services\Models\ForumTopic;
+use Yxd\Services\Models\Comment;
+use Yxd\Services\Models\Inform;
+
 class InformModel extends BaseModel
 {
 	public static function getList($page=1,$size=10,$type=0)
@@ -35,13 +39,13 @@ class InformModel extends BaseModel
 		$tps = array();//帖子
 		$cmts = array();
 		if($tids){
-		    $ts = self::dbClubSlave()->table('forum_topic')->whereIn('tid',$tids)->get();
+		    $ts = ForumTopic::db()->whereIn('tid',$tids)->get();
 		    foreach($ts as $t){
 		    	$tps[$t['tid']] = $t;
 		    }
 		}
 		if($cids){
-			$cs = self::dbClubSlave()->table('comment')->whereIn('id',$cids)->get();
+			$cs = Comment::db()->whereIn('id',$cids)->get();
 			foreach($cs as $c){
 				$cmts[$c['id']] = $c;
 			}
@@ -69,7 +73,7 @@ class InformModel extends BaseModel
 	
 	protected static function buildSearch($search)
 	{
-		$tb = self::dbClubSlave()->table('inform');
+		$tb = Inform::db();
 		if(isset($search['type']) && $search['type']){
 			$tb = $tb->where('type','=',$search['type']);
 		}
@@ -79,7 +83,7 @@ class InformModel extends BaseModel
 	
 	public static function doDelete($id)
 	{
-		$inform = self::dbClubMaster()->table('inform')->where('id','=',$id)->first();
+		$inform = Inform::db()->where('id','=',$id)->first();
 		if($inform){
 			if($inform['type']==1){				
 				TopicModel::deleteTopicInfo($inform['target_id']);				
@@ -93,6 +97,6 @@ class InformModel extends BaseModel
 	
 	public static function doIgnore($id)
 	{
-		return self::dbClubMaster()->table('inform')->where('id','=',$id)->delete();
+		return Inform::db()->where('id','=',$id)->delete();
 	}
 }

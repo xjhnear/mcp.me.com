@@ -35,8 +35,44 @@ class Anchor extends BaseHttp
         $url = self::HOST_URL . 'GetPeopleDetail';
         $params['id'] = $id;
         $result = self::http($url,$params);
-        if($result['errorCode']==0){
+        if($result['errorCode']==0&&isset($result['result'])){
             return $result['result'];
+        }
+        return null;
+    }
+    /**
+     * @param $ids
+     * @return null
+     */
+    public static function GetPeopleListByID($ids="")
+    {
+        $list = array();
+        $idArr = explode(',',$ids);
+        if($idArr){
+            foreach($idArr as $v){
+                $res = self::GetPeopleDetail($v);
+                if($res){
+                    $list[] = $res;
+                }
+            }
+            return $list;
+        }
+        return null;
+    }
+
+    /**
+     * @param $ids
+     * @return null
+     */
+    public static function GetPeopleNames($ids="")
+    {
+        $names = "";
+        $list = self::GetPeopleListByID($ids);
+        if($list){
+            foreach($list as $v){
+                $names.=  $v['name'].",";
+            }
+            return substr($names,0,-1);
         }
         return null;
     }
@@ -53,7 +89,7 @@ class Anchor extends BaseHttp
      * @param $thumbnail
      * @return bool
      */
-    public static function CreatePeople($name,$picUrl,$summary,$idx,$publishTime,$tag,$gameId,$albumIds,$thumbnail)
+    public static function CreatePeople($name,$picUrl,$summary,$idx,$publishTime,$tag,$gameId,$albumIds,$thumbnail,$imgs_attr)
     {
         $url = self::HOST_URL . 'CreatePeople';
         $params = array(
@@ -65,7 +101,8 @@ class Anchor extends BaseHttp
             'tag'=>$tag,
             'gameId'=>$gameId,
             'picAlbum'=>$albumIds,
-            'thumbnail'=>$thumbnail
+            'thumbnail'=>$thumbnail,
+            'attr' => $imgs_attr
         );
         $result = self::http($url,$params);
         if($result['errorCode']==0){
@@ -87,7 +124,7 @@ class Anchor extends BaseHttp
      * @param $thumbnail
      * @return bool
      */
-    public static function UpdatePeople($id,$name,$picUrl,$summary,$idx,$publishTime,$tag,$gameId,$albumIds,$thumbnail)
+    public static function UpdatePeople($id,$name,$picUrl,$summary,$idx,$publishTime,$tag,$gameId,$albumIds,$thumbnail,$imgs_attr)
     {
         $url = self::HOST_URL . 'UpdatePeople';
         $params = array(
@@ -100,7 +137,8 @@ class Anchor extends BaseHttp
             'tag'=>$tag,
             'gameId'=>$gameId,
             'picAlbum'=>$albumIds,
-            'thumbnail'=>$thumbnail
+            'thumbnail'=>$thumbnail,
+            'attr'=>$imgs_attr
         );
 
         $result = self::http($url,$params);

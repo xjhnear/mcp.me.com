@@ -9,6 +9,7 @@ use Yxd\Modules\Core\BackendController;
 use Youxiduo\Helper\Utility;
 use modules\gamelive\models\Game;
 use modules\gamelive\models\Anchor;
+use modules\gamelive\models\Video;
 
 
 class ApiController extends BackendController
@@ -47,6 +48,22 @@ class ApiController extends BackendController
         $data['search'] = $search;
         $data['pagelinks'] = $pager->links();
         $html = $this->html('pop-game-list',$data);
+        return $this->json(array('html'=>$html));
+    }
+
+    public function getPopVideoSearch()
+    {
+        $page = Input::get('page',1);
+        $size = 10;
+        $search = array();
+        $data = array();
+        $result = Video::GetVideoList($page,$size);
+        $data['datalist'] = $result['list'];
+        $pager = Paginator::make(array(),$result['totalPage']*$size,$size);
+        $pager->appends($search);
+        $data['search'] = $search;
+        $data['pagelinks'] = $pager->links();
+        $html = $this->html('pop-video-list',$data);
         return $this->json(array('html'=>$html));
     }
 }

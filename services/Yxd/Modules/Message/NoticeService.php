@@ -3,6 +3,9 @@ namespace Yxd\Modules\Message;
 
 use Yxd\Modules\Core\BaseService;
 
+use Yxd\Services\Models\SystemMessage;
+use Yxd\Services\Models\SystemMessageTpl;
+
 class NoticeService extends BaseService
 {
 	public static $TypeList = array('1'=>'礼包','2'=>'系统更新','3'=>'','4'=>'','5'=>'',);
@@ -156,7 +159,7 @@ class NoticeService extends BaseService
 	
 	public static function parseTpl($tpl_ename,$params)
 	{
-	    $tpl = self::dbClubSlave()->table('system_message_tpl')->where('ename','=',$tpl_ename)->first();
+	    $tpl = SystemMessageTpl::db()->where('ename','=',$tpl_ename)->first();
 		if(!$tpl) return false;
 		$tpl = $tpl['content'];
 		foreach($params as $key=>$val){
@@ -170,7 +173,7 @@ class NoticeService extends BaseService
 	 */
 	protected static function save($data,$push=false)
 	{
-		return self::dbClubMaster()->table('system_message')->insert($data);
+		return SystemMessage::db()->insert($data);
 	}
 	
 	/**
@@ -185,14 +188,14 @@ class NoticeService extends BaseService
 	
 	protected static function buildSearch($search)
 	{
-		$tb = self::dbClubSlave()->table('system_message');
+		$tb = SystemMessage::db();
 		$tb = $tb->where('type','=',1);
 		return $tb;
 	}
 	
 	public static function getInfo($id)
 	{
-		return self::dbClubSlave()->table('system_message')->where('id','=',$id)->first();
+		return SystemMessage::db()->where('id','=',$id)->first();
 	}
 	
 	/**

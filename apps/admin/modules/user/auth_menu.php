@@ -9,6 +9,7 @@ return array(
        array('name'=>Lang::get('description.lm_yh_cjyh'),'url'=>'user/users/create'),
        array('name'=>Lang::get('description.lm_yh_plfyb'),'url'=>'user/users/batch-send'),
        array('name'=>'批量发游币[安卓]','url'=>'user/users/batch-send-android'),
+       array('name'=>'批量发人民币[安卓]','url'=>'user/users/rmb-send-android'),
        array('name'=>'手机黑名单','url'=>'user/users/mobile-blacklist'),
        array('name'=>'签到报表','url'=>'user/users/checkin-report'),
        array('name'=>'安卓游币报表','url'=>'user/users/android-report'),

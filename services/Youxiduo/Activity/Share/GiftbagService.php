@@ -1,6 +1,6 @@
 <?php
 namespace Youxiduo\Activity\Share;
-
+use Youxiduo\Helper\Utility;
 
 class GiftbagService extends Service
 {	
@@ -180,17 +180,18 @@ class GiftbagService extends Service
 		return self::db()->table('giftbag_card')
 			->where('giftbag_id',$giftbag_id)
 			->where('adddate',$adddate)
+			->where('is_get',0)
 			->get();
 	}
 
 	/**
 	 * 获取礼包类型信息
-	 * @param $title
+	 * @param $activity_id
 	 * @return mixed
-     */
-	public static function getGiftbagInfo($title){
+	 */
+	public static function getGiftbagInfo($activity_id){
 		return self::db()->table('giftbag')
-			->where('title',$title)
+			->where('activity_id',$activity_id)
 			->where('is_show',1)
 			->first();
 	}
@@ -205,6 +206,6 @@ class GiftbagService extends Service
 		return self::db()->table('giftbag_card')
 			->where('id',$id)
 			->where('is_get',0)
-			->update(array('is_get'=>1,'gettime'=>time(),'uid'=>$uid));
+			->update(array('is_get'=>1,'gettime'=>time(),'uid'=>$uid,'ip'=>''));
 	}
 }

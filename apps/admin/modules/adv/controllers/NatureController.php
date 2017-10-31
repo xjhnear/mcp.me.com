@@ -50,7 +50,7 @@ class NatureController extends BackendController
 
 	public function postNatureAddEdit($id=0)
 	{
-		$input = Input::only('natureName','Id','is_recommend','is_gid','is_bigtic','is_jieshao','is_title','recommend_type','is_advname');
+		$input = Input::only('natureName','Id','is_recommend','recommend_type');
 		$biTian=array('natureName'=>'required');
         $message = array(
             'required' => '不能为空',

@@ -1,0 +1,82 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					新手签到列表
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('a_activity/atask/checkins')}}-->" method="GET">
+				    <input name="type" type="hidden" value="novice" />
+				    <table class="table-filter">
+				        <tr>
+				            <td>
+				                <div class="input-append date datepick" id="dpStart" data-date="">
+									<input name="startdate" type="text" class="input-small" value="<!--{{search.startdate|date('Y-m-d')}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+				            </td>
+				            <td>
+				                <div class="input-append date datepick" id="dpEnd" data-date="">
+									<input name="enddate" type="text" class="input-small" value="<!--{{search.enddate|date('Y-m-d')}}-->" readonly="">
+									<span class="add-on"><i class="icon-calendar"></i></span>
+								</div>
+							</td>
+				            <td><input type="text" name="uid" id="uid" class="input-medium" placeholder="用户ID" value="<!--{{search.uid}}-->"/> </td>
+				            <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			
+			<table class="table table-hover table-nomargin">
+		        <thead>
+					<tr>
+					    <th class="col-40">
+					        
+						</th>
+					    <th class="col-50">ID</th>
+						<th class="col-150">用户名</th>
+						<th class="col-60">签到次数</th>
+						<th>状态</th>
+					</tr>
+				</thead>
+				<tbody>
+				    <!--{%for item in datalist%}-->
+					<tr>
+					    <td></td>
+						<td><!--{{item.uid}}--></td>
+						<td><!--{{users[item.uid]['nickname']}}--></td>							
+						<td><!--{{item.times}}--></td>
+						<td><!--{%if item.times == days%}-->满签<!--{%else%}-->断签<!--{%endif%}--></td>
+					</tr>
+					<!--{%endfor%}-->
+				</tbody>
+		    </table>
+		    <div class="pagelink">
+		        <!--{{pagelinks}}-->
+		    </div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    gameselect('#gameselect');    
+    
+    $('a.ajax-del').bind('click',function(){
+        if(!confirm('确定要删除数据吗？')){
+            return false;
+        }
+    });
+});    
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,77 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                   奖项管理
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('jinyu/price/list')}}-->" class="">
+                                <td>
+                                    <a class="btn btn-teal" href="<!--{{url('jinyu/price/add')}}-->"><i title="添加奖项" class="icon-plus"></i></a>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-150">奖项ID</th>
+                        <th class="col-150">图片</th>
+                        <th class="col-150">名称</th>
+                        <th class="col-150">排序</th>
+                        <th class="col-150">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for item in list%}-->
+                    <tr>
+                        <td><!--{{item.priceId}}--></td>
+                        <td><img style="width:80px;height:80px;" src="<!--{{item.pricePic|default('/static/img/nopic.gif')}}-->" /></td>
+                        <td><!--{{item.priceTitle}}--></td>
+                        <td><!--{{item.priceSort}}--></td>
+
+                        <td>
+                            <a href="<!--{{url('jinyu/price/add')}}-->?priceId=<!--{{ item.priceId }}-->" class="btn btn-primary">编辑</a>
+
+                            <a href="#nogo" id="<!--{{item.priceId}}-->" class="btn btn-primary del">删除</a>
+
+                        </td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    $(function(){
+        $('.del').on('click',function(){
+            if(confirm('确定要删除数据吗？')){
+                var priceId = $(this).attr('id');
+                obj = $(this);
+                $.post('<!--{{url('jinyu/help/ajax-do')}}-->',{priceId:priceId,url:"jinyu_vote/delete/delete_priceInfo"},function(data){
+                    if(data.success){
+                        obj.parent().parent().hide();
+                    }else{
+                        alert(data.error);
+                    }
+                },"json")
+            }
+        });
+    });
+</script>
+<!--{%endblock%}-->

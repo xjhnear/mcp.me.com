@@ -3,6 +3,9 @@ namespace Yxd\Services;
 
 use Illuminate\Support\Facades\Event;
 
+use Yxd\Services\Models\ChatLog;
+use Yxd\Services\Models\ChatUser;
+
 class ChatService extends Service
 {
 	/**
@@ -10,8 +13,8 @@ class ChatService extends Service
 	 */
 	public static function addChatUser($from_uid,$to_uid)
 	{
-		$from = self::dbClubSlave()->table('chat_user')->where('from_uid','=',$from_uid)->where('to_uid','=',$to_uid)->count();
-		$to = self::dbClubSlave()->table('chat_user')->where('from_uid','=',$to_uid)->where('to_uid','=',$from_uid)->count();
+		$from = ChatUser::db()->where('from_uid','=',$from_uid)->where('to_uid','=',$to_uid)->count();
+		$to = ChatUser::db()->where('from_uid','=',$to_uid)->where('to_uid','=',$from_uid)->count();
 		$data = array();
 		if($from==0){
 			$data[] = array('from_uid'=>$from_uid,'to_uid'=>$to_uid,'last_message'=>'','last_time'=>time());
@@ -20,7 +23,7 @@ class ChatService extends Service
 			$data[] = array('from_uid'=>$to_uid,'to_uid'=>$from_uid,'last_message'=>'','last_time'=>time());
 		}
 		if($data){
-		    self::dbClubMaster()->table('chat_user')->insert($data);
+		    ChatUser::db()->insert($data);
 		}
 		return true;
 	}
@@ -30,12 +33,12 @@ class ChatService extends Service
 	 */
 	public static function deleteChatUser($from_uid,$to_uid)
 	{
-		$rows = self::dbClubMaster()->table('chat_user')->where('from_uid','=',$from_uid)->where('to_uid','=',$to_uid)->delete();
+		$rows = ChatUser::db()->where('from_uid','=',$from_uid)->where('to_uid','=',$to_uid)->delete();
 		$key = 'message::chat::uid::' . $to_uid;
 		self::redis()->srem($key,$from_uid);
 		
-		self::dbClubMaster()->table('chat_log')->where('from_uid','=',$from_uid)->where('to_uid','=',$to_uid)->update(array('from_isdel'=>1));
-		self::dbClubMaster()->table('chat_log')->where('from_uid','=',$to_uid)->where('to_uid','=',$from_uid)->update(array('to_isdel'=>1));
+		ChatLog::db()->where('from_uid','=',$from_uid)->where('to_uid','=',$to_uid)->update(array('from_isdel'=>1));
+		ChatLog::db()->where('from_uid','=',$to_uid)->where('to_uid','=',$from_uid)->update(array('to_isdel'=>1));
 		
 		return $rows>0 ? true : false;
 	}
@@ -45,8 +48,8 @@ class ChatService extends Service
 	 */
 	public static function getChatUserList($uid,$page=1,$pagesize=20)
 	{
-		$chat_users = self::dbClubSlave()->table('chat_user')->where('to_uid','=',$uid)->orderBy('last_time','desc')->forPage($page,$pagesize)->get();
-		$total = self::dbClubSlave()->table('chat_user')->where('to_uid','=',$uid)->count();
+		$chat_users = ChatUser::db()->where('to_uid','=',$uid)->orderBy('last_time','desc')->forPage($page,$pagesize)->get();
+		$total = ChatUser::db()->where('to_uid','=',$uid)->count();
 		$uids = array();
 		foreach($chat_users as $row){
 			$uids[] = $row['from_uid'];
@@ -67,7 +70,7 @@ class ChatService extends Service
 	{
 		self::resetChatMsgNum($from, $to);
 	    $chat_log = self::dbClubSlave()->select('select * from yxd_chat_log where (from_uid=? and to_uid=? and to_isdel=0) or (from_uid=? and to_uid=? and from_isdel=0) order by id asc',array($from,$to,$to,$from));
-	    //$total = self::dbClubSlave()->table('chat_log')->where('to_uid','=',$from)->orWhere('from_uid','=',$from)->count();
+	    //$total = ChatLog::db()->where('to_uid','=',$from)->orWhere('from_uid','=',$from)->count();
 	    $total = count($chat_log);
 		$uids = array();		
 		$uids[] = $from;
@@ -120,16 +123,16 @@ class ChatService extends Service
 		
 		$data = array('from_uid'=>$from_uid,'to_uid'=>$to_uid,'message'=>$message,'pic'=>$pic,'addtime'=>time());
 		    //array('from_uid'=>$to_uid,'to_uid'=>$from_uid,'message'=>$message,'addtime'=>time()),		
-		$id = self::dbClubMaster()->table('chat_log')->insertGetId($data);
+		$id = ChatLog::db()->insertGetId($data);
 		if($pic) $message = '[图片]';
-		self::dbClubMaster()->table('chat_user')->where('from_uid','=',$from_uid)->where('to_uid','=',$to_uid)->update(array('last_message'=>$message,'last_time'=>time()));
-		self::dbClubMaster()->table('chat_user')->where('from_uid','=',$to_uid)->where('to_uid','=',$from_uid)->update(array('last_message'=>$message,'last_time'=>time()));
+		ChatUser::db()->where('from_uid','=',$from_uid)->where('to_uid','=',$to_uid)->update(array('last_message'=>$message,'last_time'=>time()));
+		ChatUser::db()->where('from_uid','=',$to_uid)->where('to_uid','=',$from_uid)->update(array('last_message'=>$message,'last_time'=>time()));
 		return $id;
 	}
 	
 	public static function getChatMessage($id)
 	{
-		return self::dbClubSlave()->table('chat_log')->where('id','=',$id)->first();
+		return ChatLog::db()->where('id','=',$id)->first();
 	}
 	
 	/**
@@ -152,6 +155,6 @@ class ChatService extends Service
 	
 	public static function getNotReadFeedbackNum($uid,$last)
 	{
-		return self::dbClubSlave()->table('chat_log')->where('to_uid','=',$uid)->where('from_uid','=',1)->where('addtime','>=',$last)->count();
+		return ChatLog::db()->where('to_uid','=',$uid)->where('from_uid','=',1)->where('addtime','>=',$last)->count();
 	}
 }

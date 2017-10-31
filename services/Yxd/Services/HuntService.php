@@ -6,6 +6,8 @@ use Yxd\Models\PrizeModel;
 use Yxd\Services\Cms\GameService;
 use Illuminate\Support\Facades\DB as DB;
 use Illuminate\Support\Facades\Event;
+use Yxd\Services\Models\ActivityHunt;
+use Yxd\Services\Models\ActivityHuntAccount;
 
 class HuntService extends Service
 {
@@ -17,7 +19,7 @@ class HuntService extends Service
 		//$start = mktime(0,0,0,date('m'),date('d'),date('Y'));
 		//$end = mktime(23,59,59,date('m'),date('d'),date('Y'));
 		$time = time();
-		$hunt = self::dbClubSlave()->table('activity_hunt')
+		$hunt = ActivityHunt::db()
 		->where('status','=',1)
 		->where('startdate','<=',$time)
 		->where('enddate','>=',$time)
@@ -29,8 +31,8 @@ class HuntService extends Service
 		$hunt['second_prize'] = json_decode($hunt['second_prize'],true);
 		$hunt['third_prize'] = json_decode($hunt['third_prize'],true);
 		//获奖情况
-		$reward_count = self::dbClubSlave()->table('activity_hunt_account')->select(DB::raw('reward_no,count(*) as total'))->where('hunt_id','=',$hunt_id)->groupBy('reward_no')->lists('total','reward_no');
-		$last_reward_users = self::dbClubSlave()->table('activity_hunt_account')->where('hunt_id','=',$hunt_id)->where('reward_no','>',0)->orderBy('addtime','desc')->forPage(1,3)->get();
+		$reward_count = ActivityHuntAccount::db()->select(DB::raw('reward_no,count(*) as total'))->where('hunt_id','=',$hunt_id)->groupBy('reward_no')->lists('total','reward_no');
+		$last_reward_users = ActivityHuntAccount::db()->where('hunt_id','=',$hunt_id)->where('reward_no','>',0)->orderBy('addtime','desc')->forPage(1,3)->get();
 		$uids = array();
 		$reward_users = array();
 		foreach($last_reward_users as $row){

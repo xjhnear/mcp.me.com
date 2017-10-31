@@ -26,7 +26,8 @@
 					<div class="controls">
 					    <input id="gameselect" name="agid" data-from="android" type="hidden" value="<!--{{activity.agid}}-->" class="bigdrop select2-offscreen" style="width:200px" tabindex="-1">
 					</div>					
-				</div>			
+				</div>
+<!--
 				<div class="control-group">
 					<label class="control-label">列表图</label>
 					<div class="controls">
@@ -35,6 +36,28 @@
 						</div>
 					</div>
 				</div>
+-->
+                <div class="control-group">
+                    <label class="control-label">列表图</label>
+                    <div class="controls" >
+                        <div data-provides="fileupload" class="fileupload fileupload-new">
+                            <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                <a href="#bigimg" data-toggle="modal"><img id="selected_game_icon" src="<!--{{config('app.image_url')}}--><!--{{activity.pic|default('/static/img/wu_ss.gif')}}-->"></a>
+                            </div>
+                            <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                                            <span class="btn btn-file"><i class="icon-picture"></i>
+                                                <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                                                <input id="task_img" name="img" type="hidden" value="<!--{{activity.pic}}-->"/>
+                                                <input type="file"  name="picFile" >
+                                            </span>
+                            <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                            <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                            <input type="button" class="del_img" value="删除"/>
+                        </div>
+                    </div>
+                </div>
+
+
 				<div class="row-fluid">	
 				    <div class="span4">			
 						<div class="control-group">
@@ -106,8 +129,21 @@
 						<input type="text" name="link" class="input-xxlarge" value="<!--{{activity.link}}-->">
 						<span id="param_desc" class="help-block badge badge-warning"></span>
 					</div>
-				</div>											
-				<div class="control-group">
+				</div>
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">链接类型2</label>
+                        <div class="controls">
+                            <!--{{form_select('linktype2',linkTypeList,activity.linktype2,{'id':'linktype2'})}}-->
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">链接参数2</label>
+                        <div class="controls">
+                            <input type="text" name="link2" class="input-xxlarge" value="<!--{{activity.link2}}-->">
+                            <span id="param_desc" class="help-block badge badge-warning"></span>
+                        </div>
+                    </div>
+                    <div class="control-group">
 					<label for="textfield" class="control-label">内容</label>
 					<div class="controls">
 					    <script id="container" name="content" type="text/plain"><!--{{activity.content}}--></script>

@@ -11,9 +11,12 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Paginator;
 use Illuminate\Support\Facades\Validator;
-
+use Youxiduo\Cache\CacheService;
 use Youxiduo\Helper\DES;
 use Youxiduo\V4\User\UserService;
+use modules\web_forum\controllers\TopicController;
+use modules\v4_adv\models\Core;
+
 /*
     fujiajun 4.0 后台商城 2015/3/2
 */
@@ -31,9 +34,12 @@ class GoodsController extends BackendController
     /**视图：商品管理列表**/
     public function getList()
     {
-        $data = $params = array();
+        $params = $data = array();
         $params['pageIndex'] = Input::get('page',1);
+        $params['platform'] = Input::get('platform','ios');
         $params['pageSize'] =10;
+        $currencyTypeList = array(''=>'全部商品','0'=>'游币商城','1'=>'钻石商城');
+        $platformList = array('ios'=>'游戏多IOS','glwzry'=>'攻略APP');
         $arr=array('sign');
         $uid=$this->getSessionData('youxiduo_admin');
         foreach($arr as $v){
@@ -52,10 +58,14 @@ class GoodsController extends BackendController
                 $params[$v]=Input::get($v);
             }
         }
-        if(Input::get("isOnshelf") == 3){
+
+        $params['is_Onshelf'] = 0;
+        if(Input::get("is_Onshelf") == 3 || Input::get("isOnshelf") == 3){
             $params['isOnshelf'] = "false";
-        }else if(Input::get("isOnshelf") == 2){
+            $params['is_Onshelf'] = 3;
+        }else if(Input::get("is_Onshelf") == 2 || Input::get("isOnshelf") == 2){
             $params['isOnshelf'] = "true";
+            $params['is_Onshelf'] = 2;
         }
 
         if(Input::get('productStock')){
@@ -63,59 +73,39 @@ class GoodsController extends BackendController
         }
 
         if(Input::get('createTimeBegin')){
-            $params['createTimeBegin']=Input::get('createTimeBegin').' 00:00:00';
+            $params['createTimeBegin']=Input::get('createTimeBegin');
+        } else {
+            $params['createTimeBegin']=date("Y-m-d H:i:s",strtotime("-14 day"));
         }
         if(Input::get('createTimeEnd')){
-            $params['createTimeEnd']=Input::get('createTimeEnd').' 23:59:59';
+            $params['createTimeEnd']=Input::get('createTimeEnd');
+        } else {
+            $params['createTimeEnd']=date("Y-m-d H:i:s",time());
         }
         $params['productType']='0,1,3,4';
-        if(!empty($params['gameId'])){
-            //根据游戏ID查询关联活动
-            $data=ProductService::getMallGameRelation(array('isActive'=>1,'gid'=>$params['gameId'],'genre'=>self::GENRE));//print_r($data);
-            if($data['errorCode']==0){
-                    //根据游戏ID获取活动ID
-                    $ids=MyHelp::get_Ids($data['result'],'productCode');
-                    if(!empty($ids)) $params['productCode']=$ids;
-            }
-        }
-
+        $params['gids'] = Input::get('gameId');
+        $params['currencyType'] = Input::get('currencyType');
+        $params['sortType'] = 'Create_Time';
         $result=ProductService::searchProductList($params);
         if($result['errorCode']==0){
             $data=self::processingInterface($result,$params);
-            $arr=array();
-            foreach($data['datalist'] as $key=>$value){
+            foreach($data['datalist'] as $key=>&$value){
                 if(!empty($value['img'])){
                     $img=json_decode($value['img'],true);
+                    $listPic_arr = explode(',', $img['listPic']);
+                    $img['listPic'] = $listPic_arr[0];
                     $data['datalist'][$key]['listpic']=!empty($img['listPic']) ? $img['listPic'] :'';
                 }
-                $arr[]=$value['productCode'];
-            }
-            $ids=join(',',$arr);
-            if(!empty($ids)){
-                $arr['productCode']=$ids;
-                $arr['genre']=1;
-                $arr['isActive']=1;
-                $result=ProductService::getMallGameRelation($arr);
-                if($result['errorCode']==0){
-                    $arr=array();
-                    foreach($result['result'] as $val_){
-                        $arr[$val_['productCode']]=$val_['gid'];
-                    }
-                    foreach($data['datalist'] as $key=>&$value)
-                    {
-                        if(!empty($arr[$value['productCode']])){
-                             $gameName=GameService::getOneInfoById($arr[$value['productCode']],'ios');
-                             $value['gname']=!empty($gameName['gname']) && $gameName['gname']!='g'  ? $gameName['gname'] : '';
-                        }
-                        if(!empty($value['totalCount']) && !empty($value['restCount'])){
-                              $value['tr']=$value['totalCount']-$value['restCount'];
-                        }
-                    }
-
-                }else{
-                    $this->errorHtml($result);
+                if(empty($value['restCount'])){
+                    $value['restCount'] = 0;
                 }
+                if(!empty($value['totalCount'])){
+                    $value['tr']=$value['totalCount']-$value['restCount'];
+                }
+                $value['extraReq'] = json_decode($value['extraReq'],true);
+                isset($value['extraReq']['freeContent']) && $value['extraReq']['freeContent'] = json_decode($value['extraReq']['freeContent'],true);
             }
+
             if(Input::get("categoryName")){
                 $data['categoryName'] = Input::get("categoryName");
             }
@@ -123,21 +113,36 @@ class GoodsController extends BackendController
             if(Input::get('productStock')){
                  $data['myproductStock']='true';
             }
-
+            $data['currencyTypeList'] = $currencyTypeList;
+            $data['platformList'] = $platformList;
             return $this->display('goods-list',$data);
         }
+        $data['currencyTypeList'] = $currencyTypeList;
+        $data['platformList'] = $platformList;
         return $this->display('goods-list',$data);
     }
     //发放商品
     public function getFafang($productCode='')
     {
-        $input=Input::only('productCode',"uids");
+        $input=Input::only('productCode',"uids","p_name","gameId");
         if(empty($input['uids'])){
             return $this->json(array('errorCode'=>1,'errortxt'=>'抱歉，发放失败用户缺失!'));
         }
+        $input['number'] = 1;
         $result=ProductService::grant_product($input);
+//         print_r($input);
+//         print_r($result);die;
         if($result['errorCode']==0)
         {
+            $uid_arr = explode(",", $input['uids']);
+            foreach ($uid_arr as $uid) {
+                $input['type'] = '2011';
+                $input['linkType'] = '6';
+                $input['link'] = $input['productCode'];
+                $input['uid'] =  $uid;
+                $input['content'] = $input['p_name'].','.$input['productCode'];
+                TopicController::system_send($input);
+            }
              return $this->json(array('errorCode'=>2,'errortxt'=>''));
         }
         return $this->json(array('errorCode'=>1,'errortxt'=>'数据访问失败!'));
@@ -253,7 +258,6 @@ class GoodsController extends BackendController
 
     public function postProductAdd(){
         $input = Input::all();
-        print_r($input);
         $rule = array();
         $prompt = array();
         $valid = Validator::make($input,$rule,$prompt);
@@ -262,12 +266,13 @@ class GoodsController extends BackendController
         {
             return $this->back()->withInput()->with('global_tips','添加失败~如果选择卡密产品 请上传卡密');
         }
+
         $params = array(
             'productCode' => ProductService::getCode('p-code-','md5OrUniqid'),
             'productName' => $input['product_name'],
-            'gameId' => $input['game_id'] ? $input['game_id'] : self::YXD_GID,
-            'gid' => $input['game_id'] ? $input['game_id'] : self::YXD_GID,
-            'gname' => $input['game_name'] ? $input['game_name'] : '',
+            //'gameId' => $input['game_id'] ? $input['game_id'] : self::YXD_GID,
+            'gid' => $input['game_id'] ? $input['game_id'] : 0,
+            'gname' => $input['game_name'] ? $input['game_name'] : 0,
             'categoryId' => $input['category_id'],
             'productType' => $input['product_type'],
             'currencyType'=>$input['currencyType'],
@@ -291,23 +296,35 @@ class GoodsController extends BackendController
             'productDesc' => !empty($input['productDesc'])? $input['productDesc']:'',
             'productSummary' => !empty($input['productSummary'])? $input['productSummary']:'',
             'productInstruction' => !empty($input['productInstruction'])? $input['productInstruction']:'',
-            'isOnshelf' => !empty($input['isOnshelf'])? 'true':'false',
+//             'isOnshelf' => !empty($input['isOnshelf'])? 'true':'false',
             'lightDelivery'=>!empty($input['lightDelivery']) ? 'true' : 'false',
             'tagId'=>!empty($input['label_id']) ? $input['label_id'] : false,
             'tagName'=>!empty($input['label_name']) ? $input['label_name'] : false,
             'templateId'=>!empty($input['templateId']) ? $input['templateId'] : false,
             'contactInfo'=>!empty($input['contactInfo']) ? $input['contactInfo'] : false,
-            'biaoqianType' => $input['biaoqianType']
+            'biaoqianType' => $input['biaoqianType'],
+            'platform' => $input['appType']==0 ? 'ios' : 'glwzry',
+            'creator' => parent::getSessionUserName(),
         );
+        
+        if($params['productType']=="0"){
+            $params['lightDelivery'] = "true";
+        }else{
+            $params['lightDelivery'] = "false";
+        }
+        $params['isDiscount'] =$params['productDisplay']?"true":"false";
+        if($params['endTime'] > '2037-12-31 23:59:59'){
+            return $this->back()->withInput()->with('global_tips','抱歉，结束时间不能超过 2037-12-31 23:59:59');
+        }
         $params['isNeedTemplate']=!empty($params['templateId'])?'true':'false';
-        $params['isDiscount']='false';
+//        $params['isDiscount']='false';
         $params['isNewest']='false';
         $params['isHot']='false';
         $params['isRecommend']='false';
         switch ($params['biaoqianType']) {
             case 1:
                 # code...
-                $params['isDiscount']='true';
+//                $params['isDiscount']='true';
                 break;
             case 2:
                 # code...
@@ -354,9 +371,16 @@ class GoodsController extends BackendController
             $path = Helpers::uploadPic($dir,$input['bigpic']);
             $params['productImgpath']['detailPic'] = $path;
         }
+        
+        if(!empty($input['displayPic'])){
+            $dir = '/userdirs/mall/product/'.date('ym',time()).'/';
+            $path = Helpers::uploadPic($dir,$input['displayPic']);
+            $params['productImgpath']['listPic'] .= ','.$path;
+        }
         $uid=$this->getSessionData('youxiduo_admin');
         $params['modifier']=$uid['username'];
         $params['modifyTime']=date('Y-m-d H:i:s');
+
         if(!empty($params['tagId']) && !empty($params['tagName']) ){
             $params['tagId']=explode(',',$params['tagId']);
             $params['tagName']=explode(',',$params['tagName']);
@@ -367,12 +391,62 @@ class GoodsController extends BackendController
                 $arr_[$key]['productCode']=$params['productCode'];
             }
             $params['tagRelList']=$arr_;
+
         }
-
+        unset($params['tagId'],$params['tagName']);
+        
+            //上架设定
+        switch($input['shelf_set']){
+            case '1': //上架
+                $params['isOnshelf'] = 'true';
+                $params['extraReq']['onshelfAtBegin'] = 'false';
+//                $params['startTime']=date('Y-m-d H:i:s',time());
+                break;
+            case '2': //下架
+                $params['isOnshelf'] = 'false';
+                $params['extraReq']['onshelfAtBegin'] = 'false';
+                break;
+            case '3': //自动上架
+                $params['isOnshelf'] = 'false';
+                $params['extraReq']['onshelfAtBegin'] = 'true';
+                break;
+            case '4': //自动下架
+                $params['isOnshelf'] = 'true';
+//                 $params['isOffTogether'] = 'true';
+        }
+        
+        //自动推送
+        if(isset($input['isPush'])){
+            $freeContent['pushStatus'] = '1';
+        } else {
+            $freeContent['pushStatus'] = '2';
+        }
+        $params['extraReq']['freeContent'] = json_encode($freeContent);
+        
+        //提现类别
+        if ($params['productType'] == 5) {
+            $params['productType'] = 4;
+            $params['inventedType'] = 2;
+        }
+        $params['extraReq']['hasGameSever']=isset($input['hasGameSever']) ? 'true' : 'false';
+        $params['extraReq'] = json_encode($params['extraReq']);
+        
         $result = ProductService::addProduct($params,false);
+        if($result['errorCode']==0){
+            $data =array();
+            if(empty($input['game_id']) || $input['game_id'] == ''){
+                $input['game_id'] = '0';
+            }
+//             if(!empty($input['category_id'])){
+//                 $data = CacheService::cache_add_type_count($input['game_id'],$input['category_id']);
+//             }
+//             if(!isset($data['errorCode'])||$data['errorCode']!=0){
+//                 return $this->redirect('v4product/goods/list')->with('global_tips','添加成功,缓存失败');
+//             }
 
-        if(!$result['errorCode']){
-            return $this->redirect('v4product/goods/list')->with('global_tips','添加成功');
+//             Core::delcache(array('type'=>5,'productCode'=>$params['productCode']));
+
+            return $this->redirect('v4product/goods/list?platform='.$params['platform'])->with('global_tips','添加成功');
         }else{
             return $this->back()->withInput()->with('global_tips','添加失败');
         }
@@ -385,10 +459,19 @@ class GoodsController extends BackendController
         $pro_info = $pro_res['result'][0];
         if(isset($pro_info['img']) && $pro_info['img']){
             $pro_info['img'] = json_decode($pro_info['img'],true);
+            if(!empty($pro_info['img']['detailPicArray'])){
+                unset($pro_info['img']['detailPicArray']);
+            }
             foreach($pro_info['img'] as &$row){
                 $row = Utility::getImageUrl($row);
             }
+            $listPic_arr = explode(',', $pro_info['img']['listPic']);
+            $pro_info['img']['listPic'] = $listPic_arr[0];
+            if (count($listPic_arr)>1) {
+                $pro_info['img']['displayPic'] = $listPic_arr[1];
+            }
         }
+        isset($pro_info['extraReq']) && $pro_info['extraReq'] = json_decode($pro_info['extraReq'],true);
         $arr=array('','isDiscount','isNewest','isHot','isRecommend');
         $pro_info['biaoqianType']=0;
         foreach ($arr as $key => $value) {
@@ -399,7 +482,7 @@ class GoodsController extends BackendController
 
         if(!empty($pro_info['tagRelList'])){
             $arr_=$arr_1=array();
-            //print_r($pro_info['tagRelList']);
+            //print_r($pro_info['tagRelList']);exit;
             foreach($pro_info['tagRelList'] as $value){
                 $arr_[]=$value['tagId'];
                 $arr_1[]=$value['tagName'];
@@ -417,15 +500,24 @@ class GoodsController extends BackendController
         //exit;
         //如果有优惠价格算折扣
         if(!empty($pro_info['productDisplay']) && $pro_info['productDisplay']==1){
-            $pro_info['productGamePrice']=sprintf("%.2f",$pro_info['discountGamePrice']/$pro_info['productGamePrice'])*100;
+            if ($pro_info['productGamePrice']>0) {
+                $pro_info['productGamePrice']=sprintf("%.2f",$pro_info['discountGamePrice']/$pro_info['productGamePrice'])*100;
+            } else {
+                $pro_info['productGamePrice']=0;
+            }
         }
-
+        /**
         $rel_res = ProductService::getMallGameRelation(array('productCode'=>$pro_info['productCode'],'genre'=>self::GENRE,'isActive'=>1));
         $game_info = array();
+
         if(!$rel_res['errorCode'] && $rel_res['result']){
             $game_info = GameService::getOneInfoById($rel_res['result'][0]['gid'],self::GENRE_STR);
+        }**/
+        //提现类别
+        if ($pro_info['inventedType'] == 2) {
+            $pro_info['productType'] = 5;
         }
-        return $this->display('product-edit',array('info'=>$pro_info,'game'=>$game_info));
+        return $this->display('product-edit',array('info'=>$pro_info));
     }
 
     public function postProductEdit(){
@@ -434,13 +526,12 @@ class GoodsController extends BackendController
         $prompt = array();
         $valid = Validator::make($input,$rule,$prompt);
         if($valid->fails()) return $this->back()->withInput()->with('global_tips',$valid->messages()->first());
-
         $params = array(
+            'productId' => $input['productId'],
             'productCode' => $input['productCode'],
             'productName' => $input['product_name'],
-            'gameId' => $input['game_id'],
-            'gid' => $input['game_id'],
-            'gname' => $input['game_name'] ? $input['game_name'] : '',
+            'gid' => !empty($input['gid']) ? $input['gid']:0,
+            'gname' => !empty($input['gname']) ? $input['gname']:0,
             'categoryId' => $input['category_id'],
             'currencyType'=>$input['currencyType'],
             'productType' => !empty($input['product_type'])?$input['product_type']:0,
@@ -470,9 +561,13 @@ class GoodsController extends BackendController
             'contactInfo'=>!empty($input['contactInfo']) ? $input['contactInfo'] : false,
             'tagId'=>!empty($input['label_id']) ? $input['label_id'] : false,
             'tagName'=>!empty($input['label_name']) ? $input['label_name'] : false,
+            'modifier' => parent::getSessionUserName(),
         );
+        $platform = $input['apptype']==0 ? 'ios' : 'glwzry';
+        $params['isDiscount'] =$params['productDisplay']?"true":"false";
         $list_pic = $input['old_small_pic'];
         $detail_pic = $input['old_big_pic'];
+        $display_pic = $input['old_display_pic'];
         //如果有折扣 就为折扣前的价格
         if(!empty($params['productGamePrice'])){
              $params['productGamePrice']=sprintf("%.1f",$params['discountGamePrice']/($params['productGamePrice']/100));
@@ -491,20 +586,35 @@ class GoodsController extends BackendController
             $path = Helpers::uploadPic($dir,$input['bigpic']);
             $detail_pic = $path;
         }
+        
+        if($input['displayPic']){
+            $dir = '/userdirs/mall/product/'.date('ym',time()).'/';
+            $path = Helpers::uploadPic($dir,$input['displayPic']);
+            $display_pic = $path;
+        }
 
-        $params['productImgpath'] = array('listPic'=>$list_pic,'detailPic'=>$detail_pic);
+        if($params['endTime'] > '2037-12-31 23:59:59'){
+            return $this->back()->withInput()->with('global_tips','抱歉，结束时间不能超过 2037-12-31 23:59:59');
+        }
+
+        if ($input['apptype']==1) {
+            $params['productImgpath']['listPic'] = $list_pic.','.$display_pic;
+        } else {
+            $params['productImgpath']['listPic'] = $list_pic;
+        }
+        $params['productImgpath']['detailPic'] = $detail_pic;
         $params['productStock']=0;
         $uid=$this->getSessionData('youxiduo_admin');
         $params['modifier']=$uid['username'];
         $params['modifyTime']=date('Y-m-d H:i:s');
-        $params['isDiscount']='false';
+//        $params['isDiscount']='false';
         $params['isNewest']='false';
         $params['isHot']='false';
         $params['isRecommend']='false';
         switch ($params['biaoqianType']) {
             case 1:
                 # code...
-                $params['isDiscount']='true';
+//                $params['isDiscount']='true';
                 break;
             case 2:
                 # code...
@@ -549,20 +659,44 @@ class GoodsController extends BackendController
         unset($params['tagId'],$params['tagName']);
         $params['isNeedTemplate']=!empty($params['templateId'])?'true':'false';
 
-        $result = ProductService::editProduct($params);
-        if(!$input['old_game_id'] && $params['gameId']) {
-            //添加关系
-            $rel_data = array('categoryId'=>$params['categoryId'],'createTime'=>date('Y-m-d H:i:s',time()),'gid'=>$params['gameId'],'productCode'=>$params['productCode'],'genre'=>self::GENRE);
-            $relat_res = Utility::preParamsOrCurlProcess($rel_data,array('gid','productCode','genre','createTime'),Config::get(ProductService::RLT_URL_CONF).'save_mall_game','POST');
-
-        }elseif($input['old_game_id'] && $params['gameId']) {
-            //更新
-            $rel_data = array('productCode'=>$params['productCode'],'gid'=>$params['gameId'],'genre'=>self::GENRE);
-            $relat_res = Utility::preParamsOrCurlProcess($rel_data,array('gid','productCode','genre'),Config::get(ProductService::RLT_URL_CONF).'update_gid_by_mall','POST');
+        //上架设定
+        switch($input['shelf_set']){
+            case '1': //上架
+                $params['isOnshelf'] = 'true';
+                $params['extraReq']['onshelfAtBegin'] = 'false';
+                //                $params['startTime']=date('Y-m-d H:i:s',time());
+        
+                break;
+            case '2': //下架
+                $params['isOnshelf'] = 'false';
+                $params['extraReq']['onshelfAtBegin'] = 'false';
+                //                 $params['productStock']=$input['card_stock'];
+        
+                break;
+            case '3': //自动上架
+                $params['isOnshelf'] = 'false';
+                $params['extraReq']['onshelfAtBegin'] = 'true';
+                break;
+        
+            case '4': //自动下架
+                $params['isOnshelf'] = 'true';
+//                 $params['isOffTogether'] = 'true';
         }
-
-        if($result['errorCode']==0 && $result['result'] && $relat_res['errorCode']==0){
-            return $this->redirect('v4product/goods/list')->with('global_tips','修改成功');
+        
+        //提现类别
+        if ($params['productType'] == 5) {
+            $params['productType'] = 4;
+            $params['inventedType'] = 2;
+        }
+        $params['extraReq']['hasGameSever']=isset($input['hasGameSever']) ? 'true' : 'false';
+        $params['extraReq'] = json_encode($params['extraReq']);
+        $result = ProductService::editProduct($params);
+//        print_r($params);
+//        print_r($result);die;
+        if($result['errorCode']==0){
+            //Core::delcache(array('type'=>5,'productCode'=>$params['productCode']));
+//             return $this->redirect('v4product/goods/list?platform='.$platform)->with('global_tips','修改成功');
+            echo '<script>window.close();</script>';
         }else{
             return $this->back()->withInput()->with('global_tips','修改失败');
         }
@@ -585,21 +719,16 @@ class GoodsController extends BackendController
     //追加数量
     public function getZjsl(){
         $input = Input::all();
-        $rule = array('productCode'=>'required','productStock'=>'required');
-        $message = array(
-            'productCode.required' => 'productCode不能为空',
-            'productStock.required' => 'productStock不能为空',
-        );
-        $valid = Validator::make($input,$rule,$message);
-        if($valid->fails()) return $this->json(array('errorCode'=>0,'msg'=>$valid->messages()->first()));
         $uid=$this->getSessionData('youxiduo_admin');
         $input['modifier']=$uid['username'];
         $input['modifyTime']=date('Y-m-d H:i:s');
         $result = ProductService::editProduct($input);
+        //Core::delcache(array('type'=>5,'productCode'=>$input['productCode']));
         if($result['errorCode']!=0){
-            return $this->json(array('errorCode'=>0,'msg'=>'接口调用失败~!'));
+            echo json_encode(array('errorCode'=>0,'msg'=>'接口调用失败~!'));
         }
-        return $this->json(array('errorCode'=>1,'msg'=>'成功'));
+        echo json_encode(array('errorCode'=>1,'msg'=>'成功'));
+        exit;
     }
 
 
@@ -618,6 +747,7 @@ class GoodsController extends BackendController
         if(!$status){
             # code...
             $result=ProductService::offsaleProduct($params);
+            //Core::delcache(array('type'=>5,'productCode'=>$goods_id));
         } else {
             # code...
             $result=ProductService::onsaleProduct($params);
@@ -633,6 +763,7 @@ class GoodsController extends BackendController
             return $this->json(array('error'=>1));
         }
         $result=ProductService::DeleteProduct(array('productCode'=>$id));
+//         Core::delcache(array('type'=>-1,'productCode'=>$id));
         if($result['errorCode']==0){
             //return $this->redirect('v4aproduct/goods/list')->with('global_tips','商品删除成功');
             return $this->json(array('error'=>0));
@@ -740,6 +871,9 @@ class GoodsController extends BackendController
                     $datainfo['cate']['xcategoryImgpath']=strstr($datainfo['cate']['categoryImgpath'], '/userdirs/');
                 }
                 $datainfo['cate']['isBelongUs']=!empty($datainfo['isBelongUs']) ? 'true' : 'false';
+                if (isset($datainfo['cate']['categoryImgpath'])) {
+                    $datainfo['cate']['categoryImgpath']=Utility::getImageUrl($datainfo['cate']['categoryImgpath']);
+                }
 
                 if(!empty($datainfo['cate']['parentId']) && $datainfo['cate']['parentId'] != 0){
                     $data['categoryId']=$datainfo['cate']['parentId'];
@@ -836,6 +970,7 @@ class GoodsController extends BackendController
         $input['modifier']=$uid['username'];
         $input['modifyTime']=date('Y-m-d H:i:s');
         $result=ProductService::addEditCate($input,$url);
+
         if($result['errorCode'] == 0){
             return $this->redirect('v4product/goods/cate-list')->with('global_tips','商品种类（增加/修改）成功');
         }else{
@@ -886,7 +1021,7 @@ class GoodsController extends BackendController
             unset($input['cardType']);
             $input['cardAmountStr']=0;
             if(Input::get('dataid') != ''){
-                $input['needQuota']='true';
+                $input['needQuota']='false';
                 $input['requestFrom']=Input::get('dataid');
             }
 
@@ -897,8 +1032,8 @@ class GoodsController extends BackendController
             if($type == 'txt')
                 $input['type']=$type;
             $file['importFile']=array('tmp_name'=>Input::get('tmp'),'type'=>$type,'name'=>$filename);
-
             $result=ProductService::importcard($input,$file);
+
             if(!$result['errorCode']){
                 if(Input::get('type') == 1){
                     $input_['productStock']=Input::get("productStock");
@@ -962,9 +1097,9 @@ class GoodsController extends BackendController
         foreach ($arr as $key => $value) {
              $val=Input::get($value);
              if(!empty($val) && $value == 'timeBegin'){
-                $val.=' 00:00:00';
+                $val=date('Y-m-d H:i:s',strtotime($val['timeBegin']));
              }elseif(!empty($val) &&  $value == 'timeEnd'){
-                $val.=' 23:59:59';
+                $val=date('Y-m-d H:i:s',strtotime($val['timeEnd']));
              }
              $data[$value]=$params[$value]=$val;
         }
@@ -987,9 +1122,9 @@ class GoodsController extends BackendController
         foreach ($arr as $key => $value) {
              $val=Input::get($value);
              if(!empty($val) && $value == 'timeBegin'){
-                $val.=' 00:00:00';
+                $val=date('Y-m-d H:i:s',strtotime($val['timeBegin']));
              }elseif(!empty($val) &&  $value == 'timeEnd'){
-                $val.=' 23:59:59';
+                $val=date('Y-m-d H:i:s',strtotime($val['timeEnd']));
              }
              $data[$value]=$params[$value]=$val;
         }
@@ -1022,9 +1157,9 @@ class GoodsController extends BackendController
         foreach ($arr as $key => $value){
              $val=Input::get($value);
              if(!empty($val) && $value == 'timeBegin'){
-                $val.=' 00:00:00';
+                $val=date('Y-m-d H:i:s',strtotime($val['timeBegin']));
              }elseif(!empty($val) &&  $value == 'timeEnd'){
-                $val.=' 23:59:59';
+                $val=date('Y-m-d H:i:s',strtotime($val['timeEnd']));
              }
              if(!empty($val)){
                  $params.=$value.'='.$val.'&';
@@ -1068,11 +1203,57 @@ class GoodsController extends BackendController
         return $data;
     }
 
+    public function postRelease(){
+        $value = Input::get('value');
+        $code = Input::get('code');
+        $uid=$this->getSessionData('youxiduo_admin');
+        if(empty($uid['id'])){
+            echo json_encode(array('success'=>"false",'mess'=>'需重新登录','data'=>""));
+        };
+        $data = array('productCode'=>$code,'productStock'=>$value,'uid'=>$uid['id']);
+        $res =  ProductService::release($data);
+        if(!$res['errorCode']&&$res['result']){
+            echo json_encode(array('success'=>"true",'mess'=>'修改成功','data'=>""));
+        }else{
+            echo json_encode(array('success'=>"false",'mess'=>$res['errorDescription'],'data'=>""));
+        }
+    }
 
     /**错误输出 **/
     private function errorHtml($result=array(),$str=''){
         header("Content-type: text/html; charset=utf-8");
         return $this->back()->with('global_tips',$str.'出错拉');
         exit;
+    }
+
+    /**礼包列表 16/5/25**/
+    public function getGoodsSelect()
+    {
+        $data = $params = array();
+        $params['pageIndex'] = Input::get('page');
+        $params['platform'] = Input::get('platform',"");
+        $params['pageSize'] =5;
+        $params['onOrOff'] ='true';
+        $params['isActive'] = 'true';
+        if(Input::get('keyword')){
+            $data['keyword']=$params['productName']=Input::get('keyword');
+        }
+        if(Input::get('platform')){
+            $data['platform'] = Input::get('platform');
+        }
+        $result=ProductService::searchProductList($params);
+
+        if($result['errorCode'] !=null ){
+//            foreach($result['result'] as &$item){
+//                $item['can_use'] = $item['materialStock'] + $item['materialUsedStock'] - $item['materialQuota'];
+//            }
+//            print_r($result);
+            $data=self::processingInterface($result,$data,$params['pageSize']);
+//            print_r($data['datalist']);
+            $html = $this->html('pop-gift-list',$data);
+            return $this->json(array('html'=>$html));
+        }
+
+        self::error_html($result);
     }
 }

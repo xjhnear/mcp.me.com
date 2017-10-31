@@ -1,0 +1,78 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    统计
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('/v4statistics/task/taskcount')}}-->">
+                        <table class="table-filter">
+                            <td>
+                                开始时间
+                                <div class="input-append date " >
+                                    <input name="StartDate" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{Start}}-->" readonly>
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+                            </td>
+                            <td>
+                               结束时间
+                                <div class="input-append date " >
+                                    <input name="EndDate" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{End}}-->" readonly>
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+                            </td>
+                            <td><button class="btn btn-teal"><i class="icon-search"></i>统计</button></td>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <!-- <th class="col-60">ID</th> -->
+                        <th class="col-60">模块</th>
+                        <th class="col-100">时间段</th>
+                        <th class="col-100">总数</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><!--{{ type }}--></td>
+                        <td><!--{{Start==''or End==''?'昨日':Start~' - '~End}}--></td>
+                        <!--{% if type == '任务总数' %}-->
+                        <td><!--{{ result.totalCount < 1 ? 0 :result.totalCount }}--></td>
+                        <!--{% else %}-->
+                        <td><!--{{ result.0.count < 1 ? 0 :result.0.count }}--></td>
+                        <!--{% endif %}-->
+
+
+                    </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/laydate/laydate.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/MyHelp.js')}}-->"></script>
+<script>
+    var setting= {
+        elem:'#datetime'
+    };
+    getLaydate(setting);
+    var setting= {
+        elem:'#datetime2'
+    };
+    getLaydate(setting);
+</script>
+<!--{%endblock%}-->

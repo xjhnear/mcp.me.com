@@ -13,6 +13,8 @@ namespace Youxiduo\Android\Control;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Youxiduo\Base\BaseService;
 use Youxiduo\Android\Model\Game;
 use Youxiduo\Helper\Utility;
@@ -37,7 +39,13 @@ class HomeApi extends BaseService
 {
 	public static function home()
 	{
-		$uid = Input::get('uid');
+		$uid = (int)Input::get('uid');
+		$cachekey = 'app:home:'.$uid;
+		/*
+		if(Cache::has($cachekey)){
+			return Cache::get($cachekey);
+		}	
+		*/	
 		$out = array();
 		//推荐游戏
 		$out['recommend_game'] = (object)array();
@@ -71,7 +79,7 @@ class HomeApi extends BaseService
         $out['guess_like']['recommend_list'] = self::getGuessRecommendOut();
         $out['guess_like']['activity_list'] = self::getGuessActivityOut($gids,$uid);
 		$out['guess_like']['giftbag_list'] = self::getGuessGiftbagOut($gids,$uid); 
-		       
+		//Cache::put($cachekey,$out,30);
 		return $out;
 	}
 	protected static function getRecommendGameOut()
@@ -149,21 +157,27 @@ class HomeApi extends BaseService
 	protected static function getDailyTaskOut($uid)
 	{
 	    $time = time();
-		$search = array();		
+		$search = array('relation_task_id'=>0);		
 		$search['start_time'] = $time;
 		$search['end_time'] = $time;
 		$search['is_top'] = 1;
 		$search['is_show'] = 1;
 		$order = array('sort'=>'desc','id'=>'desc');
-		$result = ActivityTask::searchList($search,1,9,$order);
-		$total = ActivityTask::searchCount($search);
-		if($uid){
+	    if($uid){
 			$all_user_tasks = ActivityTaskUser::searchTaskStatus(array('uid'=>$uid));
 			$all_user_atids = array_keys($all_user_tasks);
 		}else{
 			$all_user_tasks = array();
 			$all_user_atids = array();
 		}
+	    $child_task_ids = TaskApi::getChildTaskIds($all_user_atids,null);
+		$all_task_ids = ActivityTask::buildSearch($search)->lists('id');
+		if($child_task_ids && is_array($child_task_ids) && !empty($child_task_ids)){
+			$all_task_ids = array_merge($all_task_ids,$child_task_ids);
+		}
+		$user_search = array('in_ids'=>$all_task_ids,'is_top'=>1);
+		$result = ActivityTask::searchList($user_search,1,9,$order);
+		$total = ActivityTask::searchCount($user_search);						
 		$gids = array();
 		foreach($result as $row){
 			$gids[] = $row['gid'];
@@ -171,6 +185,7 @@ class HomeApi extends BaseService
 		$out = array();
 		$games = Game::getListByIds($gids);
 		foreach($result as $row){
+			if(!isset($games[$row['gid']])) continue;
 			$tmp = array();
 			$tmp['aid'] = $row['id'];
 			$tmp['title'] = $row['title'];

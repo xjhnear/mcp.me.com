@@ -67,6 +67,12 @@ class WebGameService extends BaseService
 			$out['score'] = $game['score'];
 			$out['summary'] = $game['editorcomt'] ? : $game['description'];
 			$out['url'] = 'http://www.youxiduo.com/game/' . strtolower($addongame['alphabet']) . '/';
+			if (preg_match("#game\/zqt#", $out['url'])) {
+			    $out['url'] = str_replace('game/zqt', 'zqt', $out['url']);
+			    if (substr($out['url'], -1) == '/') {
+			        $out['url'] = substr($out['url'],0,strlen($out['url'])-1);
+			    }
+			}
 		}
 		if(!$out) return $out;
 		return $out;
@@ -199,7 +205,7 @@ class WebGameService extends BaseService
 		$hot_search['condition'] = array(array('field'=>'istop','logic'=>'=','value'=>0));		
 		$hot_result = GameBeta::search($hot_search,1,$pageSize,array('addtime'=>'desc','id'=>'desc'));
 		
-		$over_search['condition'] = array(array('field'=>'addtime','logic'=>'<','value'=>$start));
+		$over_search['condition'] = array(array('field'=>'addtime','logic'=>'<=','value'=>$start));
 		$over_result = GameBeta::search($over_search,1,$pageSize,array('addtime'=>'desc','id'=>'desc'));
 		
 		foreach($hot_result['result'] as $row){

@@ -9,6 +9,7 @@
 			<div class="box-content">
 				<form id="form-topic" action="<!--{{url('weba_forum/topic/bbs-edit')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data">
 					<input name="tid" type="hidden" value="<!--{{topic.tid}}-->" />
+					<input type="hidden" name="limit_id" value="<!--{{ topic.limit.id }}-->">
 					<div class="control-group">
 						<label for="textfield" class="control-label">发帖人UID</label>
 						<div class="controls">
@@ -113,13 +114,29 @@
 					<div class="control-group">
 						<label for="textfield" class="control-label">限制发帖</label>
 						<div class="controls">
-							<!--{% if topic.limit %}-->
-								<!--{{topic.limit}}-->
+							<!--{% if topic.limit.limitNum %}-->
+								<!--{{topic.limit.limitNum}}-->
 							<!--{% else %}-->
 								0
 							<!--{% endif %}-->
 						</div>
 					</div>
+					
+					<div class="control-group">
+					    <label for="textfield" class="control-label">回复设置</label>
+						<div class="controls">
+						    <label class="radio inline">
+							<!--{{form_radio('limit_status',0,topic.limit.limitStatus==0)}}-->不禁言
+							</label>
+							<label class="radio inline">
+							<!--{{form_radio('limit_status',1,topic.limit.limitStatus==1)}}-->禁言
+							</label>
+							<label class="checkbox inline">
+							<!--{{form_checkbox('reply_invisible',1,topic.replyInvisible==1)}}-->回复不可见(回复关闭前）
+							</label>
+						</div>
+					</div>
+					
 					<div class="control-group">
 						<label for="textfield" class="control-label">内容</label>
 						<div class="controls">

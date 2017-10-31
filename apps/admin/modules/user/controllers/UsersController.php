@@ -31,6 +31,8 @@ use Youxiduo\V4\User\Model\LoginLimit;
 use Youxiduo\Android\Model\Checkinfo;
 use Youxiduo\Android\Model\CreditLevel;
 use Youxiduo\V4\User\Model\MobileBlackList;
+use Youxiduo\Base\AllService;
+use Youxiduo\Helper\MyHelpLx;
 
 class UsersController extends BackendController
 {
@@ -104,8 +106,17 @@ class UsersController extends BackendController
                 $row['mobile'] = preg_replace('/(1[3578]{1}[0-9])[0-9]{4}([0-9]{4})/i','$1****$2',$row['mobile']);
             }
             $out[] = $row;
+            if(isset($row['uid'])){
+                $res = AllService::excute2("USER",array('accountId'=>$row['uid']),"account/query");
+                if($res['success']){
+                    $row['alipayAccount'] = isset($res['data'][0]['alipayAccount'])?$res['data'][0]['alipayAccount']:"0";
+                    $row['balance'] = isset($res['data'][0]['balance'])?$res['data'][0]['balance']/100:"0";
+                    $row['cashTotal'] = isset($res['data'][0]['cashTotal'])?$res['data'][0]['cashTotal']/100:"0";
+                }
+            }
         }
 
+        
 		return $this->display('users-list',$data);
 	}
 	
@@ -188,7 +199,7 @@ class UsersController extends BackendController
 		$data['user'] = UserService::getUserInfo($uid,'full');
 		return $this->display('users-info',$data);
 	}
-	
+
     /**
 	 * 编辑用户信息
 	 */
@@ -198,6 +209,9 @@ class UsersController extends BackendController
 		$uid = Input::get('uid');
 		$user = UserModel::getUserInfo($uid);
 		if(!$user) return $this->back()->with('gloable_tips','用户不存在');
+
+        $admin=$this->getSessionData('youxiduo_admin');//管理员信息
+
 		$group_ids = Input::get('group_id');
 	    if(Input::hasFile('avatar')){			
 	        $config = array(
@@ -231,6 +245,8 @@ class UsersController extends BackendController
 			}
 		}
 		if(AuthService::verifyNodeAuth('user/users/op-money')===true){
+            $rmb = Input::get('rmb',0);
+            $rmb_info = Input::get('rmb_info');
 			$score = (int)Input::get('score',0);
 			$experience = (int)Input::get('experience',0);
 			$score_info = Input::get('score_info');
@@ -259,6 +275,25 @@ class UsersController extends BackendController
 				    CreditService::handOpUserCredit($uid, $score, $experience,'admin_op',$score_info);
 				}
 		    }
+
+            if((is_numeric($rmb) && $rmb != 0)) {
+                if ($platform == 'ios' && $rmb && $rmb_info) {
+//                    NoticeService::sendInitiativeMessage(0, 0, '', $rmb_info, $rmb_info, false, false, array($uid));
+                } elseif ($platform == 'android' && $rmb) {
+                    $info = '管理员后台操作' . ($rmb > 0 ? '加' : '减') . $rmb . '人民币';
+                    $arr = array(
+                        'rechargeAccountId'=>$uid,
+                        'balanceChange'=>$rmb*100,
+                        'type'=>'manage',
+                        'operationInfo'=>$info,
+                        'operationPerson' =>$admin['realname'],
+//                        'operatorId' =>$admin['id'],
+                        'remoteIp' => MyHelpLx::get_real_ip(),
+                    );
+                    MoneyService::doRmb($arr);
+                }
+            }
+
 		}
 		return $this->back()->with('global_tips','用户信息修改成功');
 	}
@@ -351,6 +386,33 @@ class UsersController extends BackendController
 		$data['pagelinks'] = $pager->links();
 		return $this->display('credit-history',$data);
 	}
+
+    public function getRmbHistory($uid)
+    {
+        $data = $search = array();
+        $pageIndex = Input::get('page',1);
+        $pageSize = 10;
+        $search['accountId'] = $uid;
+        $search['platform'] = 'android';
+        $search['currencyType '] = '2';
+        $result = MoneyService::getRmbHistory($search, $pageIndex, $pageSize);
+        if(isset($result['totalCount'])&&$result['totalCount']){
+            foreach($result['result'] as &$row){
+                $mtime = is_numeric($row['operationTime']) ? $row['operationTime']/1000: strtotime($row['operationTime']);
+                $info = isset($row['operationDesc']) ? $row['operationDesc'] : '';
+                $row['uid'] = $row['accountId'];
+                $row['credit'] = $row['balanceChange'];
+                $row['mtime'] = $mtime;
+                $row['info'] = $info;
+            }
+            $data['datalist'] = $result['result'];
+            $data['user'] = UserService::getUserInfo($uid);
+            $pager = Paginator::make(array(),$result['totalCount'],$pageSize);
+            $data['pagelinks'] = $pager->links();
+        }
+
+        return $this->display('rmb-history',$data);
+    }
 	
 	public function getMoneyHistory($uid)
 	{
@@ -447,6 +509,80 @@ class UsersController extends BackendController
 			}
 			return $this->back()->with('global_tips','发送失败');
 		}
+	}
+	
+	
+	/**
+	 * 批量发送人民币页面
+	 */
+	public function getRmbSendAndroid()
+	{
+	    return $this->display('rmb-send-android');
+	}
+	
+	/**
+	 * 批量发送人民币提交
+	 */
+	public function postRmbSendAndroid()
+	{
+	    Input::flash();
+	    $input = Input::all();
+	    if(empty($input['rmb'])) return $this->back()->with('global_tips','请填写人民币');
+	    $rule = array(
+	        'rmb'=>'numeric',
+	        'rmb_info'=>'required_with:rmb',
+	        'uids'=>'required|okid'
+	    );
+	    $msg = array(
+	        'uids.required'=>'用户id不能为空',
+	        'uids.okid'=>'用户id必须为整数',
+	        'rmb.numeric'=>'人民币必须为整数',
+	        'rmb_info.required_with'=>'人民币备注不能为空',
+	    );
+	    Validator::extend('okid', function($attribute, $value, $parameters)
+	    {
+	        $okid = true;
+	        $ids_arr = explode(',',$value);
+	        foreach ($ids_arr as $id){
+	            if(!is_numeric($id)) {
+	                $okid = false;
+	                break;
+	            }
+	        }
+	        return $okid;
+	    });
+	    $admin=$this->getSessionData('youxiduo_admin');//管理员信息
+	    $validator = Validator::make($input,$rule,$msg);
+	    if($validator->fails()){
+	        return $this->back()->with('global_tips',$validator->messages()->first());
+	    }else{
+	        $rmb = $input['rmb'];
+	        $rmb_info = $input['rmb_info'];
+	        $uids_arr = explode(',',$input['uids']);
+	        $uids_arr = array_unique($uids_arr);
+	        	
+	        if($rmb){
+	            foreach ($uids_arr as $uid){
+	                $user = UserModel::getUserInfo($uid);
+	                if(!$user) continue;
+	                if($rmb){
+	                    $info = $rmb_info;
+	                    $arr = array(
+	                        'rechargeAccountId'=>$uid,
+	                        'balanceChange'=>$rmb*100,
+	                        'type'=>'manage',
+	                        'operationInfo'=>$info,
+	                        'operationPerson' =>$admin['realname'],
+	                        'remoteIp' => MyHelpLx::get_real_ip(),
+	                    );
+	                    MoneyService::doRmb($arr);
+	                    
+	                }
+	            }
+	            return $this->back()->with('global_tips','发送成功');
+	        }
+	        return $this->back()->with('global_tips','发送失败');
+	    }
 	}
 	
 	/**

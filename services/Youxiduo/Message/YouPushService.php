@@ -35,7 +35,7 @@ class YouPushService
      */
     const PUSH_PLATFORM_APPLE = '4';
 
-    const HOST_URL = 'http://youxiduo-java-slb-5:58080/service_push/';
+    const HOST_URL = 'http://112.124.121.34:58080/service_push/';
     //const HOST_URL = 'http://test.youxiduo.com:8080/service_push/';
 
     /**
@@ -173,7 +173,7 @@ class YouPushService
      * @param $pushPlatform
      * @return bool
      */
-    public static function sendMessage($title,$content,$type,$linkType,$link,$isPush,$version,$toUid,$tagName,$allUser=false,$pushPlatform=1)
+    public static function sendMessage($title,$content,$type,$linkType,$link,$isPush,$version,$toUid,$tagName,$allUser=false,$pushPlatform=1,$version)
     {
 
         if($toUid && is_array($toUid)){
@@ -200,7 +200,8 @@ class YouPushService
         }
 
         $result = self::http($apiurl,$params,'POST','json');
-        //print_r($result);exit;
+        print_r($params);
+        print_r($result);die;
         if($result['errorCode']==0){
             return true;
         }

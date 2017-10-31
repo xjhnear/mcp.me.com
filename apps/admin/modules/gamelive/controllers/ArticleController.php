@@ -8,6 +8,7 @@ use Yxd\Modules\Core\BackendController;
 
 use Youxiduo\Helper\Utility;
 use modules\gamelive\models\Article;
+use modules\gamelive\models\Game;
 
 
 class ArticleController extends BackendController
@@ -46,6 +47,15 @@ class ArticleController extends BackendController
         $_catalogs = Article::GetArticleCatalogs();
         foreach($_catalogs as $row){
             $catalogs[$row['url']] = $row['name'];
+        }
+        if(isset($data['article']['refGameId'])){
+            $gameIds = $data['article']['refGameId'];
+            if($gameIds){
+                $gameNames = Game::GetGameNames($gameIds);
+                if($gameNames){
+                    $data['article']['gameNames'] = $gameNames;
+                }
+            }
         }
         $data['catalogs'] = $catalogs;
         return $this->display('article-edit',$data);

@@ -168,7 +168,7 @@ class AccountController extends BaseController
 	
 	public function getCheckVerifyCode()
 	{
-	    $hashcode = Input::get('hashcode');
+	    $hashcode = Input::get('hashtoken');
 		$value = Input::get('verifycode');
 		$captcha = CaptchaCache::instance();		
 		if($captcha::check($hashcode,$value)===false){

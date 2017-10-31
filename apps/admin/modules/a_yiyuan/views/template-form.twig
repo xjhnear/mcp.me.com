@@ -1,0 +1,150 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>增加商品收货信息表单模板</h3>
+			</div>
+			<div class="box-content">
+					<form  id="form-product" action="<!--{{url('a_yiyuan/template/add')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+					<input type="hidden" id="templateId" name="templateId" value="<!--{{data.id}}-->">
+					<div class="control-group">
+                        <label class="control-label">表单名称</label>
+                        <div class="controls">
+                            <input type="text" id="templateName" name="templateName"  class="input-xlarge" value="<!--{{data.templateName}}-->" />
+                        </div>
+                    </div>
+			   		   <table class="table"  id="input_params_table">
+			    	    	<thead>
+								<tr>
+									<td>标题</td>
+									<td>是否为空</td>
+                                    <td>是否需要加密</td>
+                                    <td>排序</td>
+									<td>
+										<a class="add_input_param_button"><i class="icon-plus"></i></a>
+									</td>
+								</tr>
+							</thead>
+						<tbody id="tbody">
+							<!--{% if data.templateAttribute%}-->
+								<!--{% for key,item in data.templateAttribute%}-->
+								    <tr>
+								    	<td><input type="text" placeholder="必填" name="title[]" value="<!--{{item.title}}-->"></td>
+                                        <td class="td"><input  <!--{% if(item.isnull) %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="是" data-off-color="danger" data-off-text="否" class="switchbox" type="checkbox" /><input type="hidden"   name="isnull[]" class="hide" value="<!--{{item.isnull}}-->" /></td>
+                                        <td class="td"><input  <!--{% if(item.is_encryption) %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="是" data-off-color="danger" data-off-text="否" class="switchbox" type="checkbox" /><input type="hidden"   name="is_encryption[]" class="hide"  value="<!--{{item.is_encryption}}-->"/></td>
+										<td>	
+										   	<input type="text" placeholder="必填" name="order[]" value="<!--{{item.order}}-->">
+										</td>
+
+										<td>
+											<a class="delete_param_button"><i class="icon-minus"></i></a> 
+										</td>
+									</tr>
+								<!--{%endfor%}-->
+							<!--{%endif%}-->
+						</tbody>
+					 </table>
+					 <div class="form-actions">
+					 	<input type="hidden" name="id" value="<!--{{data.id}}-->" >
+                         <!--{%if data.id!="defaultreceivetmpl"%}-->
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                         <!--{%else%}-->
+                         <button type="button" class="btn-primary back">返回</button>
+                         <!--{%endif%}-->
+					</div>    
+				</form>
+            </div>
+		</div>
+    </div>
+</div>			
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
+<script id="tpl_input_param" type="text/html">
+	
+</script>
+<script>
+$('.switchbox').bootstrapSwitch();//是否
+$(function(){
+	function getOutTpl(){
+        var html = template.render('tpl_out_param');
+        return html;
+    }
+    
+    function getErrorTpl(){
+        var html = template.render('tpl_error_param');
+        return html;
+    }
+
+
+    $("table td a").click(function() {
+        var row = $(this).parents("tr");
+        if ($(this).hasClass("delete_param_button")) {
+            var ids_del = $("#ids_del").val();
+            $("#ids_del").val(ids_del+row.children('.del').val()+',');
+            row.remove();
+        }else{
+            var table = $(this).parents("table");
+            if($(this).hasClass("add_input_param_button")){
+                addAfterTableRow(this,getInputTpl);
+            }else if($(this).hasClass("add_out_param_button")){
+                addAfterTableRow(this,getOutTpl);
+            }else if($(this).hasClass("add_error_param_button")){
+                addAfterTableRow(this,getErrorTpl);
+            }
+        }
+        $('.switchbox').bootstrapSwitch();//是否
+    });
+
+    $('.back').bind('click',function(){
+        window.location.href = '<!--{{url('a_yiyuan/template/list')}}-->';
+    });
+
+});
+
+function getInputTpl(){
+		i=0;
+		var html =new Array();
+        	html['0']="<tr id='add_"+i+"'>";
+        	html['1']="<td><input type='text' placeholder='必填' name='title[]' value='' /></td>";
+            html['2']='<td class="td"><input  <!--{% if(data.autoShow == "1") %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="是" data-off-color="danger" data-off-text="否" class="switchbox" type="checkbox" /> <input type="hidden"   name="isnull[]" class="hide" /> </td><td class="td" ><input  <!--{% if(data.autoShow == "1") %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="是" data-off-color="danger" data-off-text="否" class="switchbox" type="checkbox" /><input type="hidden"   name="is_encryption[]" class="hide" /></td>';
+			html['3']="<td ><input type='text' placeholder='必填' name='order[]' value=''></td><td><a class='delete_param_button'><i class='icon-minus'></i></a> </td>";
+			html['4']="</tr>";
+		return html.join('');
+}
+
+
+function addAfterTableRow(a, rowStringFunc){
+	var row = $(a).parents("tr");
+	//row.appendTo(table.find("tbody"));
+	var table = $(a).parents("table");
+	row.after(rowStringFunc());
+	row.next().find("a").click(function() {
+		if($(this).hasClass('delete_param_button')){
+			deleteTableRow($(this).parent().parent());
+		}else if($(this).hasClass('add_input_param_button') || $(this).hasClass('add_out_param_button') || $(this).hasClass('add_error_param_button')){
+			addAfterTableRow(this,rowStringFunc)
+    }
+	});
+	return row
+}
+
+function deleteTableRow(row) {
+	row.remove();
+}
+$('.td').live('click',function(){
+    if($(this).find(".switchbox").prop("checked")){
+        $(this).find(".hide").val(1);
+    }else{
+        $(this).find(".hide").val(0);
+    }
+
+})
+
+</script>
+<!--{%endblock%}-->

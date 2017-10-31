@@ -299,4 +299,95 @@ class ArticleService extends BaseService
 		return $out;
 	}
 	
+/**
+	 * 视频详情
+	 */
+	public static function getGameVideoDetail($platform,$vid)
+	{
+		$video = GameVideo::getInfoById($platform,$vid);
+		if(!$video) return self::ERROR_VIDEO_NOT_EXISTS;
+		$type = $video['type'];
+		$pre_vid = GameVideo::db()->where('id','<',$vid)->orderBy('id','desc')->select('id')->pluck('id');
+		$next_vid = GameVideo::db()->where('id','>',$vid)->orderBy('id','asc')->select('id')->pluck('id');
+		
+		$v['vid'] = $video['id'];
+		$v['title'] = $video['title'];
+		$v['type'] = $video['type'];
+		$v['score'] = '5.0';
+		$v['image'] = Utility::getImageUrl($video['ico']);
+		$v['url'] = $video['video'];
+		$v['anchor'] = $video['writer'];
+		$v['desc'] = '';
+		$v['updatetime'] = date("Y-m-d", $video['addtime']);						
+		$v['pre_vid'] = $pre_vid;
+		$v['next_vid'] = $next_vid;
+		$v['times'] = $video['viewtimes'];
+		$v['duration'] = $video['duration']?:'';//时长		
+		$out['video'] = $v;
+		$gid = $video['gid'];
+		if($gid){
+			$game = $platform=='ios' ? IosGame::getInfoById($gid) : AndroidGame::getInfoById($gid);
+			if($game){
+				$gametype = GameType::getListToKeyValue();
+				$out['game'] = array(
+				    'gid'=>$game['id'],
+				    'gname'=>$game['shortgname'],
+				    'img'=>Utility::getImageUrl($game['ico']),
+				    'typename'=>isset($gametype[$game['type']]) ? $gametype[$game['type']] : '',
+				    'language'=>GameService::$languages[$game['language']],
+				    'score'=>$game['score'],
+				    'size'=>$game['size'],
+				    'downcount'=>$game['downtimes']
+				);
+			}
+		}
+		if(!isset($out['game'])) $out['game'] = array();
+		return $out;
+	}
+
+	public static function getArticleNumber($channel,$time)
+	{
+		$number = 0;
+		switch($channel){
+			case self::CHANNEL_NEWS:
+				$number = News::db()->where('addtime','>',$time)->count();
+				break;
+			case self::CHANNEL_NEWGAME:
+				$number = NewGame::db()->where('addtime','>',$time)->count();
+				break;
+			case self::CHANNEL_OPINION:
+				$number = Opinion::db()->where('addtime','>',$time)->count();
+				break;
+			case self::CHANNEL_GUIDE:
+				$number = Guide::db()->where('addtime','>',$time)->count();
+				break;
+			case 'video':
+				$number = Video::db()->where('addtime','>',$time)->count();
+				break;
+			default:
+				break;
+		}
+		return $number;
+	}
+
+	public static function getGameArticleNumber($gids)
+	{
+		$news_num = News::db()->whereIn('gid',$gids)->where('pid','<=',0)->groupBy('gid')->select(News::raw('gid,count(*) as total'))->lists('total','gid');
+		$guide_num = Guide::db()->whereIn('gid',$gids)->where('pid','<=',0)->groupBy('gid')->select(Guide::raw('gid,count(*) as total'))->lists('total','gid');
+		$opinion_num = Opinion::db()->whereIn('gid',$gids)->groupBy('gid')->select(Opinion::raw('gid,count(*) as total'))->lists('total','gid');
+		$video_num = Video::db()->whereIn('gid',$gids)->groupBy('gid')->select(Video::raw('gid,count(*) as total'))->lists('total','gid');
+		$out = array();
+		foreach($gids as $gid){
+			$out[] = array(
+				'gid'=>$gid,
+				'news_number'=>isset($news_num[$gid]) ? $news_num[$gid] : 0,
+				'guide_number'=>isset($guide_num[$gid]) ? $guide_num[$gid] : 0,
+				'opinion_number'=>isset($opinion_num[$gid]) ? $opinion_num[$gid] : 0,
+				'video_number'=>isset($video_num[$gid]) ? $video_num[$gid] : 0,
+			);
+		}
+
+		return $out;
+	}
+	
 }

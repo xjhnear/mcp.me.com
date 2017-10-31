@@ -1,0 +1,48 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>模板信息</h3>
+			</div>
+			<div class="box-content">
+				<form action="<!--{{url('v4message/tpl/save')}}-->" method="POST" class="form-horizontal">
+				<!--<div class="control-group">
+					<label for="textfield" class="control-label">模板ID</label>
+					<div class="controls">
+						<input name="id" type="text" class="input-xlarge" value="<!--{{tpl.id}}-->" <!--{% if tpl.id %}--> readOnly="true" <!--{% endif %}--> />
+					</div>
+				</div>-->
+				<input name="id" type="hidden" value="<!--{{tpl.id}}-->" <!--{% if tpl.id %}--> readOnly="true" <!--{% endif %}--> />
+				<div class="control-group">
+					<label for="textfield" class="control-label">模板标题</label>
+					<div class="controls">
+						<input name="title" type="text" class="input-xlarge" value="<!--{{tpl.title}}-->" />
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">模板内容</label>
+					<div class="controls">
+						<textarea id="content" name="content" class="input-xxlarge" rows="5"><!--{{tpl.content}}--></textarea>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">模板类型</label>
+					<div class="controls">
+						<textarea name="messageType" class="input-xxlarge" rows="5" <!--{% if tpl.messageType %}--> readOnly="true" <!--{% endif %}--> ><!--{{tpl.messageType}}--></textarea>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+
+<!--{%endblock%}-->   

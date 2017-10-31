@@ -18,6 +18,7 @@ use Youxiduo\Helper\Utility;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
 use Youxiduo\User\Model\Account;
+use Youxiduo\User\Model\AccountCheck;
 use Youxiduo\User\Model\AccountSession;
 use Youxiduo\User\Model\UserMobile;
 use Youxiduo\V4\User\Model\ThirdAccountLogin;
@@ -26,6 +27,8 @@ use Youxiduo\V4\User\Model\UserArea;
 use Youxiduo\V4\User\Model\StartupInfo;
 use Youxiduo\V4\User\Model\InviteRecord;
 use Youxiduo\V4\Helper\GeoHash;
+use Yxd\Utility\OutLog;
+use Youxiduo\Backpack\ProductService;
 
 
 
@@ -47,6 +50,8 @@ class UserService extends BaseService
 	const ERROR_USER_NOT_EXISTS = 'user_not_exists';//用户不存在
 	const ERROR_MODIFY_AVATAR_ERROR = 'modify_avatar_error';//修改用户头像失败
 	const ERROR_THIRD_NOT_BIND = 'third_not_bind';//第三方未绑定
+	const ERROR_MONTH_CHECK = 'month_check';//一個月內超過註冊2次
+
 	
 	/**
 	 * 发送短信验证码
@@ -60,7 +65,12 @@ class UserService extends BaseService
 	{
 		if(Utility::validateMobile($mobile)===true){
 			$verifycode = Utility::random(4,'alnum');
-			//$verifycode = 1234;
+			if(preg_match("/^18000000[01234]{1}\d{2}$/",$mobile)){
+			    $verifycode = 1234;
+			    $result = UserMobile::saveVerifyCodeByPhone($mobile,$verifycode,false,$ip);
+			    return $result;
+			}
+    		$verifycode = 1234;
 			$result = UserMobile::saveVerifyCodeByPhone($mobile,$verifycode,false,$ip);
 			$result==true && Utility::sendVerifySMS($mobile,$verifycode,true);
 			return $result;
@@ -101,8 +111,12 @@ class UserService extends BaseService
 	 * 
 	 * @return int 成功返回用户的UID,失败返回
 	 */
-	public static function createUserByMobile($mobile,$password,$params=array())
+	public static function createUserByMobile($mobile,$password,$params=array(),$platform='android',$client='android',$idfa='')
 	{
+	    
+		if(!empty($idfa)){
+			if(AccountCheck::checkPhoneExist($idfa) === false) return self::ERROR_MONTH_CHECK;
+		}
 		if(Utility::validateMobile($mobile)===true && !empty($password)){
 			if(Account::isExistsByField($mobile,Account::IDENTIFY_FIELD_MOBILE)===true){
 				//return self::trace_error('E1','该手机号已经存在');
@@ -110,11 +124,55 @@ class UserService extends BaseService
 				return self::ERROR_MOBILE_EXISTS;
 			}else{
 				if(UserMobile::phoneVerifyStatus($mobile)===false) return self::ERROR_MOBILE_NOT_VERIFY;
-			    $uid = Account::createUserByPhone($mobile,$password,$params);
+			    $uid = Account::createUserByPhone($mobile,$password,$params,$platform,$client,$idfa);
 			}
+			OutLog::outLog('creatuse_uid:'.$uid.' platform:'.$platform);
 			if($uid>0){
+				if(!empty($idfa)){
+					if(AccountCheck::checkPhoneTime($idfa) === false) return self::ERROR_MONTH_CHECK;
+				}
 				$session = self::makeAccessToken($uid);
-				return array('uid'=>$uid,'session_id'=>$session);
+               $money_success = MoneyService::registerAccount($uid,$platform);
+               OutLog::outLog('creatmoney_uid:'.$uid.' platform:'.$platform);
+//
+//                if($money_success){
+//                    Account::modifyUserInfo($uid,array('is_open_android_money'=>1));
+//                }
+
+               if ($client == "duoyou") {
+                   $actionId = 'DUOYOU';
+               } else {
+                   $actionId = '';
+               }
+                //通知推广员
+                $rmb = file_get_contents(Config::get('app.android_module_promoter') . 'module_promoter/promotion/notice?' . http_build_query(array('mobile'=>$mobile,'uid'=>$uid,'platform'=>$platform,'actionId'=>$actionId)));
+                OutLog::outLog('client:'.$client.' platform:'.$platform.' actionId:'.$actionId);
+                OutLog::outLog($rmb);
+                //v4自分享
+//                 $result = Utility::loadByHttp(Config::get('app.android_module_share') . 'share/v4/NewUserComing',array('mobileNo'=>$mobile,'uid'=>$uid,'platform'=>$platform,'client'=>$client,'idfa'=>$idfa),'GET','text');
+//                 OutLog::outLog('creatshare_uid:'.$uid.' platform:'.$platform);
+
+                $version = Input::get('version');
+                if ($client && $version && ($client=='yxdjqb' || $client=='yxd3' || $client=='youxiduojiu3') && $version>='4.3') {
+                    $product_plan = ProductService::product_plan(array('distributeType'=>2,'interTime'=>date("Y-m-d H:i:s",time())));
+                    if ($product_plan['errorCode']==0) {
+                        foreach ($product_plan['result'] as $plan_item) {
+                            ProductService::send_product(array('uid'=>$uid,'knapsackGoodsId'=>$plan_item['distributeGoodsId'],'planId'=>$plan_item['distributePlanId'],'goodsSourceType'=>'ios_register_goods','goodsSourceInfo'=>'用户通过注册获得物品'));
+                    
+                        }
+                    }
+                    OutLog::outLog('send_product_uid:'.$uid.' platform:'.$platform);
+                    
+                    if(!empty($idfa)){
+                        if(Account::isExistsByField($idfa,Account::IDENTIFY_FIELD_IDFA,0,true)==1){
+                            //注册获得新手物品
+                            ProductService::send_product(array('uid'=>$uid,'knapsackGoodsId'=>'-1','planId'=>'','goodsSourceType'=>'ios_freshman_goods','goodsSourceInfo'=>'用户通过注册获得新手物品'));
+                            OutLog::outLog('ios_freshman_uid:'.$uid.' platform:'.$platform);
+                        }
+                    }
+                }
+                
+                return array('uid'=>$uid,'session_id'=>$session,'tg'=>'');
 			}
 			return self::ERROR_CREATE_USER_ERROR;
 		}
@@ -134,7 +192,21 @@ class UserService extends BaseService
 	{
 	    $res = Account::isExistsByField($mobile,Account::IDENTIFY_FIELD_MOBILE,$uid);
 	    if($res==true){
-			return self::ERROR_MOBILE_EXISTS;
+	        if (UserMobile::phoneVerifyStatus($mobile)===false) {
+	            return true;
+	        } else {
+	            return self::ERROR_MOBILE_EXISTS;
+	        }
+		}else{
+			return true;
+		}
+	}
+
+	public static function isExistsByEmail($email,$uid=0)
+	{
+		$res = Account::isExistsByField($email,Account::IDENTIFY_FIELD_EMAIL,$uid);
+		if($res==true){
+			return false;
 		}else{
 			return true;
 		}
@@ -160,7 +232,7 @@ class UserService extends BaseService
 	
 	/**
 	 * 通过邮箱或手机登录
-	 * @param string $identify 
+	 * @param string $identity
 	 * @param string $password
 	 * 
 	 * @return array|string $result 成功返回用户的数组,失败返回错误码
@@ -176,14 +248,83 @@ class UserService extends BaseService
 		}
 	}
 	
+	public static function sendgoods_by_login($uid,$version)
+	{
+	   $product_plan = ProductService::product_plan(array('distributeType'=>3,'interTime'=>date("Y-m-d H:i:s",time())));
+			    if ($product_plan['errorCode']==0) {
+			        OutLog::outLog('product_plan:'.json_encode($product_plan));
+			        foreach ($product_plan['result'] as $plan_item) {
+			            $send_product_record = ProductService::send_product_record(array('distributePlanId'=>$plan_item['distributePlanId'],'startTime'=>$plan_item['distributeStartTime'],'endTime'=>$plan_item['distributeEndTime'],'uid'=>$uid,'distributeStatus'=>1));
+			            if ($plan_item['appVersion']) {
+			                $plan_item['appVersion'] = str_replace('v', '', $plan_item['appVersion']);
+			                if ($version<$plan_item['appVersion']) {
+			                    continue;
+			                }
+			            }
+			            if ($plan_item['distributeNumberType'] == 1) {
+			                if (count($send_product_record['result'])>0) {
+			                    continue;
+			                }
+			            } else {
+			                foreach ($send_product_record['result'] as $record_item) {
+			                    if (date("Y-m-d",strtotime($record_item['createTime']))==date("Y-m-d",time())) {
+			                        continue;
+			                    }
+			                }
+			            }
+			            ProductService::send_product(array('uid'=>$uid,'knapsackGoodsId'=>$plan_item['distributeGoodsId'],'planId'=>$plan_item['distributePlanId'],'goodsSourceType'=>'ios_register_goods','goodsSourceInfo'=>'用户通过登录获得物品'));
+			    
+			        }
+			        OutLog::outLog('send_product:'.$uid);
+			    }
+	   return  true;
+	}
+	
     public static function loginByPhone($mobile,$password)
 	{
 		if(Utility::validateMobile($mobile)===true && !empty($password)){
 			$user = Account::doLocalLogin($mobile,Account::IDENTIFY_FIELD_MOBILE,$password);
+			
+			$version = Input::get('version');
+			$client = Input::get('client');
+			$appname = Input::get('appname');
+			if ($appname) {
+			    $c = $appname;
+			} elseif ($client) {
+			    $c = $client;
+			} else {
+			    $c = 'android';
+			}
+// 			OutLog::outLog('loginByPhone:'.$mobile.' appname:'.$c.' version:'.$version);
+// 			if ($c && $version && ($c=='yxdjqb' || $c=='yxd3' || $c=='youxiduojiu3') && $version>='4.3') {
+// 			    $product_plan = ProductService::product_plan(array('distributeType'=>3,'interTime'=>date("Y-m-d H:i:s",time())));
+// 			    if ($product_plan['errorCode']==0) {
+// 			        OutLog::outLog('product_plan:'.json_encode($product_plan));
+// 			        foreach ($product_plan['result'] as $plan_item) {
+// 			            $send_product_record = ProductService::send_product_record(array('distributePlanId'=>$plan_item['distributePlanId'],'startTime'=>$plan_item['distributeStartTime'],'endTime'=>$plan_item['distributeEndTime'],'uid'=>$user['uid'],'distributeStatus'=>1));
+// 			            if ($plan_item['distributeNumberType'] == 1) {
+// 			                if (count($send_product_record['result'])>0) {
+// 			                    continue;
+// 			                }
+// 			            } else {
+// 			                foreach ($send_product_record['result'] as $record_item) {
+// 			                    if (date("Y-m-d",strtotime($record_item['createTime']))==date("Y-m-d",time())) {
+// 			                        continue;
+// 			                    }
+// 			                }
+// 			            }
+// 			            ProductService::send_product(array('uid'=>$user['uid'],'knapsackGoodsId'=>$plan_item['distributeGoodsId'],'planId'=>$plan_item['distributePlanId'],'goodsSourceType'=>'ios_register_goods','goodsSourceInfo'=>'用户通过登录获得物品'));
+			    
+// 			        }
+// 			        OutLog::outLog('send_product:'.$mobile);
+// 			    }
+// 			}
+			
 			if($user){
 				$mobile_verify = UserMobile::phoneVerifyStatus($user['mobile']);
 				$session = self::makeAccessToken($user['uid']);
-				return array('uid'=>$user['uid'],'mobile_is_verify'=>$mobile_verify,'session_id'=>$session);
+				$money_success = MoneyService::checkAccount($user['uid'],'ios');
+				return array('uid'=>$user['uid'],'mobile_is_verify'=>$mobile_verify,'session_id'=>$session,'vuser'=>$user['vuser']);
 			}else{
 				return self::ERROR_LOGIN_ERROR;
 			}
@@ -199,6 +340,7 @@ class UserService extends BaseService
 			if($user){
 				$mobile_verify = UserMobile::phoneVerifyStatus($user['mobile']);
 				$session = self::makeAccessToken($user['uid']);
+				$money_success = MoneyService::checkAccount($user['uid'],'ios');
 				return array('uid'=>$user['uid'],'mobile_is_verify'=>$mobile_verify,'session_id'=>$session);
 			}else{
 				return self::ERROR_LOGIN_ERROR;
@@ -270,6 +412,13 @@ class UserService extends BaseService
 		return self::ERROR_CREATE_USER_ERROR;
 	}
 	
+	public static function Thirdsession($uid,$client)
+	{
+	    if(!$uid) return self::ERROR_CREATE_USER_ERROR;
+	    $session = self::makeAccessToken($uid,$client);
+	    return array('uid'=>$uid,'session_id'=>$session);
+	}
+	
 	/**
 	 * 修改用户密码
 	 * 
@@ -318,7 +467,7 @@ class UserService extends BaseService
 	 */
 	public static function modifyUserInfo($uid,$input)
 	{		
-		$fields = array('nickname','email','summary','birthday','sex','mobile','avatar','homebg');
+		$fields = array('nickname','email','summary','birthday','sex','mobile','avatar','homebg', 'alipay_num','alipay_name');
 		$data = array();
 		//过滤非法字段
 		foreach($fields as $field){
@@ -342,7 +491,7 @@ class UserService extends BaseService
 	    if(isset($data['email']) && $data['email']){
 			if(Account::isExistsByField($data['email'],Account::IDENTIFY_FIELD_EMAIL,$uid)===true){
 				//手机号码已经存在
-				return self::ERROR_MOBILE_EXISTS;
+				return '邮箱已经存在';
 			}
 		}
         if($data){
@@ -393,7 +542,49 @@ class UserService extends BaseService
 	
 	public  static function getUserIdByMobile($mobile)
 	{
-		$user = Account::getUserInfoByField($mobile,'mobile');
+	    $mob_arr = explode(',', $mobile);
+	    $result = array();
+	    foreach ($mob_arr as $v) {
+	        $user = Account::getUserInfoByField($v,'mobile');
+	        if($user){
+	            $result[] = $user['uid'];
+	        }
+	    }
+	    if (count($result) > 0) {
+	        return implode(',', $result);
+	    } else {
+	        return 0;
+	    }
+	}
+	
+	public  static function getMobileByUserId($uid)
+	{
+	    $uid_arr = explode(',', $uid);
+	    $result = array();
+	    foreach ($uid_arr as $v) {
+	        $user = Account::getUserInfoByField($v,'uid');
+	        if($user){
+	            $result[] = $user['mobile'];
+	        } else {
+	            $result[] = "";
+	        }
+	    }
+	    return $result;
+	}
+	
+
+	public  static function getUserIdByNickname($nickname)
+	{
+	    $user = Account::getUserInfoByField($nickname,'nickname');
+	    if($user){
+	        return $user['uid'];
+	    }
+	    return 0;
+	}
+	
+    public  static function getUserIdByInviteCode($invitecode)
+	{
+		$user = Account::getUserInfoByField($invitecode,'zhucema');
 		if($user){
 			return $user['uid'];
 		}
@@ -405,9 +596,9 @@ class UserService extends BaseService
 	 * 
 	 * @param int $uid
 	 */
-	public static function getUserInfoByUid($uid,$filter='basic',$compare_uid=0)
+	public static function getUserInfoByUid($uid,$filter='basic',$compare_uid=0,$appname=NULL)
 	{
-		$user = Account::getUserInfoById($uid,$filter);
+		$user = Account::getUserInfoById($uid,$filter,$appname);
 		if(!$user) return self::ERROR_USER_NOT_EXISTS;
 		if($compare_uid){
 			$user['attention'] = Relation::isAttention($compare_uid,$uid);
@@ -424,11 +615,10 @@ class UserService extends BaseService
 	 * 
 	 * @param array $uids
 	 */
-	public static function getMultiUserInfoByUids(array $uids,$filter='basic',$compare_uid=0)
+	public static function getMultiUserInfoByUids(array $uids,$filter='basic',$compare_uid=0,$appname=NULL)
 	{
-		$users = Account::getMultiUserInfoByUids($uids,$filter);
+		$users = Account::getMultiUserInfoByUids($uids,$filter,$appname);
 		if(!$users) return self::ERROR_USER_NOT_EXISTS;
-		
 		if($compare_uid){
 			$attention_uids = Relation::getAllAttention($compare_uid);
 			$fans_uids = Relation::getAllFans($compare_uid);
@@ -448,6 +638,37 @@ class UserService extends BaseService
 		}
 		
 		return $users;
+	}
+	
+	/**
+	 * 获取用户列表
+	 *
+	 * @param array $uids
+	 */
+	public static function getMultiUserInfolist($filter='basic',$compare_uid=0,$pageIndex,$pageSize,$hastoken=false,$appname=NULL)
+	{
+	    $users = Account::getMultiUserInfolist($filter,$pageIndex,$pageSize,$hastoken,$appname);
+	    if(!$users) return self::ERROR_USER_NOT_EXISTS;
+	
+	    if($compare_uid){
+	        $attention_uids = Relation::getAllAttention($compare_uid);
+	        $fans_uids = Relation::getAllFans($compare_uid);
+	        foreach($users as $key=>$row){
+	            if($attention_uids && in_array($row['uid'],$attention_uids)){
+	                $row['attention'] = true;
+	            }else{
+	                $row['attention'] = false;
+	            }
+	            if($fans_uids && in_array($row['uid'],$fans_uids)){
+	                $row['fans'] = true;
+	            }else{
+	                $row['fans'] = false;
+	            }
+	            $users[$key] = $row;
+	        }
+	    }
+	
+	    return $users;
 	}
 	
 	/**
@@ -498,14 +719,23 @@ class UserService extends BaseService
     protected static function makeAccessToken($uid,$client='android')
 	{
 		$session = AccountSession::makeSession();
-		$id = AccountSession::saveSession($uid,$session,$client);
+		$appname = Input::get('appname');
+		$client = Input::get('client');
+		if ($client) {
+		    $c = $client;
+		} elseif ($appname) {
+		    $c = $appname;
+		} else {
+		    $c = 'android';
+		}
+		$id = AccountSession::saveSession($uid,$session,$c);
 		if($session && $id) return $session;
 		return '';
 	}
 	
-	public static function getUidFromSession($session_id)
+	public static function getUidFromSession($session_id,$client=NULL)
 	{
-		return AccountSession::getUidFromSession($session_id);
+		return AccountSession::getUidFromSession($session_id,$client);
 	}
 	
 	public static function getSessionFromUid($uid)
@@ -537,6 +767,11 @@ class UserService extends BaseService
 			}
 		}
 		return $users;
+	}
+	
+	public static function searchCountByUserName($username)
+	{
+		return Account::searchUserCountByNickname($username);
 	}
 	
 	public static function getArea($id,$type)
@@ -578,6 +813,10 @@ class UserService extends BaseService
 			$data['updatetime'] = time();			
 			UserArea::db()->insert($data);
 		}
+		unset($data['country']);
+		unset($data['updatetime']);
+		Account::db()->where('uid','=',$uid)->update($data);
+
 		return true;
 	}
 	
@@ -645,6 +884,47 @@ class UserService extends BaseService
 		}
 		return $out;
 	}
+
+	public static function inviteTop($search,$uid)
+	{
+		$tb = InviteRecord::db()->select(InviteRecord::raw('oldid as uid,count(*) as total'));
+		if(isset($search['start_time'])){
+			$tb = $tb->where('ctime','>=',strtotime($search['start_time']));
+		}
+
+		if(isset($search['end_time'])){
+			$tb = $tb->where('ctime','<=',strtotime($search['end_time']));
+		}
+		$tb = $tb->groupBy('oldid');
+		if(isset($search['min']) && $search['min']>0){
+			$tb = $tb->having('total','>=',$search['min']);
+		}
+
+		if(isset($search['max']) && $search['max']>0){
+			$tb = $tb->having('total','<=',$search['max']);
+		}
+
+
+		$rows = $tb->orderBy('total','desc')->get();
+
+		$users = array();
+		$uids = array();
+		$out = array();
+		foreach($rows as $row){
+			$uids[] = $row['uid'];
+		}
+		$users = self::getMultiUserInfoByUids($uids,'short');
+		if($users){
+			$users = self::formatDataToKey($users,'uid');
+		}
+		foreach($rows as $row){
+			if(!isset($users[$row['uid']])) continue;
+			$user = $users[$row['uid']];
+			$user['number'] = $row['total'];
+			$out[] = $user;
+		}
+		return $out;
+	}
 	
 	/**
 	 * 记录最后启动信息
@@ -672,6 +952,10 @@ class UserService extends BaseService
 		
 		if($uid && $apple_token){
 			Account::db()->where('uid','=',$uid)->update(array('apple_token'=>$apple_token));
+		}
+		
+		if($uid && $idfa){
+		    Account::db()->where('uid','=',$uid)->update(array('idfa'=>$idfa));
 		}
 		
 		return true;
@@ -727,5 +1011,21 @@ class UserService extends BaseService
 	public static function isNewUser($uid)
 	{
 		return Account::db()->where('uid','=',$uid)->pluck('is_first');
+	}
+
+	public static function getUserTokens($uids=array(),$pageIndex=1,$pageSize=10)
+	{
+		$count = self::buildUserTokens($uids)->count();
+		$result = self::buildUserTokens($uids)->select('uid','apple_token')->forPage($pageIndex,$pageSize)->get();
+		return array('result'=>$result,'totalCount'=>$count);
+	}
+
+	protected static function buildUserTokens($uids=array())
+	{
+		$tb = Account::db()->where('apple_token','<>','');
+		if($uids && is_array($uids) && !empty($uids)){
+			$tb = $tb->whereIn('uid',$uids);
+		}
+		return $tb;
 	}
 }

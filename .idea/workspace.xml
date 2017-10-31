@@ -1,0 +1,1083 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" readonly="true" id="f47cbd63-2668-46bd-9adc-87ca9c7f582c" name="Default" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="yxd_minbbs" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="TaskController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/controllers/TaskController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-206.96428">
+              <caret line="669" column="17" selection-start-line="669" selection-start-column="17" selection-end-line="669" selection-end-column="17" />
+              <folding>
+                <element signature="e#46#83#0#PHP" expanded="true" />
+                <element signature="e#6451#8935#0#PHP" expanded="false" />
+                <element signature="e#8973#11458#0#PHP" expanded="false" />
+                <element signature="e#10741#10810#0#PHP" expanded="false" />
+                <element signature="e#11492#13347#0#PHP" expanded="false" />
+                <element signature="e#13351#13458#0#PHP" expanded="false" />
+                <element signature="e#16616#21716#0#PHP" expanded="false" />
+                <element signature="e#21722#23510#0#PHP" expanded="false" />
+                <element signature="e#23516#26126#0#PHP" expanded="false" />
+                <element signature="e#40423#67246#0#PHP" expanded="false" />
+                <element signature="e#40771#41171#0#PHP" expanded="false" />
+                <element signature="e#40920#41171#0#PHP" expanded="false" />
+                <element signature="e#41016#41161#0#PHP" expanded="false" />
+                <element signature="e#41095#41161#0#PHP" expanded="false" />
+                <element signature="e#41180#41277#0#PHP" expanded="false" />
+                <element signature="e#42831#43216#0#PHP" expanded="false" />
+                <element signature="e#49441#53658#0#PHP" expanded="false" />
+                <element signature="e#67252#69501#0#PHP" expanded="false" />
+                <element signature="e#69520#70095#0#PHP" expanded="false" />
+                <element signature="e#70114#70686#0#PHP" expanded="false" />
+                <element signature="e#118854#120563#0#PHP" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LoginController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/admin/controllers/LoginController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="2" column="4" selection-start-line="2" selection-start-column="4" selection-end-line="2" selection-end-column="4" />
+              <folding>
+                <element signature="e#7#45#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SuperController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/services/Yxd/Modules/Core/SuperController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-8.821428">
+              <caret line="72" column="30" selection-start-line="72" selection-start-column="30" selection-end-line="72" selection-end-column="30" />
+              <folding>
+                <element signature="e#34#61#0#PHP" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Admin.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/services/Youxiduo/System/Model/Admin.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="40" column="27" selection-start-line="40" selection-start-column="27" selection-end-line="40" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="task-add.twig" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-add.twig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="1583" column="56" selection-start-line="1583" selection-start-column="56" selection-end-line="1583" selection-end-column="56" />
+              <folding>
+                <marker date="1509073319202" expanded="true" signature="91937:91962" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="95636:95670" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="95873:95926" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="96654:96678" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="96867:96884" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="96950:97003" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="97352:97386" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="97589:97642" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="98370:98394" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="98578:98595" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="98693:98711" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="98735:98788" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="100093:100110" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="100300:100317" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="100508:100525" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="100765:100799" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="101000:101053" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="101794:101818" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="102001:102018" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="102114:102132" placeholder="..." />
+                <marker date="1509073319202" expanded="true" signature="102156:102209" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="task-line.twig" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-line.twig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.3089431">
+              <caret line="987" column="29" selection-start-line="987" selection-start-column="29" selection-end-line="987" selection-end-column="29" />
+              <folding>
+                <marker date="1509440495610" expanded="true" signature="63735:63760" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="64553:64568" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="64661:64691" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="64801:64848" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="65275:65288" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="66922:66966" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="67217:67227" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="67398:67428" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="67514:67561" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="68019:68032" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="68313:68322" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="68367:68394" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="68521:68531" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="68751:68781" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="68867:68914" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="69372:69385" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="69666:69675" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="69903:69933" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="71414:71444" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="73284:73314" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="73400:73447" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="73905:73918" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="74199:74208" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="74360:74384" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="77054:77084" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="77170:77217" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="77675:77688" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="77905:77935" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="78021:78068" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="78526:78539" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="78755:78785" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="78871:78918" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="79376:79389" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="79606:79636" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="79722:79769" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="80227:80240" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="81170:81213" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="81642:81658" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="81717:81733" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="81775:81790" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="82301:82331" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="82417:82464" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="82922:82935" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="83604:83634" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="83720:83767" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="84225:84238" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="84489:84519" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="84605:84652" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="85110:85123" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="85600:85630" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="85716:85763" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="86221:86234" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="86816:86860" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="87111:87121" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="87292:87322" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="87408:87455" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="87913:87926" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="88207:88216" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="88261:88288" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="88415:88425" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="89658:89701" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="90130:90146" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="90205:90221" placeholder="..." />
+                <marker date="1509440495610" expanded="true" signature="90263:90278" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>版本</find>
+      <find>.stepType&quot;</find>
+      <find>uploadPicType</find>
+      <find>task_img</find>
+      <find>picUrlsOld</find>
+      <find>2.1.0</find>
+      <find>2.1.1</find>
+      <find>tasksign</find>
+      <find>config</find>
+      <find>图片</find>
+      <find>奖励图片</find>
+      <find>图片&lt;</find>
+      <find>$lineId</find>
+      <find>tasklist</find>
+      <find>templateName</find>
+      <find>limit</find>
+      <find>isLimit</find>
+      <find>stepType_b</find>
+      <find>按钮类型</find>
+      <find>task</find>
+      <find>cms</find>
+      <find>system</find>
+      <find>admin</find>
+      <find>addtask</find>
+      <find>submitType</find>
+      <find>islimit</find>
+      <find>submitType&quot;</find>
+      <find>stepType_b&quot;</find>
+      <find>Yxd\Modules\Core\SuperController</find>
+      <find>getadd</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>2.1.1</replace>
+    </replaceStrings>
+    <dirStrings>
+      <dir>D:\wamp\www\svn\trunk\yxd_minbbs</dir>
+    </dirStrings>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/views/audit-picture-list.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_product/auth_menu.php" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_product/routes.php" />
+        <option value="$PROJECT_DIR$/services/Youxiduo/Helper/MyHelp.php" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/auth_menu.php" />
+        <option value="$USER_HOME$/Desktop/1 (2).php" />
+        <option value="$USER_HOME$/Desktop/temp.php" />
+        <option value="$PROJECT_DIR$/../../../test/test1.php" />
+        <option value="$PROJECT_DIR$/services/Youxiduo/Helper/Utility.php" />
+        <option value="$PROJECT_DIR$/services/Youxiduo/Task/TaskLionService.php" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/views/iframe-sub-task.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_product/views/wechat/list.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_product/controllers/WechatController.php" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/wcms/models/Article.php" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-add.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-list-statistic.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/views/sub-task-add.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/views/sub-task-list.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-list.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-children-list.twig" />
+        <option value="$PROJECT_DIR$/config/app.php" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/controllers/TaskController.php" />
+        <option value="$USER_HOME$/Desktop/2.php" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-line.twig" />
+        <option value="$PROJECT_DIR$/config/database.php" />
+        <option value="$PROJECT_DIR$/apps/admin/config/database.php" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" />
+  <component name="JsBuildToolPackageJson" detection-done="true" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="543" />
+    <option name="y" value="17" />
+    <option name="width" value="1380" />
+    <option name="height" value="1027" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcp.me.com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcp.me.com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcp.me.com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcp.me.com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcp.me.com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcp.me.com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcp.me.com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcp.me.com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcp.me.com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="admin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path" value="C:/Program Files/nodejs/node" />
+    <property name="js.eslint.eslintPackage" value="" />
+    <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
+    <property name="SearchEverywhereHistoryKey" value="I&#9;null&#9;null" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\wamp\www\svn\trunk\yxd_minbbs\web\admin\static\images" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+      <TestRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpBehatConfigurationType" factoryName="Behat">
+      <BehatRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run-script" />
+      <scripts />
+      <envs />
+      <method />
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\jcc0309\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f47cbd63-2668-46bd-9adc-87ca9c7f582c" name="Default" comment="" />
+      <created>1506328996632</created>
+      <option name="number" value="Default" />
+      <updated>1506328996632</updated>
+      <workItem from="1506329008422" duration="80190000" />
+      <workItem from="1507707791918" duration="180874000" />
+      <workItem from="1508470627843" duration="107381000" />
+      <workItem from="1509329619204" duration="21460000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="389905000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="543" y="17" width="1380" height="1027" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30131966" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934782" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934782" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="processedProjectFiles" value="true" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/controllers/TaskController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="669" column="17" selection-start-line="669" selection-start-column="17" selection-end-line="669" selection-end-column="17" />
+          <folding>
+            <element signature="e#46#83#0#PHP" expanded="true" />
+            <element signature="e#6451#8935#0#PHP" expanded="false" />
+            <element signature="e#8973#11458#0#PHP" expanded="false" />
+            <element signature="e#10741#10810#0#PHP" expanded="false" />
+            <element signature="e#11492#13347#0#PHP" expanded="false" />
+            <element signature="e#13351#13458#0#PHP" expanded="false" />
+            <element signature="e#16616#21716#0#PHP" expanded="false" />
+            <element signature="e#21722#23510#0#PHP" expanded="false" />
+            <element signature="e#23516#26126#0#PHP" expanded="false" />
+            <element signature="e#40423#67246#0#PHP" expanded="false" />
+            <element signature="e#40771#41171#0#PHP" expanded="false" />
+            <element signature="e#40920#41171#0#PHP" expanded="false" />
+            <element signature="e#41016#41161#0#PHP" expanded="false" />
+            <element signature="e#41095#41161#0#PHP" expanded="false" />
+            <element signature="e#41180#41277#0#PHP" expanded="false" />
+            <element signature="e#42831#43216#0#PHP" expanded="false" />
+            <element signature="e#49441#53658#0#PHP" expanded="false" />
+            <element signature="e#67252#69501#0#PHP" expanded="false" />
+            <element signature="e#69520#70095#0#PHP" expanded="false" />
+            <element signature="e#70114#70686#0#PHP" expanded="false" />
+            <element signature="e#118854#120563#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/controllers/LoginController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2" column="4" selection-start-line="2" selection-start-column="4" selection-end-line="2" selection-end-column="4" />
+          <folding>
+            <element signature="e#7#45#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Yxd/Modules/Core/SuperController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#34#61#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/System/Model/Admin.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="40" column="27" selection-start-line="40" selection-start-column="27" selection-end-line="40" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-add.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1583" column="56" selection-start-line="1583" selection-start-column="56" selection-end-line="1583" selection-end-column="56" />
+          <folding>
+            <marker date="1509073319202" expanded="true" signature="91937:91962" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="95636:95670" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="95873:95926" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="96654:96678" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="96867:96884" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="96950:97003" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="97352:97386" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="97589:97642" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="98370:98394" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="98578:98595" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="98693:98711" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="98735:98788" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="100093:100110" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="100300:100317" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="100508:100525" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="100765:100799" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="101000:101053" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="101794:101818" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="102001:102018" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="102114:102132" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="102156:102209" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-line.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="974" column="7" selection-start-line="974" selection-start-column="7" selection-end-line="974" selection-end-column="7" />
+          <folding>
+            <marker date="1509440495610" expanded="true" signature="63735:63760" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="64553:64568" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="64661:64691" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="64801:64848" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="65275:65288" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="66922:66966" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="67217:67227" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="67398:67428" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="67514:67561" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68019:68032" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68313:68322" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68367:68394" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68521:68531" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68751:68781" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68867:68914" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="69372:69385" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="69666:69675" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="69903:69933" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="71414:71444" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="73284:73314" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="73400:73447" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="73905:73918" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="74199:74208" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="74360:74384" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="77054:77084" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="77170:77217" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="77675:77688" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="77905:77935" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="78021:78068" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="78526:78539" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="78755:78785" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="78871:78918" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="79376:79389" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="79606:79636" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="79722:79769" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="80227:80240" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="81170:81213" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="81642:81658" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="81717:81733" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="81775:81790" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="82301:82331" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="82417:82464" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="82922:82935" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="83604:83634" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="83720:83767" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="84225:84238" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="84489:84519" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="84605:84652" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="85110:85123" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="85600:85630" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="85716:85763" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="86221:86234" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="86816:86860" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="87111:87121" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="87292:87322" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="87408:87455" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="87913:87926" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="88207:88216" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="88261:88288" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="88415:88425" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="89658:89701" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="90130:90146" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="90205:90221" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="90263:90278" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/pop-task-list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/a_game/views/pop-game-list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="70" column="26" selection-start-line="70" selection-start-column="12" selection-end-line="70" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/iframe-children-task.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="41" column="53" selection-start-line="41" selection-start-column="44" selection-end-line="41" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/lib/JavaScriptLanguage.jar!/com/intellij/lang/javascript/index/predefined/EcmaScript.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="628" column="9" selection-start-line="628" selection-start-column="9" selection-end-line="628" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/symfony/translation/Symfony/Component/Translation/Tests/Dumper/IcuResFileDumperTest.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="6" selection-start-line="16" selection-start-column="6" selection-end-line="16" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/iframe-sub-task.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="101" column="0" selection-start-line="101" selection-start-column="0" selection-end-line="101" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/audit-picture-list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="132" column="50" selection-start-line="132" selection-start-column="40" selection-end-line="132" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/screenshot-list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="17" column="117" selection-start-line="17" selection-start-column="112" selection-end-line="17" selection-end-column="117" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/wcms/controllers/PictureController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="25" column="31" selection-start-line="25" selection-start-column="31" selection-end-line="25" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/wcms/models/Picture.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="33" selection-start-line="19" selection-start-column="33" selection-end-line="19" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/wcms/controllers/VideoController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="27" column="31" selection-start-line="27" selection-start-column="31" selection-end-line="27" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_tuiguang/models/Video.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="26" column="44" selection-start-line="26" selection-start-column="44" selection-end-line="26" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/liansai/models/Article.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="28" column="27" selection-start-line="28" selection-start-column="27" selection-end-line="28" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/wcms/models/BaseHttp.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="9" column="27" selection-start-line="9" selection-start-column="27" selection-end-line="9" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_product/views/wechat/list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="100" column="34" selection-start-line="100" selection-start-column="34" selection-end-line="100" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/wcms/models/Article.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="26" column="20" selection-start-line="26" selection-start-column="20" selection-end-line="26" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Helper/MyHelp.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="43" column="18" selection-start-line="43" selection-start-column="18" selection-end-line="43" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_product/controllers/WechatController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="18" column="46" selection-start-line="18" selection-start-column="32" selection-end-line="18" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Helper/Utility.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1015" column="27" selection-start-line="1015" selection-start-column="27" selection-end-line="1015" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/wcms/controllers/ArticleController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="70" column="12" selection-start-line="70" selection-start-column="12" selection-end-line="70" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-chain-list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="55" column="66" selection-start-line="55" selection-start-column="53" selection-end-line="55" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-list-statistic.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="76" column="49" selection-start-line="76" selection-start-column="49" selection-end-line="76" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/sub-task-add.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="107" column="56" selection-start-line="107" selection-start-column="56" selection-end-line="107" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/sub-task-list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="98" column="143" selection-start-line="98" selection-start-column="31" selection-end-line="98" selection-end-column="143" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="32" column="50" selection-start-line="32" selection-start-column="45" selection-end-line="32" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-children-list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="79" column="33" selection-start-line="79" selection-start-column="33" selection-end-line="79" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/app.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="119" column="61" selection-start-line="119" selection-start-column="61" selection-end-line="119" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Base/IModel.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="10" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Base/Model.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="58" column="30" selection-start-line="58" selection-start-column="30" selection-end-line="58" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/admin/controllers/AdminController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="25" column="39" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Task/TaskLionService.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="31" selection-start-line="12" selection-start-column="31" selection-end-line="12" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/admin/controllers/OperateController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="31" column="27" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/dbtable.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="159" column="33" selection-start-line="159" selection-start-column="33" selection-end-line="159" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/System/Model/Module.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="30" column="5" selection-start-line="30" selection-start-column="5" selection-end-line="30" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/System/AuthService.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="148" column="30" selection-start-line="148" selection-start-column="30" selection-end-line="148" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/System/Model/AuthGroup.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="32" column="27" selection-start-line="32" selection-start-column="27" selection-end-line="32" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/admin/controllers/GroupController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="37" column="36" selection-start-line="37" selection-start-column="36" selection-end-line="37" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/System/Model/Admin.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="40" column="27" selection-start-line="40" selection-start-column="27" selection-end-line="40" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-add.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="1583" column="56" selection-start-line="1583" selection-start-column="56" selection-end-line="1583" selection-end-column="56" />
+          <folding>
+            <marker date="1509073319202" expanded="true" signature="91937:91962" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="95636:95670" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="95873:95926" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="96654:96678" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="96867:96884" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="96950:97003" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="97352:97386" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="97589:97642" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="98370:98394" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="98578:98595" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="98693:98711" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="98735:98788" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="100093:100110" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="100300:100317" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="100508:100525" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="100765:100799" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="101000:101053" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="101794:101818" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="102001:102018" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="102114:102132" placeholder="..." />
+            <marker date="1509073319202" expanded="true" signature="102156:102209" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/controllers/TaskController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-206.96428">
+          <caret line="669" column="17" selection-start-line="669" selection-start-column="17" selection-end-line="669" selection-end-column="17" />
+          <folding>
+            <element signature="e#46#83#0#PHP" expanded="true" />
+            <element signature="e#6451#8935#0#PHP" expanded="false" />
+            <element signature="e#8973#11458#0#PHP" expanded="false" />
+            <element signature="e#10741#10810#0#PHP" expanded="false" />
+            <element signature="e#11492#13347#0#PHP" expanded="false" />
+            <element signature="e#13351#13458#0#PHP" expanded="false" />
+            <element signature="e#16616#21716#0#PHP" expanded="false" />
+            <element signature="e#21722#23510#0#PHP" expanded="false" />
+            <element signature="e#23516#26126#0#PHP" expanded="false" />
+            <element signature="e#40423#67246#0#PHP" expanded="false" />
+            <element signature="e#40771#41171#0#PHP" expanded="false" />
+            <element signature="e#40920#41171#0#PHP" expanded="false" />
+            <element signature="e#41016#41161#0#PHP" expanded="false" />
+            <element signature="e#41095#41161#0#PHP" expanded="false" />
+            <element signature="e#41180#41277#0#PHP" expanded="false" />
+            <element signature="e#42831#43216#0#PHP" expanded="false" />
+            <element signature="e#49441#53658#0#PHP" expanded="false" />
+            <element signature="e#67252#69501#0#PHP" expanded="false" />
+            <element signature="e#69520#70095#0#PHP" expanded="false" />
+            <element signature="e#70114#70686#0#PHP" expanded="false" />
+            <element signature="e#118854#120563#0#PHP" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/controllers/LoginController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2" column="4" selection-start-line="2" selection-start-column="4" selection-end-line="2" selection-end-column="4" />
+          <folding>
+            <element signature="e#7#45#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Yxd/Modules/Core/SuperController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.821428">
+          <caret line="72" column="30" selection-start-line="72" selection-start-column="30" selection-end-line="72" selection-end-column="30" />
+          <folding>
+            <element signature="e#34#61#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/config/database.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.21321696">
+          <caret line="9" column="38" selection-start-line="9" selection-start-column="38" selection-end-line="9" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/database.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.4625936">
+          <caret line="55" column="38" selection-start-line="55" selection-start-column="38" selection-end-line="55" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/v4_task/views/task-line.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3089431">
+          <caret line="987" column="29" selection-start-line="987" selection-start-column="29" selection-end-line="987" selection-end-column="29" />
+          <folding>
+            <marker date="1509440495610" expanded="true" signature="63735:63760" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="64553:64568" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="64661:64691" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="64801:64848" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="65275:65288" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="66922:66966" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="67217:67227" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="67398:67428" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="67514:67561" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68019:68032" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68313:68322" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68367:68394" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68521:68531" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68751:68781" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="68867:68914" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="69372:69385" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="69666:69675" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="69903:69933" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="71414:71444" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="73284:73314" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="73400:73447" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="73905:73918" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="74199:74208" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="74360:74384" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="77054:77084" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="77170:77217" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="77675:77688" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="77905:77935" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="78021:78068" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="78526:78539" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="78755:78785" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="78871:78918" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="79376:79389" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="79606:79636" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="79722:79769" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="80227:80240" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="81170:81213" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="81642:81658" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="81717:81733" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="81775:81790" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="82301:82331" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="82417:82464" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="82922:82935" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="83604:83634" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="83720:83767" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="84225:84238" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="84489:84519" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="84605:84652" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="85110:85123" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="85600:85630" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="85716:85763" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="86221:86234" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="86816:86860" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="87111:87121" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="87292:87322" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="87408:87455" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="87913:87926" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="88207:88216" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="88261:88288" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="88415:88425" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="89658:89701" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="90130:90146" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="90205:90221" placeholder="..." />
+            <marker date="1509440495610" expanded="true" signature="90263:90278" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

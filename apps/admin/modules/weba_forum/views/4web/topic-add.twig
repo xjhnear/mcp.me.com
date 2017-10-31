@@ -101,13 +101,16 @@
 						</div>
 					</div>
 					<div class="control-group">
-						<label for="textfield" class="control-label">是否禁止回复</label>
+					    <label for="textfield" class="control-label">回复设置</label>
 						<div class="controls">
-							<label class='radio inline'>
-								<!--{{form_radio('limitStatus',0,topic.limitStatus==0)}}-->不禁言
+						    <label class="radio inline">
+							<!--{{form_radio('limit_status',0,true)}}-->不禁言
 							</label>
-							<label class='radio inline'>
-								<!--{{form_radio('limitStatus',1,topic.limitStatus==1)}}-->禁言
+							<label class="radio inline">
+							<!--{{form_radio('limit_status',1,false)}}-->禁言
+							</label>
+							<label class="checkbox inline">
+							<input type="checkbox" name="reply_invisible"> 回复不可见(回复关闭前）								
 							</label>
 						</div>
 					</div>
@@ -148,6 +151,7 @@
 		UE.getEditor('container');
 
 		$('.select-pop-bbs').bind('click',function(){
+		       
 			$.ajax({
 				url:'bbs-search-select',
 				dataType:'json',

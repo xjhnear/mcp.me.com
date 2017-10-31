@@ -95,6 +95,19 @@ class MyBaseModel extends Model
 	{
 		return 	parent::db()->whereRaw($where)->get();
 	}
+
+	/**
+	 * 查询(只返回一条数据 而且排序)
+	 * @param string $sql,boolean $transaction = true
+	 * @return array $JsonResult
+	 */
+	public static function find_($where='',$orderbykey='',$orderby='desc')
+	{
+		return 	parent::db()->whereRaw($where)->orderBy($orderbykey, $orderby)->first();
+	}
+    	
+
+
     public static function setsearch($arr=array()){
 		$sql=$search=array();
 		foreach($arr as $key=>$value){

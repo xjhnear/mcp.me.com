@@ -1,0 +1,88 @@
+<!--{%extends "../sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					游戏列表
+				</h3>
+				<div class="actions">
+					<form action="<!--{{url('v4activity/activity/h5list')}}-->">
+						<table class="table-filter">
+							<tr>
+                                <td>
+                                    <!--{{form_select('platform',platforms,search.platform,{'style':'width:100px'})}}-->
+                                </td>
+								<td colspan=1>
+									<button class="btn btn-teal search_btn"><i class="icon-search"></i>搜索</button> <a href="<!--{{url('v4activity/activity/h5-info')}}-->" class="btn btn-teal">添加游戏</a>
+								</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+				<table class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+                        <th>平台</th>
+						<th>游戏名</th>
+						<th>排序</th>
+						<th>操作</th>
+					</tr>
+					</thead>
+					<tbody>
+						<!--{% for key,item in datalist%}-->
+							<tr id="tr_<!--{{item.gameid}}-->">
+                                <td><!--{{platforms[item.platform]}}--></td>
+								<td><!--{{item.gametitle ? item.gametitle : '没有关联游戏'}}--></td>
+								<td><!--{{item.orderbyvalue}}--></td>
+								<td>
+									<a href="<!--{{url('v4activity/activity/h5-info',{id:item.gameid})}}-->" class="btn btn-primary">编辑</a>
+									<a href="javascript:void(0);" data="<!--{{ item.gameid }}-->" class="btn btn-primary ajax-del"><i class="icon-trash" title="删除"></i></a>
+								</td>
+								
+							</tr>
+						<!--{%endfor%}-->
+					</tbody>
+				</table>
+				<div class="pagelink">
+					<!--{{pagelinks}}-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+	$(function(){
+		$('.ajax-del').bind('click',function(){
+			var gid = $(this).attr('data');
+			alertify.confirm('是否删除该游戏？',function(e){
+				if(e){
+					$.get('/v4activity/activity/ajax-h5-del/'+ gid,function(resp){
+						if(resp.state){
+							alertify.success(resp.msg);
+							setTimeout(function(){
+								location.reload();
+							},1000);
+						}else{
+							alertify.error(resp.msg);
+						}
+					},'json')
+				}
+			});
+		});
+		$('input').iCheck({
+			checkboxClass: 'icheckbox_square-orange',
+			radioClass: 'iradio_square-orange',
+			increaseArea: '20%' // optional
+		});
+	});
+</script>
+<!--{%endblock%}-->

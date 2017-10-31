@@ -5,9 +5,8 @@ use Illuminate\Support\Facades\Log;
 
 class BaseHttp
 {
-    const HOST_URL = 'http://10.168.196.111:19080/www-backstage/';
-    //const HOST_URL = 'http://test.youxiduo.com:12080/';
-
+//    const HOST_URL = 'http://10.168.196.111:19080/www-backstage/';
+    const HOST_URL = 'http://112.124.121.34:9081/www-backstage/';
     public static function http($url,$params=array(),$method='GET',$format='text',$multi = false, $extheaders = array())
 	{
     	if(!function_exists('curl_init')) exit('Need to open the curl extension');
@@ -59,9 +58,8 @@ class BaseHttp
         {
             curl_setopt($ci, CURLOPT_HTTPHEADER, $headers );
         }
-
         $response = curl_exec($ci);
-        //var_dump($response);exit();
+//        var_dump($response);exit();
         $status_code = curl_getinfo($ci,CURLINFO_HTTP_CODE);
         curl_close ($ci);        
         if($status_code==200) return json_decode($response,true);

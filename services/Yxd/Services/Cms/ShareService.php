@@ -1,12 +1,24 @@
 <?php
 namespace Yxd\Services\Cms;
-
+use Illuminate\Support\Facades\Input;
 use Yxd\Modules\Core\CacheService;
 use Yxd\Services\ShoppingService;
 use Yxd\Services\ThreadService;
 use Yxd\Modules\Activity\GiftbagService;
 use Illuminate\Support\Facades\DB;
 use Yxd\Services\Service;
+
+use Yxd\Services\Models\Share;
+use Yxd\Services\Models\News;
+use Yxd\Services\Models\Gonglue;
+use Yxd\Services\Models\Feedback;
+use Yxd\Services\Models\NewGame;
+use Yxd\Services\Models\GameNotice;
+use Yxd\Services\Models\Videos;
+use Yxd\Services\Models\VideosGames;
+use Yxd\Services\Models\GamesVideo;
+use Yxd\Services\Models\Zt;
+use Yxd\Services\Models\Activity;
 
 class ShareService extends Service
 {	
@@ -38,7 +50,7 @@ class ShareService extends Service
 	public static function shareVideo($video_id,$tpl,$ishtml5=0)
 	{
 		$tpl = self::getShareTpl($tpl);
-		$video = self::dbCmsSlave()->table('videos')->select('vname','litpic', 'writer','gid')->where('id','=',$video_id)->first();
+		$video = Videos::db()->select('vname','litpic', 'writer','gid')->where('id','=',$video_id)->first();
 		if(!$video) return false;
 		$game = array();
 		if($video['gid']){
@@ -46,7 +58,7 @@ class ShareService extends Service
 		}
 		//
 		if(empty($game)){
-			$v = self::dbCmsSlave()->table('videos_games')->where('vid','=',$video_id)->first();
+			$v = VideosGames::db()->where('vid','=',$video_id)->first();
 			$game = GameService::getGameInfo($v['gid']);
 		}
 		$result  = array(
@@ -65,7 +77,7 @@ class ShareService extends Service
 	public static function shareGameVideo($video_id,$tpl,$ishtml5=0)
 	{
 		$tpl = self::getShareTpl($tpl);
-		$video = self::dbCmsSlave()->table('games_video')->select('gid','ico')->where('id','=',$video_id)->first();
+		$video = GamesVideo::db()->select('gid','ico')->where('id','=',$video_id)->first();
 		if(!$video) return false;
 		$game = GameService::getGameInfo($video['gid']);
 		
@@ -85,7 +97,7 @@ class ShareService extends Service
 	public static function shareSpecial($zt_id,$tpl,$ishtml5=0)
 	{
 		$tpl = self::getShareTpl($tpl);
-		$topic = self::dbCmsSlave()->table('zt')->select('ztitle' , 'writer', 'litpic')->where('id','=',$zt_id)->first();
+		$topic = Zt::db()->select('ztitle' , 'writer', 'litpic')->where('id','=',$zt_id)->first();
 		if(!$topic) return false;
 		$result  = array(
             'title' => $topic['ztitle'],
@@ -104,7 +116,7 @@ class ShareService extends Service
 	{
 		$tpl = self::getShareTpl($tpl);
 		
-		$game = self::dbCmsSlave()->table('game_notice')->select('title','gname','pic')->where('id','=',$game_id)->first();
+		$game = GameNotice::db()->select('title','gname','pic')->where('id','=',$game_id)->first();
 		if(!$game) return false;
 		$result  = array(
             'title'  => $game['gname'],
@@ -122,9 +134,9 @@ class ShareService extends Service
 	public static function shareGuide($guide_id,$tpl,$ishtml5=0)
 	{
 		$tpl = self::getShareTpl($tpl);
-		$guide = self::dbCmsSlave()->table('gonglue')->select('gtitle','writer','gid', 'pid')->where('id','=',$guide_id)->first();
+		$guide = Gonglue::db()->select('gtitle','writer','gid', 'pid')->where('id','=',$guide_id)->first();
 		if(!$guide) return null;
-		$category = self::dbCmsSlave()->table('gonglue')->select('gtitle')->where('id','=',$guide['pid'])->first();
+		$category = Gonglue::db()->select('gtitle')->where('id','=',$guide['pid'])->first();
 	    if ($category) {
         	$tpl['weibo'] = str_replace('{gcategory}', $category['gtitle'], $tpl['weibo']);
         	$tpl['weixin'] = str_replace('{gcategory}', $category['gtitle'], $tpl['weixin']);
@@ -151,7 +163,7 @@ class ShareService extends Service
 	public static function shareOpinion($opinion_id,$tpl,$ishtml5=0)
 	{
 		$tpl = self::getShareTpl($tpl);
-		$opinion = self::dbCmsSlave()->table('feedback')->select('ftitle','gid','writer')->where('id','=',$opinion_id)->first();
+		$opinion = Feedback::db()->select('ftitle','gid','writer')->where('id','=',$opinion_id)->first();
 		if(!$opinion) return false;
 		$game = GameService::getGameInfo($opinion['gid']);
 	    if(!$game){
@@ -173,7 +185,7 @@ class ShareService extends Service
 	public static function shareNews($news_id,$tpl,$ishtml5=0)
 	{
 		$tpl = self::getShareTpl($tpl);
-		$news = self::dbCmsSlave()->table('news')->select('gid', 'title', 'writer','litpic')->where('id','=',$news_id)->first();
+		$news = News::db()->select('gid', 'title', 'writer','litpic')->where('id','=',$news_id)->first();
 		if(!$news) return false;
 		$game = GameService::getGameInfo($news['gid']);
 		if(!$game){
@@ -198,7 +210,7 @@ class ShareService extends Service
 		
 		//$activity = self::dbCmsSlave()->table('hot_activity')->select('gid', 'title', 'writer')->where('id','=',$activity_id)->first();		
 		//$game = GameService::getGameInfo($activity['gid']);
-		$activity = DB::table('activity')->where('id','=',$activity_id)->first();
+		$activity = Activity::db()->where('id','=',$activity_id)->first();
 		if(!$activity) return false;
 		$game = GameService::getGameInfo($activity['game_id']);
 		if($activity['type'] == 1){
@@ -374,6 +386,7 @@ class ShareService extends Service
 	protected static function getShortURL($url)
 	{
 		$cachekey = 'share::shorturl::' . md5($url);
+		$url = $url . '&uid='.Input::get('uid');
 		if(CLOSE_CACHE==false && CacheService::has($cachekey)){
 			return CacheService::get($cachekey);
 		}else{
@@ -400,7 +413,7 @@ class ShareService extends Service
 		if(CLOSE_CACHE==false && CacheService::has($cachekey)){
 			$tpl = CacheService::get($cachekey);
 		}else{
-		    $tpl = self::dbCmsSlave()->table('share')->select('weibo','weixin')->where('typeid','=',$typeid)->first();
+		    $tpl = Share::db()->select('weibo','weixin')->where('typeid','=',$typeid)->first();
 		    CLOSE_CACHE==false && CacheService::forever($cachekey,$tpl);
 		}		
 		return $tpl;

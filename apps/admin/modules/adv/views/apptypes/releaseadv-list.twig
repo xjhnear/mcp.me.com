@@ -34,10 +34,10 @@
 						<tr>
 						    <th class="col-60">Id</th>
 						    <th class="col-150">广告类型</th>
-							
+							<th class="col-80">广告名称</th>
 							<th class="col-60">平台</th>
 							<th class="col-120">广告地址</th>
-							<th class="col-60">浏览器</th>
+							
 							<th class="col-80">广告标识</th>
 							<th class="table-btn-group-mini">操作</th>
 						</tr>
@@ -47,10 +47,12 @@
 							<tr>
 								<td><!--{{item.Id}}--></td>
 								<td><!--{{item.natureName}}--></td>
-								
+								<td><!--{{item.advname}}--></td>
 								<td><!--{{item.versionform}}--></td>
-								<td><!--{{item.locationName}}--></td>
-								<td><!--{% if item.tosafari == 1%}-->Safari浏览器<!--{% else %}-->内置浏览器 <!--{% endif %}--></td>		
+								<td><!--{{item.locationName}}-->-<!--{{item.sort}}--></td>
+								<!--
+								<td><!--{% if item.tosafari == 1%}-->Safari浏览器<!--{% else %}-->内置浏览器 <!--{% endif %}--></td>
+								-->	
 								<td><!--{{item.aid}}--></td>
 								<td>
 									<a href="<!--{{url('adv/releaseadv/releaseadv-add-edit',{'Id':item.Id,'from':item.versionform})}}-->" class="btn btn-primary">编辑</a>

@@ -1,0 +1,112 @@
+<div class="box">
+    <div class="actions">
+        <table class="table-filter">
+	        <tr>
+                <td>
+                	<!--{{form_select('appType',app,search.appType,{'id':'complete_type','style':'margin-top:10px;width:100px'})}}-->
+                </td>
+                <td>
+                	<!--{{form_select('taskType',taskTypeList,taskType,{'id':'complete_type','style':'margin-top:10px;width:100px'})}}-->
+                </td>
+	            <td>
+	                <div class="controls">
+					    <label class="radio inline">
+				        <!--{{form_radio('keytype','id',keytype=='id')}}-->ID					        					        
+				        </label>
+				        <label class="radio inline">
+				        <!--{{form_radio('keytype','title',keytype=='title')}}-->任务标题					        					        
+				        </label>
+					</div>				                
+	            </td>
+	            <td>
+					<input id="keyword" type="text" class="input-medium" placeholder="" value="<!--{{keyword}}-->">								
+				</td>
+				<td>
+					<input type="hidden" name="offline" id="offline" value="<!--{{offline}}-->">
+				    <a href="javascript:searchTask();" class="btn btn-teal">按条件搜索</a>
+				</td>
+			</tr>
+		</table>
+    </div>    
+    <table class="table table-hover table-nomargin">
+        <thead>
+			<tr>
+			    <th class="col-60">ID</th>
+			    <th class="col-80">图标</th>
+				<th class="col-150">任务标题</th>
+				<th class="col-120">关联游戏</th>				
+				<th class="table-btn-group">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+		    <!--{%for item in datalist%}-->
+			<tr>
+				<td><!--{{item.taskId}}--></td>
+				<td class="user-avatar"><img id="task_icon_<!--{{item.taskId}}-->" src="<!--{{item.taskIcon}}-->" class="" /></td>
+				<td id="task_name_<!--{{item.taskId}}-->"><!--{{item.taskName}}--></td>
+				<td><!--{{item.gname}}--></td>				
+				<td>
+				    <a href="javascript:void(0);" data-id="<!--{{item.taskId}}-->" mutextask-id="<!--{{item.mutexTaskId}}-->" data-endTime="<!--{{item.endTime}}-->" data-isLine="<!--{{item.isLine}}-->" class="btn btn-primary select-task-id">选择</a>				    							    
+				</td>
+			</tr>
+			<!--{%endfor%}-->
+		</tbody>
+    </table>
+    <div class="pagelink">
+        <!--{{pagelinks}}-->
+    </div>
+</div>    
+    <script>
+    function searchTask()
+    {
+        var keytype = $("input[name='keytype']:checked").val();
+        var keyword = $('#keyword').val();
+        var appType = $("select[name='appType']").val();
+        var taskType = $("select[name='taskType']").val();
+        var offline = $("input[name='offline']").val();
+        $.ajax({
+            url:'/IOS_activity/task/task-pop-list',
+            data:{keytype:keytype,keyword:keyword,appType:appType,taskType:taskType,offline:offline},
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog.list['pop-task-list'].content(html);		                
+            }
+        });
+    }
+    function init_page()
+    {
+        //
+        $('.select-task-id').each(function(){
+            $(this).click(function(){
+                var task_id = $(this).attr('data-id');
+                var mutextask_id = $(this).attr('mutextask-id');
+                var task_endTime = $(this).attr('data-endTime');
+                var task_isLine = $(this).attr('data-isLine');
+                var task_name = $('#task_name_'+task_id).text();
+                var task_icon = $('#task_icon_'+task_id).attr('src');
+                set_selected_task(task_id,task_name,task_icon,task_endTime,task_isLine,mutextask_id);
+                $.dialog.list['pop-task-list'].close();
+            });
+        });
+        //
+        $('.pagelink a').each(function(){
+            var url = $(this).attr('href');            
+            $(this).attr('href','javascript:void(0);');
+            $(this).click(function(){
+                $.ajax({
+                    url:url,
+                    dataType:'json',
+		            success:function(json){
+		                var html = '';
+		                html = json.html;
+		                $.dialog.list['pop-task-list'].content(html);		                
+		            }
+                });
+            });
+            
+        });
+    }
+    init_page();
+    </script>

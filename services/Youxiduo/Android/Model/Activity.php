@@ -32,7 +32,7 @@ final class Activity extends Model implements IModel
 		    ->orderBy('sort','desc')
 		    ->forPage($pageIndex,$pageSize)
 		    ->get();
-		return $result;		
+		return $result;
 	}
 	
 	public static function getCount($gid=0)
@@ -47,9 +47,11 @@ final class Activity extends Model implements IModel
 		$tb = self::db()->where('apptype','!=',1)->where('isshow','=',1)->where('endtime','>',time());
 		if($gids) $tb = $tb->where(function($query)use($gids){
 		    if($gids) $query = $query->whereIn('agid',$gids);
+			/*
 		    $query = $query->orWhere(function($query){
 		        $query = $query->where('istop','=',0);
 		    });
+			*/
 		});
 		$result =  $tb
 		    ->orderBy('istop','desc')
@@ -58,6 +60,18 @@ final class Activity extends Model implements IModel
 		    ->forPage($pageIndex,$pageSize)
 		    ->get();
 		return $result;		
+	}
+	
+	public static function getListByTimes($starttime,$endtime)
+	{
+	    $tb = self::db()->where('apptype','!=',1)->where('isshow','=',1)->where('starttime','>=',$starttime)->where('endtime','<',$endtime);
+
+	    $result =  $tb
+	    ->orderBy('istop','desc')
+	    ->orderBy('endtime','desc')
+	    ->orderBy('sort','desc')
+	    ->get();
+	    return $result;
 	}
 	
 	public static function searchCount($keyword)
@@ -85,12 +99,17 @@ final class Activity extends Model implements IModel
 	
 	public static function getTotalCountByGameIds($gids)
 	{
-		$tb = self::db()->where('apptype','!=',1)->where('isshow','=',1);
+		$tb = self::db()->where('apptype','!=',1)->where('isshow','=',1)->where('endtime','>',time());;
+		if($gids){
+			$tb = $tb->whereIn('agid',$gids);
+		}
+		/*
 		if($gids) $tb = $tb->where(function($query)use($gids){
 		    $query = $query->whereIn('agid',$gids)->orWhere(function($query){
 		        $query = $query->where('istop','=',0)->where('endtime','>',time());
 		    });
 		});
+		*/
 		return $tb->count();
 	}
 	

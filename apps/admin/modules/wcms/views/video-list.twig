@@ -11,7 +11,12 @@
 				<div class="actions">
 				    <form action="<!--{{url('wcms/video/index')}}-->" class="">
 				    <table class="table-filter">
-				        <tr>				            
+				        <tr>	
+				            <td>标题关键词</td>
+				            <td>
+								<input name="keyword" type="text" class="input-medium" placeholder="ID/关键字" value="<!--{{search.keyword}}-->">								
+							</td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>   			            
 							<td><a href="<!--{{url('wcms/video/add')}}-->" class="btn btn-teal"><i class="icon-plus"></i>添加视频</a></td>
 				        </tr>
 				    </table>

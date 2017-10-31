@@ -1,0 +1,31 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>游戏渠道</h3>
+            </div>
+            <div class="box-content">
+                <form action="<!--{{url('v4system/game/do-channel')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+                    <input name="channel_id" type="hidden" value="<!--{{channel.channelid}}-->" />
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">渠道名称</label>
+                        <div class="controls">
+                            <input name="channel_name" type="text" class="input-xlarge" value="<!--{{channel.channelname}}-->" />
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<!--{%endblock%}-->

@@ -91,7 +91,7 @@ final class UserMobile extends Model implements IModel
 			$res = self::db()->where('mobile','=',$mobile)->where('verifycode','=',$verifycode)->update($data);
 			return true;
 		}else{
-			self::db()->where('mobile','=',$mobile)->increment('error_num',1,array('expire'=>0));
+			self::db()->where('mobile','=',$mobile)->increment('error_num',1);
 			$num = self::db()->where('mobile','=',$mobile)->pluck('error_num');
 		}
 		return false;

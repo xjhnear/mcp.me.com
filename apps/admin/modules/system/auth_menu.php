@@ -15,7 +15,8 @@ return array(
         array('name'=>Lang::get('description.lm_xt_qdsz'),'url'=>'system/task/checkin'),
         array('name'=>Lang::get('description.lm_xt_tgsz'),'url'=>'system/task/tuiguang'),
         array('name'=>Lang::get('description.lm_xt_qdcs'),'url'=>'system/task/edit-checkin'),
-        array('name'=>Lang::get('description.lm_xt_sytpsz'),'url'=>'system/picture/config'),             
+        array('name'=>Lang::get('description.lm_xt_sytpsz'),'url'=>'system/picture/config'),     
+        array('name'=>'分享模板管理','url'=>'system/share/index'),        
     ),
     'extra_node'=>array(
         array('name'=>'全部系统模块权限','url'=>'system/*'),

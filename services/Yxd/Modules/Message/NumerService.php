@@ -7,6 +7,9 @@ use Yxd\Services\ChatService;
 use Yxd\Services\CircleFeedService;
 use Yxd\Modules\Core\BaseService;
 
+use Yxd\Services\Models\ChatLog;
+use Yxd\Services\Models\Account;
+
 class NumberService extends BaseService
 {
 	const KEY_CYCLE_NUM = 'mycycleDynMsg';
@@ -54,7 +57,7 @@ class NumberService extends BaseService
 		}else{
 			$last = self::redis()->get($key_last_gettime_feedback) ? : time();
 		}
-		$feedback = self::dbClubSlave()->table('chat_log')->where('to_uid','=',$uid)->where('from_uid','=',1)->where('addtime','>=',$last)->count();
+		$feedback = ChatLog::db()->where('to_uid','=',$uid)->where('from_uid','=',1)->where('addtime','>=',$last)->count();
 		$out['myfeedbackMsg'] = $feedback;//反馈消息数量
 		//系统	    
 		$sys = self::getNotReadSystemMsgNum($uid);
@@ -175,7 +178,7 @@ class NumberService extends BaseService
 		while($data){
 			$data = unserialize($data);
 			$type = $data['type'];
-			$uids = self::dbClubSlave()->table('account')->lists('uid');			
+			$uids = Account::db()->lists('uid');			
 			switch($type)
 			{
 				case 'activity':

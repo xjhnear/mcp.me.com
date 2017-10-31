@@ -1,0 +1,236 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    查询已审核用户
+                </h3>
+                <div class="actions">
+                    <form id="myform2" action="<!--{{url('v4_task/task/product-data-download')}}-->"></form>
+                    <form id="myform3" action="<!--{{url('v4_task/task/product-uid-download')}}-->"></form>
+                    <form id="myform" action="<!--{{url('v4_task/task/user-checked')}}-->" method="GET">
+                        <input name="stepId" type="hidden" value="<!--{{stepId}}-->" />
+                        <input name="title" type="hidden" value="<!--{{title}}-->" />
+                        <table class="table-filter">
+                            <tr>
+                            	<td><span class="label label-blue"><!--{{form_checkbox('isIssue','true',search.isIssue=='true')}}-->已发放</span></td>
+                                <td><span class="label label-blue">开始时间</span>
+                                    <div class="input-append date " >
+                                        <input name="startTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{search['startTime']}}-->" >
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td><span class="label label-blue">结束时间</span>
+                                    <div class="input-append date "  data-date="">
+                                        <input name="endTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker"  value="<!--{{search['endTime']}}-->" id="date_timepicker_end" >
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td><!--{{form_select('stepStatus',taskStatus,search['stepStatus'],{'id':'complete_type','style':'margin-top:10px;width:100px'})}}--></td>
+                                <td>
+                                    <input name="name"  placeholder="用户名" style="width:177px;" type="text" class="input-small" value="<!--{{search.name}}-->" >
+                                </td>
+                                <td><span class="label label-blue"><!--{{form_checkbox('addUser','true',search.addUser=='true')}}-->将回复人添加到列表</span></td>
+                                <td><button class="btn btn-teal">搜索</button></td>
+                                <td><a href="javascript:void(0);" class="btn btn-sucess" id="daochu">导出</a></td>
+                                <td><a href="javascript:void(0);" data-act="sgin" class="btn ajax-sgin" id="sgin">发放</a></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+						<th class="col-20">
+							<input type="checkbox" name="all" value="" /><div class="btn-group">
+								<a data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></a>
+							    <ul class="dropdown-menu">
+							    	<li><a href="javascript:void(0);" data-act="sgin" class="ajax-sgin">发放</a></li>
+							    </ul>
+							</div>
+						</th>
+                        <th class="col-60">任务标题</th>
+                        <th class="col-100">用户名</th>
+                        <th class="col-80">审核状态</th>
+                        <th class="col-80">上传截图时间</th>
+                        <th class="col-100">操作人员和时间</th>
+                        <th class="table-btn-group">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for item in datalist%}-->
+                    <tr>
+                    	<td>
+                    		<!--{%if item.isIssue %}-->
+                    			<span class="badge badge-success taskStatus">已发放</span>
+                    		<!--{%else%}-->
+                    			<input type="checkbox" name="ids" uid="<!--{{item.uid}}-->" value="<!--{{item.userStepId}}-->"/>
+                    		<!--{%endif%}-->
+                    	</td>
+                        <td><!--{{item.taskName}}--></td>
+                        <td><span class="badge badge-info"><!--{{item.uid}}--></span></td>
+                        <td><span class="badge badge-success taskStatus"><!--{%if item.stepStatus ==1%}-->通过<!--{%elseif item.stepStatus ==-2%}-->不通过<!--{%endif%}--></span></td>
+                        <td><!--{{item.createTime|date('Y-m-d H:i:s')}}--></td>
+                        <td><!--{{item.updateTime|date('Y-m-d H:i:s')}}--><br><!--{{ item.operateName}}--></td>
+                        <td>
+                            <a href="javascript:void(0)" data-target="#exampleModal" taskStatus="<!--{{item.taskStatus}}-->" data-toggle="modal" uid="<!--{{item.uid}}-->" uname = "<!--{{item.userinfo.nickname}}-->" userTaskId="<!--{{item.userTaskId}}-->" taskId="<!--{{item.taskId}}-->" stepId="<!--{{item.stepId}}-->" repeatCount="<!--{{item.repeatCount}}-->" uname='<!--{{item.taskId}}-->' appId='<!--{{item.appleId}}-->' imgs="<!--{{item.picUrl}}-->" approvalContent='<!--{{item.approvalContent}}-->' class="btn btn-primary b_button">查看截图</a>
+                        </td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{#模态框#}-->
+<div class="modal fade" style="width: 900px; margin-left: -500px" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog bs-example-modal-lg"  role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">游戏截图 -- <lable id="b_name"></lable></h4>
+            </div>
+            <div class="modal-body">
+	            <div class="form-group approvalContent" style="padding: 5px;">
+	                
+	            </div>
+                <div class="form-group img_list" style="text-align: center">
+
+                </div>
+                <input type="hidden"  id="b_uid" name="b_uid" value="" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary"  id="next_one">下一页</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+    $(function(){
+    	$('input').iCheck({
+			checkboxClass: 'icheckbox_square-orange',
+			radioClass: 'iradio_square-orange',
+			increaseArea: '20%' // optional
+		});
+        var obj="";
+        gameselect('#gameselect');
+        userselect('#userselect');
+        function load_img(ob){
+            var imgs = ob.attr('imgs');
+            var appId = ob.attr('appId');
+            var approvalContent = ob.attr('approvalContent');
+
+            var str = '';
+            if(appId.length>0){
+                str = "<span class='badge badge-success'>AppleId:</span>"+appId;
+            }
+            var strs= new Array(); //定义一数组
+            strs=imgs.split(","); //字符分割
+            $("#b_name").html("(<span class='badge badge-info'>"+ob.attr('uid')+"</span>)"+str);
+            $(".approvalContent").html("");
+            if (approvalContent) {
+	            approvalContent = eval('(' + approvalContent + ')');
+	            for(var key in approvalContent){
+	            	$(".approvalContent").append('<p>'+key+':'+approvalContent[key]+'</p>');
+				}
+			}
+            
+            $(".img_list").html("");
+            for (i=0;i<strs.length ;i++ )
+            {
+                $(".img_list").append('<img src="'+strs[i]+'"  border="1px solid"/>')
+            }
+            obj = ob;
+        }
+
+        $('a.ajax-del').bind('click',function(){
+            if(!confirm('确定要删除数据吗？')){
+                return false;
+            }
+        });
+        
+	    $('a.ajax-sgin').bind('click',function(){
+	        if(!confirm('确定要发放？')){
+	            return false;
+	        }
+	        
+	        if($(this).attr('data-act')=='sgin'){
+	            var ids = [];
+	            var uids = [];
+	            var taskid = '<!--{{taskId}}-->';
+	            var taskname = '<!--{{taskName}}-->';
+	            $('input[name="ids"]:checked').each(function(){
+	                ids.push($(this).val());
+	                uids.push($(this).attr('uid'));
+	            });
+	            if(ids.length==0) return false;
+	            $.ajax({
+	                url:'<!--{{url('v4_task/task/sgin')}}-->',
+	                type:'POST',
+	                data:{'ids':ids,'uids':uids,'taskid':taskid,'taskname':taskname},
+	                dataType:'json',
+	                success:function(data){
+	                    if(data.state){
+							alertify.success(data.msg);
+							setTimeout(function(){
+								location.reload();
+							},1000);
+						}else{
+							alertify.error(data.msg);
+						}
+	                }
+	            });
+	        }
+	    });
+	    
+        $(".b_button").click(function(){
+            load_img($(this));
+        })
+
+
+        $("#next_one").click(function(){
+            var old_obj = obj;
+            if(obj){
+                var new_obj = obj.parent().parent().next("tr").children().children(".b_button");
+                console.log(new_obj);
+                if(new_obj.parent().html()){
+                    load_img(new_obj);
+                }else{
+                    $(".checked").attr("enabled","none");
+                    alert("已经是本页最后一个");
+                }
+            }
+        })
+    });
+
+	$('input[name="all"]').on('ifChecked',function(event){
+		$('input[name="ids"]').iCheck('check');
+	});
+
+	$('input[name="all"]').on('ifUnchecked',function(event){
+		$('input[name="ids"]').iCheck('uncheck');
+	});
+	
+    $("#daochu").bind('click',function(){
+        window.location.href=$("#myform2").attr("action")+"?"+$("#myform").serialize();
+    })
+    $("#daochuuid").bind('click',function(){
+        window.location.href=$("#myform3").attr("action")+"?"+$("#myform").serialize();
+    })
+</script>
+<!--{%endblock%}-->

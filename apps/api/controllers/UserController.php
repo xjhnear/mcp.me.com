@@ -146,7 +146,8 @@ class UserController extends BaseController
 	    if(Input::hasFile('avatar')){
 	    	$config = array(
 	    	    'savePath'=>'/userdirs/avatar/',
-	    	    'driverConfig'=>array('autoSize'=>array(320,120,100,80,60,50))
+	    	    //'driverConfig'=>array('autoSize'=>array(320,120,100,80,60,50))
+	    	    'driverConfig'=>array('autoSize'=>array(120,100,50))
 	    	);
 	    	$uploader = new ImageHelper($config);
 	    	$avatar = $uploader->upload('avatar');
@@ -155,20 +156,31 @@ class UserController extends BaseController
 	    	}	    	
 		}
 		
-	    if(Input::hasFile('background')){
-		    $file = Input::file('background');
-		    if($file->isValid()){
-		    	$server_path = storage_path() . '/userdirs/homebg/';
-		    	//$new_filename = $uid . '.jpg';
-		    	$new_filename = date('YmdHis') . str_random(4);
-		    	$file->move($server_path,$new_filename . '.png');
-		    	$url = '/userdirs/homebg/' . $new_filename . '.png' . '?time=' . time();		    	
-		    	$input['homebg'] = $url;		    			    	
-		    }else{
-		    	//return $this->fail(1121,'图片文件无效');
+		if(Input::hasFile('background')){
+		    $config = array(
+		        'savePath'=>'/userdirs/iosv3_userhomebg/',
+		        //'driverConfig'=>array('autoSize'=>array(320,120,100,80,60,50))
+		    );
+		    $uploader = new ImageHelper($config);
+		    $homebg = $uploader->upload('background');
+		    if($homebg !== false){
+		        $input['homebg'] = $homebg['filepath'] . '/' . $homebg['filename'];
 		    }
+		}
+// 	    if(Input::hasFile('background')){
+// 		    $file = Input::file('background');
+// 		    if($file->isValid()){
+// 		    	$server_path = storage_path() . '/userdirs/homebg/';
+// 		    	//$new_filename = $uid . '.jpg';
+// 		    	$new_filename = date('YmdHis') . str_random(4);
+// 		    	$file->move($server_path,$new_filename . '.png');
+// 		    	$url = '/userdirs/homebg/' . $new_filename . '.png' . '?time=' . time();		    	
+// 		    	$input['homebg'] = $url;		    			    	
+// 		    }else{
+// 		    	//return $this->fail(1121,'图片文件无效');
+// 		    }
 		    
-		}		
+// 		}		
 		
 		$success = UserService::updateUserInfo($uid,$input);
         if($success===-1){

@@ -19,7 +19,7 @@
                         <label class="control-label">TAG<i class="tip-star">*</i></label>
                         <div class="controls">
                             <div class=" input-append">
-                                <input type="text" name="tag" class="input-xlarge" value="<!--{{category.tag}}-->" />
+                                <input type="text" name="tag" class="input-xlarge" data-rule-required="true" data-msg-required="请填写TAG" value="<!--{{category.tag}}-->" />
                             </div>
                         </div>
                     </div>
@@ -45,6 +45,8 @@
 <!--{%block footer_js%}-->
 <script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
 <script>
 
     $(function(){

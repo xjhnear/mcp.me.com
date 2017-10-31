@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Yxd\Services\Service;
 use Illuminate\Support\Facades\Config;
 use Yxd\Services\LikeService;
+use Yxd\Services\Models\XyxGame;
 
 class XgameService extends Service
 {
@@ -22,7 +23,7 @@ class XgameService extends Service
 		}else{
 			$where = array();
 			/** (x[最新]|y[最热]|t[编辑推荐]| 编号[类型]|0[全部] )*/
-			$dbSlave = self::dbCmsMaster()->table('xyx_game');
+			$dbSlave = XyxGame::db();
 			if($keyword!=''){
 				if($t=='gname'){
 					$dbSlave =  $dbSlave->where('gamename','like',"%{$keyword}%");
@@ -158,7 +159,7 @@ class XgameService extends Service
 	/** 获取游戏详情*/
 	public static function getArticle($gid,$page=1,$pagesize=10,$uid=0)
 	{
-		$data = self::dbCmsMaster()->table('xyx_game') ->where('id','=',$gid) ->first();
+		$data = XyxGame::db() ->where('id','=',$gid) ->first();
 		$out = array();
 		$typename = self::getType($data['tid']);
 		$data['typename'] = (is_array($typename))?$typename['title']:'';
@@ -237,7 +238,7 @@ class XgameService extends Service
 	//点击开始加热度
 	public static function doHot($gid)
 	{
-		$id = self::dbCmsMaster()->table('xyx_game')->where('id','=',$gid)->increment('hotsort');
+		$id = XyxGame::db()->where('id','=',$gid)->increment('hotsort');
 		return $id ? true : false;
 	}
 	/**
@@ -277,7 +278,7 @@ class XgameService extends Service
 		//判断是否已经拿到标题
 		if(empty($v['gamename'])){
 			$gid = str_replace(array('/main/details_', '.html'), '', $v['url']);
-			$gameData = self::dbCmsMaster()->table('xyx_game') ->where('id','=',$gid) ->first();
+			$gameData = XyxGame::db() ->where('id','=',$gid) ->first();
 			if(empty($gameData['gamename'])) return;
 			$v['gamename'] = $gameData['gamename'];
 		}
@@ -293,7 +294,7 @@ class XgameService extends Service
 		parse_str($queryString[1]);
 		//获取游戏的名称
         if(empty($gid) || $gid == 0 ) return;
-		$gameData = self::dbCmsMaster()->table('xyx_game') ->where('id','=',$gid) ->first();
+		$gameData = XyxGame::db() ->where('id','=',$gid) ->first();
 		if(empty($gameData['gamename'])) return;
 		$v['gamename'] = '手机H5站小游戏-'.$gameData['gamename'].'-详情页';
 		//保存详情页数据
@@ -308,7 +309,7 @@ class XgameService extends Service
 		parse_str($queryString[1]);
 		//获取游戏的名称
         if(empty($ID) || $ID == 0) return;
-		$gameData = self::dbCmsMaster()->table('xyx_game') ->where('id','=',$ID) ->first();
+		$gameData = XyxGame::db() ->where('id','=',$ID) ->first();
 		//找到该款游戏 跳出循环继续下一次循环
 		//if(empty($gameData['gamename'])) continue;
 		if($v['platform'] =='h5'){

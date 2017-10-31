@@ -41,7 +41,7 @@
 						<td title="<!--{{ item.name }}-->"><!--{{ item.name }}--></td>
 						<td><!--{{ item.totalTopicNumber }}--></td>
 						<td><!--{{ item.totalReplyNumber }}--></td>
-						<td><!--{% if item.fid == '0' %}-->全局版块<!--{% endif %}--></td>
+						<td><!--{% if item.fid == '0' %}-->全局版块<!--{% else %}-->专属板块<!--{% endif %}--></td>
 						<td><!--{% if item.isActive %}-->开启<!--{% else %}-->关闭<!--{% endif %}--></td>
 						<td>
 							<a href="<!--{{url('web_forum/forum/edit-board',{bid:item.bid,'fid':forum_info.fid})}}-->" class="btn btn-primary"><i class="icon-edit" title="编辑"></i></a>

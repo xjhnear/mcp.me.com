@@ -47,7 +47,7 @@
 						<!--{%if location %}-->
 							<select name='location_id'>
 								<!--{%for item in location%}-->
-										<option <!--{%if item.Id==adv.location_id %}--> selected <!--{%endif%}-->value="<!--{{item.Id}}-->"><!--{{item.name}}--></option> 
+										<option <!--{%if item.Id==adv.location_id %}--> selected <!--{%endif%}-->value="<!--{{item.Id}}-->"><!--{{item.name}}-->-<!--{%if item.Id==adv.sort %}--><!--{{item.sort}}--><!--{%else%}-->0<!--{%endif%}--></option> 
 								<!--{%endfor%}-->
 							</select>
 						<!--{% endif %}-->
@@ -59,7 +59,7 @@
                     	<select name="adv_type" id="adv_type">
                     		<option value=""></option>
                     		<!--{%for type_ in type%}-->
-                    			<option value="<!--{{type_}}-->"><!--{{type_}}--></option>
+                    			 <option  <!--{%if type_==adv.adv_type %}-->selected<!--{%endif%}--> value="<!--{{type_}}-->"><!--{{type_}}--></option>
                     		<!--{%endfor%}-->
                     	</select>
                     </div>
@@ -278,7 +278,7 @@ function nature(id)
                  if(json.status == 1 ||　json.datainfo　){
                  	var html='';
                  	for(var i in json.datainfo ){
-						html+="<option value="+json.datainfo[i].Id+">"+json.datainfo[i].name+"</option>";
+                 		html+="<option value="+json.datainfo[i].Id+">"+json.datainfo[i].name+"-"+json.datainfo[i].sort+"</option>";
                     }
                  	$("#location").html("<select name='location_id'>"+html+"</select>");
                  }else{

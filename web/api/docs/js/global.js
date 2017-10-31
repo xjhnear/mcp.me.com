@@ -88,6 +88,22 @@ function addTableRow(table, rowStringFunc) {
 	return row
 }
 
+function addAfterTableRow(a, rowStringFunc) {
+	var row = $(a).parents("tr");
+	//row.appendTo(table.find("tbody"));
+	var table = $(a).parents("table");
+	row.after(rowStringFunc());
+	row.next().find("a").click(function() {
+		if($(this).hasClass('delete_param_button')){
+			deleteTableRow($(this).parent().parent());
+		}else if($(this).hasClass('add_input_param_button') || $(this).hasClass('add_out_param_button') || $(this).hasClass('add_error_param_button')){
+			addAfterTableRow(this,rowStringFunc)
+		}
+		
+	})
+	return row
+}
+
 function deleteTableRow(row) {
 	row.remove();
 }

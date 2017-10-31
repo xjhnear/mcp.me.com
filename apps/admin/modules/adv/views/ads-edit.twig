@@ -7,10 +7,10 @@
 				<h3><i class="icon-edit"></i><!--{{advtype}}--></h3>
 			</div>
 			<div class="box-content">
-			    <form action="<!--{{url('adv/ads/save')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
-			    <input id="id" name="id" type="hidden" value="<!--{{adv.id}}-->" />								
+			    <form action="<!--{{url('adv/ads/edit')}}-->" method="POST" class='form-horizontal' enctype="multipart/form-data">
+			    <input id="id" name="adid" type="hidden" value="<!--{{adv.id}}-->" />
 			    <input id="id" name="type" type="hidden" value="<!--{{adv.type|default(type)}}-->" />
-			    <div class="row-fluid">			    
+			    <div class="row-fluid">
 			    <div class="span4">
 					<div class="control-group">
 						<label class="control-label">应用</label>
@@ -29,13 +29,14 @@
 				</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label">广告标识</label>
+					<label class="control-label">广告标识<span class="nes-star">*</span></label>
 					<div class="controls">
 						<input type="text" name="aid" class="input-small" value="<!--{{adv.aid}}-->" />
+						<!--{{ errors.first('aid','<span class="text-error">:message</span>') }}-->
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label">广告位置</label>
+					<label class="control-label">广告位置<span class="nes-star">*</span></label>
 					<div class="controls">
 						<!--{{form_select('location',location,adv.location)}}-->
 					</div>
@@ -63,31 +64,44 @@
 				</div>
 				<!--{%endif%}-->
 				<!--{%if type != 4%}-->
+			    <input type="hidden" name="has_pic" value="<!--{{ adv.litpic }}-->">
 				<div class="control-group">
-					<label class="control-label">广告图</label>
+					<label class="control-label">广告图<span class="nes-star">*</span></label>
 					<div class="controls">
 						<div class="uploader" id="uniform-fileInput"><input name="litpic" class="input-file uniform_on" id="litpic" type="file" size="19" style="opacity: 0; "></div>
+						<!--{% if adv.litpic %}-->
+						<a href="#bigimg" data-toggle="modal"><img style="height:32px;" src="http://img.youxiduo.com<!--{{ adv.litpic }}-->"></a>
+						<!--{% endif %}-->
+						<!--{{ errors.first('litpic','<span class="text-error">:message</span>') }}-->
 					</div>
 				</div>
 				<!--{%endif%}-->
 				<!--{%if type == 5%}-->
+			    <input type="hidden" name="has_pic" value="<!--{{ adv.bigpic }}-->">
 				<div class="control-group">
-					<label class="control-label">广告图</label>
+					<label class="control-label">广告图<span class="nes-star">*</span></label>
 					<div class="controls">
 						<div class="uploader" id="uniform-fileInput"><input name="bigpic" class="input-file uniform_on" id="bigpic" type="file" size="19" style="opacity: 0; "></div>
+						<!--{% if adv.bigpic %}-->
+						<a href="#bigimg" data-toggle="modal"><img style="height:32px;" src="http://img.youxiduo.com<!--{{ adv.bigpic }}-->"></a>
+						<!--{% endif %}-->
+						<!--{{ errors.first('bigpic','<span class="text-error">:message</span>') }}-->
 					</div>
 				</div>
 				<!--{%endif%}-->
 				<div class="control-group">
-					<label class="control-label">跳转地址</label>
+					<label class="control-label">跳转地址<span class="nes-star">*</span></label>
 					<div class="controls">
 						<input type="text" name="downurl" class="input-xxlarge" value="<!--{{adv.downurl}}-->" />
+						<!--{{ errors.first('downurl','<span class="text-error">:message</span>') }}-->
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label">浏览器类型</label>
+					<label class="control-label">浏览器类型<span class="nes-star">*</span></label>
 					<div class="controls">
-						<input type="text" name="tosafari" class="input-xlarge" value="<!--{{adv.tosafari}}-->" />
+                        <input type="radio" name="tosafari" value="0" <!--{% if adv.tosafari == 0 %}-->checked<!--{% endif %}-->/>内置浏览器
+                        <input type="radio" name="tosafari" value="1" <!--{% if adv.tosafari %}-->checked<!--{% endif %}-->/>Safari浏览器
+						<!--{{ errors.first('tosafari','<span class="text-error">:message</span>') }}-->
 					</div>
 				</div>
 				<div class="control-group">
@@ -103,15 +117,15 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label">第三方idfa</label>
+					<label class="control-label">第三方IDFA</label>
 					<div class="controls">
 						<input type="text" name="sendidfa" class="input-xlarge" value="<!--{{adv.sendidfa}}-->" />
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label">第三方openudid</label>
+					<label class="control-label">第三方OPENUDID</label>
 					<div class="controls">
-						<input type="text" name="openudid" class="input-xlarge" value="<!--{{adv.openudid}}-->" />
+						<input type="text" name="sendudid" class="input-xlarge" value="<!--{{adv.sendudid}}-->" />
 					</div>
 				</div>
 				<div class="control-group">
@@ -127,7 +141,7 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label">第三方callback</label>
+					<label class="control-label">第三方CALLBACK</label>
 					<div class="controls">
 						<input type="text" name="sendactive" class="input-xlarge" value="<!--{{adv.sendactive}}-->" />
 					</div>
@@ -162,8 +176,7 @@ $(function(){
                 $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
             }
         });        
-    });    
-        
+    });
 });
 </script>
 <!--{%endblock%}-->

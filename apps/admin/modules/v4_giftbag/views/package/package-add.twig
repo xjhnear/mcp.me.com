@@ -1,4 +1,4 @@
-<!--{%extends "../sub-layout-giftbag.twig"%}-->
+<!--{%extends "../sub-layout-giftbag.twig"%}--> 
 <!--{%block main_content%}-->
 <div class="row-fluid">
 	<div class="span12">
@@ -46,6 +46,46 @@
 							<input type="text" name="cardDesc" id="cardDesc" data-rule-required="true" data-msg-required="请填写礼包库名称"  class="input-large" value="" />
 						</div>
 					</div>
+                    <div class="control-group">
+						<label class="control-label">礼包库简介</label>
+						<div class="controls">
+							<input type="text" name="cardDesc" id="cardDesc" data-rule-required="true" data-msg-required="请填写礼包库简介"  class="input-large" value="" />
+						</div>
+					</div>
+					
+                    <div class="control-group">
+                        <label class="control-label">用途</label>
+                        <div class="controls">
+                            <!--{{form_select('virtualUse',virtualUse,search.virtualUse,{'id':'materialUse','style':'margin-top:10px;width:100px'})}}-->
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">游戏</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="selected_game_id" name="game_id" type="hidden" value="<!--{{atask.gid}}-->"/>
+                                <input type="text" readonly id="selected_game_name" name="game_name" class="input-medium" data-rule-required="true" data-msg-required="请选择游戏" value="<!--{{ atask.typeCondition['gameName'] }}-->" />
+                                <span class="add-on select-pop-game">选择游戏</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">礼包简介</label>
+                        <div class="controls">
+                            <!--<script id="summary" data-rule-required="true" data-msg-required="请填写礼包简介" name="virtualSummary" type="text/plain"><!--{{input_old('virtualSummary') }}--></script>-->
+                        	<textarea id="intro_vi" name="virtualSummary" rows="4" style="width:536px;"><!--{{ input_old('virtualSummary') }}--></textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">礼包说明</label>
+                        <div class="controls">
+                            <!--<script id="intro" name="virtualInstruction" type="text/plain"><!--{{ input_old('virtualInstruction') }}--></script>-->
+                            <textarea id="intro_ta" name="virtualInstruction" rows="4" style="width:536px;"><!--{{ input_old('virtualInstruction') }}--></textarea>
+                        </div>
+                    </div>
+                    
                     <div id="clone_" >
                         <input type="hidden" name="tmp" id="tmp" value="">
                         <input type="hidden" name="filename" id="filename" value="">
@@ -65,19 +105,28 @@
 <!--{%endblock%}-->
 
 <!--{%block footer_js%}-->
-
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
 <script src="/static/js/ajaxfileupload.js"></script>
+<script src="/static/js/jquery.uniform.min.js"></script>
 <script src="/static/js/jquery.validationEngine.js"></script>
 <script src="/static/js/jquery.validationEngine-en.js"></script>
 <script>
-	$(function(){
+
+
+    $(function(){
 		$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
 		//$("input:file").uniform({'fileBtnText':'选择文件'});
-
+        UE.getEditor('summary',{toolbars:[['undo', 'redo']],initialFrameHeight:100});
+        //UE.getEditor('intro',{initialFrameHeight:100});
+        UE.getEditor('des',{toolbars:[['undo', 'redo']],initialFrameHeight:100});
+        
         //var i=2;
         $(document).on('change','#file_upload',function(){
              $('#upload-kami').html("载入数据中...");
              $("#uploadTxt").html($("#file_upload").val());
+
              $.ajaxFileUpload({
 				url:'/v4giftbag/package/file-count',
 				type : 'post',
@@ -104,10 +153,25 @@
 			});
 
 		});
-
-
-
-		
 	});
+	 $(function(){
+        $('#is-append').bootstrapSwitch();
+
+        $('.select-pop-game').bind('click', function () {
+            $.ajax({
+                url: '/game/api/game-search',
+                dataType: 'json',
+                success: function (json) {
+                    var html = json.html;
+                    $.dialog({id: 'pop-game-list', title: '提示', padding: 2, content: html, width: 600, height: 580});
+                }
+            });
+        });
+
+    });
+    var set_selected_game=function(game_id,game_name,icon){
+        $('#selected_game_id').val(game_id);
+        $('#selected_game_name').val(game_name);
+    }
 </script>
 <!--{%endblock%}-->

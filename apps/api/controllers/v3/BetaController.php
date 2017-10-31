@@ -18,6 +18,7 @@ class BetaController extends BaseController
 		if($gid>0){
 			$tb = $tb->where('gid','=',$gid);
 		}
+		$tb = $tb->where('is_show_at_audit','=',1);
 		$total = $tb->count();
 		$list = $tb->orderBy('addtime','desc')
 		->forPage($page,$pagesize)
@@ -34,21 +35,48 @@ class BetaController extends BaseController
 		return $this->success(array('result'=>$out,'totalCount'=>$total));
 	}
 	
-    public function guide()
+	public function newgame()
 	{
 		$gid = Input::get('gid',0);
 		$page = Input::get('pageIndex',1);
 		$pagesize = Input::get('pageSize',10);
+		$tb = DB::connection('cms')->table('game_notice')->where('apptype','!=',2);
+		$tb = $tb->where('is_show_at_audit','=',1);
+		$total = $tb->count();
+		$list = $tb->orderBy('addtime','desc')
+		->forPage($page,$pagesize)
+		->get();
+		$out = array();
+		foreach($list as $row){
+			$news = array();
+			$news['gnid'] = $row['id'];
+			$news['title'] = $row['title'] ? : $row['gname'];
+			$news['content'] = mb_substr(strip_tags($row['art_content']),0,50,'utf-8');
+			$news['addtime'] = date('Y-m-d',$row['addtime']);
+			$out[] = $news;
+		}
+		return $this->success(array('result'=>$out,'totalCount'=>$total));
+	}
+	
+    public function guide()
+	{
+		$gid = Input::get('gid',0);
+		$pageIndex = (int)Input::get('pageIndex',1);
+		$pagesize = Input::get('pageSize',10);
+		if($pageIndex<=0) $pageIndex = 1;
+		$page = ($pageIndex - 1) * $pagesize;
+		
 		if($gid>0){
-			$sql = "SELECT gid FROM (SELECT gid,addtime FROM m_gonglue WHERE gid=".$gid." ORDER BY addtime DESC) AS b GROUP BY gid ORDER BY addtime DESC LIMIT ".$page.",".$pagesize;
+			$sql = "SELECT gid FROM (SELECT gid,addtime FROM m_gonglue WHERE gid=".$gid." and is_show_at_audit=1 ORDER BY addtime DESC) AS b GROUP BY gid ORDER BY addtime DESC LIMIT ".$page.",".$pagesize;
 		}else{
-		    $sql = "SELECT gid FROM (SELECT gid,addtime FROM m_gonglue ORDER BY addtime DESC) AS b GROUP BY gid ORDER BY addtime DESC LIMIT ".$page.",".$pagesize;
+		    $sql = "SELECT gid FROM (SELECT gid,addtime FROM m_gonglue WHERE is_show_at_audit=1 ORDER BY addtime DESC) AS b GROUP BY gid ORDER BY addtime DESC LIMIT ".$page.",".$pagesize;
 		}
 		$_gids = DB::connection('cms')->select($sql);
 		$gids = array();
 		foreach($_gids as $gid){
 			$gids[] = $gid['gid'];
 		}
+		$gids = array_unique($gids);
 		$games = GameService::getGamesByIds($gids);		
 		if(!$gids){
 			return $this->success(array('result'=>array(),'totalCount'=>0));
@@ -67,9 +95,14 @@ class BetaController extends BaseController
 			$guide['title2'] = isset($guides[$gid][1]) ? $guides[$gid][1]['title'] : '';
 			$out[] = $guide; 
 		}
-		$sql = "SELECT count(distinct(gid)) as total FROM m_gonglue";
+		if($gid>0){
+			$sql = "SELECT gid FROM m_gonglue WHERE is_show_at_audit=1 AND gid = ".$gid." GROUP BY gid";
+		}else{
+		    $sql = "SELECT gid FROM m_gonglue WHERE is_show_at_audit=1 GROUP BY gid";
+		}
 		$total = DB::connection('cms')->select($sql);
-		return $this->success(array('result'=>$out,'totalCount'=>$total[0]['total']));
+		
+		return $this->success(array('result'=>$out,'totalCount'=>count($total)));
 	}
 	
     public function guideList()
@@ -77,8 +110,8 @@ class BetaController extends BaseController
 		$page = Input::get('pageIndex',1);
 		$pagesize = Input::get('pageSize',10);
 		$gid = Input::get('gid');
-		$result = DB::connection('cms')->table('gonglue')->where('pid','>=',0)->where('gid','=',$gid)->orderBy('addtime','desc')->forPage($page,$pagesize)->get();
-		$total = DB::connection('cms')->table('gonglue')->where('pid','>=',0)->where('gid','=',$gid)->count();
+		$result = DB::connection('cms')->table('gonglue')->where('pid','>=',0)->where('gid','=',$gid)->where('is_show_at_audit','=',1)->orderBy('addtime','desc')->forPage($page,$pagesize)->get();
+		$total = DB::connection('cms')->table('gonglue')->where('pid','>=',0)->where('gid','=',$gid)->where('is_show_at_audit','=',1)->count();
 		$out = array();
 		foreach($result as $row){
 			$guide = array();

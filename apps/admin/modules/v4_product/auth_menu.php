@@ -12,6 +12,7 @@ return array(
         array('name'=>Lang::get('订单管理'),'url'=>'v4product/order/list'),
         array('name'=>Lang::get('商城订单模版管理'),'url'=>'v4product/form/list'),
         array('name'=>Lang::get('人民币比率'),'url'=>'v4product/rmb/list'),
+        array('name'=>Lang::get('微信提现'),'url'=>'v4product/wechat/list'),
      ),
     'extra_node'=>array(     
         array('name'=>'全部商城模块权限','url'=>'v4product/*')

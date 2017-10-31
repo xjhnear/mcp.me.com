@@ -1,0 +1,72 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+                    首页底部友情链接
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('gamelive/home/index-down')}}-->" class="">
+				    <table class="table-filter">				        
+				        <tr>
+                            <!--
+							<td><a href="<!--{{url('gamelive/home/index-gg-footer-add')}}-->" class="btn btn-teal"><i class="icon-plus"></i>添加</a></td>
+				            -->
+                        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+							<th class="col-120">内容</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+
+						<tr>
+                            <td><!--{%for item in datalist%}-->
+                                <!--{{item.name}}-->(<!--{{item.url}}-->);
+                                <!--{%endfor%}-->
+                            </td>
+							<td>
+							    <a href="<!--{{url('gamelive/home/index-gg-footer-add')}}-->?id=1" class="btn btn-primary">编辑</a>
+                            </td>
+						</tr>
+
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>			    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){       
+    $('a.ajax-del').bind('click',function(){
+        if(confirm('确定要删除数据吗？')){
+            var id = $(this).attr('id');
+            obj = $(this);
+            $.post('<!--{{url('gamelive/home/remove-index-down')}}-->',{id:id},function(data){
+                if(data.success){
+                    obj.parent().parent().hide();
+                }else{
+                    alert(data.error);
+                }
+            },"json")
+        }
+    });
+});    
+</script>
+<!--{%endblock%}-->

@@ -15,7 +15,7 @@ class LocationController extends BackendController
 	public function getList()
 	{   
 		$search=array();
-		$search['page']=Input::get('page',1);
+		$search['pageIndex']=Input::get('page',1);
 		$search['pageSize']=15;
 		$search['%yxd_advert_location.name']=Input::get('%name');	
 		$search['=yxd_advert_location.is_show']='1';
@@ -51,8 +51,8 @@ class LocationController extends BackendController
 
 	public function postLocationAddEdit($id=0)
 	{
-		$input = Input::only('name','nature_id','Id');
-		$biTian=array('name'=>'required','nature_id'=>'required');
+		$input = Input::only('name','nature_id','Id','sort','biaoshi');
+		$biTian=array('name'=>'required','nature_id'=>'required','biaoshi'=>'required');
         $message = array(
             'required' => '不能为空',
         );
@@ -97,7 +97,7 @@ class LocationController extends BackendController
 		$search['=is_show']=1;
 		$search['page']=Input::get('page',1);
 		$search['pageSize']=7;
-		$search['=is_recommend']='广告模式';
+		//$search['=is_recommend']='广告模式';
 		$datalist=AdvService::getNatureList($search);
 		$datalist=AdvService::_processingInterface($datalist,$search,$search['pageSize']);
 		$html = $this->html('/apptypes/pop-nature-list',$datalist);

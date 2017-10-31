@@ -40,4 +40,9 @@ final class UserGame extends Model implements IModel
 		if(!$game_ids) return array();
 		return self::db()->whereIn('game_id',$game_ids)->groupBy('game_id')->select(self::raw('game_id,count(*) as total'))->get();
 	}
+	
+	public static function addUserGame($data)
+	{
+		return self::db()->insert($data);
+	}
 }

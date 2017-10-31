@@ -151,8 +151,11 @@ class DataController extends BackendController
 		$params['size'] = $pageSize;
 		//echo $url . '?' . http_build_query($params);
 		$url_total = Config::get('app.module_data_url') . ($real==true ? 'module_data/game_download_count_list_amount' : 'module_data/game_display_download_count_list_amount');
-		$count_str = \CHttp::request($url_total,$params,'GET','text');		
+		$count_str = \CHttp::request($url_total,$params,'GET','text');
+        echo "totle:".$url_total;
 		$result = \CHttp::request($url,$params);
+        echo $url;
+        print_r($params);
 		$total = $totalDownload = 0;
 		strpos($count_str,',')!==false && list($total,$totalDownload) = explode(',',$count_str);
 		$out = array('total'=>0,'result'=>array(),'games'=>array(),'totalDownload'=>0);

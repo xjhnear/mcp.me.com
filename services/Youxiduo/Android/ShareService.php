@@ -26,6 +26,7 @@ use Youxiduo\Android\Model\Giftbag;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
 use Youxiduo\V4\Common\ShareService as ShareTo;
+use Youxiduo\Activity\Duang\VariationService;
 
 class ShareService extends BaseService
 {
@@ -36,63 +37,68 @@ class ShareService extends BaseService
 	const WEB_URL_GUIDE      = 'http://m.youxiduo.com/gameandroid/guide/{0}';
 	const WEB_URL_NEWS       = 'http://m.youxiduo.com/gameandroid/news/{0}';
 	const WEB_URL_OPINION    = 'http://m.youxiduo.com/gameandroid/defail/{0}';
-	const WEB_URL_GIFTBAG    = 'http://m.youxiduo.com/activity/giftdetail?id={0}';
+	//const WEB_URL_GIFTBAG    = 'http://m.youxiduo.com/activity/giftdetail?id={0}';
+	const WEB_URL_GIFTBAG    = 'http://free.youxiduo.com/info/giftbag/{0}';
 	const WEB_URL_SPECIAL    = 'http://m.youxiduo.com/topic/info/{0}';
 	const WEB_URL_TOPIC      = 'http://m.youxiduo.com/';
 	const WEB_URL_FORUM      = 'http://m.youxiduo.com/';
 	const WEB_URL_GOODS      = 'http://m.youxiduo.com/';
-	const WEB_URL_ACTIVITY   = 'http://m.youxiduo.com/activity/activityshow/{0}';
+	//const WEB_URL_ACTIVITY   = 'http://m.youxiduo.com/activity/activityshow/{0}';
+	const WEB_URL_ACTIVITY   = 'http://free.youxiduo.com/info/activity/{0}';
 	const WEB_URL_ABOUT      = 'http://m.youxiduo.com';
 	
 	public static function forward($params)
 	{
-		$keys = array('gid','vid','gvid','guid','goid','gnid','gfid','agnid','atid','tid','about','topic_id','goods_id');
+		$keys = array('gid','vid','gvid','guid','goid','gnid','gfid','agnid','atid','tid','about','topic_id','goods_id','v3share');
 		$response = null;
 		foreach($keys as $key){
 			if(isset($params[$key])){
 				switch($key){
 					case 'gid'://游戏
 						$response =  self::shareToGame($params[$key]);
-						break;
+						break 2;
 					case 'vid'://视频
 						$response =  self::shareToVideo($params[$key]);
-						break;
+						break 2;
 					case 'gvid'://游戏视频
 						$response = self::shareToGameVideo($params[$key]);
-						break;
+						break 2;
 					case 'guid'://攻略
 						$response =  self::shareToGuide($params[$key]);
-						break;
+						break 2;
 					case 'gnid'://新闻
 						$response =  self::shareToNews($params[$key]);
-						break;
+						break 2;
 					case 'gfid'://礼包
 						$response =  self::shareToGiftbag($params[$key]);
-						break;
+						break 2;
 					case 'agnid'://新游预告
 						$response = self::shareToNewGame($params[$key]);
-						break;
+						break 2;
 					case 'goid'://评测
 						$response =  self::shareToOpinion($params[$key]);
-						break;
+						break 2;
 					case 'tid'://专题
 						$response =  self::shareToSpecial($params[$key]);
-						break;
+						break 2;
 					case 'about'://
 						$response =  self::shareToAbout();
-						break;
+						break 2;
 					case 'topic_id'://帖子
 						$response =  self::shareToTopic($params[$key]);
-						break;
+						break 2;
 					case 'goods_id'://商品
 						$response =  self::shareToGoods($params[$key]);
-						break;
+						break 2;
 					case 'atid'://活动
 						$response =  self::shareToActivity($params[$key]);
-						break;
+						break 2;
+					case 'v3share':
+						$response = self::shareToV3Activity($params);
+						break 2;
 					default:
 						$response =  self::shareToAbout();
-						break;
+						break 2;
 				}
 			}
 		}
@@ -245,7 +251,7 @@ class ShareService extends BaseService
 	 */
     public static function shareToTopic($topic_id)
     {
-    	$json = file_get_contents('http://10.161.181.86:8080/module_forum/topic_detail?tid='.$topic_id);
+    	$json = file_get_contents(Config::get('app.bbs_api_url').'topic_detail?tid='.$topic_id);
     	if(!$json) return self::trace_error('E1','帖子不存在');
     	$json = json_decode($json,true);
     	if($json['errorCode']!='0') return self::trace_error('E1','帖子不存在');
@@ -325,7 +331,7 @@ class ShareService extends BaseService
 	 */
     public static function shareToGoods($goods_id)
     {
-    	$json = file_get_contents('http://10.161.181.86:8080/module_mall/product/query_product?id='.$goods_id);
+    	$json = file_get_contents(Config::get('app.mall_api_url').'product/query_product?id='.$goods_id);
     	if(!$json) return self::trace_error('E1','商品不存在');
     	$json = json_decode($json,true);
     	if($json['errorCode']!='0') return self::trace_error('E1','商品不存在');
@@ -373,4 +379,20 @@ class ShareService extends BaseService
     	if($out===false) return self::trace_error('E1','模板解析错误');
     	return self::trace_result(array('result'=>$out));
     }
+
+	/**
+	 * @param $params
+	 * @return \Illuminate\Http\JsonResponse|\Symfony\Component\HttpFoundation\JsonResponse
+	 */
+	public static function shareToV3Activity($params)
+	{
+		$out = array();
+		$aid = $params['v3share'];
+		$uid = $params['uid'];
+		$sharetype = $params['sharetype'];
+		$taskId = $params['taskId'];
+		//$deviceId = $params[''];
+		$out = VariationService::getV3ShareContent($aid,$uid,$sharetype,$taskId);
+		return self::trace_result(array('result'=>$out));
+	}
 }

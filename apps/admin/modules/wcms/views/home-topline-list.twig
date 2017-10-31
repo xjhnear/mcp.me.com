@@ -26,6 +26,7 @@
 							<th>标题</th>							
 							<th class="col-120">时间</th>
 							<th class="col-120">排序</th>
+							<th class="col-100">最后修改人</th>
 							<th class="table-btn-group">操作</th>
 						</tr>
 					</thead>
@@ -37,6 +38,11 @@
 							<td><a href="<!--{{item.url}}-->" target="_blank"><!--{{item.title}}--></a></td>							
 							<td><!--{{item.publishTime|date('Y-m-d H:i')}}--></td>
 							<td><!--{{item.up}}--></td>							
+							<td>
+								<div style="width:80px; white-space:nowrap;text-overflow:ellipsis;overflow:hidden; ">
+									<span title='<!--{{item.userName}}-->'><!--{{item.userName}}--></span>
+								</div>
+							</td>
 							<td>
 							    <a href="<!--{{url('wcms/home/topline-delete')}}-->?idx=<!--{{item.idx}}-->" class="btn btn-primary ajax-del">删除</a>					    							    								
 							</td>

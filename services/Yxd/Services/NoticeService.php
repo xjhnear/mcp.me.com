@@ -3,6 +3,15 @@ namespace Yxd\Services;
 use Yxd\Modules\Activity\GiftbagService;
 use Yxd\Modules\Message\PromptService;
 use Illuminate\Support\Facades\DB;
+
+use Yxd\Services\Models\SystemMessage;
+use Yxd\Services\Models\SystemMessageTpl;
+use Yxd\Services\Models\SystemSetting;
+use Yxd\Services\Models\SystemUserMessage;
+use Yxd\Services\Models\SystemUserMessageDeleted;
+use Yxd\Services\Models\SystemUserMessageReaded;
+use Yxd\Services\Models\ChatLog;
+
 /**
  * 通知服务
  */
@@ -48,8 +57,10 @@ class NoticeService extends Service
 		$user = UserService::getUserInfo($uid);
 		$last = isset($user['dateline']) ? $user['dateline'] : time();
 		
-		$key = 'message::deleted::system::uid' . $uid;
-		$del_ids = self::redis()->smembers($key);
+		//$key = 'message::deleted::system::uid' . $uid;
+		//$del_ids = self::redis()->smembers($key);
+		
+		$del_ids = SystemUserMessageDeleted::db()->where('uid','=',$uid)->lists('msg_id');
 		
 		$list = self::buildList($uid,$last,$del_ids)
 			->orderBy('istop','desc')
@@ -62,7 +73,7 @@ class NoticeService extends Service
 	
 	protected static function buildList($uid,$last,$del_ids)
 	{
-		$tb = self::dbClubSlave()->table('system_message')
+		$tb = SystemMessage::db()
 			->where(function($query)use($uid){
 			    $query = $query->where('to_uid','=',0)->orWhere('to_uid','=',$uid);
 			})
@@ -78,7 +89,7 @@ class NoticeService extends Service
 	{
 		$user = UserService::getUserInfo($uid);
 		$last = isset($user['dateline']) ? $user['dateline'] : time();
-		$ids = DB::table('system_message')
+		$ids = SystemMessage::db()
 			->where(function($query)use($uid){
 			    $query = $query->where('to_uid','=',0)->orWhere('to_uid','=',$uid);
 			})
@@ -87,9 +98,7 @@ class NoticeService extends Service
 		//$key = 'message::system::uid' . $uid;
 		//$all = self::redis()->smembers($key);
 		
-		$all = self::dbClubMaster()->table('system_user_message')->where('uid','=',$uid)->lists('msg_id');
-		print_r($ids);
-		print_r($all);exit;
+		$all = SystemUserMessageReaded::db()->where('uid','=',$uid)->where('is_read','=',0)->lists('msg_id');
 		$total = array_diff($ids,$all);
 		return is_array($total) ? count($total) : 0;
 	}
@@ -98,8 +107,12 @@ class NoticeService extends Service
 	{
 		//$key = 'message::system::uid' . $uid;
 		//self::redis()->sadd($key,$id);
-		$exists = self::dbClubMaster()->table('system_user_message')->where('uid','=',$uid)->where('msg_id','=',$id)->first();
-		!$exists && self::dbClubMaster()->table('system_user_message')->insert(array('uid'=>$uid,'msg_id'=>$id));
+		$exists = SystemUserMessageReaded::db()->where('uid','=',$uid)->where('msg_id','=',$id)->first();
+		if($exists){
+			SystemUserMessageReaded::db()->where('id','=',$exists['id'])->update(array('is_read'=>1));
+		}else{
+			SystemUserMessageReaded::db()->insert(array('uid'=>$uid,'msg_id'=>$id,'is_read'=>1));
+		}
 	}
 	
 	public static function isReadSystemMsg($uid,$id)
@@ -107,7 +120,7 @@ class NoticeService extends Service
 		//$key = 'message::system::uid' . $uid;
 		//$all = self::redis()->smembers($key);
 		
-		$all = self::dbClubMaster()->table('system_user_message')->where('uid','=',$uid)->lists('msg_id');
+		$all = SystemUserMessageReaded::db()->where('uid','=',$uid)->where('is_read','=',1)->lists('msg_id');
 		
 		return in_array($id,$all) ? 0 : 1;
 		
@@ -117,7 +130,7 @@ class NoticeService extends Service
 	{
 		//$key = 'message::system::uid' . $uid;
 		//$all = self::redis()->smembers($key);
-		$all = self::dbClubMaster()->table('system_user_message')->where('uid','=',$uid)->lists('msg_id');
+		$all = SystemUserMessageReaded::db()->where('uid','=',$uid)->where('is_read','=',1)->lists('msg_id');
 		return $all;
 	}
 	
@@ -126,8 +139,10 @@ class NoticeService extends Service
 	 */
 	public static function deleteNotice($mid,$uid)
 	{
-		$key = 'message::deleted::system::uid' . $uid;
-		self::redis()->sadd($key,$mid);
+		//$key = 'message::deleted::system::uid' . $uid;
+		//self::redis()->sadd($key,$mid);
+		$exists = SystemUserMessageDeleted::db()->where('uid','=',$uid)->where('msg_id','=',$mid)->first();
+		!$exists && SystemUserMessageDeleted::db()->insert(array('uid'=>$uid,'msg_id'=>$mid));
 	}
 	
 	/**
@@ -157,8 +172,7 @@ class NoticeService extends Service
 		    'huntMsg'=>0,
 		    'shopMsg'=>0,
 		    'myPrizeMsg'=>0
-		);
-		//return $out;	
+		);	
 		return PromptService::getMsgNum($uid,$type);
 		$key_last_gettime_chat = 'message::chat::lastgettime_' . $uid;//聊天:4
 		$key_last_gettime_feedback = 'message::feedback::lastgettime_' . $uid;//反馈:5		
@@ -189,7 +203,7 @@ class NoticeService extends Service
 		}else{
 			$last = self::redis()->get($key_last_gettime_feedback) ? : time();
 		}
-		$feedback = self::dbClubSlave()->table('chat_log')->where('to_uid','=',$uid)->where('from_uid','=',1)->where('addtime','>=',$last)->count();
+		$feedback = ChatLog::db()->where('to_uid','=',$uid)->where('from_uid','=',1)->where('addtime','>=',$last)->count();
 		$out['myfeedbackMsg'] = $feedback;//反馈消息数量	
 		/*				
 		$out['activityMsg'] = PromptService::getMyActivityMsgNum($uid,$type==7 ? true : false);//新活动消息数量7

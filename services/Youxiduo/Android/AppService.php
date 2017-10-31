@@ -16,6 +16,7 @@ use Youxiduo\Base\BaseService;
 use Youxiduo\System\Model\AppConfig;
 use Yxd\Modules\System\SettingService;
 use Youxiduo\Android\Model\UserDevice;
+use Youxiduo\Message\YouPushService;
 
 class AppService extends BaseService
 {
@@ -62,6 +63,9 @@ class AppService extends BaseService
 	
 	public static function recordUserDevice($uid,$deviceId,$channelId,$idcode)
 	{
+		if(!$uid) return self::trace_result(array('result'=>true));
+		YouPushService::recordUserDevice($uid,$channelId);
+		return self::trace_result(array('result'=>true));
 		//$exists = UserDevice::db()->where('uid','=',$uid)->where('device_id','=',$deviceId)->where('channel_id','=',$channelId)->where('idcode','=',$idcode)->first();
 		$exists = UserDevice::db()->where('uid','=',$uid)->first();
 		if($exists){

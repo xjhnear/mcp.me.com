@@ -7,6 +7,11 @@ use Yxd\Services\CircleFeedService;
 
 use Yxd\Modules\Activity\GiftbagService;
 use Yxd\Services\Cms\GameService;
+use Yxd\Services\Models\SystemMessage;
+use Yxd\Services\Models\SystemUserMessageDeleted;
+use Yxd\Services\Models\SystemUserMessageReaded;
+use Yxd\Services\Models\SystemUserMessage;
+use Yxd\Services\Models\Account;
 
 use Yxd\Modules\Core\BaseService;
 
@@ -73,7 +78,7 @@ class PromptService extends BaseService
 		$chatMsgNum = is_array($result[4]) ? count($result[4]) : 0;
 		$last = ((int)$result[5]) ? : time();
 		$feedbackMsgNum = ChatService::getNotReadFeedbackNum($uid, $last);
-		$all = self::dbClubMaster()->table('system_user_message_readed')->where('uid','=',$uid)->lists('msg_id');
+		$all = SystemUserMessageReaded::db()->where('uid','=',$uid)->lists('msg_id');
 		$systemMsgNum = PromptService::getNotReadSystemNum($uid, $all,$type==6 ? true : false);
 		$activityMsgNum = (int)$result[7];
 		$hotgiftbagMsgNum = (int)$result[8];
@@ -102,7 +107,7 @@ class PromptService extends BaseService
 	{
 		$user = UserService::getUserInfo($uid);
 		$last = isset($user['dateline']) ? $user['dateline'] : time();
-		$ids = self::dbClubSlave()->table('system_message')->where('is_read','=',0)
+		$ids = SystemMessage::db()->where('is_read','=',0)
 			->where(function($query)use($uid){
 			    $query = $query->where('to_uid','=',0)->orWhere('to_uid','=',$uid);
 			})
@@ -115,7 +120,7 @@ class PromptService extends BaseService
 				$data[] = array('uid'=>$uid,'msg_id'=>$msg_id,'is_read'=>0);
 			}
 			if($data){
-				self::dbClubMaster()->table('system_user_message_readed')->insert($data);
+				SystemUserMessageReaded::db()->insert($data);
 			}
 		}
 		return is_array($total) && $reset==false ? count($total) : 0;
@@ -358,7 +363,7 @@ class PromptService extends BaseService
 			switch($type)
 			{
 				case 'activity':
-					$uids = self::dbClubSlave()->table('account')->where('vuser','=',0)->lists('uid');
+					$uids = Account::db()->where('vuser','=',0)->lists('uid');
 					foreach($uids as $uid){
 						self::addMyActivityMsgNum($uid);
 					}
@@ -387,7 +392,7 @@ class PromptService extends BaseService
 			        
 					break;
 				case 'hotgift':
-					$uids = self::dbClubSlave()->table('account')->where('vuser','=',0)->lists('uid');
+					$uids = Account::db()->where('vuser','=',0)->lists('uid');
 					$giftbag = GiftbagService::getInfo($data['data']['giftbag_id']);
 					self::queue()->rpush('queue:hotgift:msg:user:'.$today,serialize($data));
 					if($giftbag['is_hot']){
@@ -397,13 +402,13 @@ class PromptService extends BaseService
 					}
 					break;
 				case 'hunt':
-					$uids = self::dbClubSlave()->table('account')->where('vuser','=',0)->lists('uid');
+					$uids = Account::db()->where('vuser','=',0)->lists('uid');
 			       foreach($uids as $uid){
 						self::addMyHuntMsgNum($uid);
 					}
 					break;
 				case 'shop':
-					$uids = self::dbClubSlave()->table('account')->where('vuser','=',0)->lists('uid');
+					$uids = Account::db()->where('vuser','=',0)->lists('uid');
 			        foreach($uids as $uid){
 							self::addMyShopMsgNum($uid);
 					}			       

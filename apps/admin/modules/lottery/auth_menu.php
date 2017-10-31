@@ -3,7 +3,7 @@ return array(
     'module_name'  => 'lottery',
     'module_alias' => '代充抽奖',
     'module_icon'  => 'android',
-    'default_url'=>'lottery/inscharge/search',
+    'default_url'=>'lottery/inscharge/activity-search',
     'child_menu' => array(
         array('name'=>'活动列表','url'=>'lottery/inscharge/activity-search'),
         array('name'=>'抽奖列表','url'=>'lottery/inscharge/lottery-search'),

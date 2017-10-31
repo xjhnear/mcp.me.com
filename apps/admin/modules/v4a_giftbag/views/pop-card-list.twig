@@ -34,7 +34,7 @@
 			<td><!--{{item.cardUsedStock}}--></td>
 			<td id="can_use_<!--{{item.id}}-->"><!--{{item.can_use}}--></td>
 			<td>
-				<a href="javascript:void(0);" data-id="<!--{{item.id}}-->" class="btn btn-primary select-cate-id">选择</a>
+				<a href="javascript:void(0);" data-id="<!--{{item.id}}-->" gid="<!--{{item.gid}}-->" card_img="<!--{{item.imgPath.listPic}}-->" class="btn btn-primary select-cate-id">选择</a>
 			</td>
 		</tr>
 		<!--{%endfor%}-->
@@ -67,6 +67,8 @@
 						card_desc = $('#card_desc_'+card_id).text(),
 						card_stock = $('#card_stock_'+card_id).text(),
 						can_use = $('#can_use_'+card_id).text();
+                card_img = $(this).attr('card_img');
+                prize_gid = $(this).attr('gid');
 				set_selected_card(card_code,card_desc,card_stock,can_use);
 				$.dialog.list['pop-card-list'].close();
 			});

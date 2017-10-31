@@ -34,12 +34,11 @@
                             <td><input id="userselect" name="uid" type="hidden" value="<!--{{search['uid']}}-->" class="bigdrop select2-offscreen" style="width:200px" tabindex="-1"></td>
 				            <td><button class="btn btn-teal">搜索</button></td>
                             <!--{% if taskType==3 %}-->
-                            <!--
-                            <td><button type="button" class="btn btn-teal" taskId="<!--{{taskId}}-->"  id="approval_success_all">一键全审</button></td>
-                            -->
+                            <td><button type="button" class="btn btn-teal" taskId="<!--{{taskId}}-->"  id="approval_success_all">一键全通过</button></td>
                             <!--{% endif %}-->
                             <td><button type="button" class="btn btn-teal" taskId="<!--{{taskId}}-->"  id="approval_by_hand">手动发奖</button></td>
                             <td><button type="button" class="btn btn-teal" taskId="<!--{{taskId}}-->"  id="release_task_stock">释放库存</button></td>
+                            <td><button type="button" class="btn btn-teal" taskId="<!--{{taskId}}-->"  id="check_all">批量审核</button></td>
 				        </tr>
 				    </table>
 				    </form>
@@ -57,7 +56,6 @@
                             <th class="col-80">奖励</th>
 							<th class="col-80">完成状态</th>
 							<th class="col-80">奖励状态</th>
-
 							<th class="col-100">参加时间</th>
                             <!--{% if taskType==3 %}-->
 							<th class="table-btn-group">操作</th>
@@ -78,13 +76,11 @@
                             </td>
                             <td><!--{{item.prizeInfo['prizeName']}}--></td>
 							<td><span class="badge badge-success taskStatus"><!--{%if item.taskStatus==-3%}-->参与超时<!--{%elseif item.taskStatus==-2%}-->重发<!--{%elseif item.taskStatus==-1%}-->进行中/审核中<!--{%elseif item.taskStatus==0%}-->参与中<!--{%elseif item.taskStatus==1%}-->完成<!--{%elseif item.taskStatus==2%}-->失败<!--{%endif%}--></span></td>
-
                             <td><!--{%if item.prizeStatus==0%}--><span class="badge  badge-important">未发奖</span><!--{%else%}--><span class="badge  badge-success">已发奖</span><!--{%endif%}--></td>
-
-                            <td><!--{{item.startTime|date('Y-m-d H:i:s')}}--></td>
+							<td><!--{{item.startTime|date('Y-m-d H:i:s')}}--></td>
                             <!--{% if taskType==3 %}-->
 							<td>
-							    <a href="javascript:void(0)" data-target="#exampleModal" taskStatus="<!--{{item.taskStatus}}-->" data-toggle="modal" uid="<!--{{item.uid}}-->" userTaskId="<!--{{item.userTaskId}}-->" taskId="<!--{{item.taskId}}-->" stepId="<!--{{item.stepId}}-->" uname='<!--{% if users[item.uid] %}--><span class="badge badge-info"><!--{{item.uid}}--></span><a href="<!--{{url('user/users/edit',{'id':item.uid})}}-->" target="_blank"><!--{{users[item.uid]['nickname']}}--></a><!--{% else %}--><span style="color: red; ">该用户已删除</span><!--{% endif %}-->' imgs="<!--{{item.picUrl}}-->" class="btn btn-primary b_button">查看截图</a>
+							    <a href="javascript:void(0)" data-target="#exampleModal" taskStatus="<!--{{item.taskStatus}}-->" data-toggle="modal" uid="<!--{{item.uid}}-->" userTaskId="<!--{{item.userTaskId}}-->" taskId="<!--{{item.taskId}}-->" stepId="<!--{{item.stepId}}-->" repeatCount="<!--{{item.repeatCount}}-->" uname='<!--{% if users[item.uid] %}--><span class="badge badge-info"><!--{{item.uid}}--></span><a href="<!--{{url('user/users/edit',{'id':item.uid})}}-->" target="_blank"><!--{{users[item.uid]['nickname']}}--></a><!--{% else %}--><span style="color: red; ">该用户已删除</span><!--{% endif %}-->' imgs="<!--{{item.picUrl}}-->" class="btn btn-primary b_button">查看截图</a>
                             </td>
                             <!--{% endif %}-->
 						</tr>
@@ -100,6 +96,39 @@
 	</div>
 </div>
 
+
+	<div id="dialog-confirm" style="display:none" >
+		<div class="box-content" style="width: 900px;">
+		<form action="<!--{{url('a_activity2/task/check')}}-->" id="check_form" method="POST">
+            <div class="modal-body" style="max-height: 500px;">
+            	<!--{%for item in datalist%}-->
+            	<div class="control-group">
+            	<input type="hidden" name="taskId" value="<!--{{item.taskId}}-->">
+            	<div class="form-group" style="line-height: 60px;">
+            		<lable id="b_name_all" style="float: left;"><span class="badge badge-info"><!--{{item.uid}}--></span><a href="<!--{{url('user/users/edit',{'id':item.uid})}}-->" target="_blank"><!--{{users[item.uid]['nickname']}}--></a></lable>
+		            <div class="controls" style="float: right;">
+		             	<input type="radio" name="check_type_<!--{{item.userTaskId}}-->" value="1" >任务失败
+		                <input type="radio" name="check_type_<!--{{item.userTaskId}}-->" value="2" >截图不符
+		                <input type="radio" name="check_type_<!--{{item.userTaskId}}-->" value="3" checked >审核通过
+		            </div>
+            	</div>
+            	<!--{%for picUrl in item.picUrlArr%}-->
+                	<div class="form-group img_list_all" style="text-align: center"><img style="min-width: 500px;" src="<!--{{picUrl|default('/static/img/wu_ss.gif')}}-->" border="1px solid"></div>
+                <!--{%endfor%}-->
+                <input type="hidden" name="userTaskId[]" value="<!--{{item.userTaskId}}-->">
+                </div>
+				<!--{%endfor%}-->
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary checked" id="check_success">提交结果</button>
+                <button type="button" class="btn btn-default" id="check_close" data-dismiss="modal">关闭</button>
+
+            </div>
+        </form>
+		</div>
+	</div>
+	
 <!--{#模态框#}-->
 <div class="modal fade" style="width: 900px; margin-left: -500px" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
     <div class="modal-dialog bs-example-modal-lg"  role="document">
@@ -126,6 +155,31 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close"
+				        data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+
+				</h4>
+			</div>
+			<div id="modal-footer" class="modal-footer">
+				<button type="button" class="btn btn-default"
+				        data-dismiss="modal">关闭
+				</button>
+				<a href="javascript:;" id="go_" class="btn btn-primary"> 确定</a>
+			</div>
+		  </div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
 <!--{%endblock%}-->
 
 <!--{%block footer_js%}-->
@@ -135,8 +189,6 @@ $(function(){
     var obj="";
     gameselect('#gameselect');
     userselect('#userselect');
-
-
     function load_img(ob){
         var taskStatus = ob.attr("taskStatus");
         if(taskStatus=="-2"||taskStatus=="1"||taskStatus=="2"){
@@ -144,6 +196,13 @@ $(function(){
         }else{
             $(".checked").removeAttr("disabled");
         }
+
+        var repeatCount = ob.attr("repeatCount");
+        //if(repeatCount > 0){
+        //    $("#approval_again").attr("disabled","disabled");
+        //}else{
+        //    $("#approval_again").removeAttr("disabled");
+        //}
 
         var imgs = ob.attr('imgs');
         var strs= new Array(); //定义一数组
@@ -154,7 +213,6 @@ $(function(){
         {
             $(".img_list").append('<img src="'+strs[i]+'" border="1px solid"/>')
         }
-
         obj = ob;
     }
 
@@ -163,10 +221,58 @@ $(function(){
             return false;
         }
     });
+
     $(".b_button").click(function(){
         load_img($(this));
     })
 
+		$("#check_all").bind('click',function(){
+			var html=$("#dialog-confirm").html(),url=$(this).attr("data-url"),goodsname=$(this).attr("goodsname"),goodsid=$(this).attr("goodsid");
+			$.dialog({id:'pop-fafang-html',title:'任务批量审核',padding:2,content:html,width:900,height:540});
+		    $("#check_success").click(function(){
+		        if(confirm("即将提交审核，是否继续？")){
+					$.ajax({
+				        url:"/a_activity2/task/check",
+				        data:$("#check_form").serialize(),
+				        type:"POST",
+				        dataType:"json",
+				        success:function(data){
+		                    if(data.success=="true"){
+		                       window.location.href=window.location.href;
+		                    }else{
+		                        alert(data.mess);
+		                    }
+				        }
+				   });
+      
+		        }
+		    });
+		    $("#check_close").click(function(){
+		    	$.dialog.list['pop-fafang-html'].close();
+		    });
+			$("a.fafang_").bind('click',function(){
+				$("#uids").removeAttr("readonly");
+				var uids=$("#myuids").val();
+				var ff_type=$("input[name='ff_type']:checked").val();
+				var ff_boject=$("input[name='ff_boject']:checked").val();
+				var ff_count=$("input[name='ff_count']:checked").val();
+				var ff_time=$("#ff_time").val();
+				var ff_starttime=$("#ff_starttime").val();
+				var ff_endtime=$("#ff_endtime").val();
+				var cc_starttime=$("#cc_starttime").val();
+				var cc_endtime=$("#cc_endtime").val();
+				$.get(url,{uids:uids,goodsname:goodsname,goodsid:goodsid,ff_type:ff_type,ff_boject:ff_boject,ff_count:ff_count,ff_time:ff_time,ff_starttime:ff_starttime,ff_endtime:ff_endtime,cc_starttime:cc_starttime,cc_endtime:cc_endtime},function(data){
+					if(data.errorCode==2){
+						alert("发放成功");
+						setTimeout(function(){location.reload();},1000);
+					}else{
+						alert(data.errortxt);
+					}
+					$("#uids").attr("readonly");
+					$.dialog.list['pop-fafang-html'].close();
+				},"json");
+			});
+		});
 
     $("#next_one").click(function(){
         var old_obj = obj;

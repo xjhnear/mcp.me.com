@@ -2,7 +2,7 @@
 return array(
     'module_name'  => 'wxshare',
     'module_alias' => '微信分享',
-    'default_url'=>'wxshare/activity/index',
+    'default_url'=>'wxshare/activity/list',
     'child_menu' => array(
        array('name'=>'活动管理','url'=>'wxshare/activity/list'),
        array('name'=>'礼包管理','url'=>'wxshare/giftbag/list'),

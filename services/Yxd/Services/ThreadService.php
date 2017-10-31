@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Yxd\Models\Thread;
 use Yxd\Models\Forum;
+use Yxd\Services\SyncToV4ForumService;
+
+use Yxd\Services\Models\ForumTopic;
 /**
  * 论坛主题帖服务
  */
@@ -84,13 +87,15 @@ class ThreadService extends Service
 		$format_message = ForumUtility::formatTopicMessage($obj);
 		$thread['message'] = $message;
 		$thread['format_message'] = $format_message;
-		$tid = self::dbClubMaster()->table('forum_topic')->insertGetId($thread);
+		$tid = ForumTopic::db()->insertGetId($thread);
 		if($tid){
 			//问答帖游币
 			if($topic['ask'] && $topic['award']){
 				CreditService::handOpUserCredit($topic['uid'], (0-(int)$topic['award']), 0, 'topic_post_ask','发布问答求助帖消费'.$topic['award'].'游币');
 			}
 			$out = Thread::getFullTopic($tid);
+			//同步到V4
+			SyncToV4ForumService::syncTopic($tid,'add');
 			//触发发帖事件
 			Event::fire('topic.post',array(array($out)));
 			//AT好友
@@ -159,18 +164,23 @@ class ThreadService extends Service
 		$thread['ask'] = $data['cid'] == 2 ? 1 : 0;		
 		$thread['dateline'] = (int)microtime(true);
 		$thread['lastpost'] = (int)microtime(true);
-		$tid = self::dbClubMaster()->table('forum_topic')->insertGetId($thread);
+		$tid = ForumTopic::db()->insertGetId($thread);
 		return $tid;
 	}
 	
 	public static function doDelete($tid,$uid)
 	{
-		return self::dbClubMaster()->table('forum_topic')->where('tid','=',$tid)->where('author_uid','=',$uid)->update(array('displayorder'=>-1));
+		$result = ForumTopic::db()->where('tid','=',$tid)->where('author_uid','=',$uid)->update(array('displayorder'=>-1,'is_sync'=>0));
+		if ($result) {
+		    //同步到V4
+		    SyncToV4ForumService::syncTopic($tid,'delete');
+		}
+		return $result;
 	}
 	
 	public static function isDeleted($tid)
 	{
-		$topic = self::dbClubSlave()->table('forum_topic')->where('tid','=',$tid)->select('tid')->where('displayorder','=',1)->first();
+		$topic = ForumTopic::db()->where('tid','=',$tid)->select('tid')->where('displayorder','=',1)->first();
 		return $topic ? false : true;
 	}
 	
@@ -179,6 +189,6 @@ class ThreadService extends Service
 	 */
 	public static function updateLikes($tid)
 	{
-		return self::dbClubMaster()->table('forum_topic')->where('tid','=',$tid)->increment('likes');
+		return ForumTopic::db()->where('tid','=',$tid)->increment('likes');
 	}
 }

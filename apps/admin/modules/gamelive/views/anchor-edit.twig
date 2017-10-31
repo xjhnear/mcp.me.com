@@ -20,7 +20,7 @@
                         <label class="control-label">主播名字<i class="tip-star">*</i></label>
                         <div class="controls">
                             <div class=" input-append">
-                                <input type="text" name="name" class="input-xxlarge" value="<!--{{anchor.name}}-->" />
+                                <input type="text" name="name" class="input-xxlarge" data-rule-required="true" data-msg-required="请填写名字" value="<!--{{anchor.name}}-->" />
                             </div>
                         </div>
                     </div>
@@ -114,6 +114,46 @@
                             <div id="div-imgs" class="img-list-wrap"></div>
                         </div>
                     </div>
+                    <div class="control-group">
+                        <label class="control-label">轮播图片 <span class="add_img badge badge-info" >添加</span> </label>
+                        <!--{% if imgs %}-->
+                        <!--{%for item in imgs%}-->
+                        <div class="controls" >
+                            <div data-provides="fileupload" class="fileupload fileupload-new">
+                                <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                    <a href="#bigimg" data-toggle="modal"><img id="selected_game_icon" src="<!--{{item|default('/static/img/wu_ss.gif')}}-->"></a>
+                                </div>
+                                <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                                <span class="btn btn-file"><i class="icon-picture"></i>
+                                    <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                                    <input id="task_img" name="img[]" type="hidden" value="<!--{{item}}-->"/>
+                                    <input type="file"  name="picFile[]" >
+                                </span>
+                                <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                                <input type="button" class="del_img" value="删除"/>
+                            </div>
+                        </div>
+                        <!--{%endfor%}-->
+                        <!--{% else %}-->
+                        <div class="controls" >
+                            <div data-provides="fileupload" class="fileupload fileupload-new">
+                                <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                    <a href="#bigimg" data-toggle="modal"><img id="selected_game_icon" src="<!--{{data.picUrl|default('/static/img/wu_ss.gif')}}-->"></a>
+                                </div>
+                                <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                                <span class="btn btn-file"><i class="icon-picture"></i>
+                                    <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                                    <input id="task_img" name="img[]" type="hidden" value="<!--{{data.picUrl}}-->"/>
+                                    <input type="file"  name="picFile[]" >
+                                </span>
+                                <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                                <input type="button" class="del_img" value="删除"/>
+                            </div>
+                        </div>
+                        <!--{% endif %}-->
+                    </div>
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
                     </div>
@@ -130,6 +170,8 @@
 <script src="<!--{{asset('/static/js/plugins/plupload/plupload.full.min.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/plugins/plupload/jquery.plupload.queue/jquery.plupload.queue.min.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
 <script>
     var multi_upload = function(plupload,div_select,div_imgs,image_input_name,image_data){
         var self = this;
@@ -227,6 +269,30 @@
         var image_data = <!--{{pics}}-->;
         //var preview_html = '';
         multi_upload('#pic-plupload',div_select,div_imgs,image_input_name,image_data);
+
+        $(".add_img").click(function(){
+            $(this).parent().parent().append('<div class="controls">\
+            <div data-provides="fileupload" class="fileupload fileupload-new">\
+            <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">\
+            <a href="#bigimg" data-toggle="modal"><img id="selected_game_icon" src="<!--{{data.picUrl|default('/static/img/wu_ss.gif')}}-->"></a>\
+            </div>\
+            <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>\
+            <span class="btn btn-file"><i class="icon-picture"></i>\
+            <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>\
+            <input id="task_img" name="img[]" type="hidden" value="<!--{{data.picUrl}}-->"/>\
+            <input type="file"  name="picFile[]" >\
+            </span>\
+            <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>\
+            <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>\
+            <input type="button" class="del_img" value="删除"/>\
+            </div>\
+            </div>');
+        });
+        $(".del_img").live('click',function(){
+            if(confirm("确定删除吗？")){
+                $(this).parent().parent().remove();
+            }
+        });
     });
 </script>
 <!--{%endblock%}-->

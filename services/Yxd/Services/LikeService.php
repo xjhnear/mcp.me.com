@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Input;
 use Yxd\Services\Service;
 use Yxd\Services\Cms\GameService;
 use Yxd\Models\Cms\Game;
+use Yxd\Services\Models\Games;
+use Yxd\Services\Models\Like;
+use Yxd\Services\Models\LikeLogs;
+use Yxd\Services\Models\AccountFollow;
 
 class LikeService extends Service
 {
@@ -31,9 +35,9 @@ class LikeService extends Service
 		$like_type = Config::get('yxd.like_type');
 		$table = $like_type[$type];		
 		
-		$f_uids = DB::table('account_follow')->where('uid','=',$uid)->lists('fuid');
-		$total = self::dbClubSlave()->table('like')->where('target_id','=',$id)->where('target_table','=',$table)->count();
-		$uids = self::dbClubSlave()->table('like')
+		$f_uids = AccountFollow::db()->where('uid','=',$uid)->lists('fuid');
+		$total = Like::db()->where('target_id','=',$id)->where('target_table','=',$table)->count();
+		$uids = Like::db()
 		->where('target_id','=',$id)
 		->where('target_table','=',$table)
 		->orderBy('ctime','desc')
@@ -72,7 +76,7 @@ class LikeService extends Service
 				return -1;
 			}
             */
-            $like =  self::dbClubSlave()->table('like_logs')->where('key','=',$key)->first();
+            $like =  LikeLogs::db()->where('key','=',$key)->first();
             if($like){
                 return -1;
             }
@@ -85,7 +89,7 @@ class LikeService extends Service
 		$data['target_id'] = $tid;
 		$data['target_table'] = $table;
 		$data['ctime'] = time();
-		$id = self::dbClubMaster()->table('like')->insertGetId($data);
+		$id = Like::db()->insertGetId($data);
 		if($table == 'topic'){
 			ThreadService::updateLikes($tid);
 		}
@@ -99,7 +103,7 @@ class LikeService extends Service
                 'ctime'=>time(),
                 'num'=>1
             );
-            self::dbClubMaster()->table('like_logs')->insert($log);
+            LikeLogs::db()->insert($log);
         }
 		return $id ? true : false;
 	}
@@ -111,7 +115,7 @@ class LikeService extends Service
 	{
 		$like_type = Config::get('yxd.like_type');
 		$table = $like_type[$type];
-		$count = self::dbClubSlave()->table('like')->where('target_id','=',$id)->where('uid','=',$uid)->where('target_table','=',$table)->count();
+		$count = Like::db()->where('target_id','=',$id)->where('uid','=',$uid)->where('target_table','=',$table)->count();
 		if($count>0) return true;
 		
 	    $user_identify = UserService::getUserAppleIdentify($uid);
@@ -122,7 +126,7 @@ class LikeService extends Service
 				return true;
 			}
             */
-            $like =  self::dbClubSlave()->table('like_logs')->where('key','=',$key)->first();
+            $like =  LikeLogs::db()->where('key','=',$key)->first();
             if($like){
                 return true;
             }

@@ -1,0 +1,61 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    批量管理
+                </h3>
+                <div class="actions">
+                    <table class="table-filter">
+                        <tr>
+                            <td><a href="<!--{{url('v4system/kvsetting/edit')}}-->" class="btn btn-teal">添加</a></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin" style="table-layout: fixed;">
+                    <thead>
+                    <tr>
+                        <th class="col-60">ID</th>
+                        <th class="col-150">类型</th>
+                        <th class="col-80">内容</th>
+                        <th class="col-80">描述</th>
+                        <th class="col-80">版本</th>
+                        <th class="table-btn-group">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for item in datalist%}-->
+                    <tr>
+                        <td><!--{{item.incrementalId}}--></td>
+                        <td><!--{{item.configType}}--></td>
+                        <td style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"><!--{{item.configValue}}--></td>
+                        <td><!--{{item.configDesc}}--></td>
+                        <td><!--{{item.version}}--></td>
+                        <td>
+                            <a href="<!--{{url('v4system/kvsetting/edit',{id:item.incrementalId})}}-->" class="btn btn-primary">编辑</a>
+                        </td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+    $(function() {
+        gameselect('#gameselect');
+    });
+</script>
+<!--{%endblock%}-->

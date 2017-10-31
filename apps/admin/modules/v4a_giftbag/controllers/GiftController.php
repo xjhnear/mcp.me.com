@@ -12,7 +12,7 @@ use Youxiduo\Imall\ProductService;
 use Youxiduo\MyService\CheckService;
 use Youxiduo\V4\Game\GameService;
 use Yxd\Modules\Core\BackendController;
-
+use Youxiduo\Helper\MyHelpLx;
 use Illuminate\Support\Facades\Response;
 use libraries\Helpers;
 
@@ -100,6 +100,58 @@ class GiftController extends BackendController
 		return $this->display('gift/gift-list',$data);
 	}
 
+    /**视图 获取礼包列表**/
+    public function getGiftSelect()
+    {
+        $data = array();
+        $page = Input::get('page',1);
+        $pageSize = 5;
+        $search = array(
+            'productType' => 2,
+            'pageIndex' => $page,
+            'pageSize' => $pageSize,
+            'sortType' => 'Create_Time',
+            'signer' => parent::getSessionUserUid()
+        );
+        if(Input::get('keyword')){
+            $data['keyword']=$search['productName']=Input::get('keyword');
+        }
+        if(Input::get('productName')){
+            $data['keyword']=$search['productName']=Input::get('productName');
+        }
+        $res = ProductService::searchProductList($search,self::GENRE,'gift');
+//        print_r($res);
+        if(!$res['errorCode']&&$res['result']){
+            $total = $res['totalCount'];
+            $data['list'] = $res['result'];
+        }else{
+            $total = 0;
+            $data['list']= array();
+        }
+//        print_r($data['list']);
+        $data['pagelinks'] = MyHelpLx::pager_new(array(),$total,$pageSize,$search);
+        $data['search'] = $search;
+        $html = $this->html('pop-list',$data);
+        return $this->json(array('html'=>$html));
+    }
+
+    /**
+     * 处理接口返回数据
+     * @param $result
+     * @param $data
+     * @param int $pagesize
+     * @return
+     */
+    private static function processingInterface($result,$data,$pagesize=10){
+        $pager = Paginator::make(array(),!empty($result['totalCount'])?$result['totalCount']:0,$pagesize);
+
+        unset($data['pageIndex']);
+        $pager->appends($data);
+
+        $data['pagelinks'] = $pager->links();
+        $data['datalist'] = !empty($result['result'])?$result['result']:array();
+        return $data;
+    }
 	/**
 	 * 添加礼包
 	 */
@@ -166,6 +218,7 @@ class GiftController extends BackendController
 			'productSort' => $input['sort'],
 			'isNotice' => 'false',
             'isHot' => isset($input['isHot']) ? 'true' : false,
+            'isRecommend' => isset($input['isRecommend']) ? 'true' : 'false',
 			'isTop' => isset($input['is_top']) ? 'true' : false,
             'startTime' => date('Y-m-d H:i:s',strtotime($input['start_time'])),
             'endTime' => date('Y-m-d H:i:s',strtotime($input['end_time'])),
@@ -384,6 +437,7 @@ class GiftController extends BackendController
 			'productSort' => $input['sort'],
 			'isNotice' => 'false',
 			'isTop' => isset($input['is_top']) ? 'true' : 'false',
+            'isRecommend' => isset($input['isRecommend']) ? 'true' : 'false',
             'isHot' => isset($input['isHot']) ? 'true' : 'false',
             'startTime' => date('Y-m-d H:i:s',strtotime($input['start_time'])),
             'endTime' => date('Y-m-d H:i:s',strtotime($input['end_time'])),
@@ -461,6 +515,7 @@ class GiftController extends BackendController
         }
 
         //上架设定
+
         switch($input['shelf_set']){
             case '1': //上架
                 $params['isOnshelf'] = 'true';
@@ -543,6 +598,18 @@ class GiftController extends BackendController
         $hot = Input::get('hot',false);
         if(!$p_code) return $this->json(array('state'=>0,'msg'=>'数据错误'));
         $result = ProductService::updateProductextra(array('productCode'=>$p_code,'hot'=>$hot));
+        if(!$result['errorCode']){
+            return $this->json(array('state'=>1,'msg'=>'设置成功'));
+        }else{
+            return $this->json(array('state'=>0,'msg'=>'设置失败，请重试'));
+        }
+    }
+
+    public function getAjaxTop(){
+        $p_code = Input::get('p_code',false);
+        $top = Input::get('top',false);
+        if(!$p_code) return $this->json(array('state'=>0,'msg'=>'数据错误'));
+        $result = ProductService::updateProductextra(array('productCode'=>$p_code,'top'=>$top));
         if(!$result['errorCode']){
             return $this->json(array('state'=>1,'msg'=>'设置成功'));
         }else{
@@ -651,7 +718,7 @@ class GiftController extends BackendController
             unset($input['cardType']);
             $input['cardAmountStr']=0;
             if(Input::get('dataid') != ''){
-                $input['needQuota']='false';
+                $input['needQuota']='true';
                 $input['requestFrom']=Input::get('dataid');
             }
 

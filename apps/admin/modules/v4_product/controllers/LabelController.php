@@ -9,9 +9,11 @@
 namespace modules\v4_product\controllers;
 use libraries\Helpers;
 use Illuminate\Support\Facades\Config;
-use Yxd\Modules\Core\SuperController;
+
 use Illuminate\Support\Facades\Input;
 use Youxiduo\Helper\MyHelp;
+use Youxiduo\MyService\SuperController;
+
 class LabelController extends SuperController
 {
     const GENRE = 1;
@@ -21,42 +23,52 @@ class LabelController extends SuperController
     /**
      * 初始化
      */
-    public function _initialize()
+    public function __construct()
     {
         $this->current_module = 'v4_product';
-        $this->controller='label';
         //标签列表
         //http://test.open.youxiduo.com/doc/interface-info/866
-        $this->getListurl=Config::get(self::MALL_MML_API_URL).'productTag/get_product_tag_list';
+        $this->url_array['list_url']=Config::get(self::MALL_MML_API_URL).'productTag/get_product_tag_list';
         //添加标签
         //http://test.open.youxiduo.com/doc/interface-info/863
         //http://121.40.78.19:8080/module_mall/productTag/save_product_tag
-        $this->getAddurl=Config::get(self::MALL_MML_API_URL).'productTag/save_product_tag';
+        $this->url_array['post_add']=Config::get(self::MALL_MML_API_URL).'productTag/save_product_tag';
         //更新标签
         //http://test.open.youxiduo.com/doc/interface-info/864
         //http://121.40.78.19:8080/module_mall/productTag/update_product_tag
-        $this->getEditurl=Config::get(self::MALL_MML_API_URL).'productTag/update_product_tag';
+        $this->url_array['post_edit']=Config::get(self::MALL_MML_API_URL).'productTag/update_product_tag';
         //标签置顶
         //http://test.open.youxiduo.com/doc/interface-info/898
         //http://121.40.78.19:8080/module_mall/productTag/set_product_tag_sort_max
-        $this->url['top']=Config::get(self::MALL_MML_API_URL).'productTag/set_product_tag_sort_max';
-        $this->url['edit']=Config::get(self::MALL_MML_API_URL).'productTag/update_product_tag';
+        $this->url_array['set']['top']=Config::get(self::MALL_MML_API_URL).'productTag/set_product_tag_sort_max';
+        $this->url_array['set']['edit']=Config::get(self::MALL_MML_API_URL).'productTag/update_product_tag';
+        parent::__construct($this);
     }
 
-    protected function _getGlobalData($data=array(),$type='')
+    protected function AfterViewAdd($data)
     {
-        $data['productType']=array('游币商城','钻石商城');
+        $data['productType']=array('0'=>'游币商城','1'=>'钻石商城');
+        return $data;
+    }
+
+
+    protected function AfterViewEdit($data){
+        $data['data']=$data;
+        $data['productType']=array('0'=>'游币商城','1'=>'钻石商城');
         return $data;
     }
 
     //弹层查询label
-    public function  getLabelListSelect()
+    public function  getLabelListSelect($selected_categoryId='')
     {
-        $data = $params = array();
         $inputinfo=Input::all();
         $inputinfo['pageSize']=6;
         if(!empty($inputinfo['page'])) $inputinfo['pageIndex']=!empty($inputinfo['page'])?$inputinfo['page']:1;
-        $result=MyHelp::getdata($this->getListurl,$inputinfo);
+        if(!empty($selected_categoryId))
+            $inputinfo['categoryId']=$selected_categoryId;
+
+
+        $result=MyHelp::curldata($this->url_array['list_url'],$inputinfo,'GET');
         if($result['errorCode'] == 0){
             $data = MyHelp::processingInterface($result, $inputinfo, $inputinfo['pageSize']);
 

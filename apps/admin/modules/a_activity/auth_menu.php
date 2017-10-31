@@ -16,7 +16,8 @@ return array(
         array('name'=>'分享任务列表','url'=>'a_activity/atask/tlist?action_type=2'),
         array('name'=>'代充任务列表','url'=>'a_activity/atask/tlist?action_type=3'),
         array('name'=>'用户任务列表','url'=>'a_activity/atask/query-task-user'),
-        array('name'=>'签到任务说明','url'=>'a_activity/atask/agreement-edit'),           
+        array('name'=>'签到任务说明','url'=>'a_activity/atask/agreement-edit'),
+        array('name'=>'黑名单列表','url'=>'a_activity/atask/blacklist'),
     ),
     'extra_node'=>array(
         array('name'=>'全部活动模块','url'=>'a_activity/*')        

@@ -8,6 +8,7 @@ use Yxd\Modules\Core\BackendController;
 
 use Youxiduo\Helper\Utility;
 use modules\gamelive\models\Anchor;
+use Youxiduo\Helper\MyHelpLx;
 
 
 class AnchorController extends BackendController
@@ -39,6 +40,9 @@ class AnchorController extends BackendController
         $data['pics'] = json_encode(array());
         if($id){
             $result = Anchor::GetPeopleDetail($id);
+            if(isset($result['attr'])){
+                $data['imgs'] = explode(',',$result['attr']);
+            }
             $result['tags'] = implode(',',$result['tags']);
             $data['pics'] = json_encode($result['albums']);
             $data['anchor'] = $result;
@@ -90,11 +94,27 @@ class AnchorController extends BackendController
             $picAlbum = implode(';',$pics);
         }
 
+        $input = Input::all();
+        $img_arr = array();
+        if(isset($input['picFile'])) {
+            foreach ($input['picFile'] as $k => $v) {
+                if (empty($v)) {
+                    $img_arr[] = $input['img'][$k];
+                } else {
+                    $img_arr[] = MyHelpLx::save_img($v);
+                }
+            }
+        }
+        if($img_arr){
+            $imgs_attr = implode(',',$img_arr);
+        }else{
+            $imgs_attr = "";
+        }
         $result = false;
         if($id){
-            $result = Anchor::UpdatePeople($id,$name,$picUrl,$summary,$idx,$publishTime,null,null,$picAlbum,$thumbnail);
+            $result = Anchor::UpdatePeople($id,$name,$picUrl,$summary,$idx,$publishTime,null,null,$picAlbum,$thumbnail,$imgs_attr);
         }else{
-            $result = Anchor::CreatePeople($name,$picUrl,$summary,$idx,$publishTime,null,null,$picAlbum,$thumbnail);
+            $result = Anchor::CreatePeople($name,$picUrl,$summary,$idx,$publishTime,null,null,$picAlbum,$thumbnail,$imgs_attr);
         }
         if($result){
             return $this->redirect('gamelive/anchor/list');

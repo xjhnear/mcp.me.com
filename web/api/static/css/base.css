@@ -1,0 +1,30 @@
+﻿@CHARSET "UTF-8";
+
+body  { margin:0; font-family:"黑体"; background:#efeff4; color:#333333; }
+
+a                { text-decoration:none; color:#362e2b; cursor:pointer; }
+img              { border:none; } 
+ul,li,p,h1,h2,h3,dl,dt,dd { margin:0; padding:0; }
+ul,li            { list-style-type:none; }
+
+/* share */
+
+/* index */
+.register      { padding:0 13px 0 9px; }
+.register dt   { padding:40px 0; font-size:22px; text-align:center; }
+.register dd   { padding:5px 0; }
+.register .txt { width:100%; margin:0; text-indent:10px; height:40px; border:1px solid #e5e5e5; background:#fff; color:#787878; }
+.register .btn { margin:10px 0; border-radius:10px; height:36px; text-align:center; line-height:36px; display:block; background:#00aeef; color:#fff; }
+.register .ts  { font-size:12px; text-align:center; }
+.register .yx  { padding-left:10px; font-size:16px; color:#787878; }
+.register .btnQd { margin-top:30px; }
+.register .error { font-size:13px; text-align:center;color:#FF0000;}
+
+
+
+
+
+
+
+
+

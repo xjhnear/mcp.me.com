@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Config;
 class LotteryproductService extends BaseService{
     const API_URL_LOTTERY = 'app.module_lottery_api_url';//http://121.40.78.19:8080/module_lottery/
     const API_URL_WHEEL = 'app.module_wheel_api_url'; //http://121.40.78.19:8080/module_wheel
+
+    const API_URL_account = 'app.module_account_api_url';//http://121.40.78.19:48080
+
    
     //查询彩票信息 http://test.open.youxiduo.com/doc/interface-info/812
    	public static function  query_lottery($inputinfo,$params=array())
@@ -33,7 +36,7 @@ class LotteryproductService extends BaseService{
 
 	//大转盘方案查询接口 http://test.open.youxiduo.com/doc/interface-info/804
 	public static function detail_query($params=array())
-  {
+    {
 		return Utility::loadByHttp(Config::get(self::API_URL_WHEEL).'wheel/detail',$params,'GET');
 	}
 
@@ -65,12 +68,16 @@ class LotteryproductService extends BaseService{
   }  
   //更新字典常量 http://test.open.youxiduo.com/doc/interface-info/810 
   public static function update_dic($input){
-     return Utility::loadByHttp(Config::get(self::API_URL_LOTTERY).'admin/update_dic',$input,'HTMLFROM');
+     return Utility::loadByHttp(Config::get(self::API_URL_LOTTERY).'admin/update_dic',$input,'POST');
   }
   //大转盘获奖名单
   public static function querywin($input){
       return Utility::loadByHttp(Config::get(self::API_URL_WHEEL).'wheel/querywin',$input,'GET');
   }
+    //大转盘获奖名单导出
+    public static function export($input){
+        return Utility::loadByHttp(Config::get(self::API_URL_WHEEL).'wheel/export',$input,'GET');
+    }
   //删除大转盘奖品
   public static function delectDetail($input)
   {
@@ -90,6 +97,7 @@ class LotteryproductService extends BaseService{
   public static function wheel_update($input)
   {
        return Utility::loadByHttp(Config::get(self::API_URL_WHEEL).'wheel/update',$input,'POST');
+
   }
 
   //获奖用户补发奖 http://test.open.youxiduo.com/doc/interface-info/815
@@ -100,4 +108,37 @@ class LotteryproductService extends BaseService{
 
 
 
-}
+//天天彩游币管理, 大转盘游币管理   http://test.open.youxiduo.com/doc/interface-info/1403
+    //http://121.40.78.19:48080/module_account/account/statistics_yb
+
+
+  public static function statistics_yb($input)
+ {
+     return Utility::loadByHttp(Config::get(self::API_URL_account).'module_account/account/statistics_yb',$input,'GET');
+     
+
+   }
+
+
+    //钻石发放  http://121.40.78.19:48080/module_diamond//diamond/statistics_diamond
+    public static function statistics_diamond($input)
+    {
+        return Utility::loadByHttp(Config::get(self::API_URL_account).'module_diamond//diamond/statistics_diamond',$input,'GET');
+
+
+    }
+
+    public static function getConfig($input)
+    {
+        return Utility::loadByHttp(Config::get(self::API_URL_WHEEL).'/wheel/getConfig',$input,'GET');
+
+
+    }
+
+    public static function updateConfig($input)
+    {
+        return Utility::loadByHttp(Config::get(self::API_URL_WHEEL).'/wheel/updateConfig',$input,'POST');
+
+    }
+ }
+

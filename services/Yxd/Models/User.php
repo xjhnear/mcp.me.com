@@ -1,23 +1,44 @@
 <?php
 namespace Yxd\Models;
 
+use Illuminate\Support\Facades\Log;
 use Yxd\Modules\Core\CacheService;
 use Yxd\Modules\Core\BaseModel;
 use Illuminate\Support\Facades\DB;
 use Yxd\Services\TaskService;
+
+use Yxd\Services\Models\Account;
+use Yxd\Services\Models\AccountPage;
+use Yxd\Services\Models\AccountCreditHistory;
+use Yxd\Services\Models\CreditAccount;
+use Yxd\Services\Models\AccountGroupLink;
+use Yxd\Services\Models\CreditLevel;
+use Yxd\Services\Models\CreditSetting;
+use Youxiduo\Helper\Utility;
+use Illuminate\Support\Facades\Config;
+
 class User extends BaseModel
 {
+    const MALL_API_ACCOUNT = 'app.account_api_url';
 	/*
 	 * 检查用户是否存在
 	 */
 	public static function checkUserById($uid)
 	{
-		return DB::table('account')->where('uid', $uid)->count();
+		return Account::db()->where('uid', $uid)->count();
 	}
 	//获取用户游币的值
 	public static function getScore($uid)
 	{
-		$res = DB::table('credit_account')->where('uid', $uid)->first();
+	    //迁移后游币获取
+	    $params = array('accountId'=>$uid,'platform'=>'ios');
+	    $params_ = array('accountId','platform');
+	    $new = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/query');
+	    if ($new['result']) {
+	        return isset($new['result'][0]['balance']) ? $new['result'][0]['balance'] : 0;
+	    }
+	    
+		$res = CreditAccount::db()->where('uid', $uid)->first();
 		return $res['score'];
 	}
 	
@@ -62,26 +83,53 @@ class User extends BaseModel
 		}
 		$account['dateline'] = (int)microtime(true);
 		$account['zhucema'] = self::getZhucema();
-		$uid = DB::table('account')->insertGetId($account);
+		$account['reg_ip'] = self::getIp();
+		$uid = Account::db()->insertGetId($account);
 		if($uid){
 			$user['uid'] = $uid;
-			DB::table('account_group_link')->insert(array('uid'=>$uid,'group_id'=>5));
+			AccountGroupLink::db()->insert(array('uid'=>$uid,'group_id'=>5));
 			if(!isset($account['nickname']) || empty($account['nickname'])){
 				$nickname = '玩家' . $uid;
-				DB::table('account')->where('uid','=',$uid)->update(array('nickname'=>$nickname));
+				Account::db()->where('uid','=',$uid)->update(array('nickname'=>$nickname));
 				$user['nickname'] = $nickname;
 			}
+			//创建游币账户
+			$params = array('id'=>$uid,'experience'=>0,'platform'=>'ios');
+			$params_ = array('id','experience','platform');
+			Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/register','POST');
+
 			return $user;
 		}
 		return null;
 	} 
 	
+    public static function getIp($type=0)
+	{
+		$type       =  $type ? 1 : 0;
+		static $ip  =   NULL;
+		if ($ip !== NULL) return $ip[$type];
+		if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$arr    =   explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+			$pos    =   array_search('unknown',$arr);
+			if(false !== $pos) unset($arr[$pos]);
+			$ip     =   trim($arr[0]);
+		}elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+			$ip     =   $_SERVER['HTTP_CLIENT_IP'];
+		}elseif (isset($_SERVER['REMOTE_ADDR'])) {
+			$ip     =   $_SERVER['REMOTE_ADDR'];
+		}
+		// IP地址合法验证
+		$long = sprintf("%u",ip2long($ip));
+		$ip   = $long ? array($ip, $long) : array('0.0.0.0', 0);
+		return $ip[$type];
+	}
+	
 	public static function getUserInfoList($uids)
 	{		
 		if(is_array($uids)){
-			return DB::table('account')->whereIn('uid',$uids)->get();
+			return Account::db()->whereIn('uid',$uids)->get();
 		}else{
-			return DB::table('account')->where('uid','=',$uids)->first();
+			return Account::db()->where('uid','=',$uids)->first();
 		}
 	}
 	
@@ -91,7 +139,7 @@ class User extends BaseModel
 	public static function getUserInfo($identify,$identify_field = 'uid')
 	{
 		$fields = array('uid','nickname','email','avatar','mobile','sex','birthday','dateline','summary','homebg');
-		$user = DB::table('account')->select($fields)->where($identify_field,'=',$identify)->first();
+		$user = Account::db()->select($fields)->where($identify_field,'=',$identify)->first();
 		//$group = self::getUserGroupView($user['uid']);
 		//$user['groups'] = $group['groups'];
 		//$user['authorize_nodes'] = $group['authorize'];
@@ -101,9 +149,9 @@ class User extends BaseModel
 	public static function getUidListByNickname($nickname)
 	{
 		if(is_string($nickname)){
-			return DB::table('account')->where('nickname','=',$nickname)->lists('uid');
+			return Account::db()->where('nickname','=',$nickname)->lists('uid');
 		}elseif(is_array($nickname) && !empty($nickname)){
-			return DB::table('account')->whereIn('nickname',$nickname)->lists('uid');
+			return Account::db()->whereIn('nickname',$nickname)->lists('uid');
 		}
 		return null;
 	}
@@ -115,8 +163,8 @@ class User extends BaseModel
 	 */
 	public static function getUserFullInfo($uid)
 	{
-		$fields = array('uid','nickname','email','avatar','mobile','sex','summary','homebg','birthday','dateline');
-		$user = DB::table('account')->select($fields)->where('uid','=',$uid)->first();
+		$fields = array('uid','nickname','email','avatar','mobile','sex','summary','homebg','birthday','dateline','phone','province','city','region','address','alipay_num','alipay_name','idfa');
+		$user = Account::db()->select($fields)->where('uid','=',$uid)->first();
 		if(!$user) return null;
 		$group = self::getUserGroupView($uid);
 		$credit = self::getUserCredit($uid);
@@ -135,7 +183,7 @@ class User extends BaseModel
 	public static function getUserFullInfoList($uids)
 	{
 		$fields = array('uid','nickname','email','avatar','mobile','sex','birthday','summary','homebg','dateline');
-		$users = DB::table('account')->select($fields)->whereIn('uid',$uids)->get();
+		$users = Account::db()->select($fields)->whereIn('uid',$uids)->get();
 		$credits = self::getUserCreditByUids($uids);
 		foreach($users as $key=>$user){
 			//$group = self::getUserGroupView($user['uid']);
@@ -145,7 +193,6 @@ class User extends BaseModel
 		    //$users[$key]['groups'] = $group['groups'];
 		    //$users[$key]['authorize_nodes'] = $group['authorize'];
 		}
-		
 		return $users;
 	}
 	/**
@@ -157,7 +204,7 @@ class User extends BaseModel
 		$cachekey = 'credit::credit_level';
 		$cache = null;//CacheService::get($cachekey);
 		if(!$cache){
-		    $cache = DB::table('credit_level')->orderBy('start','asc')->get();
+		    $cache = CreditLevel::db()->orderBy('start','asc')->get();
 		    //CacheService::put($cachekey,$cache,30);
 		}
 		return $cache;
@@ -169,7 +216,7 @@ class User extends BaseModel
 	public static function getUserGroupView($uid)
 	{
 		$auth = array('groups'=>array(),'authorize'=>array());
-		$group_ids = DB::table('account_group_link')->where('uid','=',$uid)->lists('group_id');
+		$group_ids = AccountGroupLink::db()->where('uid','=',$uid)->lists('group_id');
 		if(empty($group_ids)) return $auth;
 		$groups = DB::table('account_group')->whereIn('group_id',$group_ids)->get();				
 		foreach($groups as $key=>$group){			
@@ -188,16 +235,31 @@ class User extends BaseModel
 	 */
 	public static function getUserCredit($uid)
 	{
-		return DB::table('credit_account')->where('uid','=',$uid)->first();
+	    $CreditAccount = CreditAccount::db()->where('uid','=',$uid)->first();
+	    //迁移后游币获取
+	    $params = array('accountId'=>$uid,'platform'=>'ios');
+	    $params_ = array('accountId','platform');
+	    $new = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/query');
+	    if ($new['result']) {
+	        $CreditAccount['score'] = isset($new['result'][0]['balance']) ? $new['result'][0]['balance'] : $CreditAccount['score'];
+	    }
+		return $CreditAccount;
 	}
 	
 	public static function getUserCreditByUids($uids)
 	{
-		$users = DB::table('credit_account')->whereIn('uid',$uids)->get();
+		$users = CreditAccount::db()->whereIn('uid',$uids)->get();
 		$out = array();
 		foreach($users as $one)
 		{
 			$out[$one['uid']] = $one;
+			//迁移后游币获取
+			$params = array('accountId'=>$one['uid'],'platform'=>'ios');
+			$params_ = array('accountId','platform');
+			$new = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/query');
+			if ($new['result']) {
+			    $out[$one['uid']]['score'] = isset($new['result'][0]['balance']) ? $new['result'][0]['balance'] : $out[$one['uid']]['score'];
+			}
 		}
 		return $out;
 	}
@@ -207,7 +269,7 @@ class User extends BaseModel
 	 */
 	public static function getCreditHistory($uid,$page=1,$pagesize=10)
 	{
-		$res = DB::table('account_credit_history')
+		$res = AccountCreditHistory::db()
 		           ->where('uid','=',$uid)
 		           ->orderBy('mtime','desc')
 		           ->forPage($page,$pagesize)
@@ -220,7 +282,17 @@ class User extends BaseModel
 	 */
     public static function doUserCredit($uid,$action,$info='')
 	{
-		$creditlist = DB::table('credit_setting')->orderBy('id','asc')->get();
+	    //迁移后游币处理  老游币表依旧操作
+	    $credit_new = false;
+	    $params = array('accountId'=>$uid,'platform'=>'ios');
+	    $params_ = array('accountId','platform');
+	    $new = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/query');
+	    if ($new['result']) {
+	        $credit_new = true;
+	        //$CreditAccount['score'] = isset($new['result'][0]['balance']) ? $new['result'][0]['balance'] : $CreditAccount['score']; 
+	    }
+	    
+		$creditlist = CreditSetting::db()->orderBy('id','asc')->get();
 		$list = array();
 		foreach($creditlist as $credit){
 			$list[$credit['name']] = $credit;
@@ -251,27 +323,35 @@ class User extends BaseModel
 				$start = 0;
 			}
 			
-			$total = DB::table('account_credit_history')
-			             ->where('uid','=',$uid)
-			             ->where('action','=',$action)
-			             ->where('mtime','>=',$start)
-			             ->count();
-			if($total>=$rewardnum) return null;
+			if ($credit_new) {
+			    $params = array('accountId'=>$uid,'platform'=>'ios','operationType'=>$action,'operationTimeBegin'=>date("Y-m-d H:i:s", $start));
+			    $params_ = array('accountId','platform','operationType','operationTimeBegin');
+			    $new = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/operation_query');
+			    if(count($new['result'])>=$rewardnum) return null;
+			} else {
+			    $total = AccountCreditHistory::db()
+    			    ->where('uid','=',$uid)
+    			    ->where('action','=',$action)
+    			    ->where('mtime','>=',$start)
+    			    ->count();
+			    if($total>=$rewardnum) return null;
+			}
 		}
+		$score_op_success = false;
 		
-		$userCredit = DB::table('credit_account')->where('uid','=',$uid)->first();
-		if($userCredit){
-			//$data['score'] = $userCredit['score']+$score;
-			//$data['experience'] = $userCredit['experience'] + $experience;
-			//DB::table('credit_account')->where('uid','=',$uid)->update($data);
-			$score!=0 && self::dbClubMaster()->table('credit_account')->where('uid','=',$uid)->increment('score',$score);
-			$experience !=0 && self::dbClubMaster()->table('credit_account')->where('uid','=',$uid)->increment('experience',$experience);
-		}else{
-			$data['score'] = $score;
-			$data['experience'] = $experience;
-			$data['uid'] = $uid;
-			DB::table('credit_account')->insert($data);
-		}
+// 		$userCredit = CreditAccount::db()->where('uid','=',$uid)->first();
+// 		if($userCredit){
+// 			//$data['score'] = $userCredit['score']+$score;
+// 			//$data['experience'] = $userCredit['experience'] + $experience;
+// 			//CreditAccount::db()->where('uid','=',$uid)->update($data);
+// 			$score!=0 && CreditAccount::db()->where('uid','=',$uid)->increment('score',$score);
+// 			$experience !=0 && CreditAccount::db()->where('uid','=',$uid)->increment('experience',$experience);
+// 		}else{
+// 			$data['score'] = $score;
+// 			$data['experience'] = $experience;
+// 			$data['uid'] = $uid;
+// 			CreditAccount::db()->insert($data);
+// 		}
 		if($score>0){
 			$sign = '增加';
 		}else{
@@ -284,9 +364,17 @@ class User extends BaseModel
 		}
 		if($score){
 			$credit_history = array('uid'=>$uid,'info'=>$info,'action'=>$action,'type'=>'游币','credit'=>$score,'mtime'=>(int)microtime(true));
-			DB::table('account_credit_history')->insert($credit_history);
+			AccountCreditHistory::db()->insert($credit_history);
 		}
-		return true;
+		if ($credit_new) {
+		    $params = array('rechargeAccountId'=>$uid,'platform'=>'ios','balanceChange'=>$score,'type'=>$action,'operationInfo'=>$info,'platform'=>'ios');
+		    $params_ = array('rechargeAccountId','platform','balanceChange','type','operationInfo','platform');
+		    $re = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/updatebalance');
+		    if ($re['result']) {
+		        $score_op_success = true;
+		    }
+		}
+		return $score_op_success;
 	}
 	
 	/**
@@ -294,9 +382,15 @@ class User extends BaseModel
 	 */
     public static function verifyLocalLogin($identify,$password,$identify_field = 'email')
 	{
-		$user = DB::table('account')->where($identify_field,'=',$identify)->first();
-		if($user && isset($user['password'])){
-			if($user['password']==self::cryptPwd($password)){		
+		$user = Account::db()->where($identify_field,'=',$identify)->first();
+		if($user && isset($user['password'])){			
+			$pwd = '';
+			if(strlen($password)==32){
+				$pwd = $password;
+			}else{
+				$pwd = self::cryptPwd($password);
+			}
+			if($user['password']==$pwd){		
 				return $user;
 			}else{
 				return -1;
@@ -312,7 +406,7 @@ class User extends BaseModel
 	 */	
 	public static function modifyAccountPassword($uid,$password)
 	{
-		$row = DB::table('account')->where('uid','=',$uid)->update(array('password'=>self::cryptPwd($password)));
+		$row = Account::db()->where('uid','=',$uid)->update(array('password'=>self::cryptPwd($password)));
 		if($row){
 			return true;
 		}
@@ -327,7 +421,7 @@ class User extends BaseModel
 		$row_1 = $row_2 = false;
 		if($info){
 			$account = array();
-			$fields = array('nickname','sex','mobile','birthday','summary','avatar','homebg');
+			$fields = array('nickname','sex','mobile','birthday','summary','avatar','homebg','phone','vuser');
 		     foreach($info as $field=>$data){
 				if(in_array($field,$fields)){
 					$account[$field] = $data;
@@ -339,24 +433,24 @@ class User extends BaseModel
 				    if(!$account['nickname'] || empty($account['nickname'])){
 						unset($account['nickname']);
 					}else{
-						$count = DB::table('account')->where('uid','<>',$uid)->where('nickname','=',$account['nickname'])->count();
+						$count = Account::db()->where('uid','<>',$uid)->where('nickname','=',$account['nickname'])->count();
 						if($count){
 							return -1;
 						}
 					}
 					
 				}					
-			    $row_1 = DB::table('account')->where('uid','=',$uid)->update($account);
+			    $row_1 = Account::db()->where('uid','=',$uid)->update($account);
 			}
 		}
 		if($group_ids){
-			DB::table('account_group_link')->where('uid','=',$uid)->delete();
+			AccountGroupLink::db()->where('uid','=',$uid)->delete();
 			if(!is_array($group_ids)) $group_ids = array($group_ids);
 			$data = array();			
 			foreach($group_ids as $group_id){
 				$data[] = array('uid'=>$uid,'group_id'=>$group_id);
 			}
-			DB::table('account_group_link')->insert($data);
+			AccountGroupLink::db()->insert($data);
 			$row_2 = true;
 		}
 		//$row = 
@@ -371,11 +465,11 @@ class User extends BaseModel
 	 */
 	public static function modifyAccountEmail($uid,$email)
 	{
-		$count = DB::table('account')->where('uid','<>',$uid)->where('email','=',$email)->count();
+		$count = Account::db()->where('uid','<>',$uid)->where('email','=',$email)->count();
 		if($count){
 			return -1;
 		}
-		$rows = DB::table('account')->where('uid','=',$uid)->update(array('email'=>$email));
+		$rows = Account::db()->where('uid','=',$uid)->update(array('email'=>$email));
 		if($rows>0){
 			
 		}
@@ -388,11 +482,11 @@ class User extends BaseModel
 	 */
 	public static function modifyAccountNickname($uid,$nickname)
 	{
-		$count = DB::table('account')->where('uid','<>',$uid)->where('nickname','=',$nickname)->count();
+		$count = Account::db()->where('uid','<>',$uid)->where('nickname','=',$nickname)->count();
 		if($count){
 			return -1;
 		}
-		$rows = DB::table('account')->where('uid','=',$uid)->update(array('nickname'=>$nickname));
+		$rows = Account::db()->where('uid','=',$uid)->update(array('nickname'=>$nickname));
 		return $rows;
 	}
 	
@@ -401,7 +495,7 @@ class User extends BaseModel
 	 */
 	public static function modifyAccountAvatar($uid, $avatar)
 	{
-		$row = DB::table('account')->where('uid','=',$uid)->update(array('avatar'=>$avatar));
+		$row = Account::db()->where('uid','=',$uid)->update(array('avatar'=>$avatar));
 		if($row){
 			return true;
 		}
@@ -413,7 +507,7 @@ class User extends BaseModel
 	 */
 	public static function modifyHomeBg($uid, $bg)
 	{
-		$row = DB::table('account')->where('uid','=',$uid)->update(array('homebg'=>$bg));
+		$row = Account::db()->where('uid','=',$uid)->update(array('homebg'=>$bg));
 		if($row){
 			return true;
 		}
@@ -426,10 +520,10 @@ class User extends BaseModel
     public static function shieldAccountField($uid,$field,$data)
 	{
 		if(!in_array($field,array('nickname','avatar'))) return false;
-		$user = DB::table('account')->where('uid','=',$uid)->first();
+		$user = Account::db()->where('uid','=',$uid)->first();
 		$log = array('uid'=>$uid,'field'=>$field,'data'=>$user[$field],'ctime'=>(int)microtime(true));
 		DB::table('account_shield_history')->insertGetId($log);
-		DB::table('account')->where('uid','=',$uid)->update(array($field=>$data));
+		Account::db()->where('uid','=',$uid)->update(array($field=>$data));
 		return true;
 	}
 	
@@ -438,7 +532,7 @@ class User extends BaseModel
 	 */
 	public static function getUserPage($uid)
 	{
-		return DB::table('account_page')->where('uid','=',$uid)->first();
+		return AccountPage::db()->where('uid','=',$uid)->first();
 	}
 	
 	/**
@@ -448,12 +542,12 @@ class User extends BaseModel
 	{
 		if(!isset($data['uid']) || empty($data['uid'])) return false;
 		$uid = $data['uid'];		
-		$count = DB::table('account_page')->where('uid','=',$uid)->count();
+		$count = AccountPage::db()->where('uid','=',$uid)->count();
 		if($count>0){
 			unset($data['uid']);
-			return DB::table('account_page')->where('uid','=',$uid)->update($data);
+			return AccountPage::db()->where('uid','=',$uid)->update($data);
 		}else{
-			DB::table('account_page')->insertGetId($data);
+			AccountPage::db()->insertGetId($data);
 		}
 	}
 	/*

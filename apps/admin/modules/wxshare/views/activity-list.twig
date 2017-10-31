@@ -12,7 +12,7 @@
 				    <table class="table-filter">
 				        <tr>				            
 				            <td>
-				            <a href="<!--{{url('wxshare/activity/edit')}}-->" class="btn btn-teal">添加活动</button></td>
+				            <a href="<!--{{url('wxshare/activity/edit')}}-->" class="btn btn-teal">添加活动</a></td>
 				        </tr>
 				    </table>
 				</div>
@@ -43,7 +43,7 @@
 							<td><!--{{item.endtime|date('Y-m-d H:i')}}--></td>
 							<td><!--{{item.addtime|date('Y-m-d H:i')}}--></td>
 							<td><!--{%if item.is_show==1%}--><span class="badge badge-success">显示</span><!--{%else%}--><span class="badge badge-important">隐藏</span><!--{%endif%}--></td>
-							<td><!--{%if item.share_times==0%}--><span class="badge badge-success">多次</span><!--{%else%}--><span class="badge badge-important">单次</span><!--{%endif%}--></td>
+							<td><!--{%if item.share_times==0%}--><span class="badge badge-success">抢小米</span><!--{%else%}--><span class="badge badge-important">送Q币</span><!--{%endif%}--></td>
 							<td><!--{{item.need_click_times}}--></td>
 							<td>
 							    <a href="<!--{{url('wxshare/activity/edit',{id:item.id})}}-->" class="btn btn-primary">编辑</a>

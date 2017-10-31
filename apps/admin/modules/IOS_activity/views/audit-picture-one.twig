@@ -1,0 +1,204 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid" xmlns="http://www.w3.org/1999/html">
+    <div class="span12">
+        <div class="box">
+
+            <div class="box-title">
+                <h3>单用户审核</h3><a style="margin-left: 10px;"  href='<!--{{url('IOS_activity/task/approval-list')}}-->?taskId=<!--{{taskId}}-->&taskName=<!--{{taskName}}-->&step_content=<!--{{step_content}}-->&step_img=<!--{{step_img}}-->&stepId=<!--{{stepId}}-->&stepType=<!--{{stepType}}-->&appleId=<!--{{appleId}}-->&appPasswordKey=<!--{{appPasswordKey}}-->&title=<!--{{title}}-->' class="btn btn-primary" >切换</a><a style="margin-left: 10px;"  href='<!--{{url('IOS_activity/task/user-checked')}}-->?stepId=<!--{{stepId}}-->&title=<!--{{title}}-->' class="btn btn-primary" >查看已审核用户</a>
+            </div>
+            <div class="box-content">
+                <form id="activity-task" action="#nogo" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+                    <div class="control-group">
+                        <label class="control-label">用户</label>
+                        <div class="controls">
+                            <!--{% if users[data.uid] %}--><a href="<!--{{url('v4user/users/edit',{'id':data.uid})}}-->" target="_blank"><!--{{users[data.uid]['nickname']}}--></a>&nbsp;<!--{{data.createTime}}--><!--{% if re[data.uid] %}-->&nbsp;<span style="color:red;">(充值额度：<!--{{re[data.uid]}}-->)</span><!--{% endif %}--><!--{% else %}--><span style="color: red; ">该用户已删除或此任务审核完毕</span><!--{% endif %}-->
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">任务标题</label>
+                        <div class="controls">
+                            <input type="text" name="sort" taskId="<!--{{taskId}}-->" stepId="<!--{{stepId}}-->" class="input-middle task" value="<!--{{taskName}}-->" />
+                        </div>
+                    </div>
+
+
+
+                    <div class="control-group">
+                        <label class="control-label">任务步骤</label>
+                        <div class="controls">
+                            <input type="text" name="sort" class="input-middle" value="<!--{{title}}-->" />
+                        </div>
+                    </div>
+                    <!--{%if stepType=="4"%}-->
+                    <div class="control-group">
+                        <label class="control-label">appleId</label>
+                        <div class="controls">
+                            <input type="text" name="sort" class="input-middle" value="<!--{{data.appleId|default('未找到需要审核的数据')}}-->" />
+                        </div>
+                    </div>
+                    <!--{%else%}-->
+                    <div class="control-group">
+                        <label class="control-label">内容</label>
+                        <div class="controls">
+                            <input type="text" name="sort" class="input-middle" value="<!--{{step_content}}-->" />
+                        </div>
+                    </div>
+
+                    <!--{%endif%}-->
+                    <div class="control-group">
+                        <label class="control-label">*icon</label>
+                        <div class="controls">
+                            <div data-provides="fileupload" class="fileupload fileupload-new">
+                                <div style="max-width: 400px;" class="fileupload-new thumbnail">
+                                    <img id="selected_game_icon" src="<!--{{step_img|default('/static/img/wu_ss.gif')}}-->">
+                                </div>
+                                <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">不通过原因</label>
+                        <div class="controls">
+                            <input type="text" name="checkFailedDesc" class="input-middle checkFailedDesc" style="width:400px;" value="上传的内容不符合要求，请重新上传" onfocus="javascript:if(this.value=='上传的内容不符合要求，请重新上传')this.value='';" /> <span> （20个字以内）</span>
+                        </div>
+                    </div>
+                    
+                                        
+                    <div class="control-group">
+                        <label class="control-label">任务审核须知</label>
+                        <div class="controls">
+                            <input type="text" name="sort" class="input-middle" value="<!--{{approvalReminderInfo}}-->" />
+                        </div>
+                    </div>
+                    
+                    <!--{%if minlevel>0 and maxlevel>0 %}-->
+                    
+                    <div class="control-group">
+                        <label class="control-label">限制等级</label>
+                        <div class="controls">
+                            <span><!--{{minlevel}}--> 到 <!--{{maxlevel}}--></span>
+                        </div>
+                    </div>
+
+                    <!--{%endif%}-->
+                    
+                    <div>
+                        <fieldset style="">
+                            <legend  >上传的任务图片</legend>
+
+                            <div style="border: 1px solid;width: 750px;height: 600px;overflow: scroll">
+                                <div>
+                                    <div class="left" style="float: left">
+                                        <div class="up" style="padding: 5px;">
+                                            <!--{% for key,value in data.approvalContent %}-->
+                                            <!--{{ key }}--> : <!--{{ value }}--><br>
+                                            <!--{% endfor %}-->
+                                        </div>
+                                    </div>
+                                    <div class="left" style="float: left">
+                                        <div class="up" style="padding: 5px;">
+                                            <!--{{ data.autorContent }}--><br>
+                                        </div>
+                                    </div>
+                                    <div class="left" style="float: left">
+                                        <div class="up" style="padding: 5px;">
+                                            <!--{%for img in data.picUrl%}-->
+                                            <a href="#bigimg" data-toggle="modal" class="showImg">  <img src="<!--{{img}}-->" style="margin-left: 10px;"  alt=""/></a>
+                                            <!--{%endfor%}-->
+                                        </div>
+                                    </div>
+                                    <div class="right" style="float: left; margin-top: 70px;padding-left: 10px;">
+                                        <label class="checkbox-inline">
+                                        </label>
+                                    </div>
+                                    <div style="clear: both"></div>
+                                </div>
+                                <div style="clear: both"></div>
+                            </div>
+                            <div style="margin-left: 300px;">
+                                <button type="button" class="btn btn-primary submit" >通过</button>
+                                <button type="button" class="btn btn-primary submit" >未通过</button>
+                            </div>
+                        </fieldset>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script src="/static/js/jquery.lazyload.js"></script>
+<script>
+    $(function(){
+
+        $("img"  ).lazyload();
+
+        var obj="";
+        gameselect('#gameselect');
+        userselect('#userselect');
+
+        $(".up").on("click",".showImg",function(){
+            var imgurl = $(this).children("img").attr("src")
+            $("#big-img").attr("src",imgurl);
+        })
+
+
+        $(".submit").click(function(){
+            var stepId = "<!--{{stepId}}-->";
+            var taskId = "<!--{{taskId}}-->";
+            var passIds = "";
+        	var PassUids = "";
+        	var PassDeviceIds = "";
+            var notPassIds = "";
+            var notPassUids = "";
+            var notPassDeviceIds = "";
+            var checkFailedDesc = "";
+            if($(this).html()=="通过"){
+                passIds = "<!--{{data.userStepId}}-->"+",";
+                PassUids = "<!--{{data.uid}}-->"+",";
+                PassDeviceIds = "<!--{{data.deviceId}}-->"+",";
+            }else{
+                notPassIds = "<!--{{data.userStepId}}-->"+",";
+                notPassUids = "<!--{{data.uid}}-->"+",";
+                notPassDeviceIds = "<!--{{data.deviceId}}-->"+",";
+                checkFailedDesc = $('.checkFailedDesc').val();
+            }
+            $.post("<!--{{url('IOS_activity/task/approval')}}-->",{stepId:stepId,passIds:passIds,PassUids:PassUids,PassDeviceIds:PassDeviceIds,notPassIds:notPassIds,notPassUids:notPassUids,notPassDeviceIds:notPassDeviceIds,taskId:taskId,checkFailedDesc:checkFailedDesc},function(data) {
+                if(data.success=="true"){
+                    alert("操作成功");
+                    location.reload();
+                }else{
+                    alert(data.mess);
+                }
+            },"json")
+        })
+
+        $("#approval_success_all").click(function(){
+            if(confirm("即将执行一键全审，是否继续？")){
+                if($(this).attr("taskId")){
+                    var taskId = $(this).attr("taskId");
+                    $.post("<!--{{url('a_activity2/task/approval-all')}}-->",{taskId:taskId},function(data) {
+                        if(data.success=="true"){
+                            window.location.href=window.location.href;
+                        }else{
+                            alert(data.mess);
+                        }
+                    },"json")
+                }else{
+                    alert("缺少任务数据");
+                }
+            }
+        })
+    });
+</script>
+<!--{%endblock%}-->

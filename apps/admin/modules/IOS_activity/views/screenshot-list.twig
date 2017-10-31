@@ -1,0 +1,57 @@
+<!--{%for item in datalist%}-->
+<!--{%if pic_count!="1"%}-->
+<div>
+    <div class="left" style="float: left">
+        <!--{% for key,value in item.approvalContent %}-->
+        <div class="up" style="padding: 5px;">
+            <!--{{ key }}--> : <!--{{ value }}--><br>
+        </div>
+        <!--{% endfor %}-->
+        <div class="up" style="padding: 5px;">
+            <!--{{ data.autorContent }}--><br>
+        </div>
+        <div class="up table-list-img" style="padding: 5px;">
+            <!--{%for img in item.picUrl%}-->
+            <a href="#bigimg" data-toggle="modal" class="showImg"> <img src="<!--{{img}}-->" width="200"  alt=""/></a>
+            <!--{%endfor%}-->
+        </div>
+        <div class="down" style="padding-left: 200px"><!--{% if users[item.uid] %}--><a href="<!--{{url('v4user/users/edit',{'id':item.uid})}}-->" target="_blank"><!--{{users[item.uid]['nickname']}}--></a>&nbsp;<!--{{item.createTime}}--><!--{% if re[item.uid] %}-->&nbsp;<span style="color:red;">(充值额度：<!--{{re[item.uid]}}-->)</span><!--{% endif %}--><!--{% else %}--><span style="color: red; ">该用户已删除</span><!--{% endif %}--></div>
+    </div>
+    <div class="right" style="float: left; margin-top: 70px;padding-left: 10px;">
+        <label class="checkbox-inline">
+            <input type="checkbox" id="inlineCheckbox1" stepid="<!--{{item.userStepId}}-->" uid="<!--{{item.uid}}-->" deviceId="<!--{{item.deviceId}}-->" class="ck" > 未通过
+        </label>
+    </div>
+    <div style="clear: both"></div>
+</div><hr>
+<!--{%else%}-->
+<div style="width: 290px;float: left">
+    <div class="left" style="float: left">
+        <div class="up table-list-img" style="padding: 5px;">
+            <!--{% for key,value in item.approvalContent %}-->
+            <div class="up" style="padding: 5px;">
+                <!--{{ key }}--> : <!--{{ value }}--><br>
+            </div>
+            <!--{% endfor %}-->
+            <div class="up" style="padding: 5px;">
+                <!--{{ item.autorContent }}--><br>
+            </div>
+            <!--{%for img in item.picUrl%}-->
+            <a href="#bigimg" data-toggle="modal" class="showImg"> <img src="<!--{{img}}-->" width="200"  alt=""/></a>
+            <!--{%endfor%}-->
+        </div>
+        <div class="down" style="padding-left: 5px" >
+            <span style="color: red">AppID:<!--{{item.appleId}}--></span><br>
+            <span style="color: red">App密码:<!--{{item.appPasswordKey}}--></span><br>
+            <!--{% if users[item.uid] %}--> <a href="<!--{{url('v4user/users/edit',{'id':item.uid})}}-->" target="_blank"> <!--{{users[item.uid]['nickname']}}--></a>&nbsp;<!--{{item.createTime}}--><!--{% if re[item.uid] %}-->&nbsp;<span style="color:red;">(充值额度：<!--{{re[item.uid]}}-->)</span><!--{% endif %}--><!--{% else %}--><span style="color: red; ">该用户已删除</span><!--{% endif %}-->
+
+        </div>
+    </div>
+    <div class="right" style="float: left; margin-top: 70px;">
+        <label class="checkbox-inline">
+            <input type="checkbox" id="inlineCheckbox1" stepid="<!--{{item.userStepId}}-->" uid="<!--{{item.uid}}-->" deviceId="<!--{{item.deviceId}}-->" class="ck" > 未通过
+        </label>
+    </div>
+</div>
+<!--{%endif%}-->
+<!--{%endfor%}-->

@@ -16,11 +16,11 @@ class UploaderController extends BackendController
         $env_split = explode('.',$env);
         if(($env_split && $env_split[0] == 'test') || ($env_split && $env_split[2] == 'dev')){
             //测试
-            $this->upload_uri = 'http://test.open.youxiduo.com:8080/module_file_system/file_upload_by_form';
-            $this->get_uri = 'http://test.open.youxiduo.com:8080/module_file_system/file/';
+            $this->upload_uri = 'http://112.124.121.34:58080/module_file_system/file_upload_by_form';
+            $this->get_uri = 'http://112.124.121.34:58080/module_file_system/file/';
         }elseif($env_split && $env_split[2] == 'com'){
             //正式
-            $this->upload_uri = 'http://youxiduo-java-slb-1:18080/module_file_system/file_upload_by_form';
+            $this->upload_uri = 'http://open.youxiduo.com:8080/module_file_system/file_upload_by_form';
             $this->get_uri = 'http://img001.youxiduo.com/';
         }else{
             //错误
@@ -102,7 +102,7 @@ class UploaderController extends BackendController
 				$imagefile = $image['filepath'] . '/' . $image['filename'];
 			}
 
-			return $this->returnJson('SUCCESS',str_replace('.','.',$imagefile));
+			return $this->returnJson('SUCCESS',str_replace('.','_480.',$imagefile));
 		}else{
 			return $this->returnJson('没有文件被上传');
 		}

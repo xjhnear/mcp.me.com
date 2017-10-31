@@ -1,0 +1,147 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					活动列表
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('liansais/home/list')}}-->" class="">
+				    <table class="table-filter">
+				        <tr>
+							<td><a href="<!--{{url('liansais/home/add')}}-->" class="btn btn-teal"><i class="icon-plus"></i>添加活动</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+							<th class="col-120">ID</th>
+							<th class="col-120">游戏名称</th>
+                            <th class="col-120">平台</th>
+                            <th class="col-120">游戏大小</th>
+                            <th class="col-120">建立时间</th>
+                            <th class="col-120">参与人数</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in list %}-->
+						<tr>
+                            <td><!--{{item.id}}--></td>
+                            <td><!--{{ item.name }}--></td>
+                            <td>
+                                <!--{%if item.platform==1 %}-->双端
+                                <!--{%elseif item.platform==2 %}-->安卓
+                                <!--{%elseif item.platform==3 %}-->iOS
+                                <!--{%endif %}-->
+                            </td>
+                            <td><!--{{ item.sizes}}--></td>
+                            <td><!--{{item.createTime}}--></td>
+                            <td><!--{{item.total}}--></td>
+                            <td>
+                                <a href="javascript:void(0);" id="<!--{{item.id}}-->" data-url="<!--{{url('liansais/home/do')}}-->" class="btn btn-primary ajax-join"><!--{%if item.enable==1%}-->关闭<!--{%else%}-->开启<!--{%endif%}--></a>
+                                <a href="<!--{{url('liansais/home/add')}}-->?id=<!--{{item.id}}-->" class="btn btn-primary">编辑</a>
+                                <a href="javascript:void(0);" id="<!--{{item.id}}-->" class="btn btn-primary del">删除</a>
+                                <a href="javascript:void(0);" id="<!--{{ item.id }}-->"  data-target="#myModal"  data-toggle="modal" class="btn btn-primary url">页面生成</a>
+                                <a href="http://zt.youxiduo.com/pchd/Export?id=<!--{{ item.id }}-->" class="btn btn-primary export" >导出数据</a>
+                            </td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">页面生成</h4>
+            </div>
+            <div class="modal-body">
+                <p>页面生成地址：<span id="slink">http://zt.youxiduo.com/pchd/activity/batchExportIndex/<span id="span1"></span></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    $(function(){
+        $(".del").click(function(){
+            if(confirm("确定要删除吗？")){
+                var id = $(this).attr("id");
+                var obj = $(this);
+                $.post("<!--{{url('liansais/home/del')}}-->", {'id': id}, function (data) {
+                    if (data.success == true) {
+                        obj.parent().parent().hide();
+                    } else {
+                        alert(data.mess);
+                    }
+                }, "json")
+            }
+        })
+        $(".url").click(function(){
+            var aid= $(this).attr("id");
+            $("#span1").html(aid);
+
+        })
+        $(".ajax-join").bind('click',function() {
+            if (confirm('确定要更新按钮吗？')) {
+                var id = $(this).attr('id');
+                var url = $(this).attr('data-url');
+                var thisBtn = $(this);
+                var enable = "";
+                if(thisBtn.html().indexOf("关闭")>-1){
+                    enable = "0";
+                }else{
+                    enable= "1";
+                }
+                $.post(url, {id: id,enable:enable}, function(data)
+                {
+                    if (data.success == true)
+                    {
+                       if(thisBtn.html()=="关闭")
+                       {
+                           thisBtn.html("开启");
+                           alert("操作成功");
+                       }
+                        else
+                       {
+                           thisBtn.html("关闭");
+                           alert("操作成功");
+
+                       }
+
+                    }
+                    else
+                    {
+                        alert(data.error);
+                    }
+                },'json')
+            }
+        })
+    })
+</script>
+<!--{%endblock%}-->
+
+

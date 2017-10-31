@@ -49,7 +49,7 @@
 					<tbody>
 					    <!--{%for item in reply_list%}-->
 						<tr>
-						    <td><input type="checkbox" name="ids" value="<!--{{item.rid}}-->" /></td>
+						    <td><input type="checkbox" name="ids" value="<!--{{item.rid}}-->/<!--{{ item.uid }}-->" /></td>
 							<td title="<!--{{item.rid}}-->"><!--{{item.floor}}--></td>
 							<td class="user-avatar"><a href="#bigimg" data-toggle="modal"><!--{{item.content}}--></a></td>
 							<td>
@@ -102,7 +102,7 @@ $(function(){
             });
             if(ids.length==0) return false;
             $.ajax({
-                url:'<!--{{url('comment/comments/del')}}-->',
+                url:'<!--{{url('weba_forum/topic/del-some-reply')}}-->',
                 type:'POST',
                 data:{'ids':ids},
                 dataType:'json',

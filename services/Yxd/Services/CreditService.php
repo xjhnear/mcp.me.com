@@ -11,6 +11,8 @@ use Yxd\Services\Models\Account;
 use Yxd\Services\Models\CreditSetting;
 use Yxd\Services\Models\CreditLevel;
 use Yxd\Services\Models\AccountCreditHistory;
+use Youxiduo\Helper\Utility;
+use Illuminate\Support\Facades\Config;
 
 class CreditService extends Service
 {	
@@ -28,6 +30,8 @@ class CreditService extends Service
 	
 	const CREDIT_RULE_ACTION_DIGEST_TOPIC = 'digest_topic';
 	const CREDIT_RULE_ACTION_UNDIGEST_TOPIC = 'undigest_topic';
+	
+	const MALL_API_ACCOUNT = 'app.account_api_url';
 	
     /**
 	 * 处理用户积分
@@ -65,27 +69,27 @@ class CreditService extends Service
 		    'name'=>'兑换商品',
 		    'info'=>'{action}{sign}了{score}{typecn}'
 		);
-	    $userCredit = CreditAccount::db()->where('uid','=',$uid)->first();
+// 	    $userCredit = CreditAccount::db()->where('uid','=',$uid)->first();
 	    $score_op_success = false;
-		if($userCredit){
-			if($score>0){
-				$score_op_success = CreditAccount::db()->where('uid','=',$uid)->increment('score',$score)>0 ? true : false;
-			}			
-			if($score <= 0){
-				$score_op_success = CreditAccount::db()->where('uid','=',$uid)->whereRaw('score>='.abs($score))->increment('score',$score)>0 ? true : false;
-			} 
-			if($experience != 0) CreditAccount::db()->where('uid','=',$uid)->increment('experience',$experience);
-			Event::fire('user.update_userinfo_cache',array(array($uid)));
-		}else{
-			$data['score'] = $score;
-			$data['experience'] = $experience;
-			$data['uid'] = $uid;
-			$score_op_success = CreditAccount::db()->insert($data);
-			//Event::fire('user.update_userinfo_cache',array(array($uid)));
-		}
-		if($score_op_success === false){
-			return false;
-		}
+// 		if($userCredit){
+// 			if($score>0){
+// 				$score_op_success = CreditAccount::db()->where('uid','=',$uid)->increment('score',$score)>0 ? true : false;
+// 			}			
+// 			if($score <= 0){
+// 				$score_op_success = CreditAccount::db()->where('uid','=',$uid)->whereRaw('score>='.abs($score))->increment('score',$score)>0 ? true : false;
+// 			} 
+// 			if($experience != 0) CreditAccount::db()->where('uid','=',$uid)->increment('experience',$experience);
+// 			Event::fire('user.update_userinfo_cache',array(array($uid)));
+// 		}else{
+// 			$data['score'] = $score;
+// 			$data['experience'] = $experience;
+// 			$data['uid'] = $uid;
+// 			$score_op_success = CreditAccount::db()->insert($data);
+// 			//Event::fire('user.update_userinfo_cache',array(array($uid)));
+// 		}
+// 		if($score_op_success === false){
+// 			return false;
+// 		}
 		if($score==0) return true;
 		
 	    if($score>0){
@@ -101,7 +105,21 @@ class CreditService extends Service
 		
 		$credit_history = array('uid'=>$uid,'info'=>$info,'action'=>$action,'type'=>'游币','credit'=>$score,'mtime'=>(int)microtime(true));
 		AccountCreditHistory::db()->insert($credit_history);
-		return true;
+		
+		//迁移后游币处理  老游币表依旧操作
+		$params = array('accountId'=>$uid,'platform'=>'ios');
+		$params_ = array('accountId','platform');
+		$new = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/query');
+		if ($new['result']) {
+		    $params = array('rechargeAccountId'=>$uid,'platform'=>'ios','balanceChange'=>$score,'type'=>$action,'operationInfo'=>$info,'platform'=>'ios');
+		    $params_ = array('rechargeAccountId','platform','balanceChange','type','operationInfo','platform');
+		    $re = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/updatebalance');
+		    if ($re['result']) {
+		        $score_op_success = true;
+		    }
+		}
+		
+		return $score_op_success;
 	}
 	
 	/**

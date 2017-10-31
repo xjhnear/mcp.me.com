@@ -47,7 +47,7 @@ Route::filter('auth', function()
 		}
 	}elseif($grant===null){
 		return Redirect::to('login');
-	}	
+	}
 });
 
 

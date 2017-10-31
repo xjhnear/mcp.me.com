@@ -1,0 +1,136 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					联赛管理
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('liansai/home/list')}}-->" class="">
+				    <table class="table-filter">
+				        <tr>
+							<td><a href="<!--{{url('liansai/home/add')}}-->?gameId=<!--{{gameId}}-->" class="btn btn-teal"><i class="icon-plus"></i>添加</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-30">序列</th>
+							<th class="col-150">赛事名称</th>
+							<th class="col-30">赛事类型</th>
+                            <th class="col-30">报名类型</th>
+                            <th class="col-30">赛事队伍</th>
+                            <th class="col-30">已报名队伍</th>
+                            <th class="col-120">建立时间</th>
+                            <th class="col-80">状态</th>
+							<th class="col-210">操作</th>
+                            <th class="table-btn-group">查看</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for key,item in list%}-->
+						<tr>
+							<td><!--{{key+1}}--></td>
+                            <td><!--{{item.eventName}}--></td>
+                            <td><!--{{ eventType[item.eventType] }}--></td>
+                            <td><!--{{item.matchTypeStr}}--></td>
+                            <td><!--{{item.teamNumLimit}}--></td>
+                            <td><!--{{item.joinTeamNum}}--></td>
+                            <td><!--{{item.createTime}}--></td>
+                            <td class="state">
+                                <a class="state1">
+                                <!--{%if item.eventSignStatus=="1"%}-->报名中<!--{%else%}-->报名结束<!--{%endif%}-->
+                                </a>
+                                <br>
+                                <a class="state2">
+                                <!--{%if item.eventStatus=="1"%}-->进行中<!--{%else%}-->已结束<!--{%endif%}-->
+                                </a>
+                            </td>
+
+							<td>
+							    <a href="<!--{{url('liansai/home/add')}}-->?eventId=<!--{{item.eventId}}-->&gameId=<!--{{ gameId }}-->" class="btn btn-primary">编辑</a>
+
+                                <a href="#nogo" id="<!--{{item.eventId}}-->" class="btn btn-primary ajax-join"><!--{%if item.eventSignStatus=="1"%}-->报名关闭<!--{%else%}-->报名开启<!--{%endif%}--></a>
+                                <a href="#nogo" id="<!--{{item.eventId}}-->" class="btn btn-primary ajax-del"><!--{%if item.eventStatus=="1"%}-->赛事结束<!--{%else%}-->赛事已结束<!--{%endif%}--></a>
+							</td>
+                            <td>
+                                <a href="<!--{{url('liansai/home/team-list')}}-->?eventId=<!--{{item.eventId}}-->" id="<!--{{item.id}}-->" class="btn btn-primary">队伍列表</a>
+                                <a href="<!--{{url('liansai/home/match-list')}}-->?eventId=<!--{{item.eventId}}-->" id="<!--{{item.id}}-->" class="btn btn-primary">比赛记录</a>
+                            </td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>			    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $('a.ajax-join').bind('click',function(){
+        if(confirm('确定要变更数据吗？')){
+            var eventId = $(this).attr('id');
+            var evenSignOpen = "";
+            obj = $(this);
+            if(obj.html().indexOf("关闭")>0){
+                evenSignOpen = "false";
+            }else{
+                evenSignOpen = "true";
+            }
+            $.post('<!--{{url('liansai/home/ajax-do')}}-->',{eventId:eventId,url:"event/updateEventSign",evenSignOpen:evenSignOpen},function(data){
+                if(data.success){
+                    alert("操作成功");
+                    if(obj.html() == "报名关闭"){
+                        obj.html("报名开启");
+                        obj.parent().siblings(".state").children(".state1").html("报名结束");
+                    }else{
+                        obj.html("报名关闭");
+                        obj.parent().siblings(".state").children(".state1").html("报名中");
+                    }
+                }else{
+                    alert(data.error);
+                }
+            },"json")
+        }
+    });
+
+    $('a.ajax-del').bind('click',function(){
+        if(confirm('确定？')){
+            var eventId = $(this).attr('id');
+            var publish = "";
+            obj = $(this);
+            if(obj.html() == "赛事结束"){
+                publish = "false";
+            }else{
+                alert("赛事已经结束");
+                return false;
+            }
+            $.post('<!--{{url('liansai/home/ajax-do')}}-->',{eventId:eventId,url:"event/eventSwitcher",publish:publish},function(data){
+                if(data.success){
+                    alert("操作成功");
+                    if(obj.html() == "赛事结束"){
+                        obj.html("赛事已结束");
+                        obj.parent().siblings(".state").children(".state1").html("报名结束");
+                    }
+                }else{
+                    alert(data.error);
+                }
+            },"json")
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,95 @@
+环境需求
+PHP 5.3.3+
+PHP扩展    
+	curl
+	gd
+	json
+	mbstring
+	memcache
+	mongo
+	mysql
+	mysqli
+	opcache
+	redis
+	pdo_mysql
+	pdo_sqlite
+	sqlite3
+	mcrypt
+	
+MySQL 5.1+
+redis 2.6+
+
+安装步骤:
+第一步：安装数据库
+复制源服务器203上的yxd_club_beta和yxd_www数据库到目标服务器上
+设置数据库访问用户名和密码(用户名和密码可以不同),记录这个用户名,等一下用于配置程序
+
+第二步：目录结构及程序部署
+假设服务器的文件存放根目录是/data
+/data/yxd_minbbs下存放程序源文件
+	将svn://113.31.18.198/branch/yxd_minbbs的全部文件导出到这个目录下
+	完成后次目录下应该是这个结构
+	/data/yxd_minbbs/apps
+	/data/yxd_minbbs/bootstrap
+	/data/yxd_minbbs/config
+	/data/yxd_minbbs/libraries
+	/data/yxd_minbbs/services
+	/data/yxd_minbbs/test
+	/data/yxd_minbbs/vendor
+	/data/yxd_minbbs/web
+
+/data/runtime 下存放动态的文件,此目录要有读写权限
+    命令行切换到这个目录下执行
+	mkdir cache logs meta sessions userdirs views
+	chmod 0777 -R runtime
+    同步源服务器203上的mnt/www/yxd_club/runtime/userdirs目录下所有文件到刚刚新建的userdirs目录下
+
+第二步：程序配置
+    打开/data/yxd_minbbs/config/database.php文件
+	
+	修改mysql配置
+	修改数组[connections][mysql]配置成yxd_club_beta的主机IP、用户名和密码
+	修改数组[connections][cms]配置成yxd_www的主机IP、用户名和密码
+	修改数组[connections][sqlite]配置成2.0版礼包的sqlite数据库文件实际路径
+	
+	修改redis配置
+	修改数组[redis][default]配置成redis的主机IP和端口
+	
+第三步：清除无用的目录和文件
+
+    rm -Rf /data/yxd_minbbs/apps/admin/config/beta
+	rm -Rf /data/yxd_minbbs/apps/admin/config/dev
+	rm -Rf /data/yxd_minbbs/apps/admin/config/developer
+	rm -Rf /data/yxd_minbbs/apps/admin/config/test
+	
+	rm -Rf /data/yxd_minbbs/apps/api/config/beta
+	rm -Rf /data/yxd_minbbs/apps/api/config/dev
+	rm -Rf /data/yxd_minbbs/apps/api/config/developer
+	rm -Rf /data/yxd_minbbs/apps/api/config/test
+	rm -Rf /data/yxd_minbbs/apps/api/config/testing
+	rm -Rf /data/yxd_minbbs/apps/api/tests
+	
+	rm -Rf /data/yxd_minbbs/composer.json
+	rm -Rf /data/yxd_minbbs/composer.lock
+	rm -Rf /data/yxd_minbbs/server.php
+	rm -Rf /data/yxd_minbbs/artisan
+	rm -Rf /data/yxd_minbbs/doc
+	rm -Rf /data/yxd_minbbs/test
+	
+第四步：检查安装情况及初始化应用数据
+    执行命令
+	php /data/yxd_minbbs/apps/admin/artisan command:app-init
+	
+第五步：部署定时任务
+
+    */1 * * * * /usr/bin/php /data/yxd_minbbs/apps/api/artisan command:applepush
+	*/1 * * * * /usr/bin/php /data/yxd_minbbs/apps/api/artisan command:useratme
+	*/1 * * * * /usr/bin/php /data/yxd_minbbs/apps/api/artisan command:userfeed
+	*/1 * * * * /usr/bin/php /data/yxd_minbbs/apps/api/artisan command:circlefeed
+	*/1 * * * * /usr/bin/php /data/yxd_minbbs/apps/api/artisan command:msgnum
+	*/1 * * * * /usr/bin/php /data/yxd_minbbs/apps/api/artisan command:clearcache
+	10 1 * * * /usr/bin/php /data/yxd_minbbs/apps/api/artisan command:joincircle
+	01 6 * * * /usr/bin/php /data/yxd_minbbs/apps/admin/artisan command:game-sync crawl-gameprice
+	
+
+

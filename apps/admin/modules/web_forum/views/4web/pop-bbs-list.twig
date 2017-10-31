@@ -1,24 +1,24 @@
 <div class="box">
     <div class="actions">
         <table class="table-filter">
-	        <tr>				            
+	        <tr>
 	            <td>
 	                <div class="controls">
-					   
+
 				        <label class="radio inline">
 				        名称
 				        </label>
-					</div>				                
+					</div>
 	            </td>
 	            <td>
-					<input id="keyword" type="text" class="input-medium" placeholder="" value="<!--{{keyword}}-->">								
+					<input id="keyword" type="text" class="input-medium" placeholder="" value="<!--{{keyword}}-->" />
 				</td>
 				<td>
 				    <a href="javascript:searchBbs();" class="btn btn-teal">按条件搜索</a>
 				</td>
 			</tr>
 		</table>
-    </div>    
+    </div>
     <table class="table table-hover table-nomargin">
         <thead>
 			<tr>
@@ -29,14 +29,14 @@
 			</tr>
 		</thead>
 		<tbody>
-					<!--{% for key,item in datalist%}--> 
+					<!--{% for key,item in datalist%}-->
 					<tr>
 						<td class="user-avatar"><img  <!--{% if item.gname %}-->title="关联游戏:<!--{{item.gname}}-->"<!--{%endif%}--> src="<!--{{item.logo}}-->"/></td>
 						<td id="bbs_name_<!--{{item.fid}}-->"><!--{{item.name}}--></td>
 						<td><!--{{item.totalTopicNumber}}--></td>
-						
+
 						<td>
-							<a href="javascript:void(0);" data-id="<!--{{item.fid}}-->" class="btn btn-primary select-bbs-id">选择</a>		
+							<a href="javascript:void(0);" data-id="<!--{{item.fid}}-->" class="btn btn-primary select-bbs-id">选择</a>
 						</td>
 					</tr>
 					<!--{%endfor%}-->
@@ -45,20 +45,20 @@
     <div class="pagelink">
         <!--{{pagelinks}}-->
     </div>
-</div>    
+</div>
     <script>
     function searchBbs()
     {
         var keytype = $("input[name='keytype']:checked").val();
         var keyword = $('#keyword').val();
         $.ajax({
-            url:'bbs-search-select',
+            url:'/web_forum/topic/bbs-search-select',
             data:{name:keyword},
             dataType:'json',
             success:function(json){
                 var html = '';
                 html = json.html;
-                $.dialog.list['pop-bbs-list'].content(html);		                
+                $.dialog.list['pop-bbs-list'].content(html);
             }
         });
     }
@@ -73,7 +73,7 @@
             });
         });
         $('.pagelink a').each(function(){
-            var url = $(this).attr('href');            
+            var url = $(this).attr('href');
             $(this).attr('href','javascript:void(0);');
             $(this).click(function(){
                 $.ajax({
@@ -82,11 +82,15 @@
 		            success:function(json){
 		                var html = '';
 		                html = json.html;
-		                $.dialog.list['pop-bbs-list'].content(html);		                
+		                $.dialog.list['pop-bbs-list'].content(html);
 		            }
                 });
             });
         });
+
+        $(".aui_close").click(function(){
+            set_selected_bbs("","");
+        })
     }
     init_page();
     </script>

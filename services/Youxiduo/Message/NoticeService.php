@@ -49,7 +49,7 @@ class NoticeService extends BaseService
 		return $out;
 	}
 	
-	public static function sendMessage($title,$content,$linkType,$link,array $toUids,$isPush,$isAllUser=false,$type=0,$pushPlatform=1)
+	public static function sendMessage($title,$content,$linkType,$link,array $toUids,$isPush,$isAllUser=false,$type=0,$pushPlatform=1,$version="")
 	{
 		if(!is_array($toUids) || !$toUids) return false;
 		$toUids = array_unique($toUids);
@@ -61,23 +61,23 @@ class NoticeService extends BaseService
 		$channel_ids = UserDevice::db()->whereIn('uid',$toUids)->lists('channel_id');
 		//print_r($toUids);
 		//echo implode(',',$toUids);
-		BaiduPushService::pushUnicastMessage($title,'',$type,$linkType,$link,implode(',',$toUids),implode(',',$channel_ids),'',$content,false,$isPush,false,$pushPlatform);
+		BaiduPushService::pushUnicastMessage($title,'',$type,$linkType,$link,implode(',',$toUids),implode(',',$channel_ids),'',$content,false,$isPush,false,$pushPlatform,$version);
 		//exit;
 		//BaiduPushService::pushTagMessage($title,'',$type,$linkType,$link,'test',$content,false,$isPush,false,implode(',',$toUids));
 		return true;
 	}
 	
-	public static function sendOneMessage($title,$content,$linkType,$link,$toUid,$isPush,$isAllUser=false,$type=0,$pushPlatform=1)
+	public static function sendOneMessage($title,$content,$linkType,$link,$toUid,$isPush,$isAllUser=false,$type=0,$pushPlatform=1,$version="")
 	{
 //		$result = Utility::loadByHttp('module_message/message/system_send',$params,'POST');
         if($isAllUser){
-            $res = BaiduPushService::androidPushMessage($title,'',$type,$linkType,$link,0,$content,false,$isPush,$isAllUser,$pushPlatform);
+            $res = BaiduPushService::androidPushMessage($title,'',$type,$linkType,$link,0,$content,false,$isPush,$isAllUser,$pushPlatform,$version);
             if($res['errorCode']==0)    return true;
             return false;
         }else{
             $device_info = UserDevice::getNewestInfoByUid($toUid);
             $res = BaiduPushService::pushUnicastMessage($title,'',$type,$linkType,$link,$toUid,
-                $device_info['channel_id'],$device_info['device_id'],$content,false,$isPush,false,$pushPlatform);
+                $device_info['channel_id'],$device_info['device_id'],$content,false,$isPush,false,$pushPlatform,$version);
             if($res['errorCode']==0)    return true;
             return false;
         }

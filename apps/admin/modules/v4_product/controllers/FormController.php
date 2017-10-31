@@ -41,7 +41,6 @@ class FormController  extends BackendController
             $params['templateName']=Input::get("templateName");
         }
         $result=ProductService::getFormList($params);
-        //print_r($result);exit;
         if($result['errorCode']==0){
             $data=self::processingInterface($result,$params);
             $data['inputinfo']=$params;
@@ -75,7 +74,7 @@ class FormController  extends BackendController
 
     public function postFormSave()
     {
-        $input=Input::only('detailValue','templateId','sort','detailId','templateName','input_name','count');
+        $input=Input::only('detailValue','templateId','sort','detailId','templateName','input_name','count','ids_del');
         $params['templateName']=$input['templateName'];
         $size=sizeof($input['input_name']);
 
@@ -94,11 +93,22 @@ class FormController  extends BackendController
                 return $this->back()->with('global_tips','操作失败');
             }
         }
+        $ids_del_arr = explode(',',$input['ids_del']);
+        foreach($ids_del_arr as $v){
+            if($v){
+                $params['templateDetailList'][] = array(
+                    'detailId' => $v,
+                    'isActive' => "false"
+                );
+            }
+        }
         if(!empty($input['templateId'])){
             $params['templateId']=$input['templateId'];
+            $result=ProductService::modify_form($params);
+        }else{
+            $result=ProductService::add_form($params);
         }
-        $result=ProductService::add_form($params);
-
+        ///product/modify_form
         if($result['errorCode']==0)
         {
             return $this->redirect('v4product/form/list')->with('global_tips','操作成功');

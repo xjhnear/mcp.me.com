@@ -1,0 +1,84 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					用户列表
+					<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('v4user/users/reward-manage')}}-->">
+				    <table class="table-filter">
+				        <tr>
+				            <td>
+									 <input type="radio" class="input-medium" name="yb" value="jia"/>加游币 <input type="radio" class="input-medium" name="yb" value="jian" />减游币
+                                <input type="text" id="num_yb" name="num_yb" class="input-small" />
+				            </td>
+				            <td>
+                                     <input type="radio" name="zs" value="jia" />加钻石 <input type="radio" name="zs" value="jian" />减钻石
+                                <input type="text" id="num_zs" name="num_zs" class="input-small" />
+							</td>
+				            <td><button class="btn btn-teal baocun"><i class="icon-search "></i>保存</button></td>
+                            <input type="hidden" name="uids" id="uids" />
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-40">
+						    						        
+							</th>
+						    <th class="col-50">ID</th>
+							<th class="col-100">用户名</th>
+							<th class="col-60">游币</th>
+							<th class="col-60">钻石</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in data%}-->
+						<tr>
+						    <td><input type="checkbox" uid="<!--{{item.uid}}-->" checked="checked"/></td>
+							<td><!--{{item.uid}}--></td>
+							<td><!--{{item.nickname}}--></td>
+							<td><!--{{money[item.uid]}}--></td>
+							<td><!--{{diamond[item.uid]}}--></td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    $(".baocun").click(function(){
+        var uids = "";
+        $("input:checked").each(function(){
+            uids += $(this).attr("uid")+",";
+        })
+        if(uids){
+            $("#uids").val(uids);
+        }else{
+            alert("无选中用户");
+            return false;
+        }
+
+
+    })
+});
+
+</script>
+<!--{%endblock%}-->

@@ -1,0 +1,95 @@
+<div class="box">
+    <div class="actions">
+        <table class="table-filter">
+	        <tr>				            
+	            <td>
+	                <div class="controls">
+
+				        <label class="radio inline">
+				        名称
+				        </label>
+					</div>				                
+	            </td>
+	            <td>
+					<input id="keyword" type="text" class="input-medium" placeholder="" value="<!--{{keyword}}-->">								
+				</td>
+				<td>
+				    <a href="javascript:search();" class="btn btn-teal">按条件搜索</a>
+				</td>
+			</tr>
+		</table>
+    </div>    
+    <table class="table table-hover table-nomargin">
+        <thead>
+			<tr>
+			    <th class="col-80">分享图标</th>
+                <th class="col-60">分享标题</th>
+				<th class="table-btn-group">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+		    <!--{%for item in list%}-->
+			<tr>
+				<td class="user-avatar"><img src="<!--{{item.wechatShareLogoUrl}}-->" class="" /></td>
+				<td><!--{{item.wechatShareTitle}}--></td>
+				<td>
+				    <a href="javascript:void(0);" data-id="<!--{{item.id}}-->" data-share_url="<!--{{item.share_url}}-->" data-share_title="<!--{{item.wechatShareTitle}}-->" data-share_pic="<!--{{item.wechatShareLogoUrl}}--><!--{{item.share_pic}}-->" data-share_des="<!--{{item.wechatShareDescription}}-->" rewards = '<!--{{item.rewards}}-->' class="btn btn-primary select-id">选择</a>
+				</td>
+			</tr>
+			<!--{%endfor%}-->
+		</tbody>
+    </table>
+    <div class="pagelink">
+        <!--{{pagelinks}}-->
+    </div>
+</div>
+    <script>
+    function search()
+    {
+        var keyword = $('#keyword').val();
+        $.ajax({
+            url:'/duang/variation/v4share-search',
+            data:{keyword:keyword},
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog.list['pop-variation-list'].content(html);
+            }
+        });
+    }
+    function init_page()
+    {
+        //
+        $('.select-id').each(function(){
+            $(this).click(function(){
+                var activity_id = $(this).attr('data-id');
+                var share_title = $(this).attr('data-share_title');
+                var share_pic = $(this).attr('data-share_pic');
+                var share_des = $(this).attr('data-share_des');
+                var share_url = $(this).attr('data-share_url');
+                var rewards = $(this).attr('rewards');
+                set_selected_v4share(activity_id,share_title,share_pic,share_des,share_url,rewards);
+                $.dialog.list['pop-variation-list'].close();
+            });
+        });
+        //
+        $('.pagelink a').each(function(){
+            var url = $(this).attr('href');            
+            $(this).attr('href','javascript:void(0);');
+            $(this).click(function(){
+                $.ajax({
+                    url:url,
+                    dataType:'json',
+		            success:function(json){
+		                var html = '';
+		                html = json.html;
+		                $.dialog.list['pop-variation-list'].content(html);
+		            }
+                });
+            });
+            
+        });
+    }
+    init_page();
+    </script>

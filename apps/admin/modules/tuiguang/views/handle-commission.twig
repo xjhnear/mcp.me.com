@@ -1,0 +1,114 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/plugins/tagsinput/jquery.tagsinput.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>处理提现</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form_column" action="<!--{{url('tuiguang/home/commision')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+
+                <div class="control-group">
+                    <label class="control-label">提现订单号</label>
+                    <div class="controls">
+                        <!--{{data.requireId}}-->
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">提现金额</label>
+                    <div class="controls">
+                        <!--{{data.cashAmount}}-->
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">提现时间</label>
+                    <div class="controls">
+                        <!--{{data.requireTime}}-->
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">收款账号</label>
+                    <div class="controls">
+                        <!--{{data.alipayAccount}}-->
+                    </div>
+                    
+                </div>
+                <div class="control-group">
+                <label class="control-label">真实姓名</label>
+                    <div class="controls">
+                        <!--{{data.accountName}}-->
+                    </div>
+                </div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">处理结果<i class="tip-star">*</i></label>
+					<div class="controls">
+
+                        <!--{%if data.result %}-->
+                        <!--{{form_select('result',result,data.result,{'id':'result','disabled':'disabled'})}}-->
+                        <!--{%else%}-->
+                        <!--{{form_select('result',result,data.result,{'id':'result'})}}-->
+                        <!--{%endif%}-->
+                        <input type="text" id="resultDesc" name="resultDesc" placeholder="失败理由" <!--{%if data.result %}-->readonly<!--{%endif%}--> value="<!--{{data.resultDesc}}-->" />
+					</div>
+				</div>
+
+                <div class="control-group">
+                    <label for="textfield" class="control-label">支付方式<i class="tip-star">*</i></label>
+                    <div class="controls">
+                        <!--{{form_select('payType',payType,data.payType,{'id':'payType'})}}-->
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">支付流水号</label>
+                    <div class="controls">
+                        <input type="text" name="payStance" id="payStance" class="input-small" value="<!--{{data.payStance}}-->" data-rule-required="true" data-msg-required="不能为空"  />
+                    </div>
+                </div>
+			    <div class="form-actions">
+                    <!--{%if data.result==0%}-->
+                    <input type="button" class="btn btn-primary ajax-cashapprove" cashAmount="<!--{{data.cashAmount}}-->" requireId="<!--{{data.requireId}}-->"  value="保存"/>
+                    <!--{%endif%}-->
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script>
+$(function(){
+    $(".ajax-cashapprove").click(function(){
+        var obj = $(this);
+        var requireId = $(this).attr('requireId');
+        var result = $("#result").val();
+        var resultDesc = $("#resultDesc").val();
+        var payType = $("#payType").val();
+        var payStance = $("#payStance").val();
+        $.post('<!--{{url('tuiguang/home/ajax-do')}}-->',{url:"cashapprove",requireId:requireId,result:result,resultDesc:resultDesc,payType:payType,payStance:payStance},function(data){
+            if(data.success){
+                    alert("保存成功！");
+                     window.location.href = document.referrer;
+            }else{
+                alert(data.error);
+            }
+        },"json")
+    })
+});
+</script>
+<!--{%endblock%}-->

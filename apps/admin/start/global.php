@@ -55,17 +55,18 @@ Event::listen('illuminate.log', function ($type, $message,$context=null)
 	if(in_array($type,array('info','error','waring','log'))){
 		$fb->{$type}($message);
 	}
-	//$fb->log($message);
+	$fb->log($message);
 });
-
-Event::listen('illuminate.query', function ($sql, $bindings, $time)
-{
-	$time = number_format($time,4,'.','');
-	$fb = App::make('firephp');
-	$fb->info($sql,$time . 'ms');
-});
-
-$logFile = 'log-mcp-'.php_sapi_name().'.txt';
+//
+//Event::listen('illuminate.query', function ($sql, $bindings, $time)
+//{
+//	$time = number_format($time,4,'.','');
+//    $sql = vsprintf(str_replace('?','"%s"',$sql), $bindings);
+//	$fb = App::make('firephp');
+//	$fb->info($sql,$time . 'ms');
+//});
+//
+$logFile = 'log-'.php_sapi_name().'.txt';
 
 Log::useDailyFiles(storage_path().'/logs/'.$logFile);
 

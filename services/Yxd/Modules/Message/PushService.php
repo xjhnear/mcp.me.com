@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Log;
 
 use Yxd\Modules\Core\BaseService;
 
+use Yxd\Services\Models\Account;
+
 class PushService extends BaseService
 {
 	public static function sendOne($apple_token,$content,$params=array())
@@ -78,7 +80,7 @@ class PushService extends BaseService
 	public static function sendSubscribeGiftbagUpdate($uids,$giftbag_id,$params)
 	{
 		$tpl = NoticeService::AUTO_NOTICE_SUBSCRIBE_GIFTBAG_UPDATE;		
-		$apple_token_list = self::dbClubSlave()->table('account')->where('apple_token','!=','')->whereIn('uid',$uids)->distinct()->select('apple_token')->lists('apple_token');
+		$apple_token_list = Account::db()->where('apple_token','!=','')->whereIn('uid',$uids)->distinct()->select('apple_token')->lists('apple_token');
 		if(!$apple_token_list) return false;
 		$content = NoticeService::parseTpl($tpl, $params);
 		if($content===false) return false;
@@ -92,9 +94,9 @@ class PushService extends BaseService
 	public static function sendSystemMessage($uids,$content,$type,$linkid)
 	{
 		if(!$uids){
-			$apple_token_list = self::dbClubSlave()->table('account')->where('apple_token','!=','')->distinct()->select('apple_token')->lists('apple_token');
+			$apple_token_list = Account::db()->where('apple_token','!=','')->distinct()->select('apple_token')->lists('apple_token');
 		}else{
-			$apple_token_list = self::dbClubSlave()->table('account')->where('apple_token','!=','')->distinct()->select('apple_token')->whereIn('uid',$uids)->lists('apple_token');
+			$apple_token_list = Account::db()->where('apple_token','!=','')->distinct()->select('apple_token')->whereIn('uid',$uids)->lists('apple_token');
 		}
 		$data = array('content'=>$content,'type'=>$type,'linkid'=>$linkid);
 		self::redis()->set('queue::apple_push::content',serialize($data));

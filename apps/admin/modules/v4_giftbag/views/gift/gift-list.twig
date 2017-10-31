@@ -27,6 +27,14 @@
 					        <td><span class="label label-blue"><input type="checkbox" name="s_params[]" value="5" <!--{{ 5 in search.s_params ? 'checked' : ''}}-->>
 						        无追加</span>
 					        </td>
+					        <td><span class="label label-blue"><input type="checkbox" name="s_params[]" value="6" <!--{{ 6 in search.s_params ? 'checked' : ''}}-->>
+						        置顶</span>
+					        </td>
+				        </tr>
+				        <tr>
+					        <td>
+							礼包类型<!--{{form_select('currencyType',currencyTypeList,search.currencyType,{'style':'margin-bottom:0px','class':'input-small','id':'currencyType'})}}-->
+                            </td>
 					        <td>
 								<input id="gameselect" name="game_id" data-from="ios" type="hidden" value="<!--{{search.game_id}}-->"
 								       class="bigdrop select2-offscreen width_150" tabindex="-1">
@@ -35,17 +43,20 @@
 								<input name="keyword" type="text" class="input-medium" placeholder="礼包名称" value="<!--{{search.keyword}}-->">
 							</td>
 					        <td>
-								<div class="input-append date datepick" id="dpStart" data-date="">
-									<input name="start_date" type="text" class="input-small" value="<!--{{ search.start_date }}-->" readonly placeholder="">
+								<div class="input-append date " >
+									<input name="start_date" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{search.start_date}}-->" readonly>
 									<span class="add-on"><i class="icon-calendar"></i></span>
 								</div>
 							</td>
 							<td>
-								<div class="input-append date datepick" id="dpEnd" data-date="">
-									<input name="end_date" type="text" class="input-small" value="<!--{{ search.end_date }}-->" readonly placeholder="">
+								<div class="input-append date " >
+									<input name="end_date" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{search.end_date}}-->" readonly>
 									<span class="add-on"><i class="icon-calendar"></i></span>
 								</div>
 							</td>
+                            <td>
+                            	<!--{{form_select('appname',appnames,search.appname,{'style':'width:100px'})}}-->
+                            </td>
 							<td><button class="btn btn-teal"><i class="icon-search"></i></button></td>
 				            <td><a href="<!--{{url('v4giftbag/gift/add')}}-->" class="btn btn-teal"><i class="icon-plus" title="添加礼包"></i></a></td>
 				        </tr>
@@ -58,12 +69,16 @@
 			        <thead>
 						<tr>
 							<th class="col-20">Icon</th>
-							<th class="col-100">礼包名称</th>
+							<th class="col-100">礼包名称/Code</th>
+							<th class="col-60">礼包类型</th>
 							<th class="col-60">开始时间</th>
 							<th class="col-60">结束时间</th>
 							<th class="col-120">属性</th>
 							<th class="col-80">剩余/总量</th>
-							<th class="col-80">追加发布</th>
+							<!--<th class="col-80">追加发布</th>-->
+							<th class="col-80">平台</th>
+							<th class="col-80">是否推送</th>
+							<th class="col-80">创建时间</th>
 							<th class="col-80">最后操作</th>
 							<th class="col-100">操作</th>
 						</tr>
@@ -73,8 +88,10 @@
 						<tr>
 							<td class="user-avatar"><img src="<!--{{ item.img.listPic }}-->" title="<!--{{item.title}}-->"></td>
 							<td>
-								<!--{{item.title}}-->
+								<!--{{item.title}}--><br/>
+								<!--{{item.productCode}}-->
 							</td>
+							<td><!--{{ currencyTypeList[item.currencyType] }}--></td>
 							<td><!--{{ item.startTimeStr }}--></td>
 							<td><!--{{ item.endTimeStr }}--></td>
 							<td>
@@ -97,7 +114,7 @@
 								<!--{% endif %}-->
 							</td>
 							<td><!--{{item.restCount}}-->/<!--{{item.totalCount}}--></td>
-							<td>
+							<!--<td>
 								<!--{% if item.extraReq.addType == '0' %}-->
 								<span class="label label-important"><i class="icon-minus-sign" title="无追加"></i></span>
 								<!--{% elseif item.extraReq.addType == 'addByTime' %}-->
@@ -110,41 +127,55 @@
 								<span class="label label-success"><i class="icon-plus-sign-alt"></i></span><<!--{{ item.extraReq.conditionNum*100 }}-->%
 								+<!--{{ item.extraReq.addNum }}--> 限 <!--{{ item.extraReq.addNumMax }}-->
 								<!--{% endif %}-->
-							</td>
+							</td>-->
+							<td><!--{{ appnames[item.appname] }}--></td>
+							<td><!--{{ item.extraReq.freeContent.pushStatus=='1' ? '是' : '否' }}--></td>
+							<td><!--{{ item.addTime|date('Y-m-d H:i:s') }}--></td>
 							<td><!--{{ item.modifier ?: item.creator }}--><br/><!--{{ item.modifyTimeStr|date('Y-m-d H:i') }}--></td>
 							<td>
 								<div class="btn-group">
 									<a data-toggle="dropdown" href="#" class="btn btn-primary dropdown-toggle"><i class="icon-cog"></i> <span class="caret"></span></a>
 									<ul class="dropdown-menu dropdown-primary">
 										<li>
-											<a class="ajax-on" ifon="<!--{{ item.isOnshelf }}-->" data="<!--{{ item.productCode }}-->" href="javascript:void(0);">
+											<a class="ajax-on" ifon="<!--{{ item.isOnshelf }}-->" data="<!--{{ item.productCode }}-->" platform="<!--{{ item.platform }}-->" href="javascript:void(0);">
 												<!--{{ item.isOnshelf ? '下架' : '上架'  }}-->
 											</a>
 										</li>
 										<li>
-											<a class="ajax-hot" ifhot="<!--{{ item.isTop }}-->" data="<!--{{ item.productCode }}-->" href="javascript:void(0);">
+											<a class="ajax-hot" ifhot="<!--{{ item.isTop }}-->" data="<!--{{ item.productCode }}-->" platform="<!--{{ item.platform }}-->" href="javascript:void(0);">
 												<!--{{ item.isTop ? '取消置顶' : '置顶'  }}-->
 											</a>
 										</li>
 										<li>
-											<a class="ajax-sign" ifsign="<!--{{ item.isSign }}-->" data="<!--{{ item.productCode }}-->" href="javascript:void(0);">
+											<a class="ajax-sign" ifsign="<!--{{ item.isSign }}-->" data="<!--{{ item.productCode }}-->" platform="<!--{{ item.platform }}-->" href="javascript:void(0);">
 												<!--{{ item.isSign ? '移除标记' : '标记'  }}-->
 											</a>
 										</li>
 										<li>
-											<a class="ajax-send" data="<!--{{ item.productCode }}-->" href="javascript:void(0);">发放</a>
+											<a class="ajax-send" data="<!--{{ item.productCode }}-->" data_name="<!--{{ item.title }}-->" gid="<!--{{ item.gid }}-->" platform="<!--{{ item.platform }}-->" href="javascript:void(0);">发放</a>
 										</li>
+                                        <!--{%if item.isExclusive%}-->
 										<li>
-											<a class="ajax-auth" data="<!--{{ item.productCode }}-->" href="javascript:void(0);">授权</a>
+											<a class="ajax-auth" data="<!--{{ item.productCode }}-->" data_name="<!--{{ item.title }}-->" gid="<!--{{ item.gid }}-->" platform="<!--{{ item.platform }}-->" uids="<!--{%for item2 in item.accountList%}--><!--{{ item2 }}-->,<!--{%endfor%}-->" href="javascript:void(0);">授权</a>
 										</li>
+                                        <!--{% endif %}-->
 										<li>
-											<a class="ajax-append" datacode="<!--{{ item.productCode }}-->" data="<!--{{ item.cardCode }}-->" dataid="<!--{{ item.productId}}-->" href="javascript:void(0);">追加</a>
+											<a class="ajax-append" datacode="<!--{{ item.productCode }}-->" data="<!--{{ item.cardCode }}-->" dataid="<!--{{ item.productId}}-->" platform="<!--{{ item.platform }}-->" href="javascript:void(0);">补充礼包</a>
 										</li>
 									</ul>
 								</div>
-							    <a href="<!--{{url('v4giftbag/gift/edit',{id:item.productId})}}-->" class="btn btn-primary"><i class="icon-edit" title="编辑"></i></a>
-								<a href="javascript:void(0);" data="<!--{{ item.productCode }}-->" class="btn btn-primary ajax-del"><i class="icon-trash" title="删除"></i></a>
-							</td>
+							    <a href="<!--{{url('v4giftbag/gift/edit',{id:item.productId,platform:item.platform})}}-->" class="btn btn-primary"><i class="icon-edit" title="编辑"></i></a>
+								<a href="javascript:void(0);" data="<!--{{ item.productCode }}-->" platform="<!--{{ item.platform }}-->" class="btn btn-primary ajax-del"><i class="icon-trash" title="删除"></i></a>
+                                <!--{% if item.isOnshelf!=1 %}-->
+                                <!--{% if item.restCount > 0 %}-->
+                                <!--{% if item.productType == 0 or item.productType == 2 %}-->
+                                <input type="button" class="btn btn-primary" data-container="body" data-html="true" data-toggle="popover" data-placement="left"  data-content='
+<input type="text" value="<!--{{item.restCount}}-->" style="width: 70px"/><input type="button" code="<!--{{item.productCode}}-->" platform="<!--{{ item.platform }}-->" class="release" value="提交" />
+                            ' value="解绑" />
+                                <!--{% endif %}-->
+                                <!--{% endif %}-->
+                                <!--{% endif %}-->
+                            </td>
 						</tr>
 						<!--{%endfor%}-->
 					</tbody>
@@ -188,6 +219,12 @@
 						<textarea rows="5" cols="30" id="myuids" style="width:400px;height:180px;" name="uids"  class="input-xlarge  input-selected-uids"></textarea>
 					</div>
 				</div>
+                <div class="control-group box-auth" >
+                    <label class="control-label">已授权用户</label>
+                    <div class="controls">
+                        <textarea rows="5" cols="30" id="myuids2" style="width:400px;height:180px;" class="input-xlarge"></textarea>
+                    </div>
+                </div>
 				<div class="form-actions">
 					<a href="javascript:void(0);" class="btn btn-primary fafang_">确定</a>
 				</div>
@@ -197,8 +234,10 @@
 </div>
 <!--{%endblock%}-->
 <!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
 <script src="<!--{{asset('/static/js/ajaxfileupload.js')}}-->"></script>
 <script>
+$('[data-toggle="popover"]').popover();
 $(function(){
 	gameselect('#gameselect');
 	$('input').iCheck({
@@ -208,11 +247,12 @@ $(function(){
 	});
 	$('.ajax-on').bind('click',function(){
 		var p_code = $(this).attr('data');
+		var platform = $(this).attr('platform');
 		var ifon = $(this).attr('ifon') ? 0 : 1;
 		var valid_str = ifon ? '上架' : '下架';
 		alertify.confirm('是否更改为' + valid_str + '？',function(e){
 			if(e){
-				$.get('/v4giftbag/gift/ajax-shelf',{'p_code':p_code,'state':ifon},function(resp){
+				$.get('/v4giftbag/gift/ajax-shelf',{'p_code':p_code,'platform':platform,'state':ifon},function(resp){
 					if(resp.state){
 						alertify.success(resp.msg);
 						setTimeout(function(){
@@ -227,9 +267,10 @@ $(function(){
 	});
 	$('.ajax-del').bind('click',function(){
 		var p_code = $(this).attr('data');
+		var platform = $(this).attr('platform');
 		alertify.confirm('是否删除该礼包？',function(e){
 			if(e){
-				$.get('/v4giftbag/gift/ajax-del/'+ p_code,function(resp){
+				$.get('/v4giftbag/gift/ajax-del/'+ p_code +'/'+ platform,function(resp){
 					if(resp.state){
 						alertify.success(resp.msg);
 						setTimeout(function(){
@@ -244,11 +285,12 @@ $(function(){
 	});
 	$('.ajax-hot').bind('click',function(){
 		var p_code = $(this).attr('data');
+		var platform = $(this).attr('platform');
 		var ifhot = $(this).attr('ifhot') ? true : false;
 		var valid_str = ifhot ? '取消' : '';
 		alertify.confirm('是否' + valid_str + '置顶？',function(e){
 			if(e){
-				$.get('/v4giftbag/gift/ajax-hot',{'p_code':p_code,'hot':!ifhot},function(resp){
+				$.get('/v4giftbag/gift/ajax-hot',{'p_code':p_code,'platform':platform,'hot':!ifhot},function(resp){
 					if(resp.state){
 						alertify.success(resp.msg);
 						setTimeout(function(){
@@ -263,11 +305,12 @@ $(function(){
 	});
 	$('.ajax-sign').bind('click',function(){
 		var p_code = $(this).attr('data');
+		var platform = $(this).attr('platform');
 		var ifsign = $(this).attr('ifsign') ? 0 : 1;
 		var valid_str = ifsign ? '设为' : '取消';
 		alertify.confirm('是否' + valid_str + '标记？',function(e){
 			if(e){
-				$.get('/v4giftbag/gift/ajax-sign',{'p_code':p_code,'sign':ifsign},function(resp){
+				$.get('/v4giftbag/gift/ajax-sign',{'p_code':p_code,'platform':platform,'sign':ifsign},function(resp){
 					if(resp.state){
 						alertify.success(resp.msg);
 						setTimeout(function(){
@@ -283,12 +326,16 @@ $(function(){
 	$(".ajax-send").bind('click',function(){
         var html=$("#dialog-confirm").html();
 		var p_code = $(this).attr('data');
+		var p_name = $(this).attr('data_name');
+		var gameId = $(this).attr('gid');
+		var platform = $(this).attr('platform');
 		$.dialog({id:'pop-fafang-html',title:'提示',padding:2,content:html,width:410,height:240});
+		$(".box-auth").hide();
         $("#select-all-uids").click();
 		$("a.fafang_").bind('click',function(){
 			var uids=$("#myuids").val();
 			if(!uids) { alertify.error('请先选择用户'); return false;}
-			$.get('/v4giftbag/gift/ajax-send',{'uids':uids,'p_code':p_code},function(data){
+			$.get('/v4giftbag/gift/ajax-send',{'uids':uids,'p_code':p_code,'platform':platform,'p_name':p_name,'gameId':gameId},function(data){
 				if(data.state){
 					alertify.success(data.msg);
 					setTimeout(function(){location.reload();},1000);
@@ -299,14 +346,20 @@ $(function(){
 		});
 	});
 	$(".ajax-auth").bind('click',function(){
+        $("#myuids2").html($(this).attr('uids'));
 		var html=$("#dialog-confirm").html();
 		var p_code = $(this).attr('data');
+		var p_name = $(this).attr('data_name');
+		var gameId = $(this).attr('gid');
+		var platform = $(this).attr('platform');
 		$.dialog({id:'pop-fafang-html',title:'提示',padding:2,content:html,width:410,height:240});
+		$(".box-auth").show();
         $("#select-all-uids").click();
 		$("a.fafang_").bind('click',function(){
 			var uids=$("#myuids").val();
+			var uids_now=$("#myuids2").val();
 			if(!uids) { alertify.error('请先选择用户'); return false;}
-			$.get('/v4giftbag/gift/ajax-auth',{'uids':uids,'p_code':p_code},function(data){
+			$.post('/v4giftbag/gift/ajax-auth',{'uids':uids,'uids_now':uids_now,'p_code':p_code,'platform':platform,'p_name':p_name,'gameId':gameId},function(data){
 				if(data.state){
 					alertify.success(data.msg);
 					setTimeout(function(){location.reload();},1000);
@@ -321,6 +374,7 @@ $(function(){
 		var p_code = $(this).attr('data');
         var dataid = $(this).attr('dataid');
         var datacode = $(this).attr('datacode');
+        var platform = $(this).attr('platform');
 		$.dialog({id:'pop-fafang-html',title:'提示',padding:2,content:html,width:410,height:120});
         $(document).on('change','#file_upload',function(){
             $.ajaxFileUpload({
@@ -378,6 +432,19 @@ $(function(){
 			});
 		});
 	});
-});    
+
+
+});
+$('.release').live('click',function(){
+    var value = $(this).siblings("input").val();
+    var code = $(this).attr("code");
+    $.post('<!--{{url('v4giftbag/gift/release')}}-->',{value:value,code:code},function(data){
+        if(data.success=="true"){
+            window.location.reload();
+        }else{
+            alert(data.mess);
+        }
+    },"json")
+});
 </script>
 <!--{%endblock%}-->

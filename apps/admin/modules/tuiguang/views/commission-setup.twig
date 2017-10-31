@@ -1,0 +1,266 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/plugins/tagsinput/jquery.tagsinput.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>分成设置</h3>
+			</div>
+			<div class="box-content">
+			    <form id="form_column" action="<!--{{url('')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+
+                <div class="control-group">
+                    <label class="control-label"><b>游戏多app</b></label>
+                    <div class="controls">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">规则：</label>
+                    <div class="controls">
+                        <label class="radio inline" style="margin-left: -18px"><!--{{form_radio('fc1','count',task.feeType=="0")}}-->人民币数量(元) <input type="text" name="rmbReward1" class="input-small" value="<!--{{task.rmbReward}}-->" /></label>
+                        <label class="radio inline"><!--{{form_radio('fc1','prop',task.feeType=="1")}}-->人民币比例 <input type="text" name="rmbRate1" class="input-small" value="<!--{{task.rmbRate}}-->" />%</label>
+                        <label class="radio inline">游币 <input type="text" name="balanceReward1" class="input-small" value="<!--{{task.yb}}-->" /></label>
+                        <label class="radio inline">分成上限<input type="text" name="upperLimit1" class="input-small" value="<!--{{task.upperLimitShow}}-->" /></label>
+                        <input type="button" CLASS="btn-primary tijiao_rmb1"did="<!--{{task.defaultId1}}-->" value="保存人民币" />
+                        <input type="button" CLASS="btn-primary tijiao_yb1" did="<!--{{task.defaultId2}}-->" value="保存游币" />
+                    </div>
+                </div>
+
+        <!--        <div class="control-group">
+                    <label class="control-label"><b>365交易</b></label>
+                    <div class="controls">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">规则：</label>
+                    <div class="controls">
+                        <label class="radio inline" style="margin-left: -18px"><!--{{form_radio('fc2','count',trade.feeType=="0")}}-->人民币数量(元) <input type="text" name="rmbReward2" class="input-small" value="<!--{{trade.rmbReward}}-->" /></label>
+                        <label class="radio inline"><!--{{form_radio('fc2','prop',trade.feeType=="1")}}-->人民币比例 <input type="text" name="rmbRate2" class="input-small" value="<!--{{trade.rmbRate}}-->" />%</label>
+                        <input type="button" CLASS="btn-primary tijiao_rmb2" did="<!--{{trade.defaultId}}-->"  value="保存人民币" />
+                        </legend>
+                    </div>
+                </div>
+       -->
+                <div class="control-group">
+                    <label class="control-label"><b>Android SDK</b></label>
+                    <div class="controls">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">规则：</label>
+                    <div class="controls">
+                        <label class="radio inline" style="margin-left: -18px"><!--{{form_radio('fc3','count',sdk.feeType=="0")}}-->人民币数量(元) <input type="text" name="rmbReward3" class="input-small" value="<!--{{sdk.rmbReward}}-->" /></label>
+                        <label class="radio inline"><!--{{form_radio('fc3','prop',sdk.feeType=="1")}}-->人民币比例 <input type="text" name="rmbRate3" class="input-small" value="<!--{{sdk.rmbRate}}-->" />%</label>
+                         <label class="radio inline">分成上限<input type="text" name="upperLimit3" class="input-small" value="<!--{{sdk.upperLimitShow}}-->" /></label>
+                        <input type="button" CLASS="btn-primary tijiao_rmb3" did="<!--{{sdk.defaultId}}-->" value="保存人民币" />
+                    </div>
+                </div>
+<hr>
+                <div class="control-group">
+                    <label><b>提现设置&规则说明</b><br><br>设置提现最低金额，即满足该金额方可提现。达到最低金额后，提现金额必须为10的整数倍方可提现，例：50,60,70..</label>
+                    <div class="controls">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label"><b>最低提现金额：</b></label>
+                    <div class="controls">
+                        <input type="text" id="cash" class="input-small" value="<!--{{cash}}-->" />元，10的整数倍
+                        <input type="button" CLASS="btn-primary tijiao_cash" value="保存金额" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label"><b>*规则说明</b></label>
+                    <div class="controls">
+                        <div data-provides="fileupload" class="fileupload fileupload-new">
+                            <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                <img id="selected_game_icon" src="<!--{{icon}}-->">
+                            </div>
+                            <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                            <span class="btn btn-file"><i class="icon-picture"></i>
+                                <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                                <input id="task_img" name="task_img" type="hidden" value="<!--{{icon}}-->"/>
+                                <input type="file"  name="prize_pic" class="myfile">
+                            </span>
+                            <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                            <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                            <input type="button" CLASS="btn-primary tijiao_icon" value="保存图片" />
+                        </div>
+                    </div>
+
+                </div>
+
+			    <div class="form-actions">
+                    <input type="hidden" name="id" value="<!--{{data.id}}-->"/>
+                    <input type="hidden" name="liveId" value="<!--{{liveId}}-->"/>
+				</div>
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script src="/static/js/ajaxfileupload.js"></script>
+<script>
+    var img_path;
+$(function(){
+    $(".tijiao_yb1").click(function(){
+        var defaultId = $(this).attr("did");
+        var feeType = 0;
+        var feeValueShow = $("input[name='balanceReward1']").val();
+        if(!feeValueShow){
+            alert("不能传空");
+        }
+        $.post('<!--{{url('tuiguang/home/ajax-commission-setup')}}-->',{defaultId:defaultId,currencyType:"0",feeType:feeType,feeValueShow:feeValueShow,upperLimitShow:"9999999.99"},function(data){
+            if(data.success){
+                alert("修改成功！");
+            }else{
+                alert(data.data);
+            }
+        },"json")
+    })
+
+
+    $(".tijiao_rmb1").click(function(){
+        var check_val =$("input[name='fc1']:checked").val();
+        var defaultId = $(this).attr("did");
+        var upperLimit=$("input[name='upperLimit1']").val();
+        if(!upperLimit){
+            upperLimit = "9999999"
+        }
+        var feeType = 1;
+        var feeValueShow = $("input[name='rmbRate1']").val();
+        if(check_val=="count"){
+            feeType = 0;
+            feeValueShow = $("input[name='rmbReward1']").val();
+        }
+        if(!feeValueShow){
+            alert("不能传空");
+        }
+        $.post('<!--{{url('tuiguang/home/ajax-commission-setup')}}-->',{defaultId:defaultId,currencyType:"2",feeType:feeType,feeValueShow:feeValueShow,upperLimitShow:upperLimit},function(data){
+            if(data.success){
+                alert("修改成功！");
+            }else{
+                alert(data.data);
+            }
+        },"json")
+    })
+
+    $(".tijiao_rmb2").click(function(){
+        var check_val =$("input[name='fc2']:checked").val();
+        var defaultId = $(this).attr("did");
+        var feeType = 1;
+        var feeValueShow = $("input[name='rmbRate2']").val();
+        if(check_val=="count"){
+            feeType = 0;
+            feeValueShow = $("input[name='rmbReward2']").val();
+        }
+        if(!feeValueShow){
+            alert("不能传空");
+        }
+        $.post('<!--{{url('tuiguang/home/ajax-commission-setup')}}-->',{defaultId:defaultId,currencyType:"2",feeType:feeType,feeValueShow:feeValueShow,upperLimitShow:"9999999.99"},function(data){
+            if(data.success){
+                alert("修改成功！");
+            }else{
+                alert(data.data);
+            }
+        },"json")
+    })
+
+    $(".tijiao_rmb3").click(function(){
+        var check_val =$("input[name='fc3']:checked").val();
+        var defaultId = $(this).attr("did");
+        var upperLimit=$("input[name='upperLimit3']").val();
+        if(!upperLimit){
+            upperLimit = "9999999";
+        }
+        var feeType = 1;
+        var feeValueShow = $("input[name='rmbRate3']").val();
+        if(check_val=="count"){
+            feeType = 0;
+            feeValueShow = $("input[name='rmbReward3']").val();
+        }
+        if(!feeValueShow){
+            alert("不能传空");
+        }
+        $.post('<!--{{url('tuiguang/home/ajax-commission-setup')}}-->',{defaultId:defaultId,currencyType:"2",feeType:feeType,feeValueShow:feeValueShow,upperLimitShow:upperLimit},function(data){
+            if(data.success){
+                alert("修改成功！");
+            }else{
+                alert(data.data);
+            }
+        },"json")
+    })
+
+    $(".tijiao_icon").click(function(){
+        if(!img_path){
+            alert("请选择图片！");return false;
+        }
+        $.post('<!--{{url('tuiguang/home/ajax-rule-setup')}}-->',{confKey:"ruleImg",confValue:img_path},function(data){
+            if(data.success){
+                alert("修改成功！");
+            }else{
+                alert(data.data);
+            }
+        },"json")
+    })
+    $(document).on('change','input.myfile',function(){
+            var timestamp = new Date().getTime();
+            var img_id = "id"+timestamp;
+            $(this).attr("id",img_id);
+            var btn_save = $(".tijiao_icon");
+            btn_save.attr("disabled","disabled");
+            $.ajaxFileUpload
+            (
+                    {
+                        url:'/tuiguang/home/ajax-upload-img', //你处理上传文件的服务端
+                        type : 'post',
+                        fileElementId:img_id,
+                        dataType: 'json',
+                        success: function (data)
+                        {
+                            if(data.success=="true"){
+                                img_path = data.data;
+                                alert("图片上传完毕！");
+                                btn_save.removeAttr("disabled");
+                            }else{
+                                alert(data.data);
+                            }
+                        }
+                    }
+            );
+    })
+    $(".tijiao_cash").click(function(){
+        var cash = $("#cash").val();
+        if(!cash){
+            alert("金额不能传空！");return fasle;
+        }
+        $.post('<!--{{url('tuiguang/home/ajax-cash-setup')}}-->',{confKey:"cashLimit",confValue:cash*100},function(data){
+            if(data.success){
+                alert("修改成功！");
+            }else{
+                alert(data.data);
+            }
+        },"json")
+    })
+});
+$('input').iCheck({
+    checkboxClass: 'icheckbox_square-orange',
+    radioClass: 'iradio_square-orange',
+    increaseArea: '20%' // optional
+});
+$('.switchbox').bootstrapSwitch();
+</script>
+<!--{%endblock%}-->

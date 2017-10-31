@@ -21,14 +21,6 @@ Route::get('atme',function(){
     return Response::json(array('result'=>$data));
 });
 
-Route::get('android/push',array('before'=>'uri_verify',function(){
-	$apple_token = 'bfd91f4fb65daccf29f7ff75106cdbc652e4d2c145c2fc7a0859dcc66f9d4681';
-	Yxd\Modules\Message\PushService::sendOne($apple_token,'测试的推送');
-}));
-
-
-
-
 
 /**
  * 加载模块路由
@@ -45,4 +37,3 @@ foreach($modules as $module=>$name){
 App::missing(function($exception){
 	return Response::view('errors.missing', array(), 404);
 });
-App::error(function($exception){echo '服务器繁忙,请稍候重试';});

@@ -11,7 +11,7 @@
 				<div class="actions">
 				    <table class="table-filter">
 				        <tr>
-				            <td><a href="<!--{{url('adv/ads/create',{'type':type})}}-->" class="btn btn-teal">添加<!--{{advtype}}--></button></td>
+				            <td><a href="<!--{{url('adv/ads/create',{'type':type})}}-->" class="btn btn-teal">添加<!--{{advtype}}--></a></td>
 				        </tr>
 				    </table>
 				</div>
@@ -29,22 +29,26 @@
 							<!--{%if type == 4%}--><th class="col-80">游戏ID</th><!--{%endif%}-->
 							<th class="col-80">应用</th>
 							<th class="col-80">版本</th>
-							<th class="table-btn-group">操作</th>
+                            <th class="col-80">浏览器</th>
+							<th class="table-btn-group-mini">操作</th>
 						</tr>
 					</thead>
 					<tbody>
 					    <!--{%for item in datalist%}-->
 						<tr>
 							<td><!--{{item.id}}--></td>
-							<td class="user-avatar"><img src="<!--{{imgurl}}--><!--{{item.litpic}}-->" class="" /></td>
+							<td class="user-avatar">
+                                <a href="#bigimg" data-toggle="modal"><img src="<!--{{imgurl}}--><!--{{item.litpic}}-->" class="" /></a>
+                            </td>
 							<td><!--{{advtype}}--></td>
 							<td><!--{{item.location}}--></td>
 							<td><!--{{item.aid}}--></td>
 							<!--{%if in_array(type,[2,3,6])%}--><td><!--{{item.advname}}--></td><!--{%endif%}-->
 							<!--{%if type == 4%}--><td><!--{{item.gid}}--></td><!--{%endif%}-->
-							<td><!--{{item.appname}}--></td>
-							<td><!--{{item.version}}--></td>					
-							<td>							    						   
+							<td><!--{{apptype[item.appname]}}--></td>
+							<td><!--{{item.version}}--></td>
+                            <td><!--{% if item.tosafari %}-->Safari浏览器<!--{% else %}-->内置浏览器<!--{% endif %}--></td>
+							<td>
 							    <a href="<!--{{url('adv/ads/edit',{'id':item.id})}}-->" class="btn btn-primary">编辑</a>							    							    
 							    <a href="<!--{{url('adv/ads/delete',{'id':item.id})}}-->" class="btn btn-primary">删除</a>
 							</td>

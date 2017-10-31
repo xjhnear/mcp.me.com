@@ -7,7 +7,7 @@
 				<h3><i class="icon-edit"></i>版本设置</h3>
 			</div>
 			<div class="box-content">
-				<form id="form-version" action="<!--{{url('system/setting/save-app-version')}}-->" method="POST" class='form-horizontal form-validate'>
+				<form id="form-version" action="<!--{{url('system/setting/save-app-version')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
 				<input name="id" type="hidden" value="<!--{{version.id}}-->" />
 				<div class="control-group">
 					<label for="textfield" class="control-label">名称</label>
@@ -24,28 +24,36 @@
 				<div class="control-group">
 					<label for="textfield" class="control-label">应用名称</label>
 					<div class="controls">
+						<!--{% if version.appname %}-->
+					    <!--{{version.appname}}-->
+					    <input name="appname" type="hidden" class="input-xlarge" value="<!--{{version.appname}}-->" />
+					    <!--{% else %}-->
 					    <input name="appname" type="text" class="input-xlarge" value="<!--{{version.appname}}-->" />
+					    <!--{% endif %}-->
 					</div>
 				</div>
+                    <!--
 				<div class="control-group">
 					<label for="textfield" class="control-label">渠道</label>
 					<div class="controls">
 					    <input name="channel" type="text" class="input-xlarge" value="<!--{{version.channel}}-->" />
 					</div>
-				</div>				
+				</div>
+                -->
 				<div class="control-group">
 					<label for="textfield" class="control-label">appstore地址</label>
 					<div class="controls">
 					    <input name="appstoreurl" type="text" class="input-xxlarge" value="<!--{{version.appstoreurl}}-->" />
 					</div>
 				</div>
-				
+				<!--
 				<div class="control-group">
 					<label for="textfield" class="control-label">H5网址</label>
 					<div class="controls">
 					    <input name="lm" type="text" class="input-xxlarge" value="<!--{{version.lm}}-->" />
 					</div>
 				</div>
+                -->
 				<div class="control-group">
 					<label for="textfield" class="control-label">下载短网址</label>
 					<div class="controls">
@@ -66,6 +74,7 @@
 					    <label class="radio inline"><!--{{form_radio('scorestate',2,version.scorestate==2)}}-->关闭评分</label>
 					</div>
 				</div>
+                    <!--
 				<div class="control-group">
 					<label for="textfield" class="control-label">下载状态</label>
 					<div class="controls">
@@ -94,6 +103,7 @@
 					    <label class="radio inline"><!--{{form_radio('bar',0,version.bar==0)}}-->关闭广告条</label>
 					</div>
 				</div>
+                    -->
 				<div class="control-group">
 					<label for="textfield" class="control-label">强制更新</label>
 					<div class="controls">
@@ -107,7 +117,7 @@
 					    <input name="updateversion" type="text" class="input-small" value="<!--{{version.updateversion}}-->" />
 					</div>
 				</div>
-				<div class="control-group">
+				<!-- <div class="control-group">
 					<label for="textfield" class="control-label">更新提示文字</label>
 					<div class="controls">
 					    <input name="updateword" type="text" class="input-xxlarge" value="<!--{{version.updateword}}-->" />
@@ -118,7 +128,54 @@
 					<div class="controls">
 					    <input name="lt" type="text" class="input-small" value="<!--{{version.lt|default(0)}}-->" />
 					</div>
-				</div>		
+				</div> -->
+				<input name="lt" type="hidden" class="input-small" value="<!--{{version.lt|default(0)}}-->" />
+
+				<div class="control-group">
+					<label for="textfield" class="control-label">更新说明</label>
+					<div class="controls">
+						<script id="intro" name="intro" type="text/plain"><!--{{ version.intro }}--></script>
+					</div>
+				</div>
+
+                    <div id="syspic">
+                    	<input id="sys_img" name="sys_img" type="hidden" value="<!--{{version.sys_img}}-->" />
+                        <input id="syspic-count" name="syspic-count" type="hidden" value="<!--{{version.syspiccount}}-->" />
+                    	<input id="syspic-delids" name="syspic-delids" type="hidden" value="" />
+						<!--{% for k, syspic in version.syspicVendorsList %}-->
+                    	<div id="syspic-sub-<!--{{k}}-->" >
+                    	<button type="button" class="btn btn-danger syspic-del control-group">X</button> 
+                    	<input name="syspicid[]" type="hidden" class="input-xxlarge syspicid" value="<!--{{k}}-->" />
+
+	                    <div class="control-group" id="adv_pic">
+	                    <div class="row-fluid">
+	                        <div class="span3">
+	                            <div class="control-group">
+	                                <label class="control-label">更新图片:</label>
+	                                <div class="controls">
+	                                    <div class="fileupload fileupload-new" data-provides="fileupload">
+	                                        <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;">
+	                                            <img src="<!--{{syspic|default('/static/img/nopic.gif')}}-->" />
+	                                        </div>
+	                                        <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+	                                        <div>
+	                                            <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input type="file"  name='sys_img_<!--{{k}}-->' /></span>
+	                                        </div>
+	                                    </div>
+	                                    <span class="help-inline"></span>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+                        </div>
+                        </div>
+                    	<!--{% endfor %}-->
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-primary syspic-add">新增更新图片</button>
+                    </div>
+                    </div>
+                    
 				<div class="form-actions">
 					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
 				</div>    
@@ -127,4 +184,72 @@
 		</div>
     </div>
 </div>
+
+<div id="syspic-module" style="display:none">
+	<button type="button" class="btn btn-danger syspic-del control-group">X</button> 
+	<input name="syspicid[]" type="hidden" class="input-xxlarge syspicid" value="#i#" />
+	<div class="control-group" id="adv_pic">
+                 
+		<div class="row-fluid">
+        	<div class="span3">
+				<div class="control-group">
+					<label class="control-label">广告图:</label>
+					<div class="controls">
+						<div class="fileupload fileupload-new" data-provides="fileupload">
+							<div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;">
+								<img src="/static/img/nopic.gif" />
+							</div>
+						<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+						<div>
+							<span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input type="file" data-rule-required="true"  data-msg-required="请选择图片" name='sys_img_#i#' /></span>
+						</div>
+					</div>
+                    <span class="help-inline"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script>
+var c = 100;
+$(function(){
+	UE.getEditor('intro',{initialFrameHeight:100});
+
+	});
+
+        $('.syspic-add').bind('click',function(){
+        	c = c + 1;
+        	var d = $('#syspic-count').val();
+        	if (d) {
+        		d += ',';
+        	}
+        	d += c;
+        	$('#syspic-count').val(d);
+        	var add = '<div id="syspic-sub-'+c+'">'+$('#syspic-module').html()+'</div>';
+        	add = add.replace(/#i#/g, c);
+			$('#syspic').append(add);
+        });
+        $('.syspic-del').live('click',function(){
+        	if ($(this).parent().children('.syspicid').val()) {
+        		var ids = $('#syspic-count').val();
+        		var v = $(this).parent().children('.syspicid').val();
+        		if (ids.indexOf(",")<0) {
+        			ids = ids.replace(v, "");
+        		} else if (ids.indexOf(v)>0) {
+        			ids = ids.replace(','+v, "");
+        		} else {
+        			ids = ids.replace(v+',', "");
+        		}
+        		$('#syspic-count').val(ids);
+        	}
+        	
+        	$(this).parent().remove();
+        });
+</script>
 <!--{%endblock%}-->

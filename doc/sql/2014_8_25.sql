@@ -1,0 +1,1 @@
+ALTER TABLE  `yxd_account` ADD  `zhucema` VARCHAR( 10 ) NOT NULL AFTER  `osversion`;

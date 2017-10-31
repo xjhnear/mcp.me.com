@@ -3,12 +3,14 @@ namespace Yxd\Services\Cms;
 
 use Illuminate\Support\Facades\DB;
 use Yxd\Services\Service;
+use Yxd\Services\Models\Games;
+use Yxd\Services\Models\GamesTag;
 
 class RankService extends Service
 {	
 	public static function getGameList($type,$gtid=0,$pricetype=null,$tag=null,$order='desc',$page=1,$pagesize=10)
 	{
-		$tb = self::dbCmsSlave()->table('games')->where('isdel','=',0);
+		$tb = Games::db()->where('isdel','=',0);
 		if($gtid>0){//筛选分类
 			$tb = $tb->where('type','=',$gtid);
 		}
@@ -18,7 +20,7 @@ class RankService extends Service
 		}
 		
 		if($tag){//筛选标签
-			$game_ids = self::dbCmsSlave()->table('games_tag')->where('tag','=',$tag)->lists('gid');
+			$game_ids = GamesTag::db()->where('tag','=',$tag)->lists('gid');
 			if($game_ids){
 				$tb = $tb->whereIn('id',$game_ids);
 			}

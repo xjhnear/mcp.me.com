@@ -57,10 +57,9 @@
                                 <!--{%endif%}-->
                             </td>
 							<td>
-
                                 <a href="#nogo" id="<!--{{item.id}}-->" class="btn btn-primary ajax-update"><!--{%if item.enable==0 %}-->开启<!--{%else%}-->关闭<!--{%endif%}--></a>
                                 <a href="<!--{{url('yxvl_eSports/VltvLive/add')}}-->?id=<!--{{item.id}}-->" class="btn btn-primary">编辑</a>
-                                <a href="<!--{{url('yxvl_eSports/VltvLive/live')}}-->?id=<!--{{item.id}}-->" class="btn btn-primary">查看图文</a>
+                                <a href="<!--{{url('yxvl_eSports/VltvLive/live')}}-->?liveId=<!--{{item.id}}-->" class="btn btn-primary">查看图文</a>
 							</td>
 						</tr>
 						<!--{%endfor%}-->

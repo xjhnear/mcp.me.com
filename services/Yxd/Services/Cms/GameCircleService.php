@@ -17,13 +17,17 @@ use Yxd\Services\ForumService;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Config;
 use Yxd\Services\Service;
 use Yxd\Services\Cms\GameService;
 use Yxd\Models\Cms\Game;
+use Youxiduo\Helper\Utility;
+use Youxiduo\Helper\DES;
+use Illuminate\Support\Facades\Config;
 
 class GameCircleService extends Service
 {	
+    const API_URL_CONF = 'app.mall_api_url';
+    const MALL_API_ACCOUNT = 'app.account_api_url';
 	/**
 	 * 游戏圈主页
 	 */
@@ -43,15 +47,15 @@ class GameCircleService extends Service
 		$out['price'] = $game['price'];
 		$out['oldprice'] = $game['oldprice'];
 		$out['language'] = $game['language'];
-		$out['downcount'] = GameService::getDownloadCountByRemote($gid,$game['downtimes']);
+		$out['downcount'] = $game['downtimes'];
 		$out['download'] = $game['downurl'];
 		$out['tosafari'] = isset($game['tosafari']) ? $game['tosafari'] : 0; 
 		$out['star'] = $game['score'];
 		
-		$out['moneyCount'] = GameService::filterDownloadCredit($gid, $uid);
+// 		$out['moneyCount'] = GameService::filterDownloadCredit($gid, $uid);
 		
         //试玩
-		$play = self::dbCmsSlave()->table('zone')->where('type','=',1)->where('gid','=',$gid)->first();
+		$play = self::dbCmsSlave()->table('zone')->where('type','=',1)->where('gid','=',$gid)->orderBy('id','desc')->first();
 		if($play){
 			$out['playurl'] = $play['linkurl'];
 			$out['playtosafari'] = $play['tosafari'];
@@ -82,7 +86,7 @@ class GameCircleService extends Service
 		}
 		$out['isin'] = isset($in_circle) ? (int)$in_circle : 0;	
 		//预约礼包	
-		$out['reservedgift'] = $uid ? (int)GiftService::isReserve($gid,$uid) : 0;
+// 		$out['reservedgift'] = $uid ? (int)GiftService::isReserve($gid,$uid) : 0;
 		
 		//游戏介绍
 		$out['appraise'] = $game['editorcomt'];
@@ -101,6 +105,7 @@ class GameCircleService extends Service
 		}
 		//有奖问答
 		$out['overList'] = array();
+                /*
 		$quize = GameAskService::getAskInfo($gid);
 		if($quize){
 			$ask['atid'] = $quize['id'];
@@ -112,25 +117,57 @@ class GameCircleService extends Service
 			$ask['tid'] = $quize['rule_id'];
 			$out['overList'][] = $ask;
 		}
+                */
 		//礼包
 		$out['gift'] = array();
 		//$gifts = self::dbCmsSlave()->table('gift')->where('gid','=',$gid)->orderBy('addtime','desc')->forPage(1,1)->get();
-		$gifts = GiftbagService::getDetailByGameID($gid);
+// 		$gifts = GiftbagService::getDetailByGameID($gid);
+		// 新版本
+		// 获取礼包列表
+		$params = array('productType'=>2,'pageIndex'=>1,'pageSize'=>1,'gids'=>$gid,'sortType'=>'Product_Sort','platform'=>'ios','currencyType'=>0,'isOnshelf'=>'TRUE','active'=>'TRUE');
+		$params_ = array('productType','pageIndex','pageSize','gids','sortType','platform','currencyType','isOnshelf','active');
+		$gifts = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::API_URL_CONF).'product/query_product');
+		
+		// 获取我的礼包
+		if($uid){
+		    $params = array('productType'=>2,'accountId'=>$uid,'platform'=>'ios');
+		    $params_ = array('productType','accountId','platform');
+		    $result_gift = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'accountproduct/query');
+		    foreach($result_gift['result'] as $index=>$row){
+		        $mygift[$row['gfid']] = !empty($row['card'])?DES::decrypt($row['card'],11111111):'';
+		    }
+		}else{
+		    $mygift = null;
+		}
+		
+		$gifts = $gifts['result'];
 	    foreach($gifts as $index=>$row){
-			$out['gift'][$index]['gfid'] = $row['id'];
+			$out['gift'][$index]['gfid'] = $row['gfid'];
+			$game = GameService::getGameInfo($row['gid']);
 			$out['gift'][$index]['url'] = self::joinImgUrl($game['ico']);
-			$out['gift'][$index]['gname'] = $game['shortgname'];
+			$out['gift'][$index]['gname'] = trim($game['shortgname']) ? trim($game['shortgname']) : $game['gname'];
 			$out['gift'][$index]['title'] = $row['title'];
-			$out['gift'][$index]['date'] = date('Y-m-d',$row['ctime']);
-			$out['gift'][$index]['adddate'] = date('Y-m-d',$row['ctime']);
-			$out['gift'][$index]['starttime'] = date('Y-m-d H:i:s',$row['starttime']);
-			$out['gift'][$index]['endtime'] = date('Y-m-d H:i:s',$row['endtime']);
-			$out['gift'][$index]['ishot'] = $row['is_hot'];
-			$out['gift'][$index]['istop'] = $row['is_top'];
-			$out['gift'][$index]['cardcount'] = $row['total_num'];
-			$out['gift'][$index]['lastcount'] = $row['last_num'];
-			$out['gift'][$index]['ishas'] = (int)GiftbagService::isGetGiftbag($row['id'], $uid);
-			$out['gift'][$index]['number'] = '';//$row[''];
+			$out['gift'][$index]['date'] = date("Y-m-d",strtotime($row['addTime']));
+			$out['gift'][$index]['adddate'] = date("Y-m-d",strtotime($row['addTime']));
+			$out['gift'][$index]['starttime'] = $row['startTimeStr'];
+			$out['gift'][$index]['endtime'] = $row['endTimeStr'];
+			$out['gift'][$index]['ishot'] = (int)$row['isHot'];
+			$out['gift'][$index]['istop'] = (int)$row['isTop'];
+			$out['gift'][$index]['cardcount'] = $row['totalCount'];
+			$out['gift'][$index]['lastcount'] = $row['restCount'];
+			$ishas = false;
+			$number = '';
+			if( $row['singleLimit']==1 && isset($mygift) && is_array($mygift)){
+			    $mygift_ids = array_keys($mygift);
+			    $ishas = in_array($row['gfid'],$mygift_ids);
+			    if($ishas){
+			        $number = $mygift[$row['gfid']];
+			    }
+			}
+
+			$out['gift'][$index]['ishas'] = (int)$ishas;
+			$out['gift'][$index]['number'] = $number;
+			
 		}
 		//新闻
 		$artlist = self::dbCmsSlave()->table('news')->where('gid','=',$gid)->where('pid','<=',0)->forPage(1,3)->orderBy('addtime','desc')->get();
@@ -624,20 +661,7 @@ class GameCircleService extends Service
 		$base = self::dbCmsSlave()->table('games')->where('id','=',$game_id)->select(array('downtimes'))->pluck('downtimes');
 		$base = ceil($base*0.75);
 		if($game_id==12776) $base = $base + 5000000;
-		$count = $base + self::dbClubSlave()->table('account_circle')->where('game_id','=',$game_id)->count();
-		return self::getGameCircleUserCountByRemote($game_id,$count);
-	}
-	
-	public static function getGameCircleUserCountByRemote($game_id,$default=0)
-	{
-		$uri = 'module_data/game_circle_member_count';
-		$url = Config::get('app.module_data_url') . $uri;
-		$params = array('game_id'=>$game_id,'platform'=>1);
-		$result = \CHttp::request($url,$params,'GET');
-		if(isset($result['circleMemberDisplayCount'])){
-			return (int)$result['circleMemberDisplayCount'];
-		}
-		return $default;
+		return $base + self::dbClubSlave()->table('account_circle')->where('game_id','=',$game_id)->count();
 	}
 	
 	/**

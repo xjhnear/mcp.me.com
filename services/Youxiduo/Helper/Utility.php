@@ -10,9 +10,10 @@
  */
 namespace Youxiduo\Helper;
 use Illuminate\Support\Facades\Log;
-
-use Illuminate\Support\Facades\Config;
 use App;
+use Illuminate\Support\Facades\Config;
+use Youxiduo\Helper\MyHelpLx;
+
 class Utility
 {
 	public static function formatContent($content,$video,array $config=array())
@@ -55,7 +56,7 @@ class Utility
 	public static function validateMobile($mobile)
 	{
 		if(!$mobile) return false;
-		if(preg_match("/^13[0-9]{1}[0-9]{8}$|14[0-9]{1}[0-9]{8}$|15[0-9]{1}[0-9]{8}$|16[0-9]{1}[0-9]{8}$|18[0-9]{1}[0-9]{8}$|17[0-9]{1}[0-9]{8}$/",$mobile)){
+		if(preg_match("/^13[0-9]{1}[0-9]{8}$|14[0-9]{1}[0-9]{8}$|15[0-9]{1}[0-9]{8}$|18[0-9]{1}[0-9]{8}$|17[0-9]{1}[0-9]{8}$|19[0]{1}[0-9]{8}$/",$mobile)){
 			return true;
 		}
 		return false;
@@ -102,7 +103,7 @@ class Utility
 	 */
 	public static function cryptPwd($password)
 	{
-		if(strlen($password)==32) return $password;
+	    if(strlen($password) == 32) return $password;
 		$salt = md5(substr($password,-1));
 		$password = md5($password . $salt);
 		return $password;
@@ -201,7 +202,7 @@ class Utility
 
         	}
         }
-        if($url){//echo $url;print_r($datainfo);
+        if($url){//echo $url;print_r($datainfo);exit;
             return Utility::loadByHttp($url,$datainfo,$method);
         }else{
             return $datainfo;
@@ -210,6 +211,18 @@ class Utility
 	
     public static function loadByHttp($url , $params = array(), $method = 'GET' ,$format='json',$platform='android' ,$multi = false, $extheaders = array())
     {   //print_r($multi);
+        if($_SERVER['REDIRECT_URL']){
+           $server = explode('/',$_SERVER['REDIRECT_URL']);
+            $arr = array('v4giftbag','v4product','v4lotteryproduct','v4message','v4_share','v4adv','v4user','web_forum');
+           if (isset($params['platform'])) {
+               $platform = $params['platform'];
+           } elseif (in_array($server[1],$arr)){
+               $platform = "ios";
+               $params['platform'] = $platform;
+           }
+        }
+        $params = MyHelpLx::add_keys_for_modules($url,$params,$platform);//添加paltform参数
+
         if(!function_exists('curl_init')) exit('Need to open the curl extension');
         $method = strtoupper($method);
         if(strpos($url,'http://')!==0 && strpos($url,'https://')!==0){
@@ -235,7 +248,12 @@ class Utility
                     {
                        foreach($multi as $key => $file)
                         {
-                            $params[$key] = '@'.realpath($file['tmp_name']).";type=".$file['type'].";filename=".$file['name'];
+                            if (class_exists('\CURLFile')) {
+                                //echo file_get_contents($file['tmp_name']);exit;
+                                $params[$key] = curl_file_create(realpath($file['tmp_name']),$file['type'],$file['name']);
+                            }else{
+                                $params[$key] = '@'.realpath($file['tmp_name']).";type=".$file['type'].";filename=".$file['name'];
+                            }
                         }
                         if(sizeof($params) > 0){
                             foreach($params as $key => $val){
@@ -260,7 +278,8 @@ class Utility
                 break;
             case 'HTMLFROM':
                curl_setopt($ci, CURLOPT_POST, TRUE);
-               curl_setopt($ci, CURLOPT_POSTFIELDS,!empty($params) && is_array($params) ? http_build_query($params) : '');  
+               curl_setopt($ci, CURLOPT_POSTFIELDS,!empty($params) && is_array($params) ? http_build_query($params) : '');
+
                $headers[] = 'Accept: text/html,application/xhtml+xml';
             break;
             case 'DELETE':
@@ -288,7 +307,7 @@ class Utility
         if($status_code!=200){
         	Log::info($response);
         }
-        //
+//        echo$url;print_r($params);print_r($response);
         if($format=='json'){
            $response = preg_replace('/[^\x20-\xff]*/', "", $response); //清除不可见字符
            $response = iconv("utf-8", "utf-8//ignore", $response); //UTF-8转码
@@ -297,17 +316,25 @@ class Utility
            	   Log::error($result);
            }
         }
-        
         return $response;
     }
 	
 	public static function SuperLoadByHttp($url , $params = array(), $method = 'GET' ,$isLog=false,$format='json',$platform='android' ,$multi = false, $extheaders = array())
     {   //print_r($multi);
+        if($_SERVER['REDIRECT_URL']){
+           $server = explode('/',$_SERVER['REDIRECT_URL']);
+            $arr = array('v4giftbag','v4product','v4lotteryproduct','v4message','IOS_liansai');
+           if(in_array($server[1],$arr)){
+               $platform = "ios";
+               $params['platform'] = $platform;
+           }
+        }
+        $params = MyHelpLx::add_keys_for_modules($url,$params,$platform);//添加paltform参数
         if(!function_exists('curl_init')) exit('Need to open the curl extension');
         $method = strtoupper($method);
         if(strpos($url,'http://')!==0 && strpos($url,'https://')!==0){
-            $keyname = $platform=='android' ? 'app.android_core_api_url' : 'app.ios_core_api_url';
-            $url = Config::get($keyname) .$url;
+	        $keyname = $platform=='android' ? 'app.android_core_api_url' : 'app.ios_core_api_url';
+	        $url = Config::get($keyname) .$url;
         }
         $ci = curl_init();
         curl_setopt($ci, CURLOPT_USERAGENT, 'PHP-SDK API');
@@ -326,7 +353,7 @@ class Utility
                 {
                     if($multi)
                     {
-                        foreach($multi as $key => $file)
+                       foreach($multi as $key => $file)
                         {
                             if (class_exists('\CURLFile')) {
                                 $params[$key] = curl_file_create(realpath($file['tmp_name']),$file['type'],$file['name']);
@@ -337,7 +364,7 @@ class Utility
                         }
                         if(sizeof($params) > 0){
                             foreach($params as $key => $val){
-                                $params[$key]= $val;
+                                   $params[$key]= $val;
                             }
                         }
 
@@ -346,13 +373,13 @@ class Utility
                     }
                     else
                     {
-                        if($format == 'json'){
-                            $params_str = json_encode($params);
-                            $headers[] = 'Content-Type: application/json; charset=utf-8';
-                        }else{
-                            $params_str = $params;
-                        }
-
+                    	if($format == 'json'){
+				            $params_str = json_encode($params);
+                    		$headers[] = 'Content-Type: application/json; charset=utf-8';
+                    	}else{
+                    		$params_str = $params;
+                    	}
+                       
                         curl_setopt($ci, CURLOPT_POSTFIELDS, $params_str);
                     }
                 }
@@ -360,7 +387,12 @@ class Utility
             case 'HTMLFROM':
                 curl_setopt($ci, CURLOPT_POST, TRUE);
                 curl_setopt($ci, CURLOPT_POSTFIELDS,!empty($params) && is_array($params) ? http_build_query($params) : '');
-                $headers[] = 'Accept: text/html,application/xhtml+xml';
+                $boundary = '---------------------------'.substr(md5(rand(0,32000)),0,10);
+                $headers[] = "content-type: multipart/form-data; boundary=".$boundary."\r\n";
+                //$headers[] = 'Accept: text/html,application/xhtml+xml';
+                $headers[] = "content-type: application/x-www-form-urlencoded\r\n";
+                //$headers[] = "content-length: ".strlen($data)."\r\n";
+                $headers[] = "connection: close\r\n\r\n";
                 break;
             case 'DELETE':
             case 'GET':
@@ -373,15 +405,14 @@ class Utility
                 break;
         }
 
-        //echo '<br/><br/><br/><br/><br/><br/><br/>'.$url.'<br/>';//exit;
-        //curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE );
+        //echo '<br/><br/><br/><br/><br/><br/><br/>'.$url.'<br/>';exit;
+        curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE );
         curl_setopt($ci, CURLOPT_URL, $url);
         if($headers)
         {
             curl_setopt($ci, CURLOPT_HTTPHEADER, $headers );
         }
         $response = curl_exec($ci);
-
         $result = $response;
         Log::info($result);
         $result = json_decode($result,true);
@@ -413,6 +444,118 @@ class Utility
         curl_close ($ci);
 
         if($format=='json'){
+           $response = preg_replace('/[^\x20-\xff]*/', "", $response); //清除不可见字符
+           $response = iconv("utf-8", "utf-8//ignore", $response); //UTF-8转码
+           $response = json_decode($response,true);
+           if($response===null){
+           	   Log::error($result);
+           }
+        }
+        
+        return $response;
+    }
+
+    public static function taskLoadByHttp($url , $params = array(), $method = 'GET' ,$format='json',$platform='android' ,$multi = false, $extheaders = array())
+    {   //print_r($multi);
+        if($_SERVER['REDIRECT_URL']){
+            $server = explode('/',$_SERVER['REDIRECT_URL']);
+            $arr = array('v4giftbag','v4product','v4lotteryproduct','v4message','v4_share','v4adv','v4user','web_forum');
+            if (isset($params['platform'])) {
+                $platform = $params['platform'];
+            } elseif (in_array($server[1],$arr)){
+                $platform = "ios";
+                $params['platform'] = $platform;
+            }
+        }
+        $params = MyHelpLx::add_keys_for_modules($url,$params,$platform);//添加paltform参数
+
+        if(!function_exists('curl_init')) exit('Need to open the curl extension');
+        $method = strtoupper($method);
+        if(strpos($url,'http://')!==0 && strpos($url,'https://')!==0){
+            $keyname = $platform=='android' ? 'app.android_core_api_url' : 'app.ios_core_api_url';
+            $url = Config::get($keyname) .$url;
+        }
+        $ci = curl_init();
+        curl_setopt($ci, CURLOPT_USERAGENT, 'PHP-SDK API');
+        curl_setopt($ci, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($ci, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ci, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ci, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ci, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ci, CURLOPT_HEADER, false);
+        $headers = (array)$extheaders;
+        switch ($method)
+        {
+            case 'POST':
+                curl_setopt($ci, CURLOPT_POST, TRUE);
+                if (!empty($params))
+                {
+                    if($multi)
+                    {
+                        foreach($multi as $key => $file)
+                        {
+                            if (class_exists('\CURLFile')) {
+                                //echo file_get_contents($file['tmp_name']);exit;
+                                $params[$key] = curl_file_create(realpath($file['tmp_name']),$file['type'],$file['name']);
+                            }else{
+                                $params[$key] = '@'.realpath($file['tmp_name']).";type=".$file['type'].";filename=".$file['name'];
+                            }
+                        }
+                        if(sizeof($params) > 0){
+                            foreach($params as $key => $val){
+                                $params[$key]= $val;
+                            }
+                        }
+                        curl_setopt($ci, CURLOPT_POSTFIELDS, $params);
+                        $headers[] = 'Expect: ';
+                    }
+                    else
+                    {
+                        if($format == 'json'){
+                            $params_str = json_encode($params);
+                            $headers[] = 'Content-Type: application/json; charset=utf-8';
+                        }else{
+                            $params_str = $params;
+                        }
+
+                        curl_setopt($ci, CURLOPT_POSTFIELDS, $params_str);
+                    }
+                }
+                break;
+            case 'HTMLFROM':
+                curl_setopt($ci, CURLOPT_POST, TRUE);
+                curl_setopt($ci, CURLOPT_POSTFIELDS,!empty($params) && is_array($params) ? http_build_query($params) : '');
+
+                $headers[] = 'Accept: text/html,application/xhtml+xml';
+                break;
+            case 'DELETE':
+            case 'GET':
+                $method == 'DELETE' && curl_setopt($ci, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                if (!empty($params))
+                {
+                    $url = $url . (strpos($url, '?') ? '&' : '?')
+                        . (is_array($params) ? http_build_query($params) : $params);
+                }
+                $headers[] = 'Content-Type: text/plain';
+                break;
+        }
+
+        //echo '<br/><br/><br/><br/><br/><br/><br/>'.$url.'<br/>';exit;
+        //curl_setopt($ci, CURLINFO_HEADER_OUT, TRUE );
+        curl_setopt($ci, CURLOPT_URL, $url);
+        if($headers)
+        {
+            curl_setopt($ci, CURLOPT_HTTPHEADER, $headers );
+        }
+        $response = curl_exec($ci);
+        $result = $response;
+        $status_code = curl_getinfo($ci,CURLINFO_HTTP_CODE);
+        curl_close ($ci);
+        if($status_code!=200){
+            Log::info($response);
+        }
+//        echo$url;print_r($params);print_r($response);
+        if($format=='json'){
             $response = preg_replace('/[^\x20-\xff]*/', "", $response); //清除不可见字符
             $response = iconv("utf-8", "utf-8//ignore", $response); //UTF-8转码
             $response = json_decode($response,true);
@@ -420,14 +563,15 @@ class Utility
                 Log::error($result);
             }
         }
-
         return $response;
     }
     
-    public static function sendVerifySMS($mobile,$code,$sms=true)
+     public static function sendVerifySMS($mobile,$code,$sms=true,$appname='yxdandroid')
     {    	
     	$to = $mobile;
-    	if($sms==true){
+    	if($sms==true && $appname=='duoyou_android'){
+    	    $text = str_replace('{code}',$code,Config::get('sms.template_duoyou',''));
+    	}elseif ($sms==true){
     	    $text = str_replace('{code}',$code,Config::get('sms.template',''));
     	}else{
     		$text = $code;
@@ -776,8 +920,7 @@ EOF;
      * 	@param	$encode_str	string	转码过的评论内容
      *
      * */
-    public static function _filterCommentStr($encode_str)
-    {
+    public static function _filterCommentStr($encode_str){
         $content = $encode_str;
         //先将内容解码回UTF-8可读文字
         $content = self::decode_comment_info($content);
@@ -879,7 +1022,7 @@ EOF;
 			$a = explode('?',$tmp);
 			if(is_readable(storage_path() . $a[0])){
 				$img = $file;
-			}			
+			}
 		}
         if(strpos($img,'/')===false){
         	$base_img_url = 'http://test.youxiduo.com:8080/module_file_system/file/';
@@ -905,4 +1048,19 @@ EOF;
             return $start/$num;
         }
     }
+    
+    public static function getUUID() {
+        mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
+        $charid = strtoupper(md5(uniqid(rand(), true)));
+        $hyphen = chr(45);// "-"
+        $uuid = chr(123)// "{"
+        .substr($charid, 0, 8).$hyphen
+        .substr($charid, 8, 4).$hyphen
+        .substr($charid,12, 4).$hyphen
+        .substr($charid,16, 4).$hyphen
+        .substr($charid,20,12)
+        .chr(125);// "}"
+        return $charid;
+    }
+
 }

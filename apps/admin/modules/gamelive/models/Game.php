@@ -76,8 +76,44 @@ class Game extends BaseHttp
             'id'=>$id
         );
         $result = self::http($url,$params);
-        if($result['errorCode']==0){
+        if($result['errorCode']==0&&isset($result['result'])){
             return $result['result'];
+        }
+        return null;
+    }
+    /**
+     * @param $ids
+     * @return null
+     */
+    public static function GetGameListByID($ids="")
+    {
+        $list = array();
+        $idArr = explode(',',$ids);
+        if($idArr){
+            foreach($idArr as $v){
+               $res = self::GetGameDetail($v);
+                if($res){
+                    $list[] = $res;
+                }
+            }
+            return $list;
+        }
+        return null;
+    }
+
+    /**
+     * @param $ids
+     * @return null
+     */
+    public static function GetGameNames($ids="")
+    {
+        $names = "";
+        $list = self::GetGameListByID($ids);
+        if($list){
+            foreach($list as $v){
+                $names.=  $v['name'].",";
+            }
+            return substr($names,0,-1);
         }
         return null;
     }

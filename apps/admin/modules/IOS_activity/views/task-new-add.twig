@@ -1,0 +1,198 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<link href="/static/css/app.css" rel="stylesheet" type="text/css"/>
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+            <div class="box-title">
+                <h3>任务信息</h3>
+            </div>
+
+
+
+			<div class="box-content">
+			    <form id="activity-task" action="<!--{{url('IOS_activity/task/task-new-add')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+
+                <div class="control-group">
+					<label class="control-label">任务名</label>
+					<div class="controls">
+						<input type="text" name="name" class="input-xxlarge" value="<!--{{atask.name}}-->" data-rule-required="true" data-msg-required="标题不能为空"  />
+					</div>
+				</div>
+
+				<div class="control-group">
+                    <label class="control-label">*活动图片</label>
+                    <div class="controls">
+                        <div class="fileupload fileupload-new" data-provides="fileupload">
+                            <div class="fileupload-new thumbnail img1" style="max-width: 120px; max-height: 120px;"><img id="listpic_img" src="<!--{{atask.pic|default('/static/img/nopic.gif')}}-->" /></div>
+                            <div class="fileupload-preview fileupload-exists thumbnail " style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+                            <div>
+                                <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input id="pic" type="file" name='pic' value="<!--{{atask.pic}}-->"/></span>
+                                <span style="color: #B94A48; display: none" id="note_sp1">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                            </div>
+                        </div>
+                        <span class="help-inline">图片最佳尺寸:550*277</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">任务描述</label>
+                    <div class="controls">
+                        <input type="text" name="summary" class="input-xxlarge" value="<!--{{atask.summary}}-->" data-rule-required="true" data-msg-required="描述不能为空"  />
+                    </div>
+                </div>
+                
+                <div class="control-group prizeDiv">
+                    <div class="control-group">
+                        <label class="control-label">任务奖励</label>
+                        <div class="controls">
+                            <input type="text" name="tour" class="input-small" value="<!--{{atask.tour|default('0')}}-->" />
+                        </div>
+                    </div>
+                </div>
+                
+				<div class="control-group">
+					<label class="control-label">是否开启</label>
+					<div class="controls">
+						<input id="if-isOnOff" name="isOnOff" data-on-color="success" data-on-text="开启"
+						       data-off-color="danger" data-off-text="关闭" class="switchbox" type="checkbox" <!--{{ atask.isOnOff ? 'checked' : '' }}-->/>
+					</div>
+				</div>
+				<!--{% if atask.newHandType>0 %}-->
+				<div class="row-fluid">
+					<div class="span3">
+						<div class="control-group">
+							<label class="control-label">新手活动类型</label>
+							<div class="controls">
+								<!--{% if atask.newHandType==1 %}-->
+									<!--{{form_radio('newHandType',1,atask.newHandType<1)}}-->完善资料
+								<!--{% elseif atask.newHandType==2 %}-->
+									<!--{{form_radio('newHandType',2,atask.newHandType==2)}}-->推送
+								<!--{% else %}-->
+									<!--{{form_radio('newHandType',3,atask.newHandType==3)}}-->完善名片
+								<!--{% endif %}-->
+								
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--{% else %}-->
+				<div class="row-fluid">
+					<div class="span3">
+						<div class="control-group">
+							<label class="control-label">新手活动类型</label>
+							<div class="controls">
+								<!--{{form_radio('newHandType',1,atask.newHandType<1)}}-->完善资料
+							</div>
+						</div>
+					</div>
+					<div class="span3">
+						<div class="control-group">
+							<div class="controls">
+								<!--{{form_radio('newHandType',2,atask.newHandType==2)}}-->推送
+							</div>
+						</div>
+					</div>
+					<div class="span3">
+						<div class="control-group">
+							<div class="controls">
+								<!--{{form_radio('newHandType',3,atask.newHandType==3)}}-->完善名片
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--{% endif %}-->
+				<div class="control-group">
+					<label for="textfield" class="control-label">任务步骤</label>
+					<div class="controls">
+						<script id="descHtml" name="descHtml" type="text/plain"><!--{{ atask.descHtml }}--></script>
+					</div>
+				</div>
+
+			    <div class="form-actions">
+					<button type="submit" class="btn btn-primary sub"><i class="icon-ok"></i>保存</button>
+                    <input type="hidden" name="id"  value="<!--{{atask.id}}-->"/>
+				</div> 
+			    </form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.uniform.min.js"></script>
+<script src="/static/js/ajaxfileupload.js"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+	$(function(){
+		UE.getEditor('descHtml',{initialFrameHeight:100});
+		
+		$('input:radio').iCheck({
+			checkboxClass: 'icheckbox_square-orange',
+			radioClass: 'iradio_square-orange',
+			increaseArea: '20%'
+		});
+		$('.switchbox').bootstrapSwitch();
+		var d=new Date(),str=''; 
+			str +=d.getFullYear()+'-'; //获取当前年份 
+			str +=d.getMonth()+1+'-'; //获取当前月份（0——11） 
+			str +=d.getDate();
+        /*
+		jQuery('#date_timepicker_start').datetimepicker({
+  				format:'Y/m/d',
+  				minDate:str,
+  				onShow:function( ct ){
+	   				this.setOptions({
+	    			maxDate:jQuery('#date_timepicker_end').val()?jQuery('#date_timepicker_end').val():false
+	   				})
+  				},
+  				timepicker:false,
+  				onSelectDate:function(current_time,$input){ 
+  					jQuery('#date_timepicker_end').datetimepicker({
+  						format:'Y/m/d',
+  						onShow:function( ct ){
+					    	this.setOptions({
+					    			minDate:$input.val()?$input.val():false
+					    	})
+  						},
+  						timepicker:false
+ 					});
+  				}
+ 		});
+
+ 		//置顶
+		$('#if-isOnOff').on('switchChange.bootstrapSwitch', function (e, data) {
+			e.preventDefault();
+		});
+         */
+
+        //图片不能为空
+        $(".sub").live('click',function(){
+            var pic1 = $(".img1").children("img").attr("src");
+            var a = 0;
+            if(pic1){
+                $("#note_sp1").hide();
+            }else{
+                $("#note_sp1").show();
+                var a = 1;
+            }
+            if(a == 1){
+                return false;
+            }
+
+        })
+
+	});
+
+    $(function(){
+        $("input[name='displayOrder']").on('ifChecked',function(e){
+            var check_val = $(this).val();
+        });
+    })
+</script>
+<!--{%endblock%}-->

@@ -8,6 +8,7 @@ use Yxd\Services\Cms\ArticleService;
 use Yxd\Services\TopicService;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
+use Yxd\Services\SyncToV4ForumService;
 /**
  * 评论
  */
@@ -145,6 +146,9 @@ class CommentController extends BaseController
 	    	UserService::checkUserSpeed($uid,true);	    	
 	    	$cmt = CommentService::getInfo($result);
 	    	$msg = CommentService::doCredit($target_table,$uid);
+	    	//同步到V4
+	    	SyncToV4ForumService::syncReply($result,'add');
+	    	
 	    	if($msg && is_numeric($msg['score'])){
 	    		return $this->success(array('result'=>$cmt,'errorCode'=>600,'errorMessage'=>$msg['msg']));
 	    	}else{
@@ -227,6 +231,9 @@ class CommentController extends BaseController
 		}elseif($status==-2){
 			return $this->fail(11211,'你无权删除别人的评论');
 		}elseif($status>0){
+		    //同步到V4
+		    SyncToV4ForumService::syncReply($cid,'delete');
+		    
 			return $this->success(array('result'=>null));
 		}else{
 			return $this->fail(11211,'评论删除失败');
@@ -247,6 +254,9 @@ class CommentController extends BaseController
 		}elseif($status===-2){
 			return $this->fail(11211,'相同设备的提问者和回答者不能设置最大答案');
 		}		
+		//同步到V4
+		SyncToV4ForumService::syncReply($cid,'setbest');
+		
 		return $this->success(array('result'=>null));
 	}
 }

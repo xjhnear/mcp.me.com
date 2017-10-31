@@ -36,14 +36,27 @@ final class AccountSession extends Model implements IModel
 		}
 	}
 	
+	public static function delSessionAll($uid)
+	{
+	    if($uid){
+	        return self::db()->where('uid','=',$uid)->delete();
+	    }else{
+	        return false;
+	    }
+	}
+	
 	public static function makeSession()
 	{
 		return md5(str_random(32));
 	}
 	
-	public static function getUidFromSession($session_id)
+	public static function getUidFromSession($session_id,$client=NULL)
 	{
-		$info = self::db()->where('access_token','=',$session_id)->first();
+		if ($client) {
+		    $info = self::db()->where('access_token','=',$session_id)->where('client','=',$client)->first();
+		} else {
+		    $info = self::db()->where('access_token','=',$session_id)->first();
+		}
 		if($info) return $info['uid'];
 		return 0;
 	}

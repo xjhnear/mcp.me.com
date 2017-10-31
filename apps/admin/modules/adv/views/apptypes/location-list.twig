@@ -25,8 +25,10 @@
 			        <thead>
 						<tr>
 						    <th class="col-60">Id</th>
-						    <th class="col-150">广告地址名称</th>
+						    <th class="col-150">广告位置名称</th>
 							<th class="col-150">广告类型</th>
+							<th class="col-80">广告位置排序</th>
+							<th class="col-150">广告位置标识</th>
 							<th class="col-150">添加时间</th>
 							<th class="table-btn-group-mini">操作</th>
 						</tr>
@@ -37,6 +39,8 @@
 								<td><!--{{item.Id}}--></td>
 								<td><!--{{item.name}}--></td>
 								<td><!--{{item.natureName}}--></td>
+								<td><!--{{item.sort}}--></td>
+								<td><!--{{item.biaoshi}}--></td>
 								<td><!--{{item.createdatetime}}--></td>
 								<td>
 									<a href="<!--{{url('adv/location/location-add-edit',{'Id':item.Id})}}-->" class="btn btn-primary">编辑</a>

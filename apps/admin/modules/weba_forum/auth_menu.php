@@ -3,7 +3,7 @@ return array(
     'module_name'  => 'weba_forum',
     'module_alias' => 'V4论坛',
     'module_icon'  => 'android',
-    'default_url'=>'weba_forum/topic/search',
+    'default_url'=>'weba_forum/topic/forum-list',
     'child_menu' => array(
         array('name'=>'论坛列表','url'=>'weba_forum/topic/forum-list'),
         array('name'=>'社区帖子管理','url'=>'weba_forum/topic/bbs-search'),

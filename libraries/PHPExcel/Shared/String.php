@@ -492,6 +492,12 @@ class PHPExcel_Shared_String
 	 */
 	public static function ConvertEncoding($value, $to, $from)
 	{
+	    if($from == 'CP1252'){
+	        $value=htmlentities($value, ENT_QUOTES, "Windows-1252");
+	        $value=html_entity_decode($value, ENT_QUOTES , "utf-8");
+	        return $value;
+	    }
+	    
 		if (self::getIsIconvEnabled()) {
 			return iconv($from, $to, $value);
 		}
@@ -505,6 +511,7 @@ class PHPExcel_Shared_String
 		}else if($from == 'UTF-16BE'){
 			return self::utf16_decode($value);
 		}
+
 		// else, no conversion
 		return $value;
 	}

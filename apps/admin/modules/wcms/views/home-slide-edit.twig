@@ -177,7 +177,8 @@ $(function(){
     });
     
     
-    $('.select-pop-article').bind('click',function(){        
+    $('.select-pop-article').bind('click',function(){
+        alert("dd");
         $.ajax({
             url:'/wcms/api/pop-article-search',
             dataType:'json',
@@ -186,10 +187,10 @@ $(function(){
                 html = json.html;
                 $.dialog({id:'pop-article-list',title:'提示',padding:2,content:html,width:600,height:580});
             }
-        });        
+        });
     });
     
-    $('.select-web-game').bind('click',function(){        
+    $('.select-web-game').bind('click',function(){
         $.ajax({
             url:'/wcms/api/pop-game-search',
             dataType:'json',
@@ -198,7 +199,7 @@ $(function(){
                 html = json.html;
                 $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
             }
-        });        
+        });
     });
     
     var div_type = $('input[name="type"]:checked').val();

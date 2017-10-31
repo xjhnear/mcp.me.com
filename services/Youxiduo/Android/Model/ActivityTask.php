@@ -73,6 +73,20 @@ final class ActivityTask extends Model implements IModel
 		if(isset($search['complete_type'])){
 			$tb = $tb->where('complete_type','=',$search['complete_type']);
 		}
+	    if(isset($search['is_relation_task'])){
+			$tb = $tb->where('is_relation_task','=',$search['is_relation_task']);
+		}
+	    if(isset($search['relation_task_id'])){
+			$tb = $tb->where('relation_task_id','=',$search['relation_task_id']);
+		}
+	    if(isset($search['child_task'])){
+			$tb = $tb->where('relation_task_id','>',0);
+		}
+		
+	    if(isset($search['in_relation_task_id']) && $search['in_relation_task_id']){
+			$tb = $tb->whereIn('relation_task_id',$search['in_relation_task_id']);
+		}
+		
 		return $tb;
 	}
 	
@@ -80,7 +94,7 @@ final class ActivityTask extends Model implements IModel
 	{
 		$cachekey = 'activity_task::'.$search['id'];
 		if(Cache::has($cachekey)){
-			return Cache::get($cachekey);
+			//return Cache::get($cachekey);
 		}
 		$tb = self::db();
 		if(isset($search['id'])){

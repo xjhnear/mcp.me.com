@@ -1,6 +1,8 @@
 <?php
 
 
+use Illuminate\Support\Facades\Log;
+
 class CHttp
 {
 	
@@ -69,7 +71,14 @@ class CHttp
         if($format=='json'){
         	$response = preg_replace('/[^\x20-\xff]*/', "", $response); //清除不可见字符
         	$response = iconv("utf-8", "utf-8//ignore", $response); //UTF-8转码
-        	$response = json_decode($response,true);
+        	try{
+        	    $json = json_decode($response,true);
+        	}catch(\Exception $e){
+        		//Log::error($response);
+        	}
+        	$error = json_last_error();
+        	$error !== JSON_ERROR_NONE && Log::error($error);
+        	$error ===JSON_ERROR_NONE && $response = $json;
         }
         return $response;
     }

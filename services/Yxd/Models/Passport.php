@@ -3,6 +3,8 @@ namespace Yxd\Models;
 
 use Illuminate\Support\Facades\DB as DB;
 use Illuminate\Support\Facades\Event;
+use Yxd\Services\Models\AccountThirdLogin;
+use Yxd\Services\Models\Account;
 
 class Passport extends User
 {
@@ -22,7 +24,7 @@ class Passport extends User
 		$third = array('sina'=>1,'qq'=>2);
 		if(!array_key_exists($account_type,$third)) return false;
 		$account_type = $third[$account_type];
-		$token = DB::table('account_thirdlogin')
+		$token = AccountThirdLogin::db()
 		         ->where('type','=',$account_type)
 		         ->where('access_token','=',$access_token)
 		         ->first();
@@ -39,13 +41,13 @@ class Passport extends User
 	 */
 	public static function checkEmailIsExists($email)
 	{
-		$count = DB::table('account')->where('email','=',$email)->count();
+		$count = Account::db()->where('email','=',$email)->count();
 		return $count>0 ? true : false;
 	}
 	
 	public static function checkNickNameIsExists($nickname)
 	{
-		$count = DB::table('account')->where('nickname','=',$nickname)->count();
+		$count = Account::db()->where('nickname','=',$nickname)->count();
 		return $count>0 ? true : false;
 	}
 	
@@ -64,11 +66,11 @@ class Passport extends User
 		$data['expires_in'] = $expires_in;
 		$data['refresh_token'] = $refresh_token;
 		
-		$token = DB::table('account_thirdlogin')->where('type','=',$third[$type])->where('type_uid','=',$type_uid)->first();
+		$token = AccountThirdLogin::db()->where('type','=',$third[$type])->where('type_uid','=',$type_uid)->first();
 		if($token){
 			return 1;
 		}
-		$id = DB::table('account_thirdlogin')->insertGetId($data);
+		$id = AccountThirdLogin::db()->insertGetId($data);
 		if($id){
 			Event::fire('user.bindthird',array($data));
 		}
@@ -80,12 +82,12 @@ class Passport extends User
 	 */
 	public static function unbindThirdLogin($uid,$access_token)	
 	{
-		return DB::table('account_thirdlogin')->where('uid','=',$uid)->where('access_token','=',$access_token)->delete();
+		return AccountThirdLogin::db()->where('uid','=',$uid)->where('access_token','=',$access_token)->delete();
 	}
 	
 	public static function unbindAllThirdLogin($uid)
 	{
-		return DB::table('account_thirdlogin')->where('uid','=',$uid)->delete();
+		return AccountThirdLogin::db()->where('uid','=',$uid)->delete();
 	}
 	
 	/**
@@ -93,14 +95,16 @@ class Passport extends User
 	 */
 	public static function isExistsBind($access_token)
 	{
-		return DB::table('account_thirdlogin')->where('account_token','=',$access_token)->count() > 0 ? true : false;
+		return AccountThirdLogin::db()->where('account_token','=',$access_token)->count() > 0 ? true : false;
 	}
 	
     /**
 	 * 检查用户权限
+	 * @deprecated
 	 */
 	public static function checkUserAuthorize($uid,$node_rule)
 	{
+		return true;
 		$user_nodes = self::getUserGroupView($uid);
 		$nodes = DB::table('authorize_node')->lists('id','rule');
 		if(isset($nodes[$node_rule])){

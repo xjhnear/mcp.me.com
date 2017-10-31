@@ -53,7 +53,7 @@ function getLaydate(settings)
         issure: true, //是否显示确认
         festival: true, //是否显示节日
         min: '1900-01-01 00:00:00', //最小日期
-        max: '2099-12-31 23:59:59', //最大日期
+        max: '2099-12-31 23:59:59', ////
         start: '2015-12-01 23:00:00',    //开始日期
         fixed: false, //是否固定在可视区域
         zIndex: 99999999, //css z-index
@@ -312,6 +312,16 @@ function ajaxCZ(settings)
     $(settings.elem).unbind(settings.event);
     $(settings.elem).on(settings.event,function(){
             _this=$(this);
+        //为了判断快点信息临时加上
+        var _Data = jQuery.parseJSON(_this.attr("data"));
+        if(_Data){
+            if(_Data.kuai_di!="undefined"&&_Data.kuai_di==""&&_Data.productType=="1"){
+                alert("此数据没有快递信息");
+                return false;
+            }
+        }
+
+        //end
             var url=settings.url == '' ? _this.attr('url') : settings.url,
                 is_del=_this.hasClass('del'),
                 t=_this.attr('dataid');
@@ -336,8 +346,8 @@ function ajaxCZ(settings)
                         data: data,
                         dataType:'json',
                         success:id || is_del?settings.del:settings.choose,
-                        beforeSend:settings.beforeSend,
-                        complete:settings.complete
+                        beforeSend:settings.beforeSend(_this,data,url),
+                        complete:settings.complete()
                     });
                 }else{
                     $.get(url,data,id || is_del?settings.del:settings.choose, 'json');
@@ -356,4 +366,59 @@ $('input').iCheck({
     increaseArea: '20%'
 });
 
+
+function setAdv_href_type(Value){
+    if(Value == '外部url' ||  Value == '内部safari'){
+        $("#data_url,#three").fadeIn();
+        $("#data_id,#span_search").fadeOut();
+        return true;
+    }else if(Value == '活动列表' || Value == '礼包列表' || Value =='游币商城列表' || Value =='钻石商城列表' || Value =='任务列表' || Value =='大转盘' || Value =='天天彩' || Value =='新手任务列表' || Value =='账号共享'){
+        $("#data_url,#data_id,#three").fadeOut();
+    }else{
+
+        if(Value == '帖子详情'){
+            $("#data_id").fadeIn();
+        }else{
+            $("#data_id,#span_search").fadeIn();
+        }
+        $("#data_url,#three").fadeOut();
+    }
+    var arr_=['专题','新游预告','新闻文章','礼包详情','视频详情','任务详情','商品详情','指定聊天室','游戏详情','活动详情'];
+    if(jQuery.inArray(Value,arr_)!=-1){
+        $('#span_search').fadeIn();
+        span_search(Value);
+    }else{
+        $('#span_search').fadeOut();
+    }
+}
+
+function  span_search(Value)
+{
+    var options = {
+        script: "/v4adv/carousel/autosearch?key="+Value+"&",
+        varname: "variableName",
+        json: true,
+        maxresults: 35,
+        callback:function(object){
+            $("input[name='urlId']").val(object.id).attr('readonly','readonly');
+        }
+    };
+    var as_json = new bsn.AutoSuggest('search_name', options);
+    return as_json;
+}
+
+function set_adv_type(adv_type){
+    if(adv_type == 2){
+        $("#adv_href_type_div,#data_id").fadeOut();
+        //$("#data_url,#three").fadeIn();
+    }else{
+        var Value=$("#adv_href_type").val();
+        if(Value == 'Safari浏览器' ||  Value == '内置浏览器' || Value == '活动列表' || Value == '礼包列表' || Value =='游币商城列表' || Value =='钻石商城列表' || Value =='任务列表' || Value =='大转盘' || Value =='天天彩' || Value =='新手任务列表' || Value =='账号共享'){
+            $("#adv_href_type_div").fadeIn();
+        }else{
+            $("#adv_href_type_div,#data_id").fadeIn();
+        }
+
+    }
+}
 

@@ -36,7 +36,11 @@ abstract class BaseService
 			file_put_contents($file,$content,FILE_APPEND);
 		}
 		$res['errorCode'] = 0;
-		return Response::json($res)->setCallback(Input::get('callback'));
+		$callback = Input::get('callback');
+		if($callback){
+		    return Response::json($res)->setCallback($callback);
+		}
+		return Response::json($res);
 	}
 	
 	public static function trace_error($code='E1',$message='')
@@ -45,4 +49,7 @@ abstract class BaseService
 		$error = array('errorCode'=>1,'message'=>$message);
 		return Response::json($error);
 	}
-}
+
+	
+
+}	

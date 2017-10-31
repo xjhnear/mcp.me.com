@@ -31,7 +31,7 @@ class Model
 	 */
 	public static function db()
 	{
-		list($conn,$table,$cache) = static::getConfig();		
+		list($conn,$table,$cache) = static::getConfig();
 		return DB::connection($conn)->table($table);
 	}
 	

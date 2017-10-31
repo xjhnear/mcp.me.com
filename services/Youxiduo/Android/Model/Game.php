@@ -236,7 +236,7 @@ final class Game extends Model implements IModel
     {
         $fields = array('id', 'shortgname', 'ico', 'score', 'size', 'pricetype', 'type', 'downtimes');
         return self::db()->where(function($query)use($keyword){
-            $query = $query->where('gname','=',$keyword)->orWhere('gname','like',''.$keyword.'%');
+            $query = $query->where('gname','=',$keyword)->orWhere('gname','like','%'.$keyword.'%');
         })->where('isdel','=',0)->orderBy('gname','asc')->orderBy('score','desc')->select($fields)->forPage($pageIndex,$pageSize)->get();
     }
     

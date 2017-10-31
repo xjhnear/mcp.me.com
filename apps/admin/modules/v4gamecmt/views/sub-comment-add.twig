@@ -1,0 +1,47 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>添加评论</h3>
+            </div>
+            <div class="box-content">
+                <form id="form-topic" action="<!--{{url('v4gamecmt/comment/sub-comment-add')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data">
+                    <input name="replyId" type="hidden" value="<!--{{ rid }}-->" />
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">评论人UID</label>
+                        <div class="controls">
+                            <input id="userselect" name="uid" type="hidden" value="" class="bigdrop select2-offscreen" style="width:200px" tabindex="-1">
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">内容</label>
+                        <div class="controls">
+                            <textarea name="content"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>提交</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditorbbs.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+    $(function() {
+        v4useridselect('#userselect');
+
+    });
+</script>
+<!--{%endblock%}-->

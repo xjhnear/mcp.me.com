@@ -51,13 +51,13 @@ class LikeService extends BaseService
 		return Like::getLikeCount($target_id, $target_table);
 	}
 	
-	public static function getLikeList($target_id,$target_table,$pageIndex=1,$pageSize=10)
+	public static function getLikeList($target_id,$target_table,$pageIndex=1,$pageSize=10,$uid=0)
 	{
 		if(!$target_id || !$target_table) return self::ERROR_PARAMS_MISS;
 		$uids = Like::getLikeList($target_id, $target_table,$pageIndex,$pageSize);
 		if(!$uids) return array();//return self::ERROR_LIKE_NOT_DATA;
-		$users = UserService::getMultiUserInfoByUids($uids,'short');
-		if(!is_array($users)) return self::ERROR_LIKE_NOT_DATA;
+		$users = UserService::getMultiUserInfoByUids($uids,'short',$uid);
+		if(!is_array($users)) $users = array();//return self::ERROR_LIKE_NOT_DATA;
 		$out = array();
 		$out_users = array();
 		foreach($users as $user){
@@ -76,7 +76,7 @@ class LikeService extends BaseService
 		return Like::getLikeCountByTids($target_ids, $target_table);
 	}
 	
-	public static function getLikeListByTids($target_ids,$target_table)
+	public static function getLikeListByTids($target_ids,$target_table,$uid=0)
 	{
 		if(!$target_ids || !$target_table) return self::ERROR_PARAMS_MISS;
 		$result = Like::getLikeListByTids($target_ids, $target_table);
@@ -85,7 +85,7 @@ class LikeService extends BaseService
 			$uids = array_merge($uids,$row);
 		}
 		if(!$uids) return array();//return self::ERROR_LIKE_NOT_DATA;
-		$users = UserService::getMultiUserInfoByUids($uids,'short');
+		$users = UserService::getMultiUserInfoByUids($uids,'short',$uid);
 		if(!is_array($users)) return self::ERROR_LIKE_NOT_DATA;
 		$out = array();
 		$out_users = array();

@@ -1,10 +1,22 @@
 <?php
 namespace Yxd\Services\Cms;
 
+
+
 use Yxd\Services\LikeService;
 use Yxd\Utility\ForumUtility;
 use Illuminate\Support\Facades\DB;
 use Yxd\Services\Service;
+use Yxd\Services\Models\News;
+use Yxd\Services\Models\Gonglue;
+use Yxd\Services\Models\Feedback;
+use Yxd\Services\Models\NewGame;
+use Yxd\Services\Models\GameNotice;
+use Yxd\Services\Models\Videos;
+use Yxd\Services\Models\VideosGames;
+use Yxd\Services\Models\ForumTopic;
+use Yxd\Services\Models\XyxGame;
+use Yxd\Services\UserService;
 
 class InfoService extends Service
 {
@@ -20,8 +32,8 @@ class InfoService extends Service
 	public static function getNewsList($page=1,$pagesize=10,$sort=0)
 	{
 		$orderby = $sort==0 ? 'addtime' : 'commenttimes';
-		$total = self::dbCmsSlave()->table('news')->where('pid','>=',0)->where('litpic','!=','')->where('zxshow','=',1)->count();
-		$artlist = self::dbCmsSlave()->table('news')->where('pid','>=',0)->where('litpic','!=','')->where('zxshow','=',1)->forPage($page,$pagesize)->orderBy($orderby,'desc')->orderBy('addtime','desc')->get();
+		$total = News::db()->where('pid','>=',0)->where('litpic','!=','')->where('zxshow','=',1)->count();
+		$artlist = News::db()->where('pid','>=',0)->where('litpic','!=','')->where('zxshow','=',1)->forPage($page,$pagesize)->orderBy($orderby,'desc')->orderBy('addtime','desc')->get();
 		$out = array();
 		foreach($artlist as $index=>$row){
 			$out[$index]['gnid'] = $row['id'];
@@ -48,7 +60,7 @@ class InfoService extends Service
 	 */
 	public static function getNewsListss2($gnid,$page=1,$pagesize=10)
 	{
-		$tb = self::dbCmsSlave()->table('news');
+		$tb = News::db();
 		$total = $tb->whereIn('pid',$gnid)->count();
 		$artlist = $tb->whereIn('pid',$gnid)->forPage($page,$pagesize)->orderBy('addtime','desc')->get();
 		$out = array();
@@ -71,7 +83,7 @@ class InfoService extends Service
 	public static function getGuideCollect($page=1,$pagesize=10,$sort=0)
 	{
 		$orderby = $sort==0 ? 'addtime' : 'commenttimes';
-		$tb = self::dbCmsSlave()->table('gonglue');
+		$tb = Gonglue::db();
 		$total = $tb->where('pid','<=',0)->count();
 		$artlist = $tb->where('pid','<=',0)->forPage($page,$pagesize)->orderBy($orderby,'desc')->orderBy('addtime','desc')->get();
 		$out = array();
@@ -111,7 +123,7 @@ class InfoService extends Service
 	 */
 	public static function getGuideList($guid,$page=1,$pagesize=10)
 	{
-		$tb = self::dbCmsSlave()->table('gonglue');
+		$tb = Gonglue::db();
 		$total = $tb->where('pid','=',$guid)->count();
 		$artlist = $tb->where('pid','=',$guid)->forPage($page,$pagesize)->orderBy('addtime','desc')->get();
 		$out = array();
@@ -129,7 +141,7 @@ class InfoService extends Service
 	 */
 	public static function getNewsList2($gnid,$page=1,$pagesize=10)
 	{
-		$tb = self::dbCmsSlave()->table('news');
+		$tb = News::db();
 		$total = $tb->where('pid','=',$gnid)->count();
 		$artlist = $tb->where('pid','=',$gnid)->forPage($page,$pagesize)->orderBy('addtime','desc')->get();
 		$out = array();
@@ -147,7 +159,7 @@ class InfoService extends Service
 	 */
 	public static function getOpinionList2($goid,$page=1,$pagesize=10)
 	{
-		$tb = self::dbCmsSlave()->table('feedback');
+		$tb = Feedback::db();
 		$total = $tb->where('pid','=',$goid)->count();
 		$artlist = $tb->where('pid','=',$goid)->forPage($page,$pagesize)->orderBy('addtime','desc')->get();
 		$out = array();
@@ -166,7 +178,7 @@ class InfoService extends Service
 	public static function getOpinionList($page=1,$pagesize=10,$sort=0)
 	{
 		$orderby = $sort==0 ? 'addtime' : 'commenttimes';
-		$tb = self::dbCmsSlave()->table('feedback');
+		$tb = Feedback::db();
 		$total = $tb->where('gid','>',0)->count();
 		$artlist = $tb->where('gid','>',0)->forPage($page,$pagesize)->orderBy($orderby,'desc')->orderBy('addtime','desc')->get();
 		$out = array();
@@ -212,7 +224,7 @@ class InfoService extends Service
 	 */
 	public static function getNewsDetail($id,$page=1,$pagesize=10,$uid=0)
 	{
-		$detail = self::dbCmsSlave()->table('news')->where('id','=',$id)->first();
+		$detail = News::db()->where('id','=',$id)->first();
 		$out = array();
 		if($detail){
 			$out['newsInfo']['nid'] = $detail['id'];
@@ -290,6 +302,8 @@ class InfoService extends Service
 				$comment['replyInfo']['fromUser']['userAvator'] = self::joinImgUrl($row['author']['avatar']);
 				$comment['replyInfo']['fromUser']['userLevel'] = $row['author']['level_name'];
 				$comment['replyInfo']['fromUser']['userLevelImage'] = self::joinImgUrl($row['author']['level_icon']);
+				$comment['replyInfo']['fromUser']['isNewUser'] = UserService::isNewUser($row['author']);
+				
 				if(isset($row['quote']) && $row['quote']){
 					$row['quote']['content'] = json_decode($row['quote']['content'],true);
 					if($row['quote']['content'] && count($row['quote']['content'])>0){									
@@ -298,6 +312,7 @@ class InfoService extends Service
 					}
 					$comment['replyInfo']['toUser']['userID'] = $row['quote']['author']['uid'];
 					$comment['replyInfo']['toUser']['userName'] = $row['quote']['author']['nickname'];
+					$comment['replyInfo']['toUser']['isNewUser'] = UserService::isNewUser($row['quote']['author']);
 				}
 				
 				$out['comments']['commentInfos'][] = $comment;
@@ -312,7 +327,7 @@ class InfoService extends Service
 	 */
     public static function getGuideDetail($id,$page=1,$pagesize=10,$uid=0)
 	{
-		$detail = self::dbCmsSlave()->table('gonglue')->where('id','=',$id)->first();
+		$detail = Gonglue::db()->where('id','=',$id)->first();
 		$out = array();
 		if($detail){
 			$out['newsInfo']['nid'] = $detail['id'];
@@ -389,6 +404,8 @@ class InfoService extends Service
 				$comment['replyInfo']['fromUser']['userAvator'] = self::joinImgUrl($row['author']['avatar']);
 				$comment['replyInfo']['fromUser']['userLevel'] = $row['author']['level_name'];
 				$comment['replyInfo']['fromUser']['userLevelImage'] = self::joinImgUrl($row['author']['level_icon']);
+				$comment['replyInfo']['fromUser']['isNewUser'] = UserService::isNewUser($row['author']);
+				
 				if(isset($row['quote']) && $row['quote']){
 					$row['quote']['content'] = json_decode($row['quote']['content'],true);
 					if($row['quote']['content'] && count($row['quote']['content'])>0){									
@@ -397,6 +414,7 @@ class InfoService extends Service
 					}
 					$comment['replyInfo']['toUser']['userID'] = $row['quote']['author']['uid'];
 					$comment['replyInfo']['toUser']['userName'] = $row['quote']['author']['nickname'];
+					$comment['replyInfo']['toUser']['isNewUser'] = UserService::isNewUser($row['quote']['author']);
 				}
 				
 				$out['comments']['commentInfos'][] = $comment;
@@ -411,7 +429,7 @@ class InfoService extends Service
 	 */
     public static function getOpinionDetail($id,$page=1,$pagesize=10,$uid=0)
 	{
-		$detail = self::dbCmsSlave()->table('feedback')->where('id','=',$id)->first();
+		$detail = Feedback::db()->where('id','=',$id)->first();
 		$out = array();
 		if($detail){
 			$out['newsInfo']['nid'] = $detail['id'];
@@ -488,6 +506,8 @@ class InfoService extends Service
 				$comment['replyInfo']['fromUser']['userAvator'] = self::joinImgUrl($row['author']['avatar']);
 				$comment['replyInfo']['fromUser']['userLevel'] = $row['author']['level_name'];
 				$comment['replyInfo']['fromUser']['userLevelImage'] = self::joinImgUrl($row['author']['level_icon']);
+				$comment['replyInfo']['fromUser']['isNewUser'] = UserService::isNewUser($row['author']);
+				
 				if(isset($row['quote']) && $row['quote']){
 					$row['quote']['content'] = json_decode($row['quote']['content'],true);
 					if($row['quote']['content'] && count($row['quote']['content'])>0){									
@@ -496,6 +516,7 @@ class InfoService extends Service
 					}
 					$comment['replyInfo']['toUser']['userID'] = $row['quote']['author']['uid'];
 					$comment['replyInfo']['toUser']['userName'] = $row['quote']['author']['nickname'];
+					$comment['replyInfo']['toUser']['isNewUser'] = UserService::isNewUser($row['quote']['author']);
 				}
 				
 				$out['comments']['commentInfos'][] = $comment;
@@ -510,7 +531,7 @@ class InfoService extends Service
 	 */
 	public static function getNewGameDetail($id,$page=1,$pagesize=10,$uid=0)
 	{
-		$detail = self::dbCmsSlave()->table('game_notice')->where('id','=',$id)->first();
+		$detail = GameNotice::db()->where('id','=',$id)->first();
 		$out = array();
 		if($detail){
 			$out['newsInfo']['nid'] = $detail['id'];
@@ -587,6 +608,7 @@ class InfoService extends Service
 				$comment['replyInfo']['fromUser']['userAvator'] = self::joinImgUrl($row['author']['avatar']);
 				$comment['replyInfo']['fromUser']['userLevel'] = $row['author']['level_name'];
 				$comment['replyInfo']['fromUser']['userLevelImage'] = self::joinImgUrl($row['author']['level_icon']);
+				$comment['replyInfo']['fromUser']['isNewUser'] = UserService::isNewUser($row['author']);
 				if(isset($row['quote']) && $row['quote']){
 					$row['quote']['content'] = json_decode($row['quote']['content'],true);
 					if($row['quote']['content'] && count($row['quote']['content'])>0){									
@@ -595,6 +617,7 @@ class InfoService extends Service
 					}
 					$comment['replyInfo']['toUser']['userID'] = $row['quote']['author']['uid'];
 					$comment['replyInfo']['toUser']['userName'] = $row['quote']['author']['nickname'];
+					$comment['replyInfo']['toUser']['isNewUser'] = UserService::isNewUser($row['quote']['author']);
 				}
 				
 				$out['comments']['commentInfos'][] = $comment;
@@ -606,35 +629,35 @@ class InfoService extends Service
 	
 	public static function getNewsInfo($id)
 	{
-		$info = self::dbCmsSlave()->table('news')->where('id','=',$id)->first();
+		$info = News::db()->where('id','=',$id)->first();
 		
 		return $info;
 	}
 	
 	public static function getGuideInfo($id)
 	{
-		$info = self::dbCmsSlave()->table('gonglue')->where('id','=',$id)->first();
+		$info = Gonglue::db()->where('id','=',$id)->first();
 		
 		return $info;
 	}
 	
 	public static function getOpinionInfo($id)
 	{
-		$info = self::dbCmsSlave()->table('feedback')->where('id','=',$id)->first();
+		$info = Feedback::db()->where('id','=',$id)->first();
 		
 		return $info;
 	}
 	
 	public static function getNewGameInfo($id)
 	{
-		$info = self::dbCmsSlave()->table('game_notice')->where('id','=',$id)->first();
+		$info = GameNotice::db()->where('id','=',$id)->first();
 		
 		return $info;
 	}
 	
 	public static function getVideoInfo($id)
 	{
-		$info = self::dbCmsSlave()->table('videos')->where('id','=',$id)->first();
+		$info = Videos::db()->where('id','=',$id)->first();
 		
 		return $info;
 	}
@@ -645,17 +668,17 @@ class InfoService extends Service
 		switch(strtolower($table))
 		{
 			case 'm_news':
-				$info = self::dbCmsSlave()->table('news')->where('id','=',$id)->select('title')->first();
+				$info = News::db()->where('id','=',$id)->select('title')->first();
 				$out['cate'] = '新闻';
 				$out['title'] = $info['title'];
 				break;
 			case 'm_gonglue':
-				$info = self::dbCmsSlave()->table('gonglue')->where('id','=',$id)->select('gtitle')->first();
+				$info = Gonglue::db()->where('id','=',$id)->select('gtitle')->first();
 				$out['cate'] = '攻略';
 				$out['title'] = $info['gtitle'];
 				break;
 			case 'm_feedback':
-				$info = self::dbCmsSlave()->table('feedback')->where('id','=',$id)->select('ftitle')->first();
+				$info = Feedback::db()->where('id','=',$id)->select('ftitle')->first();
 				$out['cate'] = '评测';
 				$out['title'] = $info['ftitle'];
 				break;
@@ -665,17 +688,17 @@ class InfoService extends Service
 				$out['title'] = $info['shortgname'];
 				break;
 			case 'm_game_notice':
-				$info = self::dbCmsSlave()->table('game_notice')->where('id','=',$id)->select('title')->first();
+				$info = GameNotice::db()->where('id','=',$id)->select('title')->first();
 				$out['cate'] = '新游';
 				$out['title'] = $info['title'];
 				break;
 			case 'm_videos':
-				$info = self::dbCmsSlave()->table('videos')->where('id','=',$id)->select('vname')->first();
+				$info = Videos::db()->where('id','=',$id)->select('vname')->first();
 				$out['cate'] = '视频';
 				$out['title'] = $info['vname'];
 				break;
 			case 'yxd_forum_topic':
-				$info = self::dbClubSlave()->table('forum_topic')->where('tid','=',$id)->select('subject','gid')->first();
+				$info = ForumTopic::db()->where('tid','=',$id)->select('subject','gid')->first();
 				if($info){
 					$game = GameService::getGameInfo($info['gid']);
 					$out['cate'] = $game ? $game['shortgname'] : '论坛';
@@ -683,7 +706,7 @@ class InfoService extends Service
 				}
 				break;
 			case 'm_xyx_game':
-				$info = self::dbCmsSlave()->table('xyx_game')->where('id','=',$id)->select('gamename','id')->first();
+				$info = XyxGame::db()->where('id','=',$id)->select('gamename','id')->first();
 				if($info){
 					$out['cate'] = '小游戏';
 					$out['title'] = $info['gamename'];

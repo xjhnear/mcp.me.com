@@ -47,4 +47,12 @@ final class GameMustPlay extends Model implements IModel
 		}
 		return $tb;
 	}
+
+	/***
+		更新数据
+	***/
+	public static function update($datainfo=array(),$id=0,$wherekey='id')
+	{	
+		return self::db()->where($wherekey, $id)->update($datainfo);
+	}
 }

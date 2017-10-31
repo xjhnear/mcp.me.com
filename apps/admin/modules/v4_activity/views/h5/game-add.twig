@@ -1,0 +1,143 @@
+<!--{%extends "../sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>游戏编辑</h3>
+			</div>
+			<div class="box-content">
+				<form id="card_from" action="<!--{{url('v4activity/activity/h5-add')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+                    <input type="hidden" class="app_inp" value="" name="platform" id="platform" />
+                    <div class="control-group app_sel">
+                        <label class="control-label">*平台</label>
+                        <div class="controls">
+                            <!--{{form_select('platform',platforms,info.platform,{'class':'app_sel'})}}-->
+                        </div>
+                    </div>
+					<div class="control-group">
+						<label class="control-label">*选择游戏</label>
+						<div class="controls">
+							<div class="input-append">
+								<input id="selected_game_id" name="gameid" type="hidden" value="<!--{{ input_old('gameid') }}-->"/>
+								<input type="text" readonly id="selected_game_name" name="gametitle" class="input-medium" data-rule-required="true" data-msg-required="请选择游戏" value="<!--{{ input_old('game_name') }}-->" />
+								<span class="add-on select-pop-game">选择游戏</span>
+							</div>
+						</div>
+					</div>
+					<div class="control-group">
+                        <label class="control-label">*游戏背景图</label>
+                        <div class="controls">
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img id="listpic_img" src="<!--{{asset('/static/img/nopic.gif')}}-->" /></div>
+                                <div class="fileupload-preview fileupload-exists thumbnail img1" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+                                <div>
+                                    <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input id="pic" type="file" name='pic' /></span>
+                                    <span style="color: #B94A48; display: none" id="note_sp1">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                                </div>
+                            </div>
+                            <span class="help-inline">图片最佳尺寸:640*250</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">*游戏头图</label>
+                        <div class="controls">
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img id="listpic_img" src="<!--{{asset('/static/img/nopic.gif')}}-->" /></div>
+                                <div class="fileupload-preview fileupload-exists thumbnail img2" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+                                <div>
+                                    <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input id="topPic" type="file" name='topPic' /></span>
+                                    <span style="color: #B94A48; display: none" id="note_sp2">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                                </div>
+                            </div>
+                            <span class="help-inline">图片最佳尺寸:640*250</span>
+                        </div>
+                    </div>
+					<div class="control-group">
+						<label class="control-label">*游戏下载链接</label>
+						<div class="controls">
+							<input type="text" name="gamedownloadurl" id="gamedownloadurl" data-rule-required="true" data-msg-required="请填写下载链接"
+							       class="input-large" value="<!--{{ input_old('gamedownloadurl') }}-->"/>
+						</div>
+					</div>
+					<div class="control-group" id="top">
+						<label class="control-label">排序</label>
+						<div class="controls">
+							<input type="text" name="orderbyvalue"   class="input-small" value="" />
+						</div>
+					</div>
+
+                    
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary sub"><i class="icon-ok"></i>保存</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.uniform.min.js"></script>
+<script src="/static/js/ajaxfileupload.js"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+	$(function(){
+		$('input:radio').iCheck({
+			checkboxClass: 'icheckbox_square-orange',
+			radioClass: 'iradio_square-orange',
+			increaseArea: '20%'
+		});
+		$('.switchbox').bootstrapSwitch();
+
+		$('.select-pop-game').bind('click',function(){
+			var url
+			if ($("select[name='platform']").val()=='ios') {
+				url = '/game/api/game-search';
+			} else {
+				url = '/a_game/api/game-search';
+			}
+			$.ajax({
+				url:url,
+				dataType:'json',
+				success:function(json){
+					var html = json.html;
+					$.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+				}
+			});
+		});
+
+        //图片不能为空
+        $(".sub").live('click',function(){
+            var pic1 = $(".img1").children("img").attr("src");
+            var pic2 = $(".img2").children("img").attr("src");
+            var a = 0;
+            if(pic1){
+                $("#note_sp1").hide();
+            }else{
+                $("#note_sp1").show();
+                var a = 1;
+            }
+            if(pic2){
+                $("#note_sp2").hide();
+            }else{
+                $("#note_sp2").show();
+                var a = 1;
+            }
+            if(a == 1){
+                return false;
+            }
+        })
+      	
+});
+	 
+	var set_selected_game=function(game_id,game_name,icon){
+		$('#selected_game_id').val(game_id);
+		$('#selected_game_name').val(game_name);
+	};
+
+</script>
+<!--{%endblock%}-->

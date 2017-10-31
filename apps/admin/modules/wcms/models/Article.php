@@ -24,7 +24,8 @@ class Article extends BaseHttp
 		if(isset($search['keyword']) && !empty($search['keyword'])){
 			$params['titleContain'] = $search['keyword'];
 		}
-
+//        echo $url;
+//        print_r($params);
 		$result = self::http($url,$params);
 		if($result!==false && $result['errorCode']==0){
 			$out = array('result'=>$result['result']['list'],'totalCount'=>($result['result']['totalPage']*$result['result']['size']));

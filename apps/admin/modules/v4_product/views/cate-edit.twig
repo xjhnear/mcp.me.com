@@ -10,15 +10,16 @@
 			    <form id="cate_from" action="<!--{{url('v4product/goods/cate-add-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
 			    	<input id="id" name="id" type="hidden" value="<!--{{cate.id}}-->" />
 			    	<input id="creator" name="creator" type="hidden" value="<!--{{cate.creator}}-->" />
-                    <div class="control-group">
-                        <label class="control-label">商城类型:</label>
-                        <div  class="controls" >
-                            <select name="currencyType" id="my_currencyType" class="input-small" >
-                                <option value="0">游币商城</option>
-                                <option value="1">钻石商城</option>
-                            </select>
+
+                        <div class="control-group">
+                            <label class="control-label">商城类型:</label>
+                            <div  class="controls" >
+                                <select name="currencyType" <!--{% if cate.id %}-->disabled<!--{% endif %}--> id="my_currencyType" class="input-small" >
+                                    <option value="0">游币商城</option>
+                                    <option value="1">钻石商城</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
 					<div class="control-group">
 						<label class="control-label">*种类名称:</label>

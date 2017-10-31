@@ -1,0 +1,168 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    微信提现
+                </h3>
+                <div class="actions">
+                    <form action="" method="GET">
+                        <table class="table-filter">
+                            <tr>
+                                <td><span class="label label-blue">开始时间</span>
+                                    <div class="input-append date " >
+                                        <input name="startTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{search.startTime}}-->" readonly>
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td><span class="label label-blue">结束时间</span>
+                                    <div class="input-append date "  data-date="">
+                                        <input name="endTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker"  value="<!--{{search.endTime}}-->" id="date_timepicker_end" readonly>
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input name="uid"  placeholder="UID" style="width:100px;" type="text" class="input-small" value="<!--{{search.uid}}-->" >
+                                </td>
+                                <td>
+                                    <!--{{form_select('processStatus',processStatusArr,search.processStatus,{'style':'width:120px;margin-left:10px;','class':'input-medium'})}}-->
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-150">订单ID</th>
+                        <th class="col-150">用户信息</th>
+                        <th class="col-150">真实姓名</th>
+                        <th class="col-150">钻石金额</th>
+                        <th class="col-150">人民币金额</th>
+
+                        <th class="col-150">申请时间</th>
+                        <th class="col-150">扣款状态</th>
+                        <th class="col-150">审核状态</th>
+                        <th class="col-150">转账状态</th>
+                        <th class="col-150">失败原因</th>
+
+                        <th class="col-150">微信订单号</th>
+                        <th class="col-150">审核时间</th>
+                        <th class="col-150">操作人</th>
+                        <th class="col-150">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for item in datalist%}-->
+                    <tr>
+                        <td><!--{{item.id}}--></td>
+                        <td>
+                            <!--{{item.uid}}--><br>
+                            <!--{{item.nickname}}--><br>
+                            <!--{{item.mobileNum}}-->
+                        </td>
+                        <td><!--{{item.realName}}--></td>
+                        <td><!--{{item.withdrawDiamondAmount}}--></td>
+                        <td><!--{{item.withdrawRmbAmount}}--></td>
+                        <td><!--{{item.applyTime}}--></td>
+
+                        <td>
+                            <!--{% if item.deductionStatus == 'FAILED' %}-->
+                                失败
+                            <!--{% elseif item.deductionStatus == 'SUCCESS' %}-->
+                                成功
+                            <!--{% elseif item.deductionStatus == 'RETURN' %}-->
+                                退款
+                            <!--{% endif %}-->
+                        </td>
+                        <td>
+                            <!--{% if item.processStatus == 'UNDEALT' %}-->
+                                未处理
+                            <!--{% elseif item.processStatus == 'PASS' %}-->
+                                通过
+                            <!--{% elseif item.processStatus == 'REFUSE' %}-->
+                                拒绝
+                            <!--{% endif %}-->
+                        </td>
+                        <td>
+                            <!--{% if item.withDrawStatus == 'SUCCESS' %}-->
+                                成功
+                            <!--{% elseif item.withDrawStatus == 'PROCESSING' %}-->
+                                处理中
+                            <!--{% elseif item.withDrawStatus == 'FAILED' %}-->
+                                失败
+                            <!--{% elseif item.withDrawStatus == 'UNPROCESSED' %}-->
+                                未转
+                            <!--{% elseif item.withDrawStatus == 'UNKNOW' %}-->
+                                未知
+                            <!--{% endif %}-->
+                        </td>
+                        <td><!--{{item.wechatPaymentRetInfo}}--></td>
+
+                        <td><!--{{item.wechatPaymentNo}}--></td>
+                        <td><!--{{item.processTime}}--></td>
+                        <td><!--{{item.operatorName}}--></td>
+                        <td>
+                            <!--{% if item.deductionStatus == 'SUCCESS' and item.processStatus != 'REFUSE' and item.withDrawStatus != 'SUCCESS' and item.withDrawStatus != 'PROCESSING' %}-->
+                                <a href="#nogo" data-id="<!--{{item.id}}-->" class="btn btn-primary ajax-pass">通过</a>
+                                <a href="#nogo" data-id="<!--{{item.id}}-->"  class="btn btn-drop ajax-refuse">拒绝</a>
+                            <!--{% endif %}-->
+                        </td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+    $(function(){
+        //通过
+        $('.ajax-pass').on('click',function () {
+            if(!confirm('审核通过后，提现金额会通过企业微信账号直接转入用户微信账户，确认通过？')){
+                return false;
+            }
+            var id = $(this).data('id');
+            $.post('<!--{{url('v4product/wechat/ajax-pass')}}-->',{id:id},function(data){
+                if(data.success=="true"){
+                    window.location.reload();
+                }else{
+                    alert(data.mess);
+                }
+            },"json");
+        });
+
+        //拒绝
+        $('.ajax-refuse').on('click',function () {
+            if(!confirm('审核拒绝后，钻石金额会直接返还至用户的游戏宝账号，确认拒绝？')){
+                return false;
+            }
+            var id = $(this).data('id');
+            $.post('<!--{{url('v4product/wechat/ajax-refuse')}}-->',{id:id},function(data){
+                if(data.success=="true"){
+                    window.location.reload();
+                }else{
+                    alert(data.mess);
+                }
+            },"json");
+        });
+    });
+</script>
+
+<!--{%endblock%}-->

@@ -7,6 +7,7 @@ return array(
     'child_menu' => array(
     	array('name'=>Lang::get('description.lm_tj_tgtj'), 'url'=>'statistics/tuiguang/index'),
         array('name'=>Lang::get('description.lm_tj_yb'),'url'=>'statistics/rank/index'),
+        array('name'=>'游币发放与消耗','url'=>'statistics/rank/money-consume'),
         array('name'=>Lang::get('description.lm_tj_yhyb'),'url'=>'statistics/usercredit/index'),
         array('name'=>Lang::get('description.lm_tj_lt'),'url'=>'statistics/forum/index'),
         array('name'=>'广告效果统计','url'=>'statistics/adv/user'),

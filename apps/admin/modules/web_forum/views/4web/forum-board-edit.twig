@@ -33,6 +33,24 @@
 							<button class="btn btn-lightred remove-forum">移除</button>
 						</div>
 					</div>
+
+                    <div class="control-group">
+                        <label class="control-label">icon</label>
+                        <div class="controls">
+                            <div data-provides="fileupload" class="fileupload fileupload-new"><input type="hidden">
+                                <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail"><img src="<!--{{ board.logo }}-->"></div>
+                                <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+								<span class="btn btn-file"><i class="icon-picture"></i>
+									<span class="fileupload-new">选择图片</span><span class="fileupload-exists">变更</span>
+									<input type="file" name="logo" >
+                                    <input type="hidden" name="logo_1" value="<!--{{ board.logo }}-->">
+								</span>
+                                <span class="add-on text-warning">默认为游戏图片</span>
+                                <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">移除</a>
+                            </div>
+                        </div>
+                    </div>
+
 					<!--{#
 					<div class="control-group">
 						<label class="control-label">论坛类型</label>
@@ -77,6 +95,7 @@
 		$('.remove-forum').click(function(){
 			$('#selected_bbs_name').val('');
 			$('#selected_bbs_id').val('');
+            return false;
 		});
 	});
 </script>

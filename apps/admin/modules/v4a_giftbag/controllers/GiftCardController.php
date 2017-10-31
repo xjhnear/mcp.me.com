@@ -35,15 +35,14 @@ class GiftcardController extends SuperController
             $inputinfo['cardCode']=$inputinfo['restId'];
             unset($inputinfo['restId']);
         }
+
         $inputinfo['pageSize']=15;
         return $inputinfo;
     }
 
     public function getDownload()
     {
-        $inputinfo = Input::all();
-        $inputinfo['pageSize']= $inputinfo['totalCount'];
-        $inputinfo = http_build_query($inputinfo);
+        $inputinfo=http_build_query(Input::all());
         $data['url']=Config::get('app.ios_virtual_card_url').'virtualcard/exportInfo';
         if(!empty($inputinfo)){
             $data['url']=$data['url'].'?'.$inputinfo;
@@ -54,7 +53,6 @@ class GiftcardController extends SuperController
         readfile($data['url']);
         exit;
     }
-
 
     protected function AfterList($data){
 

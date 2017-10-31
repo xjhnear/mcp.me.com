@@ -120,7 +120,7 @@ class BigwheelController  extends BackendController{
         if($result['errorCode']==0){
             $data=MyHelp::processingInterface($result,$inputinfo,$inputinfo['pageSize']);
         }
-        $parms=array('onOrOff'=>'true','active'=>'true');
+        $parms=array('onOrOff'=>'true','active'=>'true','platform'=>'ios');
         $result=LotteryproductService::detail_query($parms);
         if($result['errorCode']==0){
             $data['details']=$result['result'];
@@ -208,6 +208,7 @@ class BigwheelController  extends BackendController{
             $inputinfo['detailList'][]=$detailList;
 
         }
+
         $result=LotteryproductService::wheel_add($inputinfo);
         return $this->redirect('/v4lotteryproduct/bigwheel/supervise')->with('global_tips','操作成功');
     }
@@ -294,6 +295,7 @@ class BigwheelController  extends BackendController{
         }
         $params['onOrOff'] ='true';
         $params['isActive']='true';
+        $params['virtualUse']=4;
         $result=ProductService::getvirtualcardlist($params);//print_r($result);
         if($result['errorCode']==0){
             $data=MyHelp::processingInterface($result,$params,6);
@@ -338,7 +340,7 @@ class BigwheelController  extends BackendController{
                 $arr['genre']=1;
                 $arr['isActive']=1;
                 $result=ProductService::getMallGameRelation($arr); 
-                if($result['errorCode']==0){
+                if($result['errorCode']==0 && $result['result']){
                     $arr=array();
                     foreach($result['result'] as $val_){
                         $arr[$val_['productCode']]=$val_['gid']; 

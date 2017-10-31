@@ -3,9 +3,11 @@ namespace modules\gamelive\models;
 
 class BaseHttp
 {
-    const HOST_URL = 'http://10.168.196.111:19080/yxvl-backstage/';
-    //const HOST_URL = 'http://test.youxiduo.com:12080/yxvl-backstage/';
-    //const HOST_URL = 'http://mobile2.youxiduo.com:19080/yxvl-backstage/';
+//    const HOST_URL = 'http://10.168.196.111:19080/yxvl-backstage/';
+    const HOST_URL = 'http://112.124.121.34:9081/yxvl-backstage/';
+//    const HOST_URL = 'http://10.168.196.111:19080/yxvl-backstage/';
+//    const HOST_URL = 'http://mobile2.youxiduo.com:19080/yxvl-backstage/';
+//const HOST_URL = 'http://10.25.87.96:8682/yxvl-backstage/';
 
     public static function http($url,$params=array(),$method='GET',$format='text',$multi = false, $extheaders = array())
     {

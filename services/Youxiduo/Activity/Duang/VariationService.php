@@ -45,11 +45,15 @@ class VariationService{
         foreach($pre_list as $list){
             $user_info = Account::getUserInfoByField($list['phone'],'mobile');
             $act_info = VariationActivity::getInfo($list['activity_id']);
+            //$user_info && \Log::info('用户-活动:',$user_info);
+            //\Log::info('用户-活动:',$act_info);
             if($user_info && $act_info){
+                $log = '老用户['.$list['from_uid'].']于' . date('Y-m-d H:i:s',$list['addtime']) . '邀请的新用户:' . $user_info['uid'].'-' . $user_info['mobile'] . '在'.date('Y-m-d H:i:s',$user_info['dateline']).'注册成功';
+                \Log::info($log);
                 $depot_info = GiftbagDepot::getInfo($list['depot_id']);
                 $des = $list['depot_id'] == -1 ? $act_info['money'].'游币奖励' : $depot_info['name'];
                 //判断是否过期
-                if($list['expiretime'] < time()){
+                if($list['expiretime'] < $user_info['dateline']){
                     $msg_arr = array(
                         'content' => '很抱歉，由于您没有在规定的时间内完成注册登录，本次（'.$act_info['title'].'）活动的'.$des.'已过期失效',
                         'giftcard' => '。'

@@ -1,0 +1,129 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<link href="/static/css/app.css" rel="stylesheet" type="text/css"/>
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+            <div class="box-title">
+                <h3>签到设置</h3>
+            </div>
+
+			<div class="box-content">
+			    <form id="activity-task" class='form-horizontal form-validate' enctype="multipart/form-data">
+
+			<div class="box-content nopadding">	            	
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-60">时间</th>
+                            <th class="col-60">经验</th>
+                            <th class="col-60">狮牙</th>
+                            <th class="col-60">狮毛</th>
+                            <th class="col-60">勋章</th>
+                            <th class="col-100">ICON</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in data.signConfig%}-->
+						<tr>
+							<td>第<!--{{loop.index}}-->天</td>
+                            <td><input type="text" name="rewardValue1_<!--{{loop.index}}-->" class="input-small" value="<!--{{item.rewardValue1}}-->" /></td>
+                            <td><input type="text" name="rewardValue2_<!--{{loop.index}}-->" class="input-small" value="<!--{{item.rewardValue2}}-->" /></td>
+                            <td><input type="text" name="rewardValue3_<!--{{loop.index}}-->" class="input-small" value="<!--{{item.rewardValue3}}-->" /></td>
+                            <td>
+                            	<input name="rewardValue4_<!--{{loop.index}}-->" type="radio" value="1" <!--{%if item.rewardValue4==1%}-->checked="checked"<!--{%endif%}--> >有勋章
+                            	<input name="rewardValue4_<!--{{loop.index}}-->" type="radio" value="0" <!--{%if item.rewardValue4!=1%}-->checked="checked"<!--{%endif%}--> >无勋章
+							</td>
+                            <td>
+                            	<div class="controls">
+									<div data-provides="fileupload" class="fileupload fileupload-new">
+										<div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+											<img src="<!--{{img_url}}--><!--{{item.icon|default('/static/img/wu_ss.gif')}}-->">
+										</div>
+										<div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+										<span class="btn btn-file"><i class="icon-picture"></i>
+											<span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+											<input name="prize_img[]" type="hidden" value="<!--{{item.icon}}-->"/>
+											<input type="file" name="prize_pic[]"  class="img_validate myfile"  >
+										</span>
+										<a data-dismiss="fileupload" class="btn fileupload-exists fileupload-remove" href="#">Remove</a>
+										<span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+		    
+			</div>
+                    <input type="hidden" name="id" value="<!--{{data.id}}-->"/>
+                    <input type="hidden" name="signConfig_str" value='<!--{{data.signConfig_str}}-->'/>
+			    </form>
+                <div class="span1"></div>
+                <div class="form-actions">
+                    <button id="subFrom" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                </div>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/ajaxfileupload.js"></script>
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+
+    $('#subFrom').click(function(){
+        var data = $('#activity-task').serialize();
+        if (window.confirm('你确定要修改吗？')) {
+            $.ajax({
+                type: "POST",
+                url: '<!--{{url('v4_task/task/task-sign-update')}}-->',
+                data: data,
+                dataType: "json",
+                success: function(res){
+                    if(res.success == 'true') {
+                        alertify.success(res.msg);
+                    } else {
+                        alertify.error(res.msg);
+                    }
+                }
+
+            });
+        } else {
+            return false;
+        }
+
+    });
+    
+    $(document).on('change','input.myfile',function(){
+        	var obj =  $(this).parent();
+            var timestamp = new Date().getTime();
+            var img_id = "id"+timestamp;
+            $(this).attr("id",img_id);
+            var btn_save = $(this).parent().parent().parent().parent().parent().siblings().eq(1).children(".btn_save");
+            btn_save.attr("disabled","disabled");
+            $.ajaxFileUpload
+            (
+                {
+                    url:'/v4_task/task/ajax-upload-img', //你处理上传文件的服务端
+                    type : 'post',
+                    fileElementId:img_id,
+                    dataType: 'json',
+                    success: function (data)
+                    {
+                        if(data.success=="true"){
+                            img_path = data.data;
+                            //alert("图片上传完毕！");
+                            obj.children("input[name='prize_img[]']").val(img_path);
+                            btn_save.removeAttr("disabled");
+                        }else{
+                            alert(data.data);
+                        }
+                    }
+                }
+            );
+    })
+</script>
+<!--{%endblock%}-->

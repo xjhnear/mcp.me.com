@@ -5,21 +5,26 @@ use Yxd\Services\Cms\GameService;
 use Yxd\Services\CreditService;
 use Yxd\Services\UserFeedService;
 use Yxd\Services\UserService;
+use Youxiduo\Helper\Utility;
 use Yxd\Modules\Message\NoticeService;
 use Yxd\Modules\Core\BaseService;
 use modules\giftbag\models\GiftbagModel;
+use Illuminate\Support\Facades\Config;
 use Yxd\Services\Models\Giftbag;
 use Yxd\Services\Models\GiftAccount;
 use Yxd\Services\Models\GiftbagAppoint;
 use Yxd\Services\Models\GiftbagCard;
 use Yxd\Services\Models\GiftReserve;
 use Yxd\Services\Models\Games;
+use Youxiduo\Helper\DES;
 
 /**
  * 礼包服务类
  */
 class GiftbagService extends BaseService
 {
+    const API_URL_CONF = 'app.mall_api_url';
+    const MALL_API_ACCOUNT = 'app.account_api_url';
 	/**
 	 * 礼包列表
 	 */
@@ -80,6 +85,39 @@ class GiftbagService extends BaseService
 		$uid && GiftReserve::db()->where('gift_id','=',$giftbag_id)->where('uid','=',$uid)->update(array('gift_id'=>'0'));
 		return $giftbag; 
 	}
+	
+	/**
+	 * 礼包详情
+	 */
+	public static function getDetailTest($giftbag_id,$uid=0)
+	{
+	    $giftbag = self::dbClubSlave()->table('giftbag')->where('id','=',$giftbag_id)->where('is_show','=',1)->first();
+	    if(!$giftbag) return null;
+	    $game_id = $giftbag['game_id'];
+	    $giftbag['condition'] = json_decode($giftbag['condition'],true);
+	    $game = GameService::getGameInfo($game_id);
+	    $giftbag['game'] = $game;
+	    if($uid){
+	         
+	        //V4礼包领取记录接口
+	        $params = array('productType'=>2,'accountId'=>$uid,'platform'=>'ios','productCode'=>'ios'.$giftbag_id);
+	        $params_ = array('productType','accountId','platform','productCode');
+	        $result = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'accountproduct/query');
+	         
+	        $my_cardno = isset($result['result'][0]['card'])?DES::decrypt($result['result'][0]['card'],11111111):'';
+	        if($giftbag['is_not_limit'] == 1 || $giftbag['limit_count']>0 ){
+	            $my_cardno = '';
+	        }
+	    }else{
+	        $my_cardno = '';
+	    }
+	    $giftbag['ishas'] = $my_cardno ? 1 : 0;
+	    $giftbag['cardno'] = $my_cardno;
+	    //清空预约礼包
+	    $uid && self::dbClubMaster()->table('gift_reserve')->where('gift_id','=',$giftbag_id)->where('uid','=',$uid)->update(array('gift_id'=>'0'));
+	    return $giftbag;
+	}
+	
 	
 	public static function getInfo($giftbag_id)
 	{
@@ -221,6 +259,67 @@ class GiftbagService extends BaseService
 		$row = GiftReserve::db()->where('game_id','=',$game_id)->where('uid','=',$uid)->delete();
 		return true;
 	}
+	
+	/**
+	 * 领取礼包new
+	 */
+	public static function doMyGiftNew($gift_id,$uid)
+	{
+	    $out = array();
+	    // 获取礼包详情
+	    $params = array('productType'=>2,'productCode'=>$gift_id,'uid'=>$uid,'platform'=>'ios','currencyType'=>0);
+	    $params_ = array('productType','productCode','uid','platform','currencyType');
+	    $gift = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::API_URL_CONF).'product/query_product');
+	
+	    if($gift['result']) $gift = $gift['result'][0];
+	
+	    if(!$gift){
+	        $out['errorCode'] = 500;
+	        $out['result'] = "礼包不存在";
+	        return $out;//礼包不存在
+	    }
+	
+	    $user_score = UserService::getUserRealTimeCredit($uid,'score');
+	    // 下单
+	    $params = array('gfid'=>$gift_id,'uid'=>'ios'.$uid,'platform'=>'ios');
+	    $params_ = array('gfid','uid','platform');
+	    $order = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::API_URL_CONF).'order/placeorder_reform');
+	    $out['errorCode'] = $order['errorCode'];
+	    if ($order['errorCode'] == 0) {
+	        $order_id = $order['result'];
+	        // 支付
+	        $params = array('orderId'=>$order_id,'payGameAmount'=>$gift['price'],'payer'=>'ios'.$uid,'platform'=>'ios');
+	        $params_ = array('orderId','payGameAmount','payer','platform');
+	        $pay = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::API_URL_CONF).'order/payorder_reform');
+	        $out['errorCode'] = $pay['errorCode'];
+	        if ($pay['errorCode'] == 0) {
+	            $card['cardno'] = isset($pay['result'][0]['productInfo'])?DES::decrypt($pay['result'][0]['productInfo'],11111111):"";
+	            //发送系统消息
+	            $params = array('title'=>$gift['title'],'cardno'=>$card['cardno']);
+	            NoticeService::sendGetGiftbagSuccess($uid, $gift_id, $params);
+	            //产生用户动态
+	            UserFeedService::makeFeedGift($uid,$gift_id);
+	            $content = NoticeService::parseTpl(NoticeService::AUTO_NOTICE_GET_GIFTBAG_SUCCESS, $params);
+	            $out['result'] = array('title'=>$gift['title'],'content'=>$content);
+	        } else {
+	            if (isset($pay['errorDescription'])) {
+	                $err_msg = explode("|||", $pay['errorDescription']);
+	                $out['result'] = $err_msg[1]?:$pay['errorDescription'];
+	            } else {
+	                $out['result'] = "未知错误";
+	            }
+	        }
+	
+	    } else {
+	        $err_msg = explode("|||", $order['errorDescription']);
+	        $out['result'] = $err_msg[1]?:$order['errorDescription'];
+	    }
+	
+	    return $out;
+	
+	}
+	
+	
 	/**
 	 * 领取礼包
 	 */
@@ -236,12 +335,21 @@ class GiftbagService extends BaseService
 			if(!$appointed) return -2; //该用户无权领取
 		}
 		
-		//设备限制
-		$exists = self::isGetGiftbagByAppleIdentify($gift_id, $uid);
-		$apple_identify = UserService::getUserAppleIdentify($uid);
-		if($exists){
-			return -3;
+// 		//设备限制
+// 		$exists = self::isGetGiftbagByAppleIdentify($gift_id, $uid);
+// 		$apple_identify = UserService::getUserAppleIdentify($uid);
+// 		if($exists){
+// 			return -3;
+// 		}
+		if($gift['limit_count']>0){
+		    //限制领取数量
+		    $exists = self::isGetGiftbagLimitByUID($gift['limit_count'], $gift_id, $uid);
+		     
+		    if($exists){
+		        return -5;
+		    }
 		}
+		
 		$gift['condition'] = json_decode($gift['condition'],true);
 		if(!isset($gift['condition']['score'])) $gift['condition']['score'] = 0;
 		
@@ -250,13 +358,21 @@ class GiftbagService extends BaseService
 		if($gift['condition']['score']>0 && $user_score < $gift['condition']['score']){
 			return 2;
 		}
-		$my_card = GiftAccount::db()
-		->where('gift_id','=',$gift_id)
-		->where('uid','=',$uid)
-		->first();
+// 		$my_card = GiftAccount::db()
+// 		->where('gift_id','=',$gift_id)
+// 		->where('uid','=',$uid)
+// 		->first();
+
+		//V4礼包领取记录接口
+		$params = array('productType'=>2,'accountId'=>$uid,'platform'=>'ios','productCode'=>'ios'.$gift_id);
+		$params_ = array('productType','accountId','platform','productCode');
+		$result = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'accountproduct/query');
 		
-		if($my_card){//已经领取过礼包
-			$out['cardNum'] = $my_card['card_no'];
+		$game = GameService::getGameInfo($gift['game_id']);
+		
+		if($gift['is_not_limit']==0 && $gift['limit_count']==0 && isset($result['result'][0])){
+// 		if($my_card){//已经领取过礼包
+			$out['cardNum'] = !empty($result['result'][0]['card'])?DES::decrypt($result['result'][0]['card'],11111111):'';
 			$out['remainTourCurrency'] = UserService::getUserRealTimeCredit($uid,'score');
 			return $out;
 		}else{
@@ -274,15 +390,50 @@ class GiftbagService extends BaseService
 			//			
 			if($card){																
 				if($success){
-					$data = array(
-					    'gift_id'=>$gift_id,
-					    'uid'=>$uid,
-					    'game_id'=>$gift['game_id'],
-					    'card_no'=>$card['cardno'],
-					    'idfa'=>$apple_identify,
-					    'addtime'=>time()
+// 					$data = array(
+// 					    'gift_id'=>$gift_id,
+// 					    'uid'=>$uid,
+// 					    'game_id'=>$gift['game_id'],
+// 					    'card_no'=>$card['cardno'],
+// 					    'idfa'=>$apple_identify,
+// 					    'addtime'=>time()
+// 					);
+// 					GiftAccount::db()->insertGetId($data);
+					
+					//V4礼包领取记录接口
+					$detailBean = array(
+					    'productCode'=>'ios'.$gift_id,
+					    'productName'=>$gift['title'],
+					    'productSummary'=>$gift['shorttitle'],
+					    'productGamePrice'=>$gift['condition']['score'],
+					    'title'=>$gift['title'],
+					    'body'=>$gift['content'],
+					    'productType'=>2,
+					    'inventedType'=>0,
+					    'productNumber'=>1,
+					    'productInfo'=>DES::encrypt($card['cardno']),
+					    'tradeStatus'=>1,
+					    'productPrice'=>$gift['condition']['score'],
+					    'productInstruction'=>$gift['content'],
+					    'img'=>json_encode(array('listPic'=>$game['ico'],'detailPic'=>$game['ico'])),
+					    'platform'=>'ios',
+					    'gid'=>$gift['game_id'],
+					    'gname'=>$game['shortgname']?$game['shortgname']:$game['gname'],
+					    'orderId'=>$uid.$gift_id.time(),
 					);
-					GiftAccount::db()->insertGetId($data);
+					$params = array(
+					    'accountId'=>'ios'.$uid,
+					    'platform'=>'ios',
+					);
+					$params['detailBean'][] = $detailBean;
+					$params_ = array(
+					    'accountId',
+					    'platform',
+					    'detailBean'
+					);
+
+					$r = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'accountproduct/add','POST');
+
 					//更新礼包卡剩余数量
 					Giftbag::db()->where('id','=',$gift_id)->where('last_num','>',0)->decrement('last_num');
 					//减游币
@@ -400,4 +551,16 @@ class GiftbagService extends BaseService
 		$lock_uid = $lock==true ? $uid : null;
 		return GiftbagCard::db()->where('id','=',$id)->where('is_get','=',0)->update(array('is_get'=>1,'gettime'=>time(),'uid'=>$uid,'lock_uid'=>$lock_uid));
 	}
+	
+	public static function isGetGiftbagLimitByUID($limit_count,$gift_id,$uid)
+	{
+	    if(!$limit_count || !$uid) return false;
+	    //V4礼包领取记录接口
+	    $params = array('productType'=>2,'accountId'=>$uid,'platform'=>'ios','productCode'=>'ios'.$gift_id);
+	    $params_ = array('productType','accountId','platform','productCode');
+	    $result = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'accountproduct/query');
+	    $count = $result['totalCount'];
+	    return $count>=$limit_count ? true : false;
+	}
+	
 }

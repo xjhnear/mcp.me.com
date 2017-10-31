@@ -1,0 +1,120 @@
+
+<div>
+    <div class="actions">
+        <table class="table-filter">
+            <tr>
+
+                <td><!--{{form_select('sortType',sort,search.sortType,{'id':'sel_sort','style':'margin:5px;width:150px'})}}--></td>
+
+                <td>
+                    <input id="shareType" name="shareType" type="hidden" value="<!--{{search.shareType}}-->" >
+                    <input id="taskName" name="taskName"  placeholder="活动标题" style="width:177px;" type="text" class="input-small" value="<!--{{search.taskName}}-->" >
+                </td>
+                <td>
+                    <input id="gameselect" name="gameId" data-rule-required="true" data-from="ios" data-msg-required="请填写游戏"  type="hidden" value="<!--{{search.gid}}-->" class="bigdrop select2-offscreen" style="width:200px;" tabindex="-1">
+                </td>
+                <input type="hidden" name="platformType" id="platformType" value="<!--{{platformType}}-->">
+                <td><button class="btn btn-teal searchCate">搜索</button></td>
+            </tr>
+        </table>
+    </div>
+    <table class="table table-hover table-nomargin">
+        <thead>
+        <tr>
+            <th class="col-80" >icon</th>
+            <th class="col-100">任务标题</th>
+            <th class="col-120">任务简介</th>
+            <th class="col-100">关联游戏</th>
+            <th class="col-120">任务奖励</th>
+            <th class="col-100">任务类型</th>
+            <th class="col-100">任务时间</th>
+            <th class="col-80">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{%for item in datalist%}-->
+        <tr>
+            <td><img src='<!--{{item.taskIcon}}-->'  width="100px"/></td>
+            <td><!--{{item.taskName}}--></td>
+            <td><!--{{item.taskContent}}--></td>
+            <td><!--{{item.gname}}--></td>
+            <td>
+                <!--{%for item2 in item.prizeList%}-->
+                <p><!--{{item2.prizeName}}--></p>
+                <!--{%endfor%}-->
+            </td>
+            <td>
+                子任务
+            </td>
+            <td><!--{{item.startTime}}--><br><!--{{item.endTime}}--></td>
+            <td>
+                <a href="#nogo" taskName="<!--{{item.taskName}}-->" taskId="<!--{{item.taskId}}-->" class="btn select_task">选择</a>
+            </td>
+        </tr>
+        <!--{%endfor%}-->
+        </tbody>
+    </table>
+    <!--{{pagelinks}}-->
+</div>
+
+<script>
+    $(function(){
+        $(".searchCate").click(function(){
+            var sort = $('#sel_sort').val();
+            var taskName = $('#taskName').val();
+            var gid = $('#gameselect').val();
+            var shareType = $('#shareType').val();
+            var platformType = $('#platformType').val();
+            $.ajax({
+                url:'/v4_task/task/iframe-sub-task',
+                data:{sortType:sort,taskName:taskName,gid:gid,shareType:shareType,platformType:platformType},
+                dataType:'json',
+                success:function(json){
+                    var html = '';
+                    html = json.html;
+                    $.dialog.list['pop-task-list'].content(html);
+                }
+            });
+        });
+
+        gameselect('#gameselect');
+        $(".select_task").click(function(){
+            var taskName = $(this).attr("taskName");
+            var taskId = $(this).attr("taskId");
+            //判断是否重复添加
+            var checkval = "false";
+            $(".selected_task_id").each(function(){
+                if($(this).val==taskId){
+                    alert("请勿重复添加！");
+                    checkval = "true";
+                    return false;
+                }
+            });
+
+            if(checkval=="false"){
+                var _obj = selectPopSubTask;
+                _obj.parent().find('.selected_task_id').val(taskId);
+                _obj.parent().parent().attr('taskId', taskId);
+                _obj.parent().find('.selected_task_name').val(taskName);
+            }
+            $.dialog.list['pop-task-list'].close();
+        });
+
+        $('.pagination a').each(function(){
+            var url = $(this).attr('href');
+            $(this).attr('href','javascript:void(0);');
+            $(this).click(function(){
+                $.ajax({
+                    url:url,
+                    dataType:'json',
+                    success:function(json){
+                        var html = '';
+                        html = json.html;
+                        $.dialog.list['pop-task-list'].content(html);
+                    }
+                });
+            });
+
+        });
+    });
+</script>

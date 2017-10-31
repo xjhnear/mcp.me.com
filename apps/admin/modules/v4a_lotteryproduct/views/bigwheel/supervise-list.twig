@@ -57,9 +57,11 @@
                                     抽奖机会
                                     <!--{% elseif  item.linkType == 4 %}-->
                                     钻石
+                                    <!--{% elseif  item.linkType == 6 %}-->
+                                    人民币
                                     <!--{% endif %}-->
                                 </td>
-								<td><!--{{item.prizeStock-item.prizeUsedStock}}-->/<!--{{item.prizeStock}}--></td>
+								<td><!--{{item.prizeUsedStock}}-->/<!--{{item.prizeStock}}--></td>
 								<td><!--{{item.prizeProbability}}-->%</td>
 							</tr>
 						<!--{%endfor%}-->

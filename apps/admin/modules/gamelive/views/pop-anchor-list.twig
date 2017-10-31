@@ -28,7 +28,7 @@
             <td class="user-avatar"><img id="anchor_icon_<!--{{item.id}}-->" src="<!--{{item.picUrl}}-->" class="" /></td>
             <td id="anchor_name_<!--{{item.id}}-->"><!--{{item.name}}--></td>
             <td>
-                <a href="javascript:void(0);" data-id="<!--{{item.id}}-->" class="btn btn-primary select-anchor-id">选择</a>
+                <a href="javascript:void(0);" data-id="<!--{{item.id}}-->" data-name="<!--{{item.name}}-->" class="btn btn-primary select-anchor-id">选择</a>
             </td>
         </tr>
         <!--{%endfor%}-->
@@ -59,7 +59,8 @@
         $('.select-anchor-id').each(function(){
             $(this).click(function(){
                 var anchor_id = $(this).attr('data-id');
-                set_selected_anchor(anchor_id);
+                var anchor_name = $(this).attr('data-name');
+                set_selected_anchor(anchor_id,anchor_name);
                 $.dialog.list['pop-anchor-list'].close();
             });
         });

@@ -91,8 +91,8 @@
 								<!--{%if item.isSign%}-->
 									<span class="label label-success"><i class="icon-star-empty" title="标记"></i></span>
 								<!--{%endif%}-->
-								<!--{%if item.isHot%}-->
-									<span class="label label-info"><i class="icon-thumbs-up" title="置顶"></i></span>
+								<!--{%if item.isTop%}-->
+									<span class="label label-info"><i class="icon-thumbs-up" title="热门"></i></span>
 								<!--{%endif%}-->
 								<!--{%if item.isExclusive%}-->
 									<span class="label label-warning"><i class="icon-user-md" title="授权"></i></span>
@@ -132,8 +132,8 @@
 											</a>
 										</li>
 										<li>
-											<a class="ajax-hot" ifhot="<!--{{ item.isHot }}-->" data="<!--{{ item.productCode }}-->" href="javascript:void(0);">
-												<!--{{ item.isHot ? '取消置顶' : '置顶'  }}-->
+											<a class="ajax-top" iftop="<!--{{ item.isTop }}-->" data="<!--{{ item.productCode }}-->" href="javascript:void(0);">
+												<!--{{ item.isTop ? '取消热门' : '热门'  }}-->
 											</a>
 										</li>
                                         <!--
@@ -276,17 +276,17 @@ $(function(){
 			}
 		});
 	});
-	$('.ajax-hot').bind('click',function(){
+	$('.ajax-top').bind('click',function(){
 		var p_code = $(this).attr('data');
-		var ifhot = $(this).attr('ifhot') ? true : false;
-		var valid_str = ifhot ? '取消' : '';
-		alertify.confirm('是否' + valid_str + '置顶？',function(e){
+		var iftop = $(this).attr('iftop') ? true : false;
+		var valid_str = iftop ? '取消' : '';
+		alertify.confirm('是否' + valid_str + '热门？',function(e){
 			if(e){
-				$.get('/v4agiftbag/gift/ajax-hot',{'p_code':p_code,'hot':!ifhot},function(resp){
+				$.get('/v4agiftbag/gift/ajax-top',{'p_code':p_code,'top':!iftop},function(resp){
 					if(resp.state){
 						alertify.success(resp.msg);
 						setTimeout(function(){
-							location.reload();
+//							location.reload();
 						},1000);
 					}else{
 						alertify.error(resp.msg);

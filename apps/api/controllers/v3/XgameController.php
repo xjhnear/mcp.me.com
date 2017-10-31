@@ -71,11 +71,18 @@ class XgameController extends BaseController
 	public function anyCount(){
 		$input = Input::all();
 		$data['ip'] = $input['ip'];
-		$data['gid'] = $input['gid'];
-		$data['addtime'] = $input['addtime'];
-		$data['dtime'] = $input['dtime'];
+		$data['gid'] = empty($input['gid']) ? 0 : $input['gid'];
+		$data['url'] = $input['url'] ? $input['url'] : '';
+		$beginToday=mktime(0,0,0,date('m'),date('d'),date('Y'));
+		$data['addtime'] = time();
+		$data['dtime'] = $beginToday;
 		$data['platform'] = $input['platform'];
-		XgameService::doSaveCount($data);
+		if($data['gid'] == 0 && $data['url'] == ''){
+			$rs = false;
+		}else{
+			$rs = XgameService::doSaveCount($data);
+		}
+		return $this->success(array('result'=>$rs));
 	}
 	
 	

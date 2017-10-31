@@ -3,6 +3,12 @@ namespace Yxd\Services\Cms;
 
 use Yxd\Services\LikeService;
 use Yxd\Services\Service;
+use Yxd\Services\Models\News;
+use Yxd\Services\Models\Gonglue;
+use Yxd\Services\Models\NewsGame;
+use Yxd\Services\Models\Feedback;
+use Yxd\Services\Models\GamesVideo;
+use Yxd\Services\Models\Video;
 
 class ArticleService extends Service
 {		
@@ -12,8 +18,7 @@ class ArticleService extends Service
 	public static function getArticleHome($gameid)
 	{
 		$result = array();
-		$news = self::dbCmsSlave()->table('news')
-		                   ->where('gid','=',$gameid)
+		$news = News::db()->where('gid','=',$gameid)
 		                   ->where('pid','<=','0')
 		                   ->orderBy('sort','desc')
 		                   ->orderBy('addtime','desc')
@@ -29,7 +34,7 @@ class ArticleService extends Service
 			$out[$index]['video'] = strstr($row['content'], "video") ? 1 : 0;;
 		}
 		$result['news'] = $out;
-		$guides = self::dbCmsSlave()->table('gonglue')
+		$guides = Gonglue::db()
 		                   ->where('gid','=',$gameid)
 		                   ->where('pid','<=','0')
 		                   ->orderBy('sort','desc')
@@ -44,7 +49,7 @@ class ArticleService extends Service
 			$out[$index]['video'] = strstr($row['content'], "video") ? 1 : 0;;
 		}
 		$result['guides'] = $out;
-		$opinions = self::dbCmsSlave()->table('feedback')
+		$opinions = Feedback::db()
 		                   ->where('gid','=',$gameid)
 		                   ->where('pid','<=','0')
 		                   ->orderBy('sort','desc')
@@ -60,7 +65,7 @@ class ArticleService extends Service
 			$out[$index]['video'] = strstr($row['content'], "video") ? 1 : 0;;
 		}
 		$result['opinions'] = $out;
-		$videos = self::dbCmsSlave()->table('games_video')
+		$videos = GamesVideo::db()
 		                   ->where('gid','=',$gameid)
 		                   ->where('type','=','1')
 		                   ->orderBy('id','desc')
@@ -82,8 +87,8 @@ class ArticleService extends Service
 	 */
 	public static function getNewsList($page=1,$pagesize=10)
 	{
-		$total = self::dbCmsSlave()->table('news')->where('pid','<=',0)->count();
-		$artlist = self::dbCmsSlave()->table('news')->where('pid','<=',0)->forPage($page,$pagesize)->orderBy('addtime','desc')->get();
+		$total = News::db()->where('pid','<=',0)->count();
+		$artlist = News::db()->where('pid','<=',0)->forPage($page,$pagesize)->orderBy('addtime','desc')->get();
 		$out = array();
 		foreach($artlist as $index=>$row){
 			$out[$index]['gnid'] = $row['id'];
@@ -107,7 +112,7 @@ class ArticleService extends Service
 		}
 		return array('result'=>$out,'totalCount'=>$total);
 		
-		$tb = self::dbCmsSlave()->table('news');
+		$tb = News::db();
 		$total = $tb->where('pid','<=',0)->count();
 		$artlist = $tb->where('pid','<=',0)->forPage($page,$pagesize)->orderBy('addtime','desc')->get();
 		$out = array();
@@ -127,7 +132,7 @@ class ArticleService extends Service
 	 */
 	public static function getGuideList($page=1,$pagesize=10)
 	{
-		$tb = self::dbCmsSlave()->table('gonglue');
+		$tb = Gonglue::db();
 		$total = $tb->where('pid','<=',0)->count();
 		$artlist = $tb->where('pid','<=',0)->forPage($page,$pagesize)->orderBy('addtime','desc')->get();
 		$out = array();
@@ -146,7 +151,7 @@ class ArticleService extends Service
 	 */
 	public static function getOpinionList($page=1,$pagesize=10)
 	{
-		$tb = self::dbCmsSlave()->table('feedback');
+		$tb = Feedback::db();
 		$total = $tb->where('pid','<=',0)->count();
 		$artlist = $tb->where('pid','<=',0)->forPage($page,$pagesize)->orderBy('addtime','desc')->get();
 		$out = array();
@@ -164,7 +169,7 @@ class ArticleService extends Service
 	
 	protected static function getVideoDetail($id)
 	{
-	    $detail = self::dbCmsSlave()->table('video')->where('id','=',$id)->first();
+	    $detail = Video::db()->where('id','=',$id)->first();
 		$out = array();
 		if($detail){
 			$out['gnid'] = $detail['id'];

@@ -100,9 +100,11 @@ class AdvSpaceService extends BaseService
 	 */
 	public static function getBanner($appname,$channel,$version,$advSpaceId)
 	{
+		$map_table = array('home_banner_1'=>1,'home_banner_2'=>2,'shop_banner_1'=>6);
+		$postype = $map_table[$advSpaceId];
 		$advpos = AdvPos::db()->where('appname','=',$appname)
 			->where('version','=',$version)
-			->where('postype','=',1)
+			->where('postype','=',$postype)
 			->orderBy('id','desc')
 			->first();
 		$out = array();
@@ -111,6 +113,7 @@ class AdvSpaceService extends BaseService
 	        ->where('appname','=',$appname)
 	        ->where('version','=',$version)
 	        ->first();
+	    $adv = null;
 	    if(!$adv && $advpos) {
 			$out['title'] = $advpos['title'];
 			$out['type'] = $advpos['type'];
@@ -119,8 +122,9 @@ class AdvSpaceService extends BaseService
 			$out['words'] = $advpos['words'];
 		}else{		
 			$out = self::filterCommonParams($adv);
+			$out && $out['title'] = $advpos['title'];
 			$out && $out['img'] = Utility::getImageUrl($adv['litpic']);
-			$out && $out['words'] = $adv['title'];
+			$out && $out['words'] = $advpos['words'];
 		}	    
 		return $out ? array($out) : array(); 
 	}
@@ -134,9 +138,11 @@ class AdvSpaceService extends BaseService
 	 */
 	public static function getRecommendSpace($appname,$channel,$version,$advSpaceId)
 	{
+		$map_table = array('home_recommend'=>3,'shop_recommend'=>100,'ios_v4_task_center_ad'=>'200');
+		$postype = $map_table[$advSpaceId];
 		$advpos = AdvPos::db()->where('appname','=',$appname)
 			->where('version','=',$version)
-			->where('postype','=',3)
+			->where('postype','=',$postype)
 			->orderBy('tab','asc')
 			->forPage(1,4)
 			->get();
@@ -159,15 +165,17 @@ class AdvSpaceService extends BaseService
 	 * @param string $appname
 	 * @param string $channel
 	 * @param string $version
-	 * @param string $advSpaceId
+	 * @param string $advSpaceId 标识[home_network|home_single|search_hot|guess_like|type_hot]
 	 */
 	public static function getRecommendGames($appname,$channel,$version,$advSpaceId)
 	{
+		$map_table = array('home_network'=>4,'home_single'=>5,'search_hot'=>6,);
+		$postype = $map_table[$advSpaceId];
 		$advpos = AdvPos::db()->where('appname','=',$appname)
 			->where('version','=',$version)
-			->where('postype','=',4)
+			->where('postype','=',$postype)
 			->orderBy('tab','asc')
-			->forPage(1,4)
+			->forPage(1,5)
 			->get();
 		$out = array();
 	    if($advpos) {

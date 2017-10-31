@@ -4,7 +4,7 @@ return array(
     'module_name'  => 'v4a_giftbag',
     'module_alias' => 'v4a礼包管理',
     'module_icon'  => 'android',
-    'default_url'=>'v4agiftbag/gift/search',
+    'default_url'=>'v4agiftbag/package/search',
     'child_menu' => array(
         array('name'=>'礼包库列表','url'=>'v4agiftbag/package/search'),
         array('name'=>'实物库列表','url'=>'v4agiftbag/package/search-material'),

@@ -1,0 +1,104 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					队伍管理
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('liansai/home/team-list')}}-->" class="">
+				    <table class="table-filter">				        
+				        <tr>
+
+                            <td><span class="label label-blue">开始时间</span>
+                                <div class="input-append date " >
+                                    <input name="startDate" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{search.startDate}}-->" readonly>
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+                            </td>
+                            <td>结束时间
+                                <div class="input-append date "  data-date="">
+                                    <input name="endDate" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker"  value="<!--{{search.endDate}}-->" id="date_timepicker_end" readonly>
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input name="teamName" type="text" class="input-medium" placeholder="队伍名称" value="<!--{{search.teamName}}-->">
+                            </td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-120">序列</th>
+							<th class="col-120">队伍名称</th>
+							<th class="col-120">队长信息</th>
+                            <th class="col-120">队伍人数</th>
+                            <th class="col-120">有效场次</th>
+                            <th class="col-120">总积分</th>
+                            <th class="col-120">胜率</th>
+                            <th class="col-120">建立时间</th>
+                            <th class="col-120">状态</th>
+
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for key,item in list%}-->
+						<tr>
+							<td><!--{{key}}--></td>
+                            <td><!--{{item.teamName}}--></td>
+                            <td><!--{{item.leader.leaderNick}}--></td>
+                            <td><!--{{item.trueTeamNum}}--></td>
+                            <td><!--{{item.validMatchNum}}--></td>
+                            <td><!--{{item.point}}--></td>
+                            <td><!--{{item.winRate}}--></td>
+                            <td><!--{{item.createTime}}--></td>
+                            <td><!--{{result[item.status]}}--></td>
+
+							<td>
+							    <a href="<!--{{url('liansai/home/team-add')}}-->?teamId=<!--{{item.teamId}}-->" class="btn btn-primary">查看详情</a>
+							    <a href="#nogo" teamId="<!--{{item.teamId}}-->" leaderId="<!--{{item.leader.infoId}}-->" class="btn btn-primary ajax-del">取消资格</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>			    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+$(function(){
+    $('a.ajax-del').bind('click',function(){
+        if(confirm('确定要删除数据吗？')){
+            var teamId = $(this).attr('teamId');
+            var leaderId = $(this).attr('leaderId');
+            obj = $(this);
+            $.post('<!--{{url('liansai/home/ajax-do')}}-->',{url:"dismissTeam",teamId:teamId,leaderId:leaderId},function(data){
+                if(data.success){
+                    obj.parent().parent().hide();
+                }else{
+                    alert(data.error);
+                }
+            },"json")
+        }
+    });
+});
+</script>
+<!--{%endblock%}-->

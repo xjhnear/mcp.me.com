@@ -7,6 +7,13 @@ use Yxd\Modules\Message\NoticeService;
 use Illuminate\Support\Facades\DB;
 use Yxd\Services\Service;
 use Yxd\Models\Cms\Game;
+use Yxd\Services\Models\ShopCate;
+use Yxd\Services\Models\ShopGoods;
+use Yxd\Services\Models\ShopGoodsAccount;
+use Yxd\Services\Models\TodayExchangeAccount;
+use Yxd\Services\Models\Giftbag;
+use Yxd\Services\Models\CreditAccount;
+
 
 /**
  * 商城
@@ -18,8 +25,8 @@ class ShoppingService extends Service
 	 */
 	public static function getCateList($page=1,$pagesize=10)
 	{  
-		$total = self::dbClubSlave()->table('shop_cate')->where('show','=',1)->count();
-		$catelist = self::dbClubSlave()->table('shop_cate')
+		$total = ShopCate::db()->where('show','=',1)->count();
+		$catelist = ShopCate::db()
 		->where('show','=',1)
 		->orderBy('sort','desc')
 		->forPage($page,$pagesize)
@@ -40,7 +47,7 @@ class ShoppingService extends Service
 	
 	protected static function buildGoodsList($cate_id)
 	{
-		$tb = self::dbClubSlave()->table('shop_goods')->where('status','=',0);
+		$tb = ShopGoods::db()->where('status','=',0);
 		if($cate_id){  
 			$tb = $tb->where('cate_id','=',$cate_id);
 		}
@@ -52,14 +59,14 @@ class ShoppingService extends Service
 	 */
 	public static function getGoodsInfo($id,$uid=0)
 	{
-		$goods = self::dbClubSlave()->table('shop_goods')->where('id','=',$id)->first();
+		$goods = ShopGoods::db()->where('id','=',$id)->first();
 		if($goods && $goods['limit_flag']==1){
 			 $day_start = mktime('0','0','0',date('m'),date('d'),date('Y'));
 			 $day_end = mktime('23','59','59',date('m'),date('d'),date('Y'));
 			 if($day_start>$goods['limit_time']){
 			 	$day_limit_goods_last = $goods['day_limit_goods_total'];
 			 	$data = array('day_limit_goods_last'=>$day_limit_goods_last,'limit_time'=>$day_end);
-			 	self::dbClubSlave()->table('shop_goods')->where('id',$id)->update($data);
+			 	ShopGoods::db()->where('id',$id)->update($data);
 			 	$goods['day_limit_goods_last'] = $goods['day_limit_goods_total'];
 			 	$goods['limit_time'] = $day_end;
 			 }
@@ -74,8 +81,8 @@ class ShoppingService extends Service
 		$goods['ishas'] = 0;
 		$goods['exchangeinfo'] = '';
 		if($uid){
-			$exchange_times = self::dbClubSlave()->table('shop_goods_account')->where('uid','=',$uid)->where('goods_id','=',$id)->count();
-			$mygoods_list = self::dbClubSlave()->table('shop_goods_account')->where('uid','=',$uid)->where('goods_id','=',$id)->get();
+			$exchange_times = ShopGoodsAccount::db()->where('uid','=',$uid)->where('goods_id','=',$id)->count();
+			$mygoods_list = ShopGoodsAccount::db()->where('uid','=',$uid)->where('goods_id','=',$id)->get();
 			if($exchange_times>0) $goods['ishas'] = 1;
 			$goods['surplus_exchange_times'] = $goods['max_exchange_times']==0 ? 9999 : $goods['max_exchange_times'] - $exchange_times;
 			foreach($mygoods_list as $mygoods){
@@ -94,7 +101,7 @@ class ShoppingService extends Service
 	
 	public static function getLastExchangeUserInfo($size=5)
 	{
-		$exchange_goods_list = self::dbClubSlave()->table('shop_goods_account')->forPage(1,$size)->orderBy('id','desc')->get();
+		$exchange_goods_list = ShopGoodsAccount::db()->forPage(1,$size)->orderBy('id','desc')->get();
 		$uids = array();
 		$goods_ids = array();
 		foreach($exchange_goods_list as $row){
@@ -103,7 +110,7 @@ class ShoppingService extends Service
 		}
 		$users = UserService::getBatchUserInfo($uids);
 		if(!$goods_ids) return array();
-		$goods_list = self::dbClubSlave()->table('shop_goods')->whereIn('id',$goods_ids)->lists('name','id');
+		$goods_list = ShopGoods::db()->whereIn('id',$goods_ids)->lists('name','id');
 		$notices = array();
 		foreach($exchange_goods_list as $row){
 			if(!isset($users[$row['uid']]) || !isset($goods_list[$row['goods_id']])) continue;
@@ -121,10 +128,10 @@ class ShoppingService extends Service
 	public static function getMyGoodsList($uid,$page=1,$pagesize=10)
 	{
 		
-		$goods_ids = self::dbClubSlave()->table('shop_goods_account')->where('uid','=',$uid)->orderBy('addtime','desc')->lists('goods_id');
+		$goods_ids = ShopGoodsAccount::db()->where('uid','=',$uid)->orderBy('addtime','desc')->lists('goods_id');
 		$total = count($goods_ids);
 		if(empty($goods_ids)) return array();
-		$goods = self::dbClubSlave()->table('shop_goods')->whereIn('id',$goods_ids)
+		$goods = ShopGoods::db()->whereIn('id',$goods_ids)
 			->forPage($page,$pagesize)
 			->get();
 		$tmp_goods = array();
@@ -142,7 +149,7 @@ class ShoppingService extends Service
 	
 	public static function exchangeList($goods_id)
 	{
-		$tmp = self::dbClubSlave()->table('shop_goods_account')->where('goods_id','=',$goods_id)->orderBy('addtime','desc')->get();
+		$tmp = ShopGoodsAccount::db()->where('goods_id','=',$goods_id)->orderBy('addtime','desc')->get();
 		if(empty($tmp)) return array();
 		foreach($tmp as $row){
 			$uids[] = $row['uid'];
@@ -164,6 +171,31 @@ class ShoppingService extends Service
 		return $out;
 	}
 	
+    public static function exchangeListPage($goods_id,$pageIndex,$pageSize=10)
+	{
+		$total = ShopGoodsAccount::db()->where('goods_id','=',$goods_id)->count();
+		$tmp = ShopGoodsAccount::db()->where('goods_id','=',$goods_id)->orderBy('addtime','desc')->forPage($pageIndex,$pageSize)->get();
+		if(empty($tmp)) return array('result'=>array(),'totalCount'=>0);
+		foreach($tmp as $row){
+			$uids[] = $row['uid'];
+		}
+		//$uids = array_values($tmp);
+		$users = UserService::getBatchUserInfo($uids);
+		$out = array();
+		foreach($tmp as $one){
+			$uid = $one['uid'];
+			$addtime = $one['addtime'];
+			if(!isset($users[$uid])) continue;
+			$user = array();
+			$user['nick'] = $users[$uid]['nickname'];
+			$user['levelimg'] = self::joinImgUrl($users[$uid]['level_icon']);
+			$user['avatarImg'] = self::joinImgUrl($users[$uid]['avatar']);
+			$user['date'] = date('Y-m-d',$addtime);
+			$out[] = $user;
+		}
+		return array('result'=>$out,'totalCount'=>$total);
+	}
+	
 	/**
 	 * 兑换商品
 	 */
@@ -175,7 +207,7 @@ class ShoppingService extends Service
 		}
 		$todaystarttime = strtotime(date('Y-m-d 0:0:0'));
 		$todayendtime = strtotime(date('Y-m-d 23:59:59'));
-		$goods = DB::table('shop_goods')->where('id','=',$goods_id)->first();
+		$goods = ShopGoods::db()->where('id','=',$goods_id)->first();
 	    
 		if(!$goods){
 			return 1;//商品不存在
@@ -188,13 +220,13 @@ class ShoppingService extends Service
 		}
 	    
 		$max_exchange_times = (int)$goods['max_exchange_times'];
-		$exchange_times = self::dbClubSlave()->table('shop_goods_account')->where('uid','=',$uid)->where('goods_id','=',$goods_id)->count();
+		$exchange_times = ShopGoodsAccount::db()->where('uid','=',$uid)->where('goods_id','=',$goods_id)->count();
 
 		//新增了兑换次数的限制
 		if($max_exchange_times==1){	
 			if(isset($idfa) && !empty($idfa))
 			{			
-				$today_exchange_account = self::dbClubSlave()->table('today_exchange_account')->where('goods_id','=',$goods_id)->where('idfa','=',$idfa)->whereBetween('ctime', array($todaystarttime, $todayendtime))->get();
+				$today_exchange_account = TodayExchangeAccount::db()->where('goods_id','=',$goods_id)->where('idfa','=',$idfa)->whereBetween('ctime', array($todaystarttime, $todayendtime))->get();
 				if($today_exchange_account)
 				{
 					return 6;
@@ -206,7 +238,7 @@ class ShoppingService extends Service
 				{
 					return 8;
 				}
-				$today_exchange_account = self::dbClubSlave()->table('today_exchange_account')
+				$today_exchange_account = TodayExchangeAccount::db()
 										  ->where('goods_id', $goods_id)->where('mac', $mac)
 										  ->whereBetween('ctime', array($todaystarttime, $todayendtime))->get();
 			    if($today_exchange_account)
@@ -220,7 +252,7 @@ class ShoppingService extends Service
 		}elseif($max_exchange_times>0){
 			if(isset($idfa) && !empty($idfa))
 			{
-				$today_exchange_account =self::dbClubSlave()->table('today_exchange_account')
+				$today_exchange_account =TodayExchangeAccount::db()
 										  ->where('goods_id', $goods_id)->where('idfa', $idfa)
 										  ->whereBetween('ctime', array($todaystarttime, $todayendtime))->get();
 				if($today_exchange_account)
@@ -234,7 +266,7 @@ class ShoppingService extends Service
 					{
 						return 8;
 					}
-				$today_exchange_account = self::dbClubSlave()->table('today_exchange_account')
+				$today_exchange_account = TodayExchangeAccount::db()
 										  ->where('goods_id', $goods_id)->where('mac', $mac)
 										  ->whereBetween('ctime', array($todaystarttime, $todayendtime))->get();
 			    if($today_exchange_account)
@@ -248,7 +280,7 @@ class ShoppingService extends Service
 		}elseif($max_exchange_times==0){
 			if(isset($idfa) && !empty($idfa))
 			{
-				$today_exchange_account =self::dbClubSlave()->table('today_exchange_account')
+				$today_exchange_account =TodayExchangeAccount::db()
 										  ->where('goods_id', $goods_id)->where('idfa', $idfa)
 										  ->whereBetween('ctime', array($todaystarttime, $todayendtime))->get();
 				if($today_exchange_account)
@@ -262,7 +294,7 @@ class ShoppingService extends Service
 					{
 						return 8;
 					}
-				$today_exchange_account = self::dbClubSlave()->table('today_exchange_account')
+				$today_exchange_account = TodayExchangeAccount::db()
 										  ->where('goods_id', $goods_id)->where('mac', $mac)
 										  ->whereBetween('ctime', array($todaystarttime, $todayendtime))->get();
 			    if($today_exchange_account)
@@ -279,7 +311,8 @@ class ShoppingService extends Service
 		if($goods['endtime']<$time){
 			return 5;
 		}
-		$user_credit = self::dbClubSlave()->table('credit_account')->where('uid','=',$uid)->first();
+// 		$user_credit = CreditAccount::db()->where('uid','=',$uid)->first();
+		$user_credit['score'] = UserService::getUserRealTimeCredit($uid,'score');
 		if(!$user_credit){
 			return 3;//游币不足
 		}
@@ -289,7 +322,7 @@ class ShoppingService extends Service
 		$result = self::dbClubMaster()->transaction(function()use($goods_id,$uid,$goods,$idfa,$mac){			
 			
         	//兑换记录
-        	$exchange = array('goods_id'=>$goods_id,'uid'=>$uid,'score'=>$goods['score'],'addtime'=>time());
+        	$exchange = array('goods_id'=>$goods_id,'uid'=>$uid,'score'=>$goods['score'],'addtime'=>time(),'adddate'=>mktime(0,0,0,date('m'),date('d'),date('Y')));
         	if((int)$goods['gtype']==1){
         		$exchange['goods_type'] = 1;
         		$exchange['expense'] = $goods['expense'];
@@ -301,7 +334,7 @@ class ShoppingService extends Service
         			$exchange['cardno'] = $gift['cardno'];
         			$exchange['expense'] = '';
         			$exchange['goods_type'] = 2;
-        			GiftbagService::updateGiftbagCardStatus($gift['id']);
+        			GiftbagService::updateGiftbagCardStatus($gift['id'],$uid,false);
         		}else{
         			return 2;
         		}
@@ -318,9 +351,9 @@ class ShoppingService extends Service
 			//减库存
 			$can_buy = 0;
 			if((int)$goods['gtype']==1){//实物类
-        	    $can_buy = ShoppingService::dbClubMaster()->table('shop_goods')->where('id','=',$goods_id)->whereRaw('totalnum > usednum')->increment('usednum');
+        	    $can_buy = ShopGoods::db()->where('id','=',$goods_id)->whereRaw('totalnum > usednum')->increment('usednum');
 			}elseif((int)$goods['gtype']==2){//虚拟类				
-				$can_buy = ShoppingService::dbClubMaster()->table('giftbag')->where('id','=',$goods['gift_id'])->whereRaw('last_num > 0')->decrement('last_num');
+				$can_buy = Giftbag::db()->where('id','=',$goods['gift_id'])->whereRaw('last_num > 0')->decrement('last_num');
 				$can_buy > 0 && ShoppingService::dbClubMaster()->table('shop_goods')->where('id','=',$goods_id)->increment('usednum');
 			}
 			
@@ -349,13 +382,13 @@ class ShoppingService extends Service
 			}
 			*/
         	
-			ShoppingService::dbClubMaster()->table('shop_goods_account')->insertGetId($exchange);
+			ShopGoodsAccount::db()->insertGetId($exchange);
         	//把设备今天兑换的商品记录到today_exchange_account表中
-        	ShoppingService::dbClubMaster()->table('today_exchange_account')->insertGetId($today_exchange);
+        	TodayExchangeAccount::db()->insertGetId($today_exchange);
         	
         	
         	if($goods['limit_flag']==1){
-        	    ShoppingService::dbClubMaster()->table('shop_goods')->where('id','=',$goods_id)->decrement('day_limit_goods_last');
+        	    ShopGoods::db()->where('id','=',$goods_id)->decrement('day_limit_goods_last');
         	}        	
         	
         	//发通知
@@ -365,7 +398,7 @@ class ShoppingService extends Service
         	return true;        	
         });
         if($result){
-        	$myexchange = self::dbClubSlave()->table('shop_goods_account')->where('uid','=',$uid)->where('goods_id','=',$goods_id)->first();
+        	$myexchange = ShopGoodsAccount::db()->where('uid','=',$uid)->where('goods_id','=',$goods_id)->first();
         }
 		return $result===true ? array('type'=>intval($myexchange['goods_type']==2) ? 0 : 1,'title'=>$goods['name'],'content'=>intval($myexchange['goods_type']==2) ? '激活码:'.$myexchange['cardno'] : $myexchange['expense']) : $result;
 	}

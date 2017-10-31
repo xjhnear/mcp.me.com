@@ -1,0 +1,69 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<link href="/static/css/app.css" rel="stylesheet" type="text/css"/>
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+            <div class="box-title">
+                <h3>任务规则</h3>
+            </div>
+
+			<div class="box-content">
+			    <form id="activity-task" class='form-horizontal form-validate' >
+
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">内容(普通任务)<i class="tip-star">*</i></label>
+                        <div class="controls">
+                            <script id="container" name="content" type="text/plain"><!--{{data.0.dicValue}}--></script>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">内容(特殊任务)<i class="tip-star">*</i></label>
+                        <div class="controls">
+                            <script id="container2" name="content2" type="text/plain"><!--{{data.1.dicValue}}--></script>
+                        </div>
+                    </div>
+
+			    </form>
+                <div class="span1"></div>
+                <div class="form-actions">
+                    <button id="subFrom" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                </div>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script>
+    var editor = UE.getEditor('container',{initialFrameWidth:800});
+    var editor = UE.getEditor('container2',{initialFrameWidth:800});
+
+    $('#subFrom').click(function(){
+        var data = $('#activity-task').serialize();
+        if (window.confirm('你确定要修改吗？')) {
+            $.ajax({
+                type: "POST",
+                url: '<!--{{url('v4_task/task/task-rule-update')}}-->',
+                data: data,
+                dataType: "json",
+                success: function(res){
+                    if(res.success == 'true') {
+                        alertify.success(res.msg);
+                    } else {
+                        alertify.error(res.msg);
+                    }
+                }
+
+            });
+        } else {
+            return false;
+        }
+
+    });
+</script>
+<!--{%endblock%}-->

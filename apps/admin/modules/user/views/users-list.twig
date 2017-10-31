@@ -65,6 +65,9 @@
 							<th class="col-60"><span class="cus-android"></span>游币</th>
 							<th class="col-80"><span class="cus-android"></span>经验/等级</th>
 							<!--{%endif%}-->
+                            <th class="col-60"><span class="cus-android"></span>支付账户</th>
+                            <th class="col-60"><span class="cus-android"></span>人民币余额</th>
+                            <th class="col-60"><span class="cus-android"></span>提现总额</th>
 							<th class="col-120">注册时间</th>
 							<th class="col-60">来源</th>
 							<th>状态</th>
@@ -89,6 +92,10 @@
 
                             <td><!--{{item.experience}}-->/Lv.<!--{{item.level_name}}--></td>
 							<!--{%endif%}-->
+                            <td><!--{{item.alipayAccount}}--></td>
+                            <td><a href="<!--{{url('user/users/rmb-history',{'uid':item.uid})}}-->"><!--{{item.balance}}--></a></td>
+                            <td><!--{{item.cashTotal}}--></td>
+
 							<td><!--{{item.dateline|date('Y-m-d H:i:s')}}--></td>
 							<td><!--{%if item.client == 'android'%}--><span class="cus-android"></span><!--{%else%}--><span class="cus-ios"></span><!--{%endif%}--></td>
 							<td><!--{%if in_array(item.uid,bans)%}--><span class="label">禁用中</span><!--{%endif%}--><!--{%if item.vuser==1%}-->robot<!--{%endif%}--></td>

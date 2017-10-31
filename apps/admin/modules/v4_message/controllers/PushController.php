@@ -102,7 +102,7 @@ class PushController extends BackendController
 				return $this->back()->with('global_tips','发送方式不能为空');
 			}
 		}
-		
+
 		$result = PushService::addMessage($params);
 		return $this->redirect('v4_message/push/list','发送成功');
 	}

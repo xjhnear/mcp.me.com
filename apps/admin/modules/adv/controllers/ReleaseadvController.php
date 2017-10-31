@@ -31,6 +31,7 @@ class ReleaseadvController extends BackendController
 				$locationName=AdvService::getLocationInfo($value['location_id']);
 				if(!empty($locationName) && $locationName['is_show'] == 1){
 					$value['locationName']=$locationName['name'];
+					$value['sort']=$locationName['sort'];
 				}
 			}	
 		}
@@ -45,7 +46,7 @@ class ReleaseadvController extends BackendController
 	public function getReleaseadvAddEdit($id=0,$from='ios')
 	{	
 		$datainfo=array();
-		$datainfo['type']=array('图片'=>'图片','文字'=>'文字','弹窗'=>'弹窗','轮播'=>'轮播','条幅'=>'条幅','链接'=>'链接','游戏列表'=>'游戏列表','游戏信息'=>'游戏信息');
+		$datainfo['type']=array('图片'=>'图片','文字'=>'文字','弹窗'=>'弹窗','轮播'=>'轮播','推荐'=>'推荐','条幅'=>'条幅','链接'=>'链接','游戏列表'=>'游戏列表','游戏信息'=>'游戏信息');
 		$apptypes=AdvService::FindApptypes(" versionform='$from' and   is_show=1");
 		if(!empty($apptypes)){
 			$datainfo['apptypesselect']=$apptypes;	
@@ -115,7 +116,9 @@ class ReleaseadvController extends BackendController
             if(Input::get('bigpic_')) $input['bigpic']=Input::get('bigpic_');
         }
 
-        $dir = '/advdirs/' . date('Y') . '/' . date('m') . '/';
+        //$dir = '/userdirs/userdirs/common/icon_v4/' . date('Y') . '/' . date('m') . '/';
+        //$dir = '/userdirs/common/icon_v4/test/slide';
+         $dir = '/userdirs/common/icon_v4/test/adv/';
         $path = storage_path() . $dir;
 
         if(Input::hasFile('litpic')){

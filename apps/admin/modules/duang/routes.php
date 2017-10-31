@@ -17,3 +17,6 @@ Route::controller('duang/variation','modules\duang\controllers\VariationControll
 Route::controller('duang/gbdepot','modules\duang\controllers\GbdepotController');
 //展示列表
 Route::controller('duang/show','modules\duang\controllers\ShowController');
+
+//v4分享
+//Route::controller('duang/v4share','modules\duang\controllers\V4shareController');

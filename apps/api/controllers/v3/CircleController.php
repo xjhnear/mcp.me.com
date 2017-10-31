@@ -20,7 +20,7 @@ class CircleController extends BaseController
 		$gid = Input::get('gid');
 		$uid = Input::get('uid');
 		$appname = Input::get('appname','');
-		$version = $this->getComVersion();
+		$version = $this->getComVersion();//Input::get('version','3.0.0');
 		if(empty($gid)) return $this->fail(1121,'游戏ID不能为空');
 		$result = GameCircleService::getHomePage($gid,$uid,$appname,$version);
 		return $this->success(array('result'=>$result));
@@ -168,7 +168,7 @@ class CircleController extends BaseController
 			return $this->fail(11211,'用户不存在');
 		}
 		$page = Input::get('pageIndex',1);
-		$pagesize = Input::get('pageSize',10);
+		$pagesize = Input::get('pagesize',10);
 		$result = CircleFeedService::getDataFeed($uid,$page,$pagesize);
 		//print_r($result);exit;
 		$out = array();

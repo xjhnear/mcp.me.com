@@ -121,7 +121,7 @@ class VltvLiveController extends BackendController
     public function getLive()
     {
         $data = array();
-        $liveId = Input::get('id',1);
+        $liveId = Input::get('liveId',1);
         $data['liveId'] = $liveId;
 
         $pageIndex = (int)Input::get('page',1);
@@ -197,15 +197,15 @@ class VltvLiveController extends BackendController
         isset($img_arr[5]) && $input['smallImgUrl_2'] = $img_arr[5];
 
         if($id){
-            $res= ESportsService::excute2($input,"UpdateLiveGraphical",false);
+            $res= ESportsService::excute2(array_filter($input),"UpdateLiveGraphical",false);
         }else{
             unset($input['id']);
-            $res= ESportsService::excute2($input,"CreateLiveGraphical",false);
+            $res= ESportsService::excute2(array_filter($input),"CreateLiveGraphical",false);
         }
-//        print_r($input);
-//        print_r($res);die;
+        print_r(array_filter($input));
+        print_r($res);die;
         if($res['success']){
-            return $this->redirect('yxvl_eSports/VltvLive/live?id='.$input['liveId'],'保存成功');
+            return $this->redirect('yxvl_eSports/VltvLive/live?liveId='.$input['liveId'],'保存成功');
         }else{
             return $this->back($res['error']);
         }

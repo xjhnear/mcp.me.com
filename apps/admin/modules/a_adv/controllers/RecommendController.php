@@ -44,10 +44,12 @@ class RecommendController extends BackendController
 			'3.0.1'=>'3.0.1',
 			'3.0.2'=>'3.0.2',
 			'3.1.0'=>'3.1.0',
+			'3.1.1'=>'3.1.1',
+            '3.1.2'=>'3.1.2',
 		);
 	}
 	
-	public function getImagePlaceList($_place_type='12')
+	public function getImagePlaceList($_place_type='3022')
 	{
 		$place_type = Input::get('place_type',$_place_type);
 		$pageIndex = Input::get('page',1);

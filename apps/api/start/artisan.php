@@ -30,4 +30,6 @@ Artisan::add(new ClearCache());
 Artisan::add(new ReserveGiftbag());
 //同步论坛数据
 Artisan::add(new SyncForum());
+//同步用户到亲加
+Artisan::add(new ImportUser());
 

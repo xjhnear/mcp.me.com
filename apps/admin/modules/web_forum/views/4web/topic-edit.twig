@@ -16,7 +16,30 @@
 							<input id="userselect" name="author_uid" type="hidden" value="<!--{{ topic.uid }}-->" class="bigdrop select2-offscreen" style="width:200px" tabindex="-1">
 						</div>
 					</div>
-					<div class="control-group">
+
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">帖子属性</label>
+                        <div class="controls">
+						    <span class="span9">
+						        <label class="radio inline">
+                                    <!--{{form_radio('displayOrder',0,topic.displayOrder==0,{'disabled':'disabled'})}}-->正常
+                                </label>
+								<label class="radio inline">
+                                    <!--{{form_radio('displayOrder',1,topic.displayOrder==1,{'disabled':'disabled'})}}-->公告
+                                </label>
+						        <label class="radio inline">
+                                    <!--{{form_radio('displayOrder',2,topic.displayOrder==2,{'disabled':'disabled'})}}-->全局公告
+                                </label>
+								<div class="input-append input-prepend date inline">
+                                    <span class="add-on"><!--{{form_checkbox('isTop',1,topic.isTop)}}-->置顶</span>
+                                    <input name="top_deadline" type="text" class="input-medium datetimepicker" value="<!--{{topic.topEndTime}}-->">
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+						    </span>
+                        </div>
+                    </div>
+
+					<div class="control-group bbslist">
 						<label for="textfield" class="control-label">所属论坛</label>
 						<div class="controls">
 							<div class="input-append">
@@ -28,10 +51,10 @@
 						</div>
 					</div>
 
-					<div class="control-group">
+					<div class="control-group boardlist">
 						<label for="textfield" class="control-label">所属版块</label>
 						<div class="controls">
-						    <!--{{form_select('cid',bk_type,topic.bid,{'data-rule-required':true,'data-msg-required':'请选择版块'})}}-->							
+						    <!--{{form_select('cid',bk_type,topic.bid,{'data-rule-required':true,'data-msg-required':'请选择版块','disabled':'disabled'})}}-->
 						</div>
 					</div>
 					<div class="control-group">
@@ -45,6 +68,13 @@
 						<label for="textfield" class="control-label">标题</label>
 						<div class="controls">
 							<input type="text" name="subject" value="<!--{{ topic.subject }}-->" class="input-xxlarge" data-rule-required="true" data-msg-required="标题不能为空"/>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label for="textfield" class="control-label">礼包ID</label>
+						<div class="controls">
+							<input id="giftId" type="text" name="giftId" class="input-large" value="<!--{{ topic.giftId }}-->" />
 						</div>
 					</div>
 
@@ -85,27 +115,7 @@
 							</label>
 						</div>
 					</div>
-					<div class="control-group">
-					    <label for="textfield" class="control-label">帖子属性</label>
-						<div class="controls">
-						    <span class="span9">
-						        <label class="radio inline">
-						        <!--{{form_radio('displayOrder',0,topic.displayOrder==0)}}-->正常				        					        
-						        </label>
-								<label class="radio inline">
-						        <!--{{form_radio('displayOrder',1,topic.displayOrder==1)}}-->公告				        					        
-						        </label>
-						        <label class="radio inline">
-						        <!--{{form_radio('displayOrder',2,topic.displayOrder==2)}}-->全局公告				        					        
-						        </label>								
-								<div class="input-append input-prepend date inline">
-								    <span class="add-on"><!--{{form_checkbox('isTop',1,topic.isTop)}}-->置顶</span>
-									<input name="top_deadline" type="text" class="input-medium datetimepicker" value="<!--{{topic.topEndTime}}-->">
-									<span class="add-on"><i class="icon-calendar"></i></span>
-								</div>								
-						    </span>
-						</div>
-					</div>
+
 					
 					<div class="control-group">
 						<label for="textfield" class="control-label">内容</label>
@@ -124,7 +134,7 @@
 <!--{%endblock%}-->
 
 <!--{%block footer_js%}-->
-<script src="<!--{{asset('/static/js/ueditor/ueditorbbs.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
 <script src="/static/js/jquery.validationEngine.js"></script>
@@ -154,6 +164,21 @@
 		if($('#selected_bbs_id').val().length){
 			var cid = $('#cid').attr('data-cid');
 		}
+
+        $("input[name='displayOrder']").on('ifChecked',function(e){
+            var check_val = $(this).val();
+            if(check_val==1){
+                $(".boardlist").hide();
+                $(".bbslist").show();
+            }else if(check_val==2){
+                $(".boardlist").hide();
+                $(".bbslist").hide();
+            }else if(check_val==0){
+                $(".boardlist").show();
+                $(".bbslist").show();
+            }
+        });
+
 	});
 	jQuery("#form-topic").validationEngine({'custom_error_messages':{
 		"#check-plat":{
@@ -165,6 +190,24 @@
 		radioClass: 'iradio_square-orange',
 		increaseArea: '20%' // optional
 	});
-	$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
+	$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
+    
+    check_radio();
+    function check_radio(){
+        $(function(){
+            var check_val = $("input[name='displayOrder'][checked='checked']").val();
+            if(check_val==1){
+                $(".boardlist").hide();
+                $(".bbslist").show();
+            }else if(check_val==2){
+                $(".boardlist").hide();
+                $(".bbslist").hide();
+            }else if(check_val==0){
+                $(".boardlist").show();
+                $(".bbslist").show();
+            }
+            $(":checked").removeAttr("disabled");
+        })
+    }
 </script>
 <!--{%endblock%}-->

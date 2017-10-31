@@ -7,3 +7,4 @@ Route::controller('v4product/order','modules\v4_product\controllers\OrderControl
 Route::controller('v4product/order','modules\v4_product\controllers\OrderController');
 Route::controller('v4product/form','modules\v4_product\controllers\FormController');
 Route::controller('v4product/rmb','modules\v4_product\controllers\RmbController');
+Route::controller('v4product/wechat','modules\v4_product\controllers\WechatController');

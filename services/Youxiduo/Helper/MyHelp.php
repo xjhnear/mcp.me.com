@@ -21,6 +21,7 @@ use Youxiduo\V4\Cms\Model\News;
 use Youxiduo\V4\Cms\Model\NewGame;
 use Youxiduo\Cms\Model\Videos;
 use Youxiduo\Task\TaskV3Service;
+use Youxiduo\V4\Activity\ActivityService;
 class MyHelp
 {		
        public static function getdata($url='',$inputInfo){
@@ -31,6 +32,9 @@ class MyHelp
             return Utility::loadByHttp($url,$inputInfo,'POST');
         }
 
+        public static function html_form_data($url,$inputInfo){
+            return Utility::loadByHttp($url,$inputInfo,'HTMLFROM');
+        }
         public static function curldata($url='',$inputInfo,$type='POST',$isLog=false)
         {
             return Utility::SuperLoadByHttp($url,$inputInfo,$type,$isLog);
@@ -264,8 +268,8 @@ class MyHelp
     public static function getAdv_Type()
     {
         return array(
-            "外部url"=>"外部url",
-            "内部safari"=>"内部safari",
+            "外部url"=>"Safari浏览器",
+            "内部safari"=>"内置浏览器",
             "游戏详情"=>"游戏详情",
             "专题"=>"专题",
             "新游预告"=>"新游预告",
@@ -277,11 +281,14 @@ class MyHelp
             "商品详情"=>"商品详情",
             "活动详情"=>"活动详情",
             "礼包列表"=>"礼包列表",
-            "商城列表"=>"商城列表",
+            "游币商城列表"=>"游币商城列表",
+            "钻石商城列表"=>"钻石商城列表",
             "任务列表"=>"任务列表",
             "指定聊天室"=>"指定聊天室",
             "大转盘"=>"大转盘",
-            "天天彩"=>"天天彩"
+            "天天彩"=>"天天彩",
+            "新手任务列表"=>"新手任务列表",
+            "账号共享"=>"账号共享"
         );
     }
 
@@ -321,6 +328,7 @@ class MyHelp
                     $arr=array_map(function($val){
                         $arr_['id']=$val['productCode'];
                         $arr_['value']=$val['productName'];
+                        $arr_['gameId']=$val['gid'];
                         return $arr_;
                     },$arr['result']);
                 }
@@ -348,6 +356,7 @@ class MyHelp
                     $arr=array_map(function($val){
                         $arr_['id']=$val['productCode'];
                         $arr_['value']=$val['productName'];
+                        $arr_['gameId']=$val['gid'];
                         return $arr_;
                     },$arr['result']);
                 }
@@ -366,6 +375,20 @@ class MyHelp
                 break;
             case '指定聊天室':
                 $arr=IosGame::db()->select('id', 'shortgname as value ')->where('shortgname','like','%'.$value.'%')->where('isdel','=',0)->get();
+                break;
+            case '活动详情':
+                $params['name']=$value;
+                $params['activityType']='3,4';
+                $arr = ActivityService::get_activity_info_list_back_end($params,array('name','activityType'));
+                if($arr['errorCode'] == 0){
+                    $arr=array_map(function($val){
+                        $arr_['id']=$val['id'];
+                        $arr_['value']=$val['name'];
+                        $arr_['gameId']=$val['gid'];
+                        $arr_['other']=json_encode(array('linkValue'=>$val['linkValue'],'linkType'=>isset($val['linkType'])?:"",'linkId'=>isset($val['linkId'])?:""));
+                        return $arr_;
+                    },$arr['result']);
+                }
                 break;
         }
 

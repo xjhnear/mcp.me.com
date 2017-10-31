@@ -5,11 +5,19 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Youxiduo\Base\BaseService;
 use Youxiduo\Helper\Utility;
 use Illuminate\Support\Facades\Config;
+use Youxiduo\Helper\BaseHttp;
 
 class TaskV3Service extends BaseService{
 
-    const API_URL_CONF = 'app.task_api_url';//"http://youxiduo-java-slb-5:58080/module_task/";
+    const API_URL_CONF = 'app.task_api_url';//"http://121.40.78.19:58080/module_task/";
+    const API_LION_URL_CONF = 'app.task_lion_api_url';//"112.124.121.34:20017/task_distribute/";
 //    const API_URL_CONF = "http://192.168.2.64:8080/module_task/";
+
+    public static function task_checked($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."step/query_approved_step_info",$data,'GET');
+        return $res;
+    }
 
 
     public static function task_add($data=array())
@@ -89,7 +97,13 @@ class TaskV3Service extends BaseService{
 
     public static function approval_step_screenshot($data=array())
     {
-        $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."screenshot/approval_step_screenshot",$data,'GET');
+        $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."screenshot/approval_step_screenshot",$data,'POST');
+        return $res;
+    }
+    
+    public static function approval_step_screenshot_lion($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_LION_URL_CONF)."approval_step_screenshot/lion_screenshot",$data,'POST');
         return $res;
     }
 
@@ -102,6 +116,12 @@ class TaskV3Service extends BaseService{
     public static function query_user_step_info_list($data=array())
     {
         $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."step/query_user_step_info_list",$data,'GET');
+        return $res;
+    }
+    
+    public static function query_user_step_info_list_lion($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_LION_URL_CONF)."query_step_info/lion_step",$data,'GET');
         return $res;
     }
 
@@ -128,4 +148,53 @@ class TaskV3Service extends BaseService{
         $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."step/delete_step",$data,'GET');
         return $res;
     }
+
+    public static function sync_v4_prize_list($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."prize/sync_v4_prize_list",$data,'POST');
+        return $res;
+    }
+
+    public static function query_user_step_info_count($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."step/query_user_step_info_count",$data,'GET');
+        return $res;
+    }
+    
+    public static function query_user_step_info_count_lion($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_LION_URL_CONF)."query_step_info/step_count",$data,'GET');
+        return $res;
+    }
+    
+    public static function task_rule($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."task/task_rule",$data,'GET');
+        return $res;
+    }
+
+    public static function update_task_rule($data = array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."task/update_task_rule",$data,'POST');
+        return $res;
+    }
+
+    public static function query_new_users($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."task/query_new_users_attend_task",$data,'POST');
+        return $res;
+    }
+    
+    public static function doSgin($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_URL_CONF)."step/update_approved_issue_status",$data,'POST');
+        return $res;
+    }
+    
+    public static function adv_active($data=array())
+    {
+        $res = Utility::loadByHttp(Config::get(self::API_LION_URL_CONF)."adv_distribute/adv_active",$data,'GET');
+        return $res;
+    }
+    
   }

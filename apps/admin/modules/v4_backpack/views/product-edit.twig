@@ -1,0 +1,529 @@
+<!--{%extends "sub-layout-shop.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>编辑物品</h3>
+			</div>
+			<div class="box-content">
+				<form id="form-product" action="<!--{{url('v4backpack/goods/product-edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data" >
+					<input type="hidden" name="goodsid" value="<!--{{ info.goodsid }}-->">
+                    <div class="row-fluid">
+                        <!--{% if info.goodstype==1 %}-->
+                        <div class="span3">
+                            <div class="control-group">
+                                <label class="control-label">物品类型</label>
+                                <div class="controls">
+                                    <!--{{form_radio('goodstype',1,info.goodstype!=2)}}-->钻石
+                                </div>
+                            </div>
+                        </div>
+                        <!--{% elseif info.goodstype==2 %}-->
+                        <div class="span3">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <!--{{form_radio('goodstype',2,info.goodstype==2)}}-->任务物品
+                                </div>
+                            </div>
+                        </div>
+                        <!--{% elseif info.goodstype==3 %}-->
+                        <div class="span3">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <!--{{form_radio('goodstype',3,info.goodstype==3)}}-->礼包
+                                </div>
+                            </div>
+                        </div>
+                        <!--{% else %}-->
+                        <div class="span3">
+                            <div class="control-group">
+                                <div class="controls">
+                                    <!--{{form_radio('goodstype',7,info.goodstype==7)}}-->组合道具
+                                </div>
+                            </div>
+                        </div>
+                        <!--{% endif %}-->
+                    </div>
+	                
+					<div class="control-group">
+						<label class="control-label">物品名称</label>
+						<div class="controls">
+							<input type="text" name="goodsname" id="name" data-rule-required="true" data-msg-required="请填写物品名称"
+							       class="input-large" value="<!--{{ info.goodsname }}-->"/>
+						</div>
+					</div>
+					
+					<div class="control-group">
+						<label class="control-label">物品简称</label>
+						<div class="controls">
+							<input type="text" name="goodsshortname" id="shortname" data-rule-required="true" data-msg-required="请填写物品简称"
+							       class="input-large" value="<!--{{ info.goodsshortname }}-->"/>
+						</div>
+					</div>
+
+                    <div class="control-group">
+                        <label class="control-label">物品介绍</label>
+                        <div class="controls">
+                            <textarea id="goodscontent" name="goodscontent" rows="4" style="width:536px;"><!--{{ info.goodscontent }}--></textarea>
+                        </div>
+                    </div>
+
+
+					<div class="control-group">
+						<label class="control-label">关联游戏</label>
+						<div class="controls">
+							<div class="input-append">
+								<input id="selected_game_id" name="gid" type="hidden" value="<!--{{ info.gid }}-->"/>
+								<input type="text" readonly id="selected_game_name" name="gname" class="input-medium" value="<!--{{ info.gname }}-->" data-rule-required="true"  data-msg-required="请选择游戏"/>
+								<span class="add-on select-pop-game">选择游戏</span>
+                                <input type="button" value="清除游戏" class="clear_game"/>
+							</div>
+						</div>
+					</div>
+					
+					<div class="control-group">
+						<label class="control-label">物品图像</label>
+						<div class="controls">
+							<div class="fileupload fileupload-new" data-provides="fileupload">
+								<div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;">
+									<img src="<!--{{ info.picurl ? info.picurl : '/static/img/nopic.gif' }}-->" />
+								</div>
+								<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+								<div>
+									<span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择照片</span><span class="fileupload-exists">重新选择</span><input type="file" name='picurl' /></span>
+								</div>
+							</div>
+							<span class="help-inline" style="color: red">图片最佳尺寸：300*300</span>
+							<input type="hidden" name="old_picurl" value="<!--{{ info.picurl }}-->">
+						</div>
+					</div>
+
+
+					<div class="control-group" id="rmb" >
+						<div class="row-fluid">
+							<div class="span3">
+								<div class="control-group">
+									<label class="control-label">钻石类型</label>
+									<div class="controls">
+										<!--{{form_radio('diamondtype',1,info.diamondtype!=2)}}-->固定数量
+									</div>
+								</div>
+							</div>
+							<div class="span3">
+								<div class="control-group">
+									<div class="controls">
+										<!--{{form_radio('diamondtype',2,info.diamondtype==2)}}-->随机数量
+									</div>
+								</div>
+							</div>
+						</div>
+					
+						<div class="control-group" id="fixed" >
+							<div class="control-group" >
+								<label class="control-label">钻石数量</label>
+								<div class="controls">
+									<input type="text" name="diamondnum"  class="input-large" value="<!--{{ info.diamondnum }}-->"
+									       data-rule-required="true"  data-msg-required="请填写钻石价格" data-rule-digits="true"  data-msg-digits="请填写整数" />
+								</div>
+							</div>
+						</div>
+						<div class="control-group" id="rand" style="display:none" >
+							<div class="control-group" >
+								<label class="control-label">钻石数量下限</label>
+								<div class="controls">
+									<input type="text" name="diamondmin"  class="input-large" value="<!--{{ info.diamondmin }}-->"
+									       data-rule-required="true"  data-msg-required="请填写钻石价格" data-rule-digits="true"  data-msg-digits="请填写整数" />
+								</div>
+							</div>
+							<div class="control-group" >
+								<label class="control-label">钻石数量上限</label>
+								<div class="controls">
+									<input type="text" name="diamondmax"  class="input-large" value="<!--{{ info.diamondmax }}-->"
+									       data-rule-required="true"  data-msg-required="请填写钻石价格" data-rule-digits="true"  data-msg-digits="请填写整数" />
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="control-group" id="task" style="display:none" >
+						<div class="control-group">
+							<label class="control-label">*任务</label>
+							<div class="controls">
+								<div class="input-append">
+									<input id="selected_task_id" name="taskid" type="hidden" value="<!--{{ info.taskid }}-->"/>
+									<input id="selected_mutextask_id" name="mutexTaskId" type="hidden" value="<!--{{ info.mutexTaskId }}-->"/>
+									<input id="selected_task_endTime" name="task_endTime" type="hidden" value=""/>
+									<input id="selected_task_isLine" name="task_isLine" type="hidden" value="<!--{{ info.isLine }}-->"/>
+									<input type="text" readonly id="selected_task_name" name="taskname" class="input-medium" data-rule-required="true" data-msg-required="请选择任务" value="<!--{{ info.taskname }}-->" />
+									<span class="add-on select-pop-task">选择任务</span>
+								</div>
+							</div>
+						</div>
+					</div>
+										
+					<div class="control-group" id="subtask" <!--{% if not info.subTaskId %}-->style="display:none"<!--{% endif %}--> >
+						<div class="control-group">
+							<label class="control-label">需完成子任务</label>
+							<div class="controls">
+								<div class="input-append">
+									<input id="selected_subtask_id" name="subtaskid" type="hidden" value="<!--{{ info.subTaskId }}-->"/>
+									<input type="text" readonly id="selected_subtask_name" name="subtaskname" class="input-medium" data-rule-required="true" data-msg-required="请选择任务" value="<!--{{ info.subTaskName }}-->" />
+									<span class="add-on select-pop-subtask">选择任务</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="control-group" id="div_icon_new" style="display:none" >
+						<div class="control-group">
+		                    <div class="controls">
+		                    	<div class="input-append">
+		                        	<input class="selected_cardCode" name="card_code" value="<!--{%if info.giftId %}--><!--{{info.giftId}}--><!--{%endif%}-->" type="hidden"/>
+		                            <input type="text" readonly class="input-small selected_card_name" name="card_des" value="<!--{{ info.giftName }}-->" data-rule-required="true" data-msg-required="请选择礼包" />
+		                            <!--{%if info.giftId %}--><input type="hidden" name="card_code_old" value="<!--{{info.giftId}}-->"/><!--{%endif%}-->
+		                            <span class="add-on select-card-code">选择</span>
+		                            <span class="add-on can-use">可上架礼包<span class="text-error">0</span>个</span>
+		                        </div>
+		                    	<div class="input-append">
+		                    		&nbsp;
+		                            <input type="hidden" name="card_change" value=""/>
+		                            <input type="text" name="totalCount" class="input-min xxx totalCount" value="<!--{{info.storeNum}}-->" readonly="readonly">
+		                            <input type="text" name="total" class="input-min" value="" />
+		                            <span class="add-on get_gift" id="get_gift_new">分配</span>
+		                        </div>
+		                    </div>
+						</div>
+					</div>
+                    
+					<div class="row-fluid">
+						<div class="span3"  >
+							<div class="control-group"id="product_sort" >
+								<label class="control-label">排序</label>
+								<div class="controls">
+									<input type="text" name="sortvalue"  class="input-small" value="<!--{{ info.sortvalue }}-->" />
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+					<div class="row-fluid">
+						<div class="span4">
+							<div class="control-group">
+								<label class="control-label">截止时间</label>
+								<div class="controls">
+									
+										<input name="endtime" id="date_timepicker_end" type="text" class="input-medium laydate-icon" value="<!--{{info.endtime}}-->" data-rule-required="true"  data-msg-required="请填写截止时间" readonly>
+										<span class="add-on"><i class="icon-calendar"></i></span>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+
+	                <div class="control-group backpack_children_all" id="backpack_children_all" style="border-top: 1px dashed #999;border-bottom: 1px dashed #999;padding-top: 10px;padding-bottom: 10px;display:none">
+	                    <div class="control-group">
+	                        <label class="control-label">子道具选择</label>
+	                        <div class="controls">
+	                            <div class="block__list block__list_words">
+	                                <ul id="editable" style="border: 1px solid;width: 400px;margin: 0 0 10px 0;">
+	                                    <!--{%for item in info.backpack_children%}-->
+	                                    <li backpackid="<!--{{item.goodsid}}-->" ><!--{{item.goodsname}}--> <i class="js-remove" style="margin-top: -5px;margin-right: -15px;">✖</i></li>
+	                                    <!--{%endfor%}-->
+	                                </ul>
+	                            </div>
+	                            <input type="button" id="show_iframe" value="添加子道具" class="select-backpack-code"/>
+	                        </div>
+	                    </div>
+	                </div>
+	                
+					<div class="form-actions">
+						<input type="hidden" name="ids" class="ids" value="<!--{{ info.subGoodsIds }}-->"/>
+						<button type="submit" class="btn btn-primary sub"><i class="icon-ok"></i>保存</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/jquery.uniform.min.js"></script>
+<script src="<!--{{asset('/static/js/xheditor/xheditor-1.1.14-zh-cn.min.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script src="/static/js/ajaxfileupload.js"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditorbbs.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="/static/js/laydate/laydate.js"></script>
+<link rel="stylesheet" href="/static/css/plugins/tagsinput/jquery.tagsinput.css">
+<script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script>
+var num_new = 0;
+var n_new = 0;
+var count_new = 0;
+var t_new = 0;
+	var set_selected_game=function(game_id,game_name,icon){
+		$('#selected_game_id').val(game_id);
+		$('#selected_game_name').val(game_name);
+	};
+	
+	var set_selected_task=function(task_id,task_name,task_icon,task_endTime,task_isLine,mutextask_id){
+		$('#selected_task_id').val(task_id);
+		$('#selected_mutextask_id').val(mutextask_id);
+		$('#selected_task_name').val(task_name);
+		$('#selected_task_endTime').val(task_endTime);
+		$('#selected_task_isLine').val(task_isLine);
+		if (task_isLine) {
+			$('#subtask').fadeIn();
+		}
+	};
+	var set_selected_subtask=function(task_id,task_name){
+		$('#selected_subtask_id').val(task_id);
+		$('#selected_subtask_name').val(task_name);
+	};
+
+	var set_selected_backpack=function(backpack_code,backpack_name,backpack_desc,img){
+        //判断是否重复添加
+        var checkval = "false";
+        $("#editable").children("li").each(function(){
+            if($(this).attr("backpackid")==backpack_code){
+                alert("请勿重复添加！");
+                checkval = "true";
+                return false;
+            }
+        })
+        if(checkval=="false"){
+            $("#editable").append('<li backpackid="'+backpack_code+'" >'+backpack_name+'<i class="js-remove" style="margin-top: -5px;margin-right: -15px;">✖</i></li>');
+        }
+	};
+	
+	function set_selected_card(card_code,card_name,card_stock,can_use,card_gid){
+	    card_code1 = card_code;
+	    card_name1=card_name;
+	    can_use1=parseInt(can_use);
+	    //obj.parent().parent().parent().parent().find("img").attr("src",card_img);
+	    obj.parent().parent().parent().find(".xxx").val(0);
+	    obj.parent().parent().parent().parent().find("input[name='prize_img[]']").val(card_img);
+	    obj.parent().parent().parent().parent().find("input[name='prize_img_new[]']").val(card_img);
+	    $(function(){
+	        obj.siblings(".selected_cardCode").val(card_code1);
+	        obj.siblings(".selected_card_name").val(card_name1);
+	        obj.siblings(".can-use").children().html(can_use1);
+	        obj.siblings(".prize_gid").val(prize_gid);
+	    })
+	}
+	
+	function d_type_fade(check_val){
+		switch(check_val){
+			case '1' :
+				$('#fixed').fadeIn();
+				$('#rand').fadeOut();
+				break;
+			case '2' :
+				$('#fixed').fadeOut();
+				$('#rand').fadeIn();
+				break;
+		}
+	}
+	
+	function type_fade(check_val){
+		switch(check_val){
+			case '1' :
+				$('#rmb').fadeIn();
+				$('#task').fadeOut();
+				$('#backpack_children_all').fadeOut();
+				$('#div_icon_new').fadeOut();
+				$('#subtask').fadeOut();
+				break;
+			case '2' :
+				$('#rmb').fadeOut();
+				$('#task').fadeIn();
+				$('#backpack_children_all').fadeOut();
+				$('#div_icon_new').fadeOut();
+				break;
+			case '3' :
+				$('#rmb').fadeOut();
+				$('#task').fadeOut();
+				$('#backpack_children_all').fadeOut();
+				$('#div_icon_new').fadeIn();
+				$('#subtask').fadeOut();
+				break;
+			case '7' :
+				$('#rmb').fadeOut();
+				$('#task').fadeIn();
+				$('#backpack_children_all').fadeIn();
+				$('#div_icon_new').fadeOut();
+				$('#subtask').fadeOut();
+				break;
+		}
+	}
+
+	$(".js-remove").live('click',function(){
+	    $(this).parent().remove();
+	})
+	
+	$(function(){
+		UE.getEditor('productInstruction');
+		var end = {
+		    elem: '#date_timepicker_end',
+		    format: 'YYYY/MM/DD hh:mm:ss',
+		    min: laydate.now(),
+		    max: '2099-06-16 23:59:59',
+		    istime: true,
+		    istoday: false,
+		    choose: function(datas){
+		        start.max = datas; //结束日选好后，重置开始日的最大日期
+		    }
+		};
+		laydate(end);
+		$('input.switchbox').bootstrapSwitch();
+		$('input').iCheck({
+			checkboxClass: 'icheckbox_square-orange',
+			radioClass: 'iradio_square-orange',
+			increaseArea: '20%'
+		});
+
+		//种类
+		type_fade($("input[name='goodstype']:checked").val());
+		$("input[name='goodstype']").on('ifChecked',function(e){
+			var check_val = e.currentTarget.value;
+			type_fade(check_val);
+			return false;
+		});
+		d_type_fade($("input[name='diamondtype']:checked").val());
+		$("input[name='diamondtype']").on('ifChecked',function(e){
+			var check_val = e.currentTarget.value;
+			d_type_fade(check_val);
+			return false;
+		});
+		
+			//选择礼包
+	    $(".select-card-code").live('click',function(){
+	        obj = $(this);
+	        val = 'ios';
+	        $.ajax({
+	            url:'/v4giftbag/package/cate-card-select',
+	            data:{virtualUse:5,platform:val},
+	            dataType:'json',
+	            success:function(json){
+	                var html = json.html;
+	                $.dialog({id:'pop-card-list',title:'提示',padding:2,content:html,width:600,height:580});
+	            }
+	        });
+	    });
+	    
+	        //选择子道具
+    $(".select-backpack-code").live('click',function(){
+        $.ajax({
+            url:'/v4backpack/goods/cate-backpack-select',
+            data:{goodstype:2},
+            dataType:'json',
+            success:function(json){
+                var html = json.html;
+                $.dialog({id:'pop-backpack-list',title:'提示',padding:2,content:html,width:650,height:500});
+            }
+        });
+    });
+    
+		$("#get_gift_new").on('click',function(){
+	        if($('input[name="card_des"]').val().length == 0){
+	            alert('分配前请选择礼包!');
+	            return false;
+	        }
+	        var num = parseInt($(this).parent().prev().children(":last").children(":last").html());
+	        var n = parseInt($(this).prev().val());
+	        var t = parseInt($('input[name="totalCount"]').val());
+	
+	        if(num.length == 0 || num == undefined || num == 0 || num == '' || isNaN(num)){
+	            alert('分配前请重新选择礼包!');
+	            return false;
+	        }
+	        var re = /^([1-9]\d*|[0]{1,1})$/;
+	        if(isNaN(n) || !re.test(n)){
+	            alert('请输入有效分配数!');
+	            return false;
+	        }
+	        if(n>num){
+	            alert('分配数大于总数!');
+	            return false;
+	        }
+	        if(n_new == n && n_new != 0){
+	            return false;
+	        }
+	        n_new = n;
+	        if(count_new == 0){
+	            num_new = num;
+	            t_new = t;
+	        }
+	        var e = num_new-n;
+	        if(e>0){
+	            count_new = count_new + 1;
+	        }
+	        $(this).parent().prev().children(":last").children(":last").html(e);
+	        $(this).prev().prev().val(n+t_new);
+	        $('input[name="card_change"]').val('1');
+	    })
+    
+		$('.select-pop-game').bind('click',function(){
+			$.ajax({
+				url:'/game/api/game-search',
+				dataType:'json',
+				success:function(json){
+					var html = json.html;
+					$.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+				}
+			});
+		});
+
+		$('.select-pop-task').bind('click',function(){
+			$.ajax({
+				url:'/IOS_activity/task/task-pop-list',
+				data:{},
+				dataType:'json',
+				success:function(json){
+					var html = json.html;
+					$.dialog({id:'pop-task-list',title:'提示',padding:2,content:html,width:600,height:580});
+				}
+			});
+		});
+		
+		$('.select-pop-subtask').bind('click',function(){
+			var lineId = $('#selected_task_id').val();
+			$.ajax({
+				url:'/IOS_activity/task/subtask-pop-list',
+				data:{lineId:lineId},
+				dataType:'json',
+				success:function(json){
+					var html = json.html;
+					$.dialog({id:'pop-subtask-list',title:'提示',padding:2,content:html,width:600,height:580});
+				}
+			});
+		});
+		
+        $(".clear_game").click(function(){
+            $("#selected_game_id").val('');
+            $("#selected_game_name").val('');
+        })
+        
+        $(".sub").click(function(){
+        	var ids = "";
+        	if($("input[name='task_endTime']").val()!=""){
+	        	var task_endTime = $("input[name='task_endTime']").val();
+	        	task_endTime = task_endTime.replace(/-/g,"/");
+	            if($("input[name='endtime']").val()>task_endTime){
+		        	alert("截止时间不能晚于任务结束时间");
+		        	return false;
+		        }
+	        }
+	        $("#editable").children("li").each(function(){
+	            var backpackid = $(this).attr("backpackid");
+	            ids +=backpackid+",";
+	        });
+	        $(".ids").val(ids);
+		})
+	});
+</script>
+<!--{%endblock%}-->

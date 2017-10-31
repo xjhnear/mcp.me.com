@@ -11,6 +11,7 @@ namespace Yxd\Models;
 use Yxd\Services\UserService;
 
 use Illuminate\Support\Facades\DB;
+use Yxd\Services\Models\ForumTopic;
 
 class Thread
 {
@@ -19,7 +20,7 @@ class Thread
 	 */
 	public static function getThreadCount($gid,$cid=0,$feature=0)
 	{
-		$tb = DB::table('forum_topic')->where('gid','=',$gid);
+		$tb = ForumTopic::db()->where('gid','=',$gid);
 		
 		if($cid>0){
 			$tb = $tb->where('cid','=',$cid);
@@ -40,7 +41,7 @@ class Thread
 	 */
 	public static function getThreadList($gid,$cid=0,$page=1,$pagesize=20,$feature=0,$sort='dateline')
 	{
-	    $tb = DB::table('forum_topic')->where('gid','=',$gid);
+	    $tb = ForumTopic::db()->where('gid','=',$gid);
 		
 		if($cid>0){
 			$tb = $tb->where('cid','=',$cid);
@@ -59,7 +60,7 @@ class Thread
 	
     public static function getFullTopic($tid)
 	{
-		$thread = DB::table('forum_topic')->where('tid','=',$tid)->first();
+		$thread = ForumTopic::db()->where('tid','=',$tid)->first();
 		if(!$thread) return null;
 		$author = UserService::getUserInfo($thread['author_uid'],'basic');
 		$thread['author'] = $author;

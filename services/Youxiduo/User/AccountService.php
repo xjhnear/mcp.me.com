@@ -34,7 +34,7 @@ class AccountService extends BaseService
 	 * 发送手机验证码
 	 * @param string $mobile 手机号
 	 */
-	public static function sendPhoneVerifyCode($mobile,$ip,$sms=true)
+	public static function sendPhoneVerifyCode($mobile,$ip,$sms=true,$appname='yxdandroid')
 	{
 		if(Utility::validateMobile($mobile)===true){
 			$ban = MobileBlackList::checkMobileExists($mobile);
@@ -42,9 +42,9 @@ class AccountService extends BaseService
 				return self::trace_error('E1','该手机号已被禁用');
 			}
 			$verifycode = Utility::random(4,'alnum');			
-			//$verifycode = '1234';		
+			$verifycode = '1234';		
 			$result = UserMobile::saveVerifyCodeByPhone($mobile,$verifycode,false,$ip);
-			$result==true && Utility::sendVerifySMS($mobile,$verifycode,$sms);
+			$result==true && Utility::sendVerifySMS($mobile,$verifycode,$sms,$appname);
 			return self::trace_result(array('result'=>$result));
 		}
 		return self::trace_error('E1','手机号无效');
@@ -114,7 +114,7 @@ class AccountService extends BaseService
 	 * 
 	 * @return int $uid 用户唯一标识UID
 	 */
-	public static function createUserByPhone($mobile,$password,$params=array(),$ip='')
+	public static function createUserByPhone($mobile,$password,$params=array(),$ip='',$platform='android',$client='android')
 	{
 	    $limit_time = mktime(0,0,0,date('m'),date('d'),date('Y'));
 	    $limit_num = 3;
@@ -132,14 +132,24 @@ class AccountService extends BaseService
 			}else{
 				if(UserMobile::phoneVerifyStatus($mobile,true)===false) return self::trace_error('E1','手机未验证');
 				$params['ip'] = $ip;
-			    $uid = Account::createUserByPhone($mobile,$password,$params);
+			    $uid = Account::createUserByPhone($mobile,$password,$params,$platform,$client,$idcode);
 			}
 			if($uid>0){
 				$session = self::makeAccessToken($uid);
-				$money_success = MoneyService::registerAccount($uid);
+				$money_success = MoneyService::registerAccount($uid,$client);
 				if($money_success){
 					Account::modifyUserInfo($uid,array('is_open_android_money'=>1));
 				}
+				if ($client == "duoyou") {
+				    $actionId = 'DUOYOU';
+				} else {
+				    $actionId = '';
+				}
+                //通知推广员
+                $rmb = file_get_contents(Config::get('app.android_module_promoter') . 'module_promoter/promotion/notice?' . http_build_query(array('mobile'=>$mobile,'uid'=>$uid,'platform'=>'android','actionId'=>$actionId)));
+                //v4自分享
+				$result = Utility::loadByHttp(Config::get('app.android_module_share') . 'module_share/share/v4/NewUserComing',array('mobileNo'=>$mobile,'uid'=>$uid,'platform'=>'android'),'GET','text');
+				
 				return self::trace_result(array('result'=>array('uid'=>$uid,'session_id'=>$session)));
 			}
 			return self::trace_error('E1','注册失败');

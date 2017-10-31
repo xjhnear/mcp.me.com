@@ -14,6 +14,7 @@ use Youxiduo\Base\Model;
 use Youxiduo\Base\IModel;
 
 use Youxiduo\Helper\Utility;
+use Youxiduo\Helper\MyHelp;
 /**
  * 应用配置模型类
  */
@@ -61,6 +62,15 @@ final class AppConfig extends Model implements IModel
 		if($info){
 			$append = json_decode($info['append'],true);
 			is_array($append) && $info = array_merge($info,$append);
+			$info['syspicVendorsList'] = explode(',', $info['sys_img']);
+			foreach ($info['syspicVendorsList'] as &$item) {
+			    $item = MyHelp::getImageUrl($item);
+			}
+			if (isset($info['syspicVendorsList'])) {
+			    $info['syspiccount'] = implode(',',array_keys($info['syspicVendorsList']));
+			} else {
+			    $info['syspiccount'] = '';
+			}
 		}
 		return $info;
 	}

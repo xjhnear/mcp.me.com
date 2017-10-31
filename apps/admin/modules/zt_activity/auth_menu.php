@@ -2,7 +2,7 @@
 return array(
     'module_name'  => 'zt_activity',
     'module_alias' => '专题活动',
-    'default_url'=>'zt_activity/blcx/list',
+    'default_url'=>'zt_activity/blcx/message-list',
     'child_menu' => array(
         array('name'=>'百炼成仙留言审核','url'=>'zt_activity/blcx/message-list'),
         array('name'=>'百炼成仙月儿海选','url'=>'zt_activity/blcx/audit-list'),

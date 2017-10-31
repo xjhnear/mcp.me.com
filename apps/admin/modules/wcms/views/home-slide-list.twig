@@ -25,6 +25,7 @@
 							<th>标题</th>
 							<th class="col-150">图片</th>
 							<!--{%if position=='third'%}--><th class="col-120">新位置</th><!--{%endif%}-->
+							<th class="col-100">最后修改人</th>
 							<th class="table-btn-group">操作</th>
 						</tr>
 					</thead>
@@ -41,6 +42,11 @@
 								<input name="idx_<!--{{item.idx}}-->" type="text" class="input-small" value="<!--{{item.idx}}-->" />
 							</td>
 							<!--{%endif%}-->
+							<td>
+								<div style="width:80px; white-space:nowrap;text-overflow:ellipsis;overflow:hidden; ">
+									<span title='<!--{{item.userName}}-->'><!--{{item.userName}}--></span>
+								</div>
+							</td>
 							<td>
 							    <a href="<!--{{url('wcms/home/slide-edit',{position:position})}}-->?idx=<!--{{item.idx}}-->" class="btn btn-primary">编辑</a>
 								<!--{%if position=='one'%}-->

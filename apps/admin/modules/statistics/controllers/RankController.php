@@ -11,6 +11,7 @@ use modules\user\models\UserModel;
 use modules\statistics\models\RankModel;
 use Yxd\Utility\ImageHelper;
 use Yxd\Services\PassportService;
+use Youxiduo\Base\AllService;
 
 use PHPImageWorkshop\ImageWorkshop;
 
@@ -150,4 +151,43 @@ class RankController extends BackendController
 		}
 		return $months;
 	}
+	
+	//游币发放与消耗
+	public function getMoneyConsume()
+	{
+	    $data = $search = array();
+	    $data['give'] = '系统发放';
+	    $data['use'] = '系统消耗';
+	    $data['person'] = '人工发放';
+	    $data['consume'] = '人工消耗';
+	    $search = Input::get();
+	    $search['platform'] = 'android';
+	    $search['timeBegin'] = isset($search['startDate'])?$search['startDate']:0;
+	    $search['timeEnd'] = isset($search['endDate'])?$search['endDate']:0;
+	    $search = array_filter($search);
+	    $search['currencyType'] = '0';
+	    $search['operationType'] = 'sys_operation';
+	    $search['isPositive'] = 'true';
+	    $res = AllService::excute2("48080",$search,"module_rmb/account/currencyStatics");
+	    if($res['success'])
+	        $data['xt'] = $res['data'];
+	    $search['isPositive'] = 'false';
+	    $res = AllService::excute2("48080",$search,"module_rmb/account/currencyStatics");
+	    if($res['success'])
+	        $data['xh'] = $res['data'];
+	    unset($search['operationType']);
+	    $search['operationType'] = 'manage ';
+	    $search['isPositive'] = 'true';
+	    $res = AllService::excute2("48080",$search,"module_rmb/account/currencyStatics");
+	    if($res['success'])
+	        $data['rg'] = $res['data'];
+	    $search['isPositive'] = 'false';
+	    $res = AllService::excute2("48080",$search,"module_rmb/account/currencyStatics");
+	    if($res['success'])
+	        $data['rgxh'] = $res['data'];
+	    $data['search'] = $search;
+	    return $this->display('appaccount-ybf-list',$data);
+	}
+	
+	
 }

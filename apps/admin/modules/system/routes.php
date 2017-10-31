@@ -20,4 +20,6 @@ Route::controller('system/picture','modules\system\controllers\PictureSettingCon
 //API性能统计
 Route::controller('system/profile','modules\system\controllers\ProfileController');
 
+Route::controller('system/share','modules\system\controllers\ShareController');
+
 //Route::controller('system/privilege','modules\system\controllers\PrivilegeController');

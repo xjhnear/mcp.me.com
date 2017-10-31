@@ -13,6 +13,7 @@ class PackageController extends BackendController{
         $this->current_module = 'v4_giftbag';
     }
 
+
     //礼包库
     public function getSearch(){
         $data = $params = array();
@@ -24,7 +25,7 @@ class PackageController extends BackendController{
         foreach($arr as $v){
             if(Input::get($v) && Input::get($v) != 'false'){
                 $params[$v]="true";
-            }
+        }
         }
         if(Input::get('cardDesc')){
             $params['cardDesc']=Input::get('cardDesc');
@@ -33,16 +34,22 @@ class PackageController extends BackendController{
         $params['isActive']="true";
         $params['signer']= $uid['id'];
         if(Input::get('timeBegin')){
-            $params['timeBegin']=Input::get('timeBegin').' 00:00:00';
+            $params['timeBegin']=Input::get('timeBegin');
         }
         if(Input::get('timeEnd')){
-            $params['timeEnd']=Input::get('timeEnd').' 23:59:59';
+            $params['timeEnd']=Input::get('timeEnd');
+        }
+        if(Input::get('gid')){
+            $params['gid']=Input::get('gid');
         }
         if(!empty($params['editor']) && $params['editor'] == 'true') $params['editor']=$uid['id'];
-        $result=ProductService::getvirtualcardlist($params,1);//print_r($result);
+        $result=ProductService::getvirtualcardlist($params,1);
+//        print_r($result);
         if($result['errorCode']==0){
             $data=self::processingInterface($result,$params,$params['pageSize']);
             $data['url']=ProductService::getReturnUrl();
+            $data['materialUse'] = array('1'=>"自分享",'2'=>'礼包','4'=>'大转盘','3'=>'任务','5'=>'背包道具');
+//            print_r($data);
             return $this->display('package/package-list',$data);
         }
         return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
@@ -68,10 +75,10 @@ class PackageController extends BackendController{
         $params['isActive']="true";
         $params['signer']= $uid['id'];
         if(Input::get('timeBegin')){
-            $params['timeBegin']=Input::get('timeBegin').' 00:00:00';
+            $params['timeBegin']=Input::get('timeBegin');
         }
         if(Input::get('timeEnd')){
-            $params['timeEnd']=Input::get('timeEnd').' 23:59:59';
+            $params['timeEnd']=Input::get('timeEnd');
         }
         if(!empty($params['editor']) && $params['editor'] == 'true') $params['editor']=$uid['id'];
 //        print_r($params);
@@ -89,7 +96,7 @@ class PackageController extends BackendController{
     public function getAddMaterial()
     {
         $data = array();
-        $data['materialUse'] = array('1'=>"活动",'2'=>'商品','3'=>'任务');
+        $data['materialUse'] = array('2'=>"活动",'4'=>'自分享','3'=>'大转盘','3'=>'任务','5'=>'背包道具');
 
         return $this->display('package/material-add',$data);
     }
@@ -97,7 +104,9 @@ class PackageController extends BackendController{
     //添加实物库
     public function getAdd()
     {
-        return $this->display('package/package-add');
+        $data = array();
+        $data['virtualUse'] = array('1'=>"自分享",'2'=>'礼包','4'=>'大转盘','3'=>'任务','5'=>'背包道具');
+        return $this->display('package/package-add',$data);
     }
 
     public function getDelect($id)
@@ -124,7 +133,11 @@ class PackageController extends BackendController{
         $input['cardType']=1;
         $input['cardDesc']=Input::get('cardDesc');
         $params['expTimeStr']= date('Y',time()) + 20 . '-' . date('m-d H:i:s'); //50年后日期
-
+        $input['virtualInstruction']=Input::get('virtualInstruction');
+        $input['virtualSummary']=Input::get('virtualSummary');
+        $input['virtualUse']=Input::get('virtualUse');
+        $input['gid']=Input::get('game_id');
+        $input['gname']=Input::get('game_name');
         $result=ProductService::addeditcard($input,'virtualcard/add');
         if($result['errorCode']==0){
             if(!is_file(Input::get('tmp'))){
@@ -153,8 +166,8 @@ class PackageController extends BackendController{
         $input['materialType']=0;
         $input['materialDesc']=Input::get('materialDesc');
         $input['materialStock']=Input::get('materialStock');
-        $input['materialSummary']=Input::get('productSummary');
-        $input['materialInstruction']=Input::get('productInstruction');
+   //     $input['materialSummary']=Input::get('productSummary');
+    //    $input['materialInstruction']=Input::get('productInstruction');
         $input['materialUse']=Input::get('materialUse');
         $input['gid']=Input::get('game_id');
         $input['gname']=Input::get('game_name');
@@ -428,14 +441,23 @@ class PackageController extends BackendController{
     public function getCateCardSelect()
     {
         $data = $params = array();
-        $params['pageIndex'] = Input::get('page');
+        $params['pageIndex'] = Input::get('page',"1");
+        $params['platform'] = Input::get('platform',"");
         $params['pageSize'] =5;
         $params['onOrOff'] ='true';
         $params['isActive'] = 'true';
         if(Input::get('keyword')){
             $data['keyword']=$params['cardDesc']=Input::get('keyword');
         }
+        if(Input::get('platform')){
+            $data['platform'] = Input::get('platform');
+        }
+        if(Input::get('virtualUse')){
+            $data['virtualUse']=$params['virtualUse']=Input::get('virtualUse');
+        }
+//        print_r($params);
         $result=ProductService::getvirtualcardlist($params);
+//        print_r($result);
         if($result['errorCode'] !=null ){
             foreach($result['result'] as &$item){
                 $item['can_use'] = $item['cardStock'] + $item['cardUsedStock'] - $item['cardQuota'];
@@ -457,11 +479,16 @@ class PackageController extends BackendController{
 
         $data = $params = array();
         $params['pageIndex'] = Input::get('page');
+        $params['platform'] = Input::get('platform',"");
+        $params['materialUse'] = Input::get('materialUse',"");
         $params['pageSize'] =5;
         $params['onOrOff'] ='true';
         $params['isActive'] = 'true';
         if(Input::get('keyword')){
             $data['keyword']=$params['materialDesc']=Input::get('keyword');
+        }
+        if(Input::get('platform')){
+            $data['platform'] = Input::get('platform');
         }
         $result=ProductService::getmateriallist($params);
         if($result['errorCode'] !=null ){
@@ -492,5 +519,18 @@ class PackageController extends BackendController{
         $data['pagelinks'] = $pager->links();
         $data['datalist'] = !empty($result['result'])?$result['result']:array();
         return $data;
+    }
+    public function postAjaxUploadAppend(){
+        if(!Input::get('card_code'))  return json_encode(array('state'=>0,'msg'=>'没有礼包码'));
+        if(!Input::get('tmp'))  return json_encode(array('state'=>0,'msg'=>'卡密文件不存在'));
+        $input = Input::all();
+        //追加礼包
+        $filename=Input::get('filename');
+        $result=ProductService::importcard(array('cardAmountStr'=>0,'type'=>'txt','importDesc'=>'导入','cardCode'=>$input['card_code'],'expTimeStr'=>date('Y-m-d H:i:s',strtotime('2030-01-01 00:00:00'))),array('importFile'=>array('tmp_name'=>Input::get('tmp'),'type'=>'txt','name'=>$filename)));
+        if($result['errorCode']==0){
+            return json_encode(array("state"=>1,'msg'=>'追加成功'));
+        }else{
+            return json_encode(array('state'=>0,'msg'=>'追加失败'));
+        }
     }
 }

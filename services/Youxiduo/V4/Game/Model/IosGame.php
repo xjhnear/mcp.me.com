@@ -29,7 +29,17 @@ final class IosGame extends Model implements IModel
 	{
 		return self::db()->where('id','=',$gid)->first();
 	}
-	
+
+    /**
+     * 通过游戏名来查询游戏
+     * @param $gname
+     * @return array
+     */
+    public static function getInfoPassName($gname){
+        if(!$gname) return array();
+        return self::db()->where('gname',$gname)->get();
+    }
+
 	public static function getMultiInfoById($gids,$format=false)
 	{
 		if(!$gids) return array();

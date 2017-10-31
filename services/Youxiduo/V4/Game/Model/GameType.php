@@ -9,13 +9,12 @@
  *
  */
 namespace Youxiduo\V4\Game\Model;
-
-use Youxiduo\Base\Model;
+use Youxiduo\Base\MyBaseModel; 
 use Youxiduo\Base\IModel;
 /**
  * 游戏类型模型类
  */
-final class GameType extends Model implements IModel
+final class GameType extends MyBaseModel implements IModel
 {	
     public static function getClassName()
 	{

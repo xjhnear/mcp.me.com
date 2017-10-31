@@ -20,6 +20,7 @@ use Youxiduo\Helper\Utility;
 use Youxiduo\Android\Model\AdvImage;
 use Youxiduo\Android\Model\AdvAppLink;
 use Youxiduo\Android\Model\Game;
+use Youxiduo\Android\Model\GameType;
 
 class AdvService extends BaseService
 {
@@ -229,6 +230,9 @@ class AdvService extends BaseService
             ->orderBy('addtime','desc')
             ->forPage(1,$limit)
             ->get();
+
+        $types = GameType::db()->orderBy('id','asc')->lists('typename','id');
+
         foreach($games as $row){
             $data = array();
             $data['gid'] = $row['id'];
@@ -243,6 +247,8 @@ class AdvService extends BaseService
             $data['hot'] = $row['ishot'];
             $data['linktype'] = $row['linktype'] ? : '';
             $data['link'] = $row['link'] ? : '';
+            $data['typename'] = isset($types[$row['type']]) ? $types[$row['type']] : '';
+            $data['size'] = $row['size'];
 
             $out[] = $data;
         }

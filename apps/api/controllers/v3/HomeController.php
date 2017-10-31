@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Input;
+
 use Yxd\Modules\Core\CacheService;
 use Yxd\Modules\System\SettingService;
 use Yxd\Services\Cms\AdvService;
@@ -40,7 +41,7 @@ class HomeController extends BaseController
 		$out['yxx_coverurl'] = isset($picture['plaza_2']) ? 'http://img.youxiduo.com' . $picture['plaza_2'] : 'http://img.youxiduo.com/userdirs/home/youxixiu@2x.png' . '?v=' . $v;
 		
 		//幻灯
-		$out['shuffles'] = AdvService::getHomeSlide($appname,$version);
+		$out['shuffles'] = AdvService::getHomeSlide($appname,$version,$uid);
 		
 		//今日推荐
 		$out['hotgames'] = AdvService::getHomeHotGame($appname,$version,$uid);

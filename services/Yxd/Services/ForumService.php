@@ -15,6 +15,10 @@ use Yxd\Services\Cms\GameService;
 use Yxd\Services\Cms\CommentService;
 use Yxd\Utility\ForumUtility;
 use Yxd\Models\Topic;
+use Yxd\Services\Models\Forum as V3Forum;
+use Yxd\Services\Models\AccountFollow;
+use Yxd\Services\Models\AccountCircle;
+use Yxd\Services\Models\ForumTopic;
 
 use Illuminate\Support\Facades\DB;
 use Yxd\Models\Forum;
@@ -27,7 +31,7 @@ class ForumService extends Service
 	
 	public static function getOpenForumGids()
 	{
-		$gids = self::dbClubSlave()->table('forum')->lists('gid');
+		$gids = V3Forum::db()->lists('gid');
 		return $gids;
 	}
 	
@@ -66,7 +70,7 @@ class ForumService extends Service
 	 */
 	public static function getNoticeList($gid)
 	{
-		$notices = DB::table('forum_topic')
+		$notices = ForumTopic::db()
 		               ->whereIn('gid',array(0,$gid))		               
 		               ->where('displayorder','>=',2)
 		               ->where('status','=',1)
@@ -87,7 +91,7 @@ class ForumService extends Service
 	
 	public static function getOpenStatus($game_id)
 	{
-		$count = DB::table('forum')->where('gid','=',$game_id)->count();
+		$count = V3Forum::db()->where('gid','=',$game_id)->count();
 		return $count > 0 ? 1 : 0;
 	}
 	
@@ -105,8 +109,8 @@ class ForumService extends Service
 	
 	public static function getCircleFriends($gid,$uid)
 	{
-		$c_uids = self::dbClubSlave()->table('account_circle')->where('game_id','=',$gid)->forPage(1,100)->orderBy('id','desc')->lists('uid');
-		$f_uids = self::dbClubSlave()->table('account_follow')->where('uid','=',$uid)->lists('fuid');
+		$c_uids = AccountCircle::db()->where('game_id','=',$gid)->forPage(1,100)->orderBy('id','desc')->lists('uid');
+		$f_uids = AccountFollow::db()->where('uid','=',$uid)->lists('fuid');
 		if(!$c_uids) return array('result'=>array(),'totalCount'=>0);
 		$users = UserService::getBatchUserInfo($c_uids);
 		$out = array();
@@ -194,7 +198,7 @@ class ForumService extends Service
 	
 	protected static function buildWhere($gid=0,$cid)
 	{
-		$tb = DB::table('forum_topic')->where('displayorder','>=',0);
+		$tb = ForumTopic::db()->where('displayorder','>=',0);
 		//gid=0表示取出所有游戏对应的帖子
 		if($gid>0){
 			$tb = $tb->where('gid','=',$gid);
@@ -336,6 +340,8 @@ class ForumService extends Service
 				$comment['replyInfo']['fromUser']['userAvator'] = self::joinImgUrl($row['author']['avatar']);
 				$comment['replyInfo']['fromUser']['userLevel'] = $row['author']['level_name'];
 				$comment['replyInfo']['fromUser']['userLevelImage'] = self::joinImgUrl($row['author']['level_icon']);
+				$comment['replyInfo']['fromUser']['isNewUser'] = UserService::isNewUser($row['author']);
+				
 				if(isset($row['quote']) && $row['quote']){
 					$row['quote']['content'] = json_decode($row['quote']['content'],true);
 					if($row['quote']['content'] && count($row['quote']['content'])>0){									
@@ -344,6 +350,7 @@ class ForumService extends Service
 					}
 					$comment['replyInfo']['toUser']['userID'] = $row['quote']['author']['uid'];
 					$comment['replyInfo']['toUser']['userName'] = $row['quote']['author']['nickname'];
+					$comment['replyInfo']['toUser']['isNewUser'] = UserService::isNewUser($row['quote']['author']);
 				}
 				
 				$out['comments']['commentInfos'][] = $comment;

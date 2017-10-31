@@ -63,7 +63,6 @@ class CacheService
 	protected static function getDefaultCacheDriver()
 	{
 		return self::redis();
-                //return self::file();
 		//return self::memcached();
 	}
 	

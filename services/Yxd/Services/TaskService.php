@@ -12,6 +12,12 @@ use Yxd\Services\Service;
 use Yxd\Services\Cms\GameService;
 use Yxd\Models\Cms\Game;
 use Yxd\Modules\Core\BaseService;
+use Yxd\Services\Models\Task;
+use Yxd\Services\Models\TaskAccount;
+use Yxd\Services\Models\Account;
+use Yxd\Services\Models\CheckInfo;
+use Yxd\Services\Models\CheckInfoLimit;
+use Yxd\Services\Models\ShareLimit;
 
 class TaskService extends BaseService
 {	
@@ -23,7 +29,7 @@ class TaskService extends BaseService
 	 */
 	public static function getList($type,$uid,$version='3.0.0')
 	{		
-		$tasks = self::dbClubMaster()->table('task')->where('type','=',$type)->orderBy('id','asc')->get();		
+		$tasks = Task::db()->where('type','=',$type)->orderBy('id','asc')->get();		
 		$user_task_ids = self::canExecTaskList($uid,$version);
 		$tasklist = array();
 		foreach($tasks as $key=>$row){
@@ -66,15 +72,15 @@ class TaskService extends BaseService
 		if(CLOSE_CACHE!==false && CacheService::has($cachekey_table_task)){
 			$tasks = CacheService::get($cachekey_table_task);
 		}else{
-		    $tasks = self::dbClubMaster()->table('task')->orderBy('id','asc')->get();
+		    $tasks = Task::db()->orderBy('id','asc')->get();
 		      
 		    CLOSE_CACHE!==false && CacheService::forever($cachekey_table_task,$tasks);
 		}
 		*/
-		if($version=='3.1.0'){
-		    $tasks = self::dbClubMaster()->table('task')->orderBy('id','asc')->get();
+		if($version != '3.0.0'){
+		    $tasks = Task::db()->orderBy('id','asc')->get();
 		}else{
-			$tasks = self::dbClubMaster()->table('task')->where('type','<>',3)->orderBy('id','asc')->get();
+			$tasks = Task::db()->where('type','<>',3)->orderBy('id','asc')->get();
 		}
 	    $task_ids = array();
 	    $limit_task_ids = array();
@@ -89,14 +95,14 @@ class TaskService extends BaseService
 			$limit_task_ids[$row['id']] = $condition[$row['action']];
 		}
 
-		$user_normal_list = self::dbClubMaster()->table('task_account')->where('uid','=',$uid)->where('task_type','=',2)->where('status','=',1)->get();
+		$user_normal_list = TaskAccount::db()->where('uid','=',$uid)->where('task_type','=',2)->where('status','=',1)->get();
 		$user_normal_task_ids = array();
 		foreach($user_normal_list as $row){
 			$user_normal_task_ids[] = $row['task_id'];
 		}
 		$start = mktime(0,0,0,date('m'),date('d'),date('Y'));
 		$end = mktime(23,59,59,date('m'),date('d'),date('Y'));
-		$tmp_user_everyday_task_ids = self::dbClubMaster()->table('task_account')
+		$tmp_user_everyday_task_ids = TaskAccount::db()
 			->where('uid','=',$uid)
 			->where('task_type','=',1)
 			->where('status','=',1)
@@ -113,7 +119,7 @@ class TaskService extends BaseService
 		/*
 		 * 推广任务
 		 */
-		$tmp_user_tuiguang_task = self::dbClubMaster()->table('task_account')->where('uid','=',$uid)->where('task_type','=',3)->get();
+		$tmp_user_tuiguang_task = TaskAccount::db()->where('uid','=',$uid)->where('task_type','=',3)->get();
 		$user_tuiguang_task_ids = array();
 		foreach($tmp_user_tuiguang_task as $tuiguang_task){
 				$user_tuiguang_task_ids[]=$tuiguang_task['task_id'];
@@ -129,7 +135,7 @@ class TaskService extends BaseService
 	public static function execTask($uid)
 	{
 		$task_ids = self::canExecTaskList($uid);
-		$tasks = self::dbClubMaster()->table('task')->whereIn('id',$task_ids)->get();
+		$tasks = Task::db()->whereIn('id',$task_ids)->get();
 		foreach($tasks as $task){
 			$condition = json_decode($task['condition'],true);
 			$conkey = $exectype = key($condition);
@@ -171,7 +177,7 @@ class TaskService extends BaseService
 				$user_task['uid'] = $uid;
 				$user_task['receive'] = 0;
 				$user_task['ctime'] = time();
-				self::dbClubMaster()->table('task_account')->insertGetId($user_task);
+				TaskAccount::db()->insertGetId($user_task);
 			}
 		}
 	}
@@ -262,13 +268,13 @@ class TaskService extends BaseService
 		$expire = $end - time();
 		//$limit = (int)self::redis()->get($key);
 		//if($limit==0) self::redis()->expire($key,$expire);
-		$limit = self::dbClubSlave()->table('share_limit')->where('uid','=',$uid)->where('ctime','>',$start)->count();		
+		$limit = ShareLimit::db()->where('uid','=',$uid)->where('ctime','>',$start)->count();		
 		if($limit>=3){
 			//self::redis()->incr($key);
 			return true;
 		}else{
 			//self::redis()->incr($key);
-			self::dbClubSlave()->table('share_limit')->insert(array('uid'=>$uid,'ctime'=>time()));
+			ShareLimit::db()->insert(array('uid'=>$uid,'ctime'=>time()));
 			return false;
 		}
 	}
@@ -312,7 +318,15 @@ class TaskService extends BaseService
 					break;
 			}
 			if($score){
-				CreditService::handOpUserCredit($uid,$score,0,'checkin');
+				$time = time();
+				$startdate = mktime(0,0,0,1,1,2015);
+				$enddate = mktime(0,0,0,1,4,2015);
+				$info = '签到奖励游币'.$score;
+				if($time>$startdate && $time<$enddate){
+					$score = $score * 2;
+					$info = '元旦签到奖励双倍游币'.$score;
+				}
+				CreditService::handOpUserCredit($uid,$score,0,'checkin',$info);
 			}
 		}
 	}
@@ -325,13 +339,13 @@ class TaskService extends BaseService
 		$finish = false;
 		$addtask = false;
 		$flag = false;
-		$task = self::dbClubMaster()->table('task')->where('action','=',$action)->first();
+		$task = Task::db()->where('action','=',$action)->first();
 		if($task){
 			$reward = json_decode($task['reward'],true);
 			$condition = json_decode($task['condition'],true);
 			if(isset($condition['closed']) && intval($condition['closed'])==1) return false;
 			if($execType == self::TASK_EXEC_TYPE_ONCE){//一次性任务
-			    $user_task = self::dbClubMaster()->table('task_account')->where('uid','=',$uid)->where('task_id','=',$task['id'])->first();
+			    $user_task = TaskAccount::db()->where('uid','=',$uid)->where('task_id','=',$task['id'])->first();
 			    if(!$user_task) {
 			    	$finish = true;
 			    	$addtask = true;
@@ -339,8 +353,8 @@ class TaskService extends BaseService
 			}elseif($execType == self::TASK_EXEC_TYPE_EVERYDAY){//每日任务
 				$start = mktime(0,0,0,date('m'),date('d'),date('Y'));
 				$end = mktime(23,59,59,date('m'),date('d'),date('Y'));				
-				$user_task = self::dbClubMaster()->table('task_account')->where('uid','=',$uid)->where('task_id','=',$task['id'])->where('ctime','>=',$start)->where('ctime','<=',$end)->first();
-				$times = self::dbClubMaster()->table('task_account')->where('uid','=',$uid)->where('task_id','=',$task['id'])->where('ctime','>=',$start)->where('ctime','<=',$end)->count();
+				$user_task = TaskAccount::db()->where('uid','=',$uid)->where('task_id','=',$task['id'])->where('ctime','>=',$start)->where('ctime','<=',$end)->first();
+				$times = TaskAccount::db()->where('uid','=',$uid)->where('task_id','=',$task['id'])->where('ctime','>=',$start)->where('ctime','<=',$end)->count();
 				$limit = (int)$condition[$action];
 				$max_times = isset($condition['max_times']) ? (int)$condition['max_times'] : 1;
 				if($limit==1){					
@@ -362,7 +376,7 @@ class TaskService extends BaseService
 				}
 				
 			}elseif($execType == self::TASK_EXEC_TYPE_LIMIT){
-//				$times = self::dbClubMaster()->table('task_account')->where('uid','=',$uid)->where('task_id','=',$task['id'])->count();
+//				$times = TaskAccount::db()->where('uid','=',$uid)->where('task_id','=',$task['id'])->count();
 //				$limit = (int)$condition[$action];
 //				if($times >= $limit) $finish = true;
 //				if($times<$limit) $addtask = true;
@@ -379,7 +393,7 @@ class TaskService extends BaseService
 				$user_task['uid'] = $uid;
 				$user_task['receive'] = 1;
 				$user_task['ctime'] = time();
-				self::dbClubMaster()->table('task_account')->insertGetId($user_task);				
+				TaskAccount::db()->insertGetId($user_task);				
 			}
 		    if($finish==true) {//获取奖励 
 		    	$info = '完成' . $task['typename'] . $task['step_name'] . ',获得游币' . $reward['score'] . '个';
@@ -400,11 +414,18 @@ class TaskService extends BaseService
 	 */
 	public static function doCheckin($uid)
 	{
-		if(self::isExistsCheckin($uid)){
+		$start = mktime(0,0,0,date('m'),date('d'),date('Y'));
+		$idfa = UserService::getUserAppleIdentifyBy($uid,'idfa');
+		if(!$idfa)  $idfa = Input::get('idfa'); 
+		if(self::isExistsCheckin($uid,$idfa)){
 			return -1;
 		}else{
-			$id = self::dbClubMaster()->table('checkinfo')->insertGetId(array('uid'=>$uid,'ctime'=>time()));
-			self::doEveryCheckin($uid);
+			if($idfa){
+			    $success = CheckInfoLimit::db()->insertGetId(array('idfa'=>$idfa,'cdate'=>$start));
+			    if(!$success) return false;
+			}
+			$id = CheckInfo::db()->insertGetId(array('uid'=>$uid,'ctime'=>time()));
+			$id && self::doEveryCheckin($uid);
 			return $id ? true : false;
 		}
 	}
@@ -412,10 +433,14 @@ class TaskService extends BaseService
 	/**
 	 * 是否已经签到
 	 */
-	public static function isExistsCheckin($uid)
+	public static function isExistsCheckin($uid,$idfa=null)
 	{
 		$start = mktime(0,0,0,date('m'),date('d'),date('Y'));
-		$count = self::dbClubMaster()->table('checkinfo')->where('uid','=',$uid)->where('ctime','>=',$start)->count();
+		if($idfa){		
+			$exists = CheckInfoLimit::db()->where('idfa','=',$idfa)->where('cdate','=',$start)->count();
+			return $exists>0 ? true : false;
+		}
+		$count = CheckInfo::db()->where('uid','=',$uid)->where('ctime','>=',$start)->count();
 		return $count>0 ? true : false;
 	}
 	/*
@@ -423,7 +448,7 @@ class TaskService extends BaseService
 	 */	
 	public static function getZhucefa($uid)
 	{
-		$zhucema = self::dbClubMaster()->table('account')->where('uid', $uid)->pluck('zhucema');
+		$zhucema = Account::db()->where('uid', $uid)->pluck('zhucema');
 		/*
 		$cachekey_table_task = 'table::task::zhucema';
 		if(CLOSE_CACHE!==false && CacheService::has($cachekey_table_task)){
@@ -447,7 +472,7 @@ class TaskService extends BaseService
 		for($i=0;$i<7;$i++){
 			$week[] = $today_start - (60*60*24*($i+1));
 		}		
-		$list = self::dbClubMaster()->table('checkinfo')->where('uid','=',$uid)->where('ctime','>=',$start)->orderBy('ctime','desc')->lists('ctime');
+		$list = CheckInfo::db()->where('uid','=',$uid)->where('ctime','>=',$start)->orderBy('ctime','desc')->lists('ctime');
 		$checkin_list = array();
 		$index = 0;
 		foreach($list as $time){
@@ -471,7 +496,7 @@ class TaskService extends BaseService
 	public static function getContinuousCheckin($uid)
 	{
 		$today_start = mktime(0,0,0,date('m'),date('d'),date('Y'));
-		$list = self::dbClubMaster()->table('checkinfo')->where('uid','=',$uid)->orderBy('ctime','desc')->take(8)->lists('ctime');
+		$list = CheckInfo::db()->where('uid','=',$uid)->orderBy('ctime','desc')->take(8)->lists('ctime');
 		$count = count($list);
 		$continuous = array();
 		for($i=0;$i<$count;$i++){

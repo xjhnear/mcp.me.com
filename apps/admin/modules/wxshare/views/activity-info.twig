@@ -38,10 +38,10 @@
 					<label class="control-label">分享类型</label>
 					<div class="controls">					    				        
 				        <label class="radio inline">
-				        <!--{{form_radio('share_times',0,activity.share_times==1)}}-->多次					        					        				        
+				        <!--{{form_radio('share_times',0,activity.share_times==0)}}-->抢小米					        					        				        
 				        </label>					        			        	        				     
 				        <label class="radio inline">
-				        <!--{{form_radio('share_times',1,activity.share_times==0)}}-->单次
+				        <!--{{form_radio('share_times',1,activity.share_times==1)}}-->送Q币
 				        </label>
 					</div>
 				</div>
@@ -49,7 +49,7 @@
 					<label class="control-label">完成次数</label>
 					<div class="controls">
 						<input type="text" name="need_click_times" class="input-small" value="<!--{{activity.need_click_times}}-->" data-rule-required="true" data-msg-required="次数不能为空" />
-						<span class="help-inline">此值仅在分享类型为多次时有效</span>
+						<span class="help-inline">此值仅在分享类型为单次时有效</span>
 					</div>
 				</div>
 				<div class="control-group">

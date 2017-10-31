@@ -32,7 +32,7 @@ final class Video extends Model implements IModel
 		$field = 'id';
 		if($sort=='date') $field = 'addtime';
 		if($sort=='hot') $field = 'viewtimes';
-		$result = self::buildCond($platform,$type,$isTop)->orderBy($field,'desc')->orderBy('id','desc')->forPage($pageIndex,$pageSize)->get();
+		$result = self::buildCond($platform,$type,$isTop)->orderBy($field,'desc')->orderBy('sort','desc')->orderBy('id','desc')->forPage($pageIndex,$pageSize)->get();
 		return $result;
 	}
 	

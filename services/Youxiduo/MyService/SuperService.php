@@ -49,6 +49,7 @@ class SuperService
         return MyHelp::getdata(!empty($this->url_array[$key])?$this->url_array[$key]:false,$inputInfo);
     }
 
+
     //删除
     public function _getDel($inputinfo)
     {
@@ -75,9 +76,9 @@ class SuperService
         $valid = Validator::make($inputinfo,$rule,$prompt);
         //验证回调
         if(!empty($extend) and is_array($extend)){
-            foreach($extend as $key=>$val){
-                Validator::extend($key,$val);
-            }
+                foreach($extend as $key=>$val){
+                    Validator::extend($key,$val);
+                }
         }
         if($valid->fails())
             return $this->obj->block_('ByView',$valid->messages()->first());

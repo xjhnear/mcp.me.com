@@ -103,6 +103,7 @@ class GiftController extends BackendController
 		$input['content'] = Input::get('content');
 		$condition = array('score'=>Input::get('score',0));
 		$input['condition'] = json_encode($condition);
+		$input['limit_count'] = Input::get('limitcount');
 		//$input['ctime'] = time();
 		
 	    if($input['is_appoint']){

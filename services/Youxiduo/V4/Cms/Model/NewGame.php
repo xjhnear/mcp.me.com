@@ -73,7 +73,7 @@ final class NewGame extends Model implements IModel
 	
     public static function getDetailById($platform,$id)
 	{
-		$fields = self::raw('id,title,addtime,commenttimes,content,editor');
+		$fields = self::raw('id,title,addtime,commenttimes,art_content as content,editor');
 		$info = self::db()->where('id','=',$id)->select($fields)->first();
 		if($info){
 			$info['gid'] = 0;
@@ -82,5 +82,10 @@ final class NewGame extends Model implements IModel
 			$info['writer'] = '';
 		}
 		return $info;
+	}
+
+	public static function getAutoSearch($name)
+	{
+		return  self::db()->where('title','like',"%{$name}%")->select('id','title as value ')->get();
 	}
 }

@@ -43,7 +43,7 @@ class ReportController extends BackendController
 		}
 		if(!$end) {
 			$end = date('Y-m-d 23:59:59');
-		} else{
+		}else{
 			$end = $end . ' 23:59:59';
 		}
 		$config_ids = StatisticConfig::db()->where('CHANNEL_ID','=','ZT_CHANNEL')->lists('CONFIG_ID');

@@ -16,7 +16,7 @@
                         <label class="control-label">标题<i class="tip-star">*</i></label>
                         <div class="controls">
                             <div class=" input-append">
-                                <input type="text" name="title" class="input-xxlarge" value="<!--{{article.title}}-->" />
+                                <input type="text" name="title" class="input-xxlarge" data-rule-required="true" data-msg-required="请填写标题" value="<!--{{article.title}}-->" />
                             </div>
                         </div>
                     </div>
@@ -61,15 +61,18 @@
                         <label class="control-label">关联游戏</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input type="text" id="game_id" name="gameId" class="input-xlarge" value="<!--{{article.refGameId}}-->" /><span class="add-on select-game">选择</span>
+                                <input type="hidden" id="game_id" name="gameId" class="input-xlarge" value="<!--{{article.refGameId}}-->"  />
+                                <input type="text"  id="games" class="tagsinput" value="<!--{{article.gameNames}}-->" /><span class="add-on select-game">选择</span>
                             </div>
+
                         </div>
                     </div>
                     <div class="control-group">
                         <label class="control-label">关联主播</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input type="text" id="anchor_id" name="peopleId" class="input-xlarge" value="<!--{{article.refPeopleId}}-->" /><span class="add-on select-anchor">选择</span>
+                                <input type="hidden" id="anchor_id" name="peopleId" class="input-xlarge" value="<!--{{article.refPeopleId}}-->"/>
+                                <input type="text" id="people" class="tagsinput" value="<!--{{article.peopleNames}}-->" /><span class="add-on select-anchor">选择</span>
                             </div>
                         </div>
                     </div>
@@ -91,7 +94,7 @@
                     <div class="control-group">
                         <label class="control-label">标签</label>
                         <div class="controls">
-                            <div class="span9"><input type="text" name="tags" id="tags" class="tagsinput" value="<!--{{article.tags}}-->"></div>
+                            <div class="span9"><input type="text" name="tags" id="tags" class="tagsinput" value="<!--{{article.tags}}-->" /></div>
                         </div>
                     </div>
                     <div class="control-group">
@@ -107,7 +110,7 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                        <button type="submit" class="btn btn-primary sub"><i class="icon-ok"></i>保存</button>
                     </div>
                 </form>
             </div>
@@ -120,8 +123,70 @@
 <!--{%block footer_js%}-->
 <script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
 <script>
+    var gameArr = new Array();
+    var peopleArr = new Array();
+    $(function(){
+        setArr();
+        function setArr(){
+            var game_ids = $('#game_id').val();
+            var gameNames = $('#games').val();
+            var anchor_ids = $('#anchor_id').val();
+            var people = $('#people').val();
+
+            var gameIdArr = game_ids.split(',');
+            var gameNameArr = gameNames.split(',');
+            var anchorIdArr = anchor_ids.split(',');
+            var anchorNameArr = people.split(',');
+            $.each(gameNameArr,function(n,val){
+                gameArr[val] = gameIdArr[n];
+            })
+            $.each(anchorNameArr,function(n,val){
+                peopleArr[val] = anchorIdArr[n];
+            })
+        }
+
+        $(".sub").click(function(){
+            var game_ids = "";
+            var gameNames = $('#games').val();
+            var anchor_ids = "";
+            var people = $('#people').val();
+
+            var gameNameArr = gameNames.split(',');
+            var anchorNameArr = people.split(',');
+
+            $.each(gameNameArr,function(n,val){
+                game_ids += gameArr[val]+",";
+            })
+            $.each(anchorNameArr,function(n,val){
+                anchor_ids += peopleArr[val]+",";
+            })
+            game_ids = game_ids.substr(0,game_ids.length-1);
+            anchor_ids = anchor_ids.substr(0,anchor_ids.length-1);
+            $('#game_id').val(game_ids)
+            $('#anchor_id').val(anchor_ids);
+        })
+    })
+
+
+
     var set_selected_game = function(game_id,game_name,game_icon){
+        var gameNames = $('#games').val();
+        if(gameNames.length>0){
+            var a = gameNames.split(',');
+            if(a.indexOf(game_name)!=-1){
+                alert(game_name+" 已在列表中！");return false;
+            }
+            a.push(game_name);
+            var b = a.join(',');
+            //console.log(b);
+            $('#games').val(b);
+        }else{
+            $('#games').val(game_name);
+        }
+
         var game_ids = $('#game_id').val();
         if(game_ids.length>0){
             var a = game_ids.split(',');
@@ -132,9 +197,26 @@
         }else{
             $('#game_id').val(game_id);
         }
+        gameArr[game_name] = game_id;
+
     };
 
-    var set_selected_anchor = function(anchor_id){
+    var set_selected_anchor = function(anchor_id,anchor_name){
+
+        var people = $('#people').val();
+        if(people.length>0){
+            var a = people.split(',');
+            if(a.indexOf(anchor_name)!=-1){
+                alert(anchor_name+" 已在列表中！");return false;
+            }
+            a.push(anchor_name);
+            var b = a.join(',');
+            //console.log(b);
+            $('#people').val(b);
+        }else{
+            $('#people').val(anchor_name);
+        }
+
         var anchor_ids = $('#anchor_id').val();
         if(anchor_ids.length>0){
             var a = anchor_ids.split(',');
@@ -145,12 +227,19 @@
         }else{
             $('#anchor_id').val(anchor_id);
         }
+        peopleArr[anchor_name] = anchor_id;
+
     };
     $(function(){
         $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i',lang:'ch'});
-        if($(".tagsinput").length > 0){
-            $('.tagsinput').tagsInput({width:'auto', height:'auto'});
-        }
+//        if($(".tagsinput").length > 0){
+//            $('.tagsinput').tagsInput({width:'auto', height:'auto'});
+//        }
+
+        //一个一个来tags
+        $("#tags").tagsInput({width:'auto', height:'auto'});
+//        $("#games").tagsInput({width:'auto', height:'auto'});
+//        $("#people").tagsInput({width:'auto', height:'auto'});
 
         $('.select-game').bind('click',function(){
             $.ajax({

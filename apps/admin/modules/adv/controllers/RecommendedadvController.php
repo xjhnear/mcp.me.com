@@ -19,11 +19,11 @@ class RecommendedadvController extends BackendController
 		$search['page']=Input::get('page',1);
 		$search['pageSize']=15;
 		$search['=yxd_advert_recommendedadv.is_show']='1';
-		$search['=yxd_advert_nature.recommend_type']=Input::get('=recommend_type');
+		$search['=yxd_advert_nature.recommend_type']=Input::get('=re1commend_type');
 		$datalist=AdvService::getRecommendedadvList($search);//添加查询条件
 		 if(!empty($datalist['result'])){ //AdvService::
-			foreach ($datalist['result'] as $key => &$value){
-				$name=AdvService::getNatureInfo($value['nature_id']);
+			foreach ($datalist['result'] as $key => &$value){ 
+				$name=AdvService::getNatureInfo($value['nature_id']); 
 				if(!empty($name) && $name['is_show'] == 1){
 					$value['nature_name']=$name['natureName'];
 					$value['recommend_type']=$name['recommend_type'];
@@ -42,6 +42,7 @@ class RecommendedadvController extends BackendController
 	{	
 		$datainfo=array();
 		$datainfo['adv']['tabtype']='评测攻略';
+		$datainfo['type']=array('图片'=>'图片','文字'=>'文字','弹窗'=>'弹窗','轮播'=>'轮播','推荐'=>'推荐','条幅'=>'条幅','链接'=>'链接','游戏列表'=>'游戏列表','游戏信息'=>'游戏信息');
 		$apptypes=AdvService::FindApptypes(" is_show=1 ");
 		if(!empty($apptypes)){
 			$datainfo['apptypesselect']=$apptypes;	
@@ -64,13 +65,14 @@ class RecommendedadvController extends BackendController
 
 	public function postRecommendedadvAddEdit()
 	{	
-		$input=Input::only('location','apptypes_id','nature_id','recommended_id','link_id','title','sort','tabtype','versionform');
-		$biTian=array(
+		$input=Input::only('location_id','apptypes_id','nature_id','recommended_id','link_id','title','sort','tabtype','versionform','adv_type','words');
+        $biTian=array(
 				'apptypes_id'=>'required',
 				'recommended_id'=>'required',
 				'nature_id'=>'required',
 				'link_id'=>'required',
 				'title'=>'required',
+				'location_id'=>'required',
 		);
 		$message = array(
             'required' => '不能为空',
@@ -89,7 +91,7 @@ class RecommendedadvController extends BackendController
             $input['Id']=Input::get('Id');
             if(Input::get('litpic_'))  $input['litpic']=Input::get('litpic_');
         }
-		$dir = '/advdirs/' . date('Y') . '/' . date('m') . '/';
+		$dir = '/userdirs/common/icon_v4/test/adv/';
         $path = storage_path() . $dir;
 		if(Input::hasFile('litpic')){	
             $file = Input::file('litpic');
@@ -103,7 +105,6 @@ class RecommendedadvController extends BackendController
         foreach($input as $key=>&$value){
         	if(empty($value)) $value=0;
         }
-        
         $id=AdvService::RecommendedadvAddEdit($input);
  		if(!empty($id)){
 			return $this->redirect('/adv/recommendedadv/list')->with('global_tips','推荐发布操作成功');
@@ -114,13 +115,15 @@ class RecommendedadvController extends BackendController
 
 	public function postYouxiquanAddEdit()
 	{
-		$input=Input::only('versionform','nature_id','gid','gamename','sort');
+		$input=Input::only('apptypes_id','adv_type','recommended_id','versionform','nature_id','gid','gamename','sort','youxiTitle','youxiWords','location_id');
 		$biTian=array(
 				'gid'=>'required',
 				'versionform'=>'required',
 				'gamename'=>'required',
+				'youxiTitle'=>'required',
+				'location_id'=>'required',
 		);
-
+		
 		$message = array(
             'required' => '不能为空',
         );
@@ -131,15 +134,40 @@ class RecommendedadvController extends BackendController
             {	
             	$strerror[]=$message;
    	        }
-   	        print_r($input);exit;
    	        return $this->back()->with('global_tips',join('-',array_flip(array_flip($strerror))));
+        }
+        if(!empty($input['youxiTitle'])){
+        	$input['title']=$input['youxiTitle'];
+        	unset($input['youxiTitle']);
+        }else{
+        	unset($input['youxiTitle']);
+        }
+        if(!empty($input['youxiWords'])){
+        	$input['words']=$input['youxiWords'];
+        	unset($input['youxiWords']);
+        }else{
+        	unset($input['youxiWords']);
         }
         if(Input::get('Id')){
             $input['Id']=Input::get('Id');
+            if(Input::get('youxi_litpic_'))  $input['litpic']=Input::get('litpic_');
         }
+        $dir = '/userdirs/common/icon_v4/test/adv/';
+        $path = storage_path() . $dir;
+		if(Input::hasFile('youxi_litpic')){	
+            $file = Input::file('youxi_litpic');
+            $new_filename = date('YmdHis') . str_random(4);
+            $mime = $file->getClientOriginalExtension();
+            $file_path =$file->move($path,$new_filename . '.' . $mime );
+            if($file_path)  $input['litpic']=$dir.$new_filename . '.' . $mime;
+        }else{
+        	if(empty($input['litpic']))  return $this->back()->with('global_tips','推荐位缩略图没有上传');
+        }
+        
         foreach($input as $key=>&$value){
         	if(empty($value)) $value=0;
         }
+
         $id=AdvService::RecommendedadvAddEdit($input);
         if(!empty($id)){
 			return $this->redirect('/adv/recommendedadv/list')->with('global_tips','推荐发布成功');
@@ -179,6 +207,15 @@ class RecommendedadvController extends BackendController
 		return $this->json(array('status'=>0));
 	}
     
+    public function getLocationinfo()
+    {
+    	$id=Input::get('id');
+    	$datainfo=AdvService::FindLocation(" nature_id=$id and is_show=1");
+    	if(!empty($datainfo)){
+    		return $this->json(array('status'=>1,'datainfo'=>$datainfo));	
+    	}
+		return $this->json(array('status'=>0));
+    }
 
     public function getNatureType(){
     	$id=Input::get('id');

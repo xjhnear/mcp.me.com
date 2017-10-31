@@ -29,6 +29,14 @@ final class VideoGame extends Model implements IModel
 		
 		return $gids;
 	}
+	
+	public static function getVideoIdsByGameIds($gid)
+	{
+	    $vids = self::db()->whereIn('agid',$gid)->where('agid','>',0)->orderBy('id','asc')->lists('vid');
+	
+	    return $vids;
+	}
+	
 
     /**
      * 游戏文章是否包含视频

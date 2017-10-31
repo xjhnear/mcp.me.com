@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Youxiduo\Android\Model\Activity;
 use Youxiduo\Android\Model\Game;
 use Youxiduo\Message\Model\MessageType;
+use Youxiduo\Helper\MyHelpLx;
 class ActivityController extends BackendController
 {
 	public function _initialize()
@@ -47,9 +48,9 @@ class ActivityController extends BackendController
 	{
 		$keytype = Input::get('keytype');
 		$keyword = Input::get('keyword');
-		$search = array('keyword'=>$keyword);		
+		$search = array('keyword'=>$keyword,'isshow'=>'true');
 		$page = Input::get('page',1);
-		$pagesize = 10;
+		$pagesize = 5;
 		$data = array();
 		$data['no'] = $no;	
 		$data['keytype'] = $keytype;
@@ -77,7 +78,7 @@ class ActivityController extends BackendController
 	public function getEdit($id=0)
 	{
 		$data = array();
-		
+        $linkTypeList = array();
 		$result = MessageType::getList();
 		$result = Config::get('linktype');
 		$linkTypeListDesc = array();
@@ -85,7 +86,6 @@ class ActivityController extends BackendController
 			$linkTypeList[$key] = $row['name'];
 			$linkTypeListDesc[$key] = $row['description'];
 		}
-		
 		$data['linkTypeList'] = $linkTypeList;
 		$data['descs'] = json_encode($linkTypeListDesc);
 		
@@ -99,7 +99,7 @@ class ActivityController extends BackendController
 	
 	public function postEdit()
 	{
-		$input = Input::only('id','title','type','agid','starttime','endtime','istop','isshow','ishot','content','redirect_type','linktype','link','sort');
+		$input = Input::only('id','title','type','agid','starttime','endtime','istop','isshow','ishot','content','redirect_type','linktype','link','linktype2','link2','sort');
 		
 		$rule = array(
 		    'title'=>'required',
@@ -137,6 +137,8 @@ class ActivityController extends BackendController
 		$data['redirect_type'] = $input['redirect_type'];
 		$data['linktype'] = $input['linktype'];
 		$data['link'] = $input['link'];
+        $data['linktype2'] = $input['linktype2'];
+        $data['link2'] = $input['link2'];
 		$data['sort'] = (int)$input['sort'];
 		$data['apptype'] = 2;
 		$data['adddate'] = date('Y-m-d');
@@ -144,15 +146,16 @@ class ActivityController extends BackendController
 		$dir = '/userdirs/' . date('Y') . '/' . date('m') . '/';
 	    $path = storage_path() . $dir;
 	    //列表图
-	    if(Input::hasFile('listpic')){
-	    	
-			$file = Input::file('listpic'); 
-			$new_filename = date('YmdHis') . str_random(4);
-			$mime = $file->getClientOriginalExtension();			
-			$file->move($path,$new_filename . '.' . $mime );
-			$input['pic'] = $dir . $new_filename . '.' . $mime;
-		}
-		
+        if(Input::hasFile('picFile')){
+            $file = Input::file('picFile');
+            $new_filename = date('YmdHis') . str_random(4);
+            $mime = $file->getClientOriginalExtension();
+            $file->move($path,$new_filename . '.' . $mime );
+            $data['pic'] = $dir . $new_filename . '.' . $mime;
+        }else{
+            $data['pic'] = Input::get("img");
+        }
+
 		$success = Activity::m_save($data);
 		if($success){
 			return $this->redirect('a_activity/activity/index','活动保存成功');

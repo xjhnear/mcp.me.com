@@ -1,0 +1,92 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					365交易分成列表
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('v4_tuiguang/home/commission-setup')}}-->" class="">
+				    <table class="table-filter">				        
+				        <tr>
+				            <td>
+                                <input name="gameRefId" type="text" class="input-medium" placeholder="游戏ID" value="<!--{{search.gameRefId}}-->">
+                            </td>
+				            <td>
+								<input name="gameName" type="text" class="input-medium" placeholder="游戏名称" value="<!--{{search.gameName}}-->">
+							</td>
+                          
+
+							<td><button class="btn btn-teal"><i class="icon-search"></i>查询</button> <a href="<!--{{url('v4_tuiguang/home/commission-setup-add')}}-->" class="btn btn-teal">添加设置 </a>
+							</td>
+                            
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-120">游戏ID</th>
+							<th class="col-120">游戏名称</th>
+							<th class="col-120">渠道与分成</th>                          
+                            <th class="col-120">排序</th>                        
+                            <th class="col-120">操作</th>	
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for item in datalist%}-->
+						<tr>
+							<td><!--{{item.gameRefId}}--></td>
+                            <td><!--{{item.gameName}}--></td>
+                            <td> 
+                           <!--{%for list in item.percentageBeanList%}-->
+                                <p>渠道:<!--{{list.channelName}}-->; 分成: <!--{{list.feeValueShow}}--></p>
+                           <!--{%endfor%}-->                       
+                            </td>    
+                            <td><!--{{item.displayIndex}}--></td>                              
+                            <td><a href="<!--{{url('v4_tuiguang/home/commission-setup-add')}}-->?gameId=<!--{{item.gameId}}-->" class="btn btn-teal">设置</a></td>
+                            
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    共 <!--{{count}}-->个游戏
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>			    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){       
+    $('a.ajax-del').bind('click',function(){
+        if(confirm('确定要删除数据吗？')){
+            var id = $(this).attr('id');
+            obj = $(this);
+            $.post('<!--{{url('yxvl_eSports/VltvLive/ajax-del')}}-->',{id:id,api:"RemoveLiveGraphical"},function(data){
+                if(data.success){
+                    obj.parent().parent().hide();
+                }else{
+                    alert(data.error);
+                }
+            },"json")
+        }
+    });
+});    
+   $('.sel-val').change(function(){
+       alert($('.sel-val').val());
+   });
+</script>
+<script src="/static/js/laydate/laydate.js"></script>
+<script src="<!--{{asset('/static/js/ajaxfileupload.js')}}-->"></script>
+<!--{%endblock%}-->

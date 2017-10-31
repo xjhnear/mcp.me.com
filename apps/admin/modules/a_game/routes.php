@@ -9,3 +9,6 @@ Route::controller('a_game/api','modules\a_game\controllers\ApiController');
 Route::controller('a_game/games','modules\a_game\controllers\GamesController');
 Route::controller('a_game/pkg','modules\a_game\controllers\PkgController');
 Route::controller('a_game/platform','modules\a_game\controllers\PlatformController');
+//Route::controller('a_game/androidgame','modules\a_game\controllers\AndroidgameController');
+
+Route::controller('a_game/mustplay','modules\a_game\controllers\MustplayController');

@@ -279,7 +279,6 @@ class ProductService extends BaseService{
      * @return bool|mixed|string
      **/
     public static function getvirtualcardlist($params,$type=0){
-        
         return Utility::preParamsOrCurlProcess($params,array_keys($params),Config::get(self::VIRTUAL_CARD_URL).'virtualcard/list');
     }
 
@@ -423,6 +422,18 @@ class ProductService extends BaseService{
         return Utility::preParamsOrCurlProcess($params,array('id','onOrOff','modifier','isActive'),Config::get(self::VIRTUAL_CARD_URL).'virtualcard/list_update');
     }
 
+    //卡密库存分配
+    public static function distributioncard($params)
+    {
+        return Utility::preParamsOrCurlProcess($params,array('cardCode','cardNumber','requestFrom'),Config::get(self::VIRTUAL_CARD_URL).'virtualcard/distribution');
+    }
+    
+    //卡密库存释放
+    public static function release_distributioncard($params)
+    {
+        return Utility::preParamsOrCurlProcess($params,array('cardNumber','requestFrom'),Config::get(self::VIRTUAL_CARD_URL).'virtualcard/release_distribution');
+    }
+    
     //实物状态上架  下架
     public static function changestatus($params){
         $youxiduo_admin=Session::get('youxiduo_admin');
@@ -459,6 +470,7 @@ class ProductService extends BaseService{
     {
         return Utility::preParamsOrCurlProcess($params,array_keys($params),Config::get(self::MALL_MML_API_URL).'product/recommend');
     }
+
     //增加商品推荐位
     public static function addrecommend($params)
     {

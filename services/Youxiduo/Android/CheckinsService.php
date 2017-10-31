@@ -27,14 +27,13 @@ class CheckinsService extends BaseService
 	public static function doTask($uid)
 	{
 	    $search = array('start_time'=>time(),'end_time'=>time(),'is_show'=>1);
-		$tasks = CheckinsTask::searchList($search,1,4,array('sort'=>'desc','id'=>'desc'));
+		$tasks = CheckinsTask::searchList($search,1,10,array('sort'=>'desc','id'=>'desc'));
 		$res = CheckinsTaskUser::searchList(array('uid'=>$uid),1,31,array('id'=>'desc'));
 		$task_ids = array();
 		foreach($res as $row){
 			$task_ids[] = $row['ctid'];
 		}		
-		$running_days = count(Checkinfo::getContinuousCheckin($uid,date('j')));//连续
-		$cumulative_days = (int)CheckInfo::getCurrentMonthCheckinsTimes($uid);//累计
+		$running_days = count(Checkinfo::getContinuousCheckin($uid,date('j')));//连续		
 	    foreach($tasks as $row){
 			$exists = ($task_ids && in_array($row['id'],$task_ids)) ? true : false;
 			if($exists) continue;//已完成的任务则跳过
@@ -46,12 +45,13 @@ class CheckinsService extends BaseService
 				$st = date_create(date('Y-m-d',$row['start_time']));
 				$et = date_create(date('Y-m-d'));
 				$diff = date_diff($st,$et);
-				if($diff->days >= $days && $running_days>=$days){
+				if(($diff->days+1) >= $days && $running_days>=$days){
 					$add_task = true;
 					$info = '任务奖励:完成连续签到' . $days . '天任务';
 					$message = '尊敬的用户，您已经完成《'.$row['title'].'》任务，获得了'.$money.'游币，请前往游币中心查看。';
 				}
 			}elseif($type=='cumulative'){//累计
+				$cumulative_days = (int)CheckInfo::getCurrentMonthCheckinsTimes($uid,$row['start_time']);//累计				
 			    if($cumulative_days>=$days){
 					$add_task = true;
 					$info = '任务奖励:完成累计签到' . $days . '天任务';

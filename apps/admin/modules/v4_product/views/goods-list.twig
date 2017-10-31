@@ -15,18 +15,18 @@
 								<td></td>
 								<td>
 									开始时间
-									<div class="input-append date datepick" id="dpEnd" data-date="">
-										<input name="createTimeBegin"  placeholder="" type="text" class="input-small" value="<!--{{createTimeBegin}}-->" readonly>
-										<span class="add-on"><i class="icon-calendar"></i></span>
-									</div>
-								</td>
-								<td>
-									结束时间
-									<div class="input-append date datepick" id="dpEnd" data-date="">
-										<input name="createTimeEnd"  placeholder="" type="text" class="input-small" value="<!--{{createTimeEnd}}-->" readonly>
+									<div class="input-append date " >
+										<input name="createTimeBegin" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{createTimeBegin}}-->" readonly>
 										<span class="add-on"><i class="icon-calendar"></i></span>
 									</div>
 
+								</td>
+								<td>
+									结束时间
+									<div class="input-append date " >
+										<input name="createTimeEnd" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{createTimeEnd}}-->" readonly>
+										<span class="add-on"><i class="icon-calendar"></i></span>
+									</div>
 								<td>
 									<div class="input-append">
 										<input id="selected_categoryId" name="categoryId"   type="hidden" value="<!--{{categoryId}}-->" />
@@ -38,8 +38,8 @@
                         </tr>
                         <tr>
                         	<td>
-                        		<input type="radio" class="input_align_5" name="isOnshelf" <!--{% if isOnshelf ==0  %}-->checked<!--{%endif%}-->    value='1'> 全部 &nbsp&nbsp <input type="radio" class="input_align_5" name="isOnshelf" <!--{% if isOnshelf == 'true' %}-->checked<!--{%endif%}-->   value='2' > 上架中 &nbsp&nbsp 
-                            <input type="radio" class="input_align_5" <!--{% if isOnshelf == 'false' %}-->checked<!--{%endif%}-->  name="isOnshelf"  value='3' > 已下架  
+                        		<input type="radio" class="input_align_5" name="isOnshelf" <!--{% if is_Onshelf ==0  %}-->checked<!--{%endif%}-->    value='1'> 全部 &nbsp&nbsp <input type="radio" class="input_align_5" name="isOnshelf" <!--{% if is_Onshelf == 2 %}-->checked<!--{%endif%}-->   value='2' > 上架中 &nbsp&nbsp
+                            <input type="radio" class="input_align_5" <!--{% if is_Onshelf == 3 %}-->checked<!--{%endif%}-->  name="isOnshelf"  value='3' > 已下架
                             </td>
                             <td>
                             	<input type="checkbox" class="input_align_5" name="productStock" <!--{% if myproductStock == 'true' %}-->checked<!--{%endif%}--> > 只看已发完的 &nbsp&nbsp&nbsp
@@ -49,6 +49,8 @@
                             	<input name="productName"  placeholder="请填写商品名称" style="width:177px;" type="text" class="input-small" value="<!--{{productName}}-->" >
                             </td>
                             <td><input id="gameselect" name="gameId" data-from="ios" type="hidden" value="<!--{{gameId}}-->" class="bigdrop select2-offscreen" style="width:200px;" tabindex="-1"></td>
+                        	<td><!--{{form_select('platform',platformList,platform,{'id':'complete_type','style':'margin-top:10px;width:100px'})}}--></td>
+                        	<td><!--{{form_select('currencyType',currencyTypeList,currencyType,{'id':'complete_type','style':'margin-top:10px;width:100px'})}}--></td>
                         	<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
 	                        <td><a href="<!--{{url('v4product/goods/product-add')}}-->" class="btn btn-teal"><i class="icon-plus" title="添加商品"></i></a></td>
                         </tr>
@@ -62,13 +64,15 @@
 					<tr>
 						<!-- <th class="col-60">ID</th> -->
 						<th class="col-60">图片</th>
-						<th class="col-100">商品名称</th>
+						<th class="col-100">商品名称/ID</th>
+						<th class="col-60">商城类型</th>
 						<th class="col-60">游戏</th>
 						<th class="col-80">商品种类</th>
 						<th class="col-80">所需游币</th>
 						<th class="col-80">开始时间</th>
 						<th class="col-80">结束时间</th>
 						<th class="col-80">已领/总数</th>
+						<th class="col-80">是否推送</th>
 						<th class="table-btn-group">操作</th>
 						<th class="col-80">最后操作人</th>	
 						<th class="col-80">最后操作时间</th>	
@@ -78,15 +82,17 @@
 					<!--{% for key,item in datalist%}-->
 					<tr id="tr_<!--{{item.productCode}}-->">
 						<td class="user-avatar"><img src='<!--{{item.listpic}}-->'/></td>
-						<td><!--{{item.productName}}--></td>
-						<td><!--{{item.gname}}--></td>
+						<td><!--{{item.productName}}--><br/><!--{{item.productCode}}--></td>
+						<td><!--{{currencyTypeList[item.currencyType]}}--></td>
+						<td><!--{%if item.gid == 0%}-->全部游戏<!--{%else%}--><!--{{item.gname}}--><!--{%endif%}--></td>
 						<td><!--{{item.category.categoryName}}--></td>
 						<td><!--{{item.discountGamePrice}}--></td>
 						<td><!--{{item.startTimeStr}}--></td>
 						<td><!--{{item.endTimeStr}}--></td>
 						<td><!--{{item.tr ? item.tr : 0}}-->/<!--{{item.totalCount}}--></td>
+						<td><!--{{ item.extraReq.freeContent.pushStatus=='1' ? '是' : '否' }}--></td>
 						<td>
-							<a href="<!--{{url('v4product/goods/product-edit',{id:item.productCode})}}-->" class="btn btn-primary">编辑</a>
+							<a href="<!--{{url('v4product/goods/product-edit',{id:item.productCode})}}-->" target="_blank" class="btn btn-primary">编辑</a>
 							
 							<a href="javascript:;" data-size="<!--{{item.tr}}-->/<!--{{item.totalCount}}-->" data-productCode="<!--{{item.productCode}}-->" data-name="<!--{{item.productName}}-->" data-type="<!--{{item.productType}}-->" data-url="<!--{{url('v4product/goods/product-zj')}}-->"  data-id="<!--{{item.productId}}-->" data-code="<!--{{item.cardCode}}-->" class="btn btn-primary zj">追加</a>
 							<div class="btn-group">
@@ -104,8 +110,10 @@
 										<li><a href='javascript:;' class="openproductactivity" data-code="<!--{{item.productCode}}-->" data-stime="<!--{{item.startTimeStr}}-->" data-etime="<!--{{item.endTimeStr}}-->" id="openproductactivity"  url="<!--{{url('v4product/goods/openproductactivity')}}-->" >开启优惠</a></li>
 										<!--{%endif%}-->
 									-->
-									<li><a href='javascript:;' class="myfafang" data-url="<!--{{url('v4product/goods/fafang',{productCode:item.productCode})}}-->">发放</a></li>
-									<li>
+                                    <!--{%if item.productType=="0"%}-->
+									<li><a href='javascript:;' class="myfafang" data-url="<!--{{url('v4product/goods/fafang',{productCode:item.productCode})}}-->" p_name="<!--{{item.productName}}-->" productCode="<!--{{item.productCode}}-->" >发放</a></li>
+                                    <!--{%endif%}-->
+                                    <li>
 										<!--{%if item.isSign == 1 %}-->
 											<a href="<!--{{url('v4product/goods/sign',{id:item.productCode,sign:0})}}-->" >取消标记</a>
 											<!--{%else%}-->
@@ -116,6 +124,21 @@
 										<a href="<!--{{url('v4product/goods/product-operator',{id:item.productCode,type:'top',val:item.isTop})}}-->">置顶<!--{%if item.isTop == 1%}--><i class="icon-ok"></i><!--{%endif%}--></a>
 									</li>
 									<li><a href='javascript:;' code="<!--{{item.productCode}}-->"  url="<!--{{url('v4product/goods/goodsdelete',{id:item.productCode})}}-->" class="ajax-del"><i class="icon-trash"></i>删除</a></li>
+
+                                        <!--{% if item.isOnshelf!=1 %}-->
+                                        <!--{% if item.restCount > 0 %}-->
+                                        <!--{% if item.productType == 0 or item.productType == 2 %}-->
+                                    <li>
+                                        <input type="button" class="btn btn-primary" data-container="body" data-html="true" data-toggle="popover" data-placement="left"  data-content='
+<input type="text" value="<!--{{item.restCount}}-->" style="width: 70px"/><input type="button" code="<!--{{item.productCode}}-->" class="release" value="提交" />
+                            ' value="解绑" />
+                                    </li>
+                                        <!--{% endif %}-->
+                                        <!--{% endif %}-->
+                                        <!--{% endif %}-->
+
+
+                                    </li>
                                 </ul>
 							</div>
 						</td>
@@ -235,10 +258,12 @@
 </div>
 <!--{%endblock%}-->
 <!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
 <script src="/static/js/ajaxfileupload.js"></script>
 <script>
+    $('[data-toggle="popover"]').popover();
 	$(function(){
-		$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
+		//$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
 		$('.select-pop-cate').on('click',function(){
 			$.ajax({
 				url:'/v4product/goods/cate-list-select',
@@ -356,33 +381,29 @@
 			var i=0;
 			$("#go_").unbind("click");
 			$("#go_").bind('click',function(){
-			   $("#modal-footer").fadeOut();
 			   if(i == 1) i=0;
 				if(datatype>0){
 					var productStock=$("#productStock").val();
 					if(!productStock){
 						alertify.error("请先填写追加数量！");
-						 $("#modal-footer").fadeIn();
 						return false;
 					}
-
-
                     $.get('/v4product/goods/zjsl',{productCode:dataProductCode,productStock:productStock},function(data){
 						if(data.errorCode){
 							alertify.success('操作成功');
-							 $("#modal-footer").fadeIn();
 						}else{
 							alertify.error(data.msg);
-							 $("#modal-footer").fadeIn();
-						}
-						$("#productStock").val('');
+                        }
+                        $("#productStock").val('');
 						$("#myModal").modal("hide");
+                        window.location.reload();
+                        return true;
 					},'JSON');
 				}else{
 					
 					alertify.confirm('确认上传该文件？',function(e){
 						if(e){
-							if(dataline < 1){
+                            if(dataline < 1){
 								alertify.error("抱歉，没有卡密~！");
 								return false;
 							}
@@ -406,7 +427,6 @@
 								dataType : 'JSON',
 								success : function (data){
 									data = eval("("+data+")");
-									$("#modal-footer").fadeIn();
 									if(data.state){
 										alertify.success('上传成功');
 										i=1;
@@ -418,27 +438,25 @@
 									return false;
 								}
 							});
-						}else{
-							$("#modal-footer").fadeIn();
 						}
-
 						return false;
 					});
 			    }
-			  $("#modal-footer").fadeIn(); 
+			  //$("#modal-footer").fadeIn();
 			});
 		});	
 		$("a.myfafang").bind('click',function(){
-			var html=$("#dialog-confirm").html(),url=$(this).attr("data-url");
+			var html=$("#dialog-confirm").html(),url=$(this).attr("data-url"),p_name=$(this).attr("p_name"),productCode=$(this).attr("productCode"),gameId=$(this).attr("gid");
 			$.dialog({id:'pop-fafang-html',title:'提示',padding:2,content:html,width:410,height:240});
             $("#select-all-uids").click();
 			$("a.fafang_").bind('click',function(){
 				$("#uids").removeAttr("readonly");
 				var uids=$("#myuids").val();
 				if(!uids) {alert("抱歉，用户ID没有获取！"); return false;}
-				$.get(url,{uids:uids},function(data){
+				$.get(url,{uids:uids,p_name:p_name,productCode:productCode,gameId:gameId},function(data){
 					if(data.errorCode==2){
 						alert("发放成功");
+						setTimeout(function(){location.reload();},1000);
 					}else{
 						alert(data.errortxt);
 					}
@@ -493,5 +511,16 @@
 		$("#selected_categoryId").val(cate_id);
 		$("#selected_cate_name").val(cate_name);
 	};
+    $('.release').live('click',function(){
+        var value = $(this).siblings("input").val();
+        var code = $(this).attr("code");
+        $.post('<!--{{url('v4giftbag/gift/release')}}-->',{value:value,code:code},function(data){
+            if(data.success=="true"){
+                window.location.reload();
+            }else{
+                alert(data.mess);
+            }
+        },"json")
+    });
 </script>
 <!--{%endblock%}-->

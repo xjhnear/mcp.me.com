@@ -4,7 +4,7 @@ return array(
     'module_name'  => 'v4_giftbag',
     'module_alias' => 'v4礼包管理',
     'module_icon'  => 'ios',
-    'default_url'=>'v4giftbag/gift/search',
+    'default_url'=>'v4giftbag/package/search',
     'child_menu' => array(
         array('name'=>'礼包库列表','url'=>'v4giftbag/package/search'),
         array('name'=>Lang::get('description.lm_lb_lblb'),'url'=>'v4giftbag/gift/search'),

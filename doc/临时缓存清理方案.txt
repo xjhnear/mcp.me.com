@@ -1,0 +1,19 @@
+﻿鉴于一段时期内best后台和新后台并存的局面，为了解决因缓存导致的数据不一致，设定通过队列异步清除相关缓存的
+
+缓存分类:game/article/commend/adv/topic/app 
+更新类型:add/update/delete
+
+
+game
+
+article
+
+commend
+
+adv
+
+topic
+
+app
+
+select b.shortgname,a.total from (select gid,sum(total_num) as total from m_gift where gid>0 and addtime>UNIX_TIMESTAMP('2014-01-01') group by gid order by total desc) as a left join m_games b on a.gid=b.id

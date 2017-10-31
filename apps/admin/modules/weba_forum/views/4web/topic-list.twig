@@ -108,7 +108,7 @@
 									<!--{%else%}-->
 									<li><a href="<!--{{url('weba_forum/topic/bbs-stick')}}-->" data-act="on" data-tid="<!--{{item.tid}}-->" class="ajax-stick">置顶</a></li>
 									<!--{%endif%}-->
-									<li><a href="javascript:;" data-url="<!--{{url('weba_forum/topic/huifuedit',{'tid':item.tid})}}-->" tid="<!--{{item.tid}}-->" data-act="on" class="ajax-stick bianji">编辑帖子回复</a></li>
+									<li><a href="javascript:;" data-url="<!--{{url('weba_forum/topic/huifuedit',{'tid':item.tid})}}-->" tid="<!--{{item.tid}}-->" data-act="on" class="ajax-stick bianji">编辑回复限制</a></li>
 								</ul>
 							</div>
 							<!--{%if search.recycle==1%}-->
@@ -277,59 +277,75 @@
 		});
 
 		gameselect('#gameselect');
-	});
 
-	$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
-	$(".bianji").bind('click',function(){
-		var url_get="<!--{{url('weba_forum/topic/replylimitlist')}}-->",
-			    url=$(this).attr('data-url'),
-			    id=0,
-			    my_div=$("#box-content"),
-			    limitRate=my_div.find("[name='limitRate']"),
+        $('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
+        var targetType = 'TOPIC';
+        var id = 0;
+        var url = '';
+        var tid = 0;
+        $(".bianji").bind('click',function(){
+            var url_get="<!--{{url('weba_forum/topic/replylimitlist')}}-->",
+                my_div=$("#box-content"),
+                limitRate=my_div.find("[name='limitRate']"),
                 limitStatus=my_div.find("[name='limitStatus']"),
                 limitDeadline=my_div.find("[name='limitDeadline']"),
-                limitNum=my_div.find("[name='limitNum']"),
-				tid=$(this).attr('tid'),
-				targetType='TOPIC';
-		$.get(url_get,{'targetId':tid},function(data){
-			  if(data.error < 1 && typeof(data.result) != "undefined"){
-			  		if(typeof(data.result.id) != "undefined"){
-			  			id=data.result.id;
-			  		}
-			  		
-			  		if(data.result.limitRate){
-			  			limitRate.val(data.result.limitRate);
-			  		}
-			  		if(data.result.limitStatus){
-			  			
-						$("#y").attr("checked",true);
-					}else{
-						$("#n").attr("checked",true);
-			  		}
-			  		if(data.result.limitDeadline){
-			  			limitDeadline.val(data.result.limitDeadline);
-			  		}
-			  		if(data.result.limitNum){
-			  			limitNum.val(data.result.limitNum);
-			  		}
-			  		targetType=data.result.limitNum;
-			  }
-			  $("#myModal").modal("show");
-			  $("#go_").one('click',function(){ 
-                var limitRate_=limitRate.val(), 
+                limitNum=my_div.find("[name='limitNum']");
+            tid=$(this).attr('tid');
+            url=$(this).attr('data-url');
+            $.get(url_get,{'targetId':tid},function(data){
+                if(data.error < 1 && typeof(data.result) != "undefined"){
+                    if(typeof(data.result.id) != "undefined"){
+                        id=data.result.id;
+                    }
+
+                    if(data.result.limitRate){
+                        limitRate.val(data.result.limitRate);
+                    }
+                    if(data.result.limitStatus){
+
+                        $("#y").attr("checked",true);
+                    }else{
+                        $("#n").attr("checked",true);
+                    }
+                    if(data.result.limitDeadline){
+                        limitDeadline.val(data.result.limitDeadline);
+                    }
+                    if(data.result.limitNum){
+                        limitNum.val(data.result.limitNum);
+                    }
+                    targetType=data.result.limitNum;
+                } else {
+                    //没数据初始化
+                    limitRate.val('');
+                    $("#y").attr("checked", false);
+                    $("#n").attr("checked", false);
+                    limitDeadline.val('');
+                    limitNum.val('');
+                }
+                $("#myModal").modal("show");
+            });
+        });
+
+        $("#go_").on('click',function(){
+            var my_div=$("#box-content"),
+                limitRate=my_div.find("[name='limitRate']"),
+                limitStatus=my_div.find("[name='limitStatus']"),
+                limitDeadline=my_div.find("[name='limitDeadline']"),
+                limitNum=my_div.find("[name='limitNum']");
+            var limitRate_=limitRate.val(),
                     limitStatus_=my_div.find("[name='limitStatus']:checked").val(),
                     limitDeadline_=limitDeadline.val(),
                     limitNum_=limitNum.val();
-                   
-				$.post(url,{'id':id,'targetId':tid,'targetType':targetType,'limitNum':limitNum_,'limitRate':limitRate_,'limitStatus':limitStatus_,'limitDeadline':limitDeadline_},function(data){
-                		alert(data.text);
-                		 return false;
-                });
-                $("#myModal").modal("hide");
+
+            $.post(url,{'id':id,'targetId':tid,'targetType':targetType,'limitNum':limitNum_,'limitRate':limitRate_,'limitStatus':limitStatus_,'limitDeadline':limitDeadline_},function(data){
+                alert(data.text);
                 return false;
-        	});
-		});
-		
-	})
+            });
+            $("#myModal").modal("hide");
+            return false;
+        });
+
+	});
+
 </script>
 <!--{%endblock%}-->

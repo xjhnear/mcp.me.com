@@ -7,3 +7,4 @@ use Illuminate\Support\Facades\App;
 
 //用户反馈
 Route::controller('feedback/chat','modules\feedback\controllers\ChatController');
+Route::controller('feedback/achat','modules\feedback\controllers\AchatController');

@@ -1,4 +1,7 @@
 <!--{%extends 'base-layout'%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/js/plugins/bootstrap-table/bootstrap-table.min.css">
+<!--{%endblock%}-->
 <!--{%block main_content%}-->
 <div class="row-fluid">
 	<div class="span12">
@@ -17,14 +20,17 @@
 				</div>
 			</div>
 			<div class="box-content nopadding">
-				<table class="table table-bordered table-hover">
-					<tr>
-						<th width="10%">ID</th>
-						<th width="20%">模块类型</th>
-						<th width="20%">模块名称</th>
-						<th width="40%">描述</th>
-						<th width="10%">操作</th>
-					</tr>
+				<table id="table" class="table table-bordered table-hover" data-toggle="table" data-resizable="true">
+					<thead>
+						<tr>
+							<th class="col-150" data-field="id">ID</th>
+							<th class="col-100" data-field="name">模块类型</th>
+							<th class="col-150" data-field="alias">模块名称</th>
+							<th data-field="desc">描述</th>
+							<th data-field="op">操作</th>
+						</tr>
+					</thead>
+					<tbody>
 					<!--{%for item in datalist%}-->
 					<tr>
 						<td><!--{{item.id}}--></td>
@@ -39,9 +45,16 @@
 						</td>
 					</tr>
 					<!--{%endfor%}-->
+					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
 </div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script type="text/javascript" src="/static/js/plugins/bootstrap-table/bootstrap-table.js"></script>
+<script type="text/javascript" src="/static/js/plugins/bootstrap-table/extensions/resizable/bootstrap-table-resizable.js"></script>
+<script type="text/javascript" src="/static/js/plugins/bootstrap-table/colResizable-1.5.min.js"></script>
 <!--{%endblock%}-->

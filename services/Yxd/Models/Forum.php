@@ -4,6 +4,10 @@ namespace Yxd\Models;
 use Yxd\Services\UserService;
 
 use Illuminate\Support\Facades\DB;
+use Yxd\Services\Models\Forum as V3Forum;
+use Yxd\Services\Models\ForumChannel;
+use Yxd\Services\Models\ForumNotice;
+use Yxd\Services\Models\AccountCircle;
 
 class Forum
 {
@@ -12,7 +16,7 @@ class Forum
 	 */
 	public static function getForumInfoByDomain($domain)
 	{
-		return DB::table('forum')->where('domain','=',$domain)->first();
+		return V3Forum::db()->where('domain','=',$domain)->first();
 	}
 	
     /**
@@ -21,12 +25,12 @@ class Forum
 	public static function getChannelList($gid,$autoadd=false)
 	{
 		if($gid==2){
-			$channels = DB::table('forum_channel')
+			$channels = ForumChannel::db()
                ->where('gid','=',$gid)
                ->orderBy('displayorder','asc')
                ->get();
 		}else{
-		    $channels = DB::table('forum_channel')
+		    $channels = ForumChannel::db()
                ->where('gid','=',$gid)
                ->orWhere('gid','=',0)
                ->orderBy('displayorder','asc')
@@ -50,12 +54,12 @@ class Forum
 	public static function getChannelKV($gid)
 	{
 		if($gid==2){
-			return DB::table('forum_channel')
+			return ForumChannel::db()
 		           ->orderBy('displayorder','asc')
 		           ->where('gid','=',$gid)
 		           ->lists('channel_name','cid');
 		}
-		return DB::table('forum_channel')
+		return ForumChannel::db()
 		           ->orderBy('displayorder','asc')
 		           ->where('gid','=',$gid)
 		           ->orWhere('gid','=',0)
@@ -65,13 +69,13 @@ class Forum
     public static function getForumList($gid)
 	{
 		if($gid==2){
-			$forum_list = DB::table('forum')
+			$forum_list = V3Forum::db()
 		                  ->where('displayorder','=',0)
 		                  ->where('gid','=',$gid)
 		                  ->get();
 		    return $forum_list;
 		}
-		$forum_list = DB::table('forum')
+		$forum_list = V3Forum::db()
 		                  ->where('displayorder','=',0)
 		                  ->where('gid','=',$gid)
 		                  ->orWhere('gid','=',0)
@@ -82,7 +86,7 @@ class Forum
 	
 	public static function getNoticeList($gid)
 	{
-		$notices = DB::table('forum_notice')
+		$notices = ForumNotice::db()
 		               ->whereIn('gid',array(0,$gid))
 		               ->where('startdate','<=',(int)microtime(true))
 		               ->where('enddate','>=',(int)microtime(true))
@@ -93,7 +97,7 @@ class Forum
 	
 	public static function getNoticeInfo($id)
 	{
-		return DB::table('forum_notice')
+		return ForumNotice::db()
 		               ->where('id','=',$id)
 		               ->where('startdate','=<',(int)microtime(true))
 		               ->where('enddate','>=',(int)microtime(true))
@@ -102,13 +106,13 @@ class Forum
 	
 	public static function getCircleUserCount($gid)
 	{
-		return DB::table('account_circle')
+		return AccountCircle::db()
 		           ->where('game_id','=',$gid)->count();
 	}
 	
 	public static function getCircleUsers($gid,$page=1,$pagesize=10)
 	{
-		return DB::table('account_circle')
+		return AccountCircle::db()
 		           ->where('game_id','=',$gid)
 		           ->forPage($page,$pagesize)
 		           ->orderBy('id','desc')

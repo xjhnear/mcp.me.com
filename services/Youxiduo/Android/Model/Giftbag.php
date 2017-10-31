@@ -144,7 +144,12 @@ final class Giftbag extends Model implements IModel
 	public static function getInfoByIds($ids)
 	{
 		if(!$ids) return array();
-		$list = self::db()->whereIn('id',$ids)->get();
+		$tb = self::db()->whereIn('id',$ids);
+		$version = Input::get('version');
+		if($version=='3.0.0'){
+			$tb = $tb->where('is_activity','=',1);
+		}
+		$list = $tb->get();
 		$data = array();
 		foreach($list as $row){
 			$data[$row['id']] = $row;

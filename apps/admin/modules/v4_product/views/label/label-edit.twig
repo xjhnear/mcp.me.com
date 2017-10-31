@@ -8,17 +8,17 @@
             </div>
             <div class="box-content">
                 <form id="cate_from" action="<!--{{url('v4product/label/edit')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
-                    <input type="hidden" name="tagId" value="<!--{{result.tagId}}-->">
+                    <input type="hidden" name="tagId" value="<!--{{data.tagId}}-->">
                     <div class="control-group">
                         <label class="control-label">*标签名称</label>
                         <div class="controls">
-                            <input type="text" name="tagName" id="tagName" data-rule-required="true" data-msg-required="请填写标签名称" class="input-xlarge" value="<!--{{result.tagName}}-->" />
+                            <input type="text" name="tagName" id="tagName" data-rule-required="true" data-msg-required="请填写标签名称" class="input-xlarge" value="<!--{{data.tagName}}-->" />
                         </div>
                     </div>
                     <div class="control-group">
                         <label class="control-label">*商城类型</label>
                         <div class="controls">
-                            <!--{{form_select('',productType,result.productType,{'class':'input-small','id':'productType'})}}-->
+                            <!--{{form_select('',productType,data.currencyType,{'class':'input-small','id':'productType'})}}-->
                         </div>
                     </div>
                     <div class="control-group">
@@ -26,7 +26,7 @@
                         <div class="controls">
                             <div class="input-append">
                                 <input id="selected_categoryId" name="categoryId"   type="hidden" value="<!--{{result.categoryId}}-->" />
-                                <input type="text" placeholder="请选择商品种类" name="categoryName" id="selected_cate_name" readonly  style="width:120px" value="<!--{{result.categoryName}}-->" />
+                                <input type="text" placeholder="请选择商品种类" name="categoryName" id="selected_cate_name" readonly  style="width:120px" value="<!--{{data.categoryName}}-->" />
                                 <span class="add-on select-pop-cate">选择商品种类</span>
 
                             </div>
@@ -36,7 +36,7 @@
                     <div class="control-group">
                         <label class="control-label">排序</label>
                         <div class="controls">
-                            <input type="text" name="tagSort" id="sort" class="input-small" value="<!--{{result.tagSort|default(50)}}-->" />
+                            <input type="text" name="tagSort" id="sort" class="input-small" value="<!--{{data.tagSort|default(50)}}-->" />
                             <span class="help-inline">排序值越大越靠前</span>
                         </div>
                     </div>

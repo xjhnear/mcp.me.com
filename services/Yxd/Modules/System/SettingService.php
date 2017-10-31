@@ -9,7 +9,7 @@
 namespace Yxd\Modules\System;
 
 use Yxd\Modules\Core\CacheService;
-
+use Yxd\Services\Models\SystemSetting;
 use Yxd\Modules\Core\BaseService;
 /**
  * 配置服务类
@@ -29,12 +29,12 @@ class SettingService extends BaseService
 		}
 		*/
 		$config = array();
-		$tb = self::dbClubMaster()->table('system_setting');
+		$tb = SystemSetting::db();
 		if(!empty($keyname)){
 			$data = $tb->where('keyname','=',$keyname)->first();
 			if($data){
 				$config = array('keyname'=>$keyname,'data'=>unserialize($data['data']));
-				CacheService::put($keyname,$config,3600);
+				//CacheService::put($keyname,$config,3600);
 			}
 			return $config;
 		}else{
@@ -45,18 +45,18 @@ class SettingService extends BaseService
 				$list[$key] = $val;
 			}
 			$config = $list;
-			CacheService::put('tb::system_config',$config,3600);
+			//CacheService::put('tb::system_config',$config,3600);
 		}
 		return $config;
 	}
 	public static function setConfig($keyname,$data)
 	{	
 		$json = serialize($data);
-		$count = self::dbClubMaster()->table('system_setting')->where('keyname','=',$keyname)->count();
+		$count = SystemSetting::db()->where('keyname','=',$keyname)->count();
 		if($count){
-			self::dbClubMaster()->table('system_setting')->where('keyname','=',$keyname)->update(array('data'=>$json));			
+			SystemSetting::db()->where('keyname','=',$keyname)->update(array('data'=>$json));			
 		}else{
-			self::dbClubMaster()->table('system_setting')->insertGetId(array('keyname'=>$keyname,'data'=>$json));
+			SystemSetting::db()->insertGetId(array('keyname'=>$keyname,'data'=>$json));
 		}
 		
 		CacheService::forget($keyname);

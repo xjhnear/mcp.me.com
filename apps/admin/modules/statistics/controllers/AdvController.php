@@ -48,7 +48,10 @@ class AdvController extends BackendController
 		if($end){
 			$tb = $tb->where('addtime','<',strtotime($end));
 		}
-		$result = $tb->forPage(1,$pageSize)->get();
+		if($export!=0){
+		    $tb = $tb->forPage(1,$pageSize);
+	    }
+	    $result = $tb->get();
 		if($result){
 			$out = array();
 			foreach($result as $row){

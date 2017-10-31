@@ -74,6 +74,7 @@ class CommentModel extends BaseModel
 	
 	public static function doDelete($ids)
 	{
+        print_r($ids);
 		return CommentService::deleteByAdmin($ids);
 	}
 	

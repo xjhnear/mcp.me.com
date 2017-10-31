@@ -118,7 +118,7 @@ class VariationMain extends Model implements IModel
     public static function getAutoSendSharemanValidInfo($activity_ids){
         if(!$activity_ids) return false;
 		$query = self::db();
-		$query->select(DB::raw('main_id,activity_id,from_uid,COUNT(*) AS num,send_msg,share_send_msg'));
+		$query->select(DB::raw('main_id,activity_id,from_uid,COUNT(*) AS num,send_msg,share_send_msg,get_more_coin'));
         $query->whereIn('activity_id',$activity_ids);
         $query->where(function($q){
             $q->where('received',1);

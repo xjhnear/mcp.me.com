@@ -193,10 +193,10 @@ class RelationService extends Service
 	 */
 	public static function getCircleUserList($gid,$page=1,$pagesize=20)
 	{
-		$data = self::getCircleUserListCache($gid,$page,$pagesize);
-		if($data){
-			return $data;
-		}
+		//$data = self::getCircleUserListCache($gid,$page,$pagesize);
+		//if($data){
+		//	return $data;
+		//}
 		$total = Forum::getCircleUserCount($gid);
 		$uids  = Forum::getCircleUsers($gid,$page,$pagesize);
 		$users = UserService::getBatchUserInfo($uids);

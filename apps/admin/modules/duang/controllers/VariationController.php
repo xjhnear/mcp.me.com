@@ -22,6 +22,8 @@ use Youxiduo\V4\User\UserService;
 use Yxd\Modules\Core\BackendController;
 use Youxiduo\V4\Common\ShareService;
 use Youxiduo\Task\TaskV3Service;
+use Youxiduo\V4share\V4shareService;
+use Youxiduo\Helper\MyHelpLx;
 
 class VariationController extends BackendController{
     public function _initialize(){
@@ -413,7 +415,6 @@ class VariationController extends BackendController{
         $data['search'] = $search;
         $data['pagelinks'] = $pager->links();
         $data['totalcount'] = VariationActivity::getListCount($keyword);
-//        print_r($result);
         $html = $this->html('pop-variation-list',$data);
         return $this->json(array('html'=>$html));
     }
@@ -486,4 +487,374 @@ class VariationController extends BackendController{
         }
         return $this->display('activity-task-query',$data);
     }
+    function getV4share(){
+        $data = $search = $input = array();
+        $search['pageSize'] = 10;
+        $search['title'] = Input::get("title");
+        if(!$search['title'])unset($search['title']);
+        $pageIndex = (int)Input::get('page',1);
+        $search['offset'] = ($pageIndex-1)*10;
+        $search['platform'] = 'android';
+        $res = V4shareService::excute($search,"GetShareConfigList");
+        unset($search['page']);unset($search['pageIndex']);//pager不能有‘page'参数
+        $data['pagelinks'] = "";
+        if($res['success']){
+            $data['list'] = $res['data']['list'];
+            $total = $res['data']['totalCount'];
+            $data['pagelinks'] = MyHelpLx::pager(array(),$total,$search['pageSize'],$search);
+        }
+        
+        $data['search'] = $search;
+        return $this->display('variation/v4share-list',$data);
+    }
+
+    public function getV4shareAdd()
+    {
+        $data = array();
+        $input = Input::get();
+        $id = Input::get('id',"");
+        if($id){
+            $res = V4shareService::excute2(array('shareConfigId'=>$id),"GetShareConfigDetail");
+            if($res['data']){
+                $data['data'] = $res['data'];
+            }
+        }
+        $data['conditions'] = array('A' => '活动','T' => '任务');
+        $data['prize'] = array('rmbb' => '人民币','youb' => '游币','gift' => '礼包','good' => '商品');
+        return $this->display('variation/task-add',$data);
+    }
+
+    public function getAjaxGetV4share()
+    {
+        $id = Input::get('shareId',"");
+        if($id){
+            $res = V4shareService::excute2(array('shareConfigId'=>$id),"GetShareConfigDetail");
+            if($res['data']){
+                return $res;
+            }
+        }
+        return "false";
+
+    }
+
+    public function postV4shareAdd()
+    {
+        $id = Input::get("videoId");
+        $input = Input::all();
+        $input['platform'] = 'android';
+        //奖励数组
+        $prize_img_arr = Input::get('prize_img',array());
+        $prizeId_arr = Input::get('prizeId',array());
+        if(Input::file('prize_pic')){
+            $prize_pic = $input['prize_pic'];
+        }else{
+            $prize_pic = array();
+        }
+        unset($input['prize_pic']);
+
+        $prize_img_arr_new = Input::get('prize_img_new',array());
+        $prizeId_arr_new = Input::get('prizeId_new',array());
+        if(Input::file('prize_pic_new')){
+            $prize_pic_new = $input['prize_pic_new'];
+        }else{
+            $prize_pic_new = array();
+        }
+        unset($input['prize_pic_new']);
+        $icon = MyHelpLx::save_img($input['share_pic']);
+        $input['wechatShareLogoUrl'] = $icon?$icon:$input['wechatShareLogoUrl'];unset($input['share_pic']);
+
+        $icon = MyHelpLx::save_img($input['top_pic']);
+        $input['backgroundPicUrl'] = $icon?$icon:$input['backgroundPicUrl'];unset($input['top_pic']);
+        //处理奖励内容
+        $prize_list = array();
+        $input['prize_type']= Input::get('prize_type',array());
+        foreach($input['prize_type'] as $k=>$v){
+            $arr = array();
+            if($v == 'rmbb'||$v == 'youb'){
+                $danwei = $v == 'rmbb'?"人民币":"游币";
+                $arr['rewardName'] = $input['youb_num'][$k].$danwei;
+                $arr['rewardType'] = $v;
+                $arr['amount'] = $input['youb_num'][$k];
+                if($danwei == "游币"){
+                    $arr['rewardName'] = (int)$input['youb_num'][$k].$danwei;
+                    $arr['amount'] = (int)$input['youb_num'][$k];
+                }
+            }else{
+                $arr['rewardName'] = $input['card_des'][$k];
+                $arr['rewardType'] = $v;
+                if($v == 'gift'){
+                    $arr['giftId'] = $input['card_code'][$k];
+                    $arr['totalCount'] = $input['num_get'][$k];
+                }elseif($v == 'good'){
+                    $arr['goodId'] = $input['card_code'][$k];
+                    $arr['totalCount'] = $input['num_get'][$k];
+                }
+            }
+
+            if($prize_pic&&$prize_pic[$k]){
+                $arr['iconUrl'] = MyHelpLx::save_img($prize_pic[$k]);
+            }else{
+                $arr['iconUrl'] = $prize_img_arr[$k];
+            }
+            if($prizeId_arr[$k]){
+                $arr['rewardId'] = $prizeId_arr[$k];
+            }
+            $prize_list[] = $arr;
+        }
+        unset($input['prize_type']);
+        unset($input['youb_num']);
+        unset($input['card_code']);
+        unset($input['card_des']);
+        unset($input['num_get']);
+        unset($input['num_auto']);
+        unset($input['prize_gid']);
+
+        //处理新用户奖励内容
+        $prize_list_new = array();
+        $input['prize_type_new']= Input::get('prize_type_new',array());
+        foreach($input['prize_type_new'] as $k=>$v){
+            $arr = array();
+            if($v == 'rmbb'||$v == 'youb'){
+                $danwei = $v == 'rmbb'?"人民币":"游币";
+                $arr['rewardName'] = $input['youb_num_new'][$k].$danwei;
+                $arr['rewardType'] = $v;
+                $arr['amount'] = $input['youb_num_new'][$k];
+            }else{
+                $arr['rewardName'] = $input['card_des_new'][$k];
+                $arr['rewardType'] = $v;
+                if($v == 'gift'){
+                    $arr['giftId'] = $input['card_code_new'][$k];
+                    $arr['totalCount'] = $input['num_get_new'][$k];
+                }elseif($v == 'good'){
+                    $arr['goodId'] = $input['card_code_new'][$k];
+                    $arr['totalCount'] = $input['num_get_new'][$k];
+                }
+            }
+
+            if($prize_pic_new&&$prize_pic_new[$k]){
+                $arr['iconUrl'] = MyHelpLx::save_img($prize_pic_new[$k]);
+            }else{
+                $arr['iconUrl'] = $prize_img_arr_new[$k];
+            }
+            if($prizeId_arr_new[$k]){
+                $arr['rewardId'] = $prizeId_arr_new[$k];
+            }
+            $prize_list_new[] = $arr;
+        }
+
+        unset($input['prize_type_new']);
+        unset($input['youb_num_new']);
+        unset($input['card_code_new']);
+        unset($input['card_des_new']);
+        unset($input['num_get_new']);
+        unset($input['num_auto_new']);
+        unset($input['prize_gid_new']);
+
+        //编辑时
+        $id = Input::get('id','');
+
+        if($prize_list){
+            $input['reward'] = json_encode(array_merge($prize_list));
+        }
+
+        if($prize_list_new){
+            $input['bait'] = json_encode(array_merge($prize_list_new));
+        }
+//        $input = array_filter($input);//去空值
+        if($input['startTime']){
+            $input['startTime'] = strtotime($input['startTime']);
+        }
+        if($input['endTime']){
+            $input['endTime'] = strtotime($input['endTime']);
+        }
+        if($input['is_show']=="on"){
+            $input['enableStatus'] = "T";
+        }else{
+            $input['enableStatus'] = "F";
+        }
+        unset($input['id']);
+        if($id){
+            $input['shareConfigId'] = $id;
+            $success = V4shareService::excute2($input,"UpdateShareConfig");
+        }else{
+            $success = V4shareService::excute2($input,"AddShareConfig");
+        }
+        if($success['success']){
+            $act_info = VariationActivity::getInfo($success['data']);
+            $target_id=Input::get('bestEvent');
+            $target_title = Input::get('title');
+            $platform = 'android';
+            $tpl_ename = 'android_share_tpl_activity_info';
+            $title = Input::get('share_title');
+            $icon = Input::get('wechatShareLogoUrl',"");
+            $redirect_url = 'http://share.youxiduo.com/android/share/home?hashcode='.isset($act_info['hashcode'])?$act_info['hashcode']:sha1(str_random(8));
+            $content = Input::get('wechatShareDescription');
+            $start_time = strtotime(Input::get('startTime'));
+            $end_time = strtotime(Input::get('endTime'));
+            $is_show = isset($input['is_show']) ? 1 : 0;
+            $shareId_v4 = $id?$id:$success['data'];
+            $res = ShareService::saveAdvInfoByTargetId($target_id,$target_title,$platform,$tpl_ename,$title,$icon,$content,$redirect_url,$start_time,$end_time,$is_show,$shareId_v4);
+
+            return $this->redirect('duang/variation/v4share','数据保存成功');
+        }else{
+            return $this->back($success['error']);
+        }
+    }
+
+    public function postTaskOpen()
+    {
+        $id = $_REQUEST['id'];
+        $type = $_REQUEST['type'];
+        $data = array('shareConfigId'=>$id);
+        if($type=="1"){
+            $url = "DisableShareConfig";
+        }else{
+            $url = "EnableShareConfig";
+        }
+        $res = V4shareService::excute2($data,$url);
+        if(!$res['error']){
+            echo json_encode(array('success'=>"true",'mess'=>'修改成功','data'=>$type));
+        }else{
+            echo json_encode(array('success'=>"false",'mess'=>'修改失败','data'=>$type));
+        }
+    }
+
+    public function getV4shareRecord()
+    {
+        $data = array();
+        $input = $search = Input::get();
+        $search['pageSize'] = 10;
+        $pageIndex = (int)Input::get('page',1);
+        $search['offset'] = ($pageIndex-1)*$search['pageSize'];
+        $total = 0;
+        $search['startTime'] = strtotime(Input::get('startTime'));
+        $search['endTime'] = strtotime(Input::get('endTime'));
+        if($input){
+            $res = V4shareService::excute2(array_filter($search),"GetShareRecordList");
+            $total = $res['data']['totalCount'];
+            if(isset($res['data']['list'])){
+                $data['data'] = $res['data']['list'];
+                $uids = array();
+                foreach($data['data'] as $row){
+                    $uids[] = $row['upperUid'];
+                }
+                $tmp_users = UserService::getMultiUserInfoByUids($uids,'full');
+                if(is_array($tmp_users)){
+                    foreach($tmp_users as $user){
+                        $users[$user['uid']] = $user;
+                    }
+                    $data['users'] = $users;
+                }
+            }
+        }
+        unset($search['page']);unset($search['pageIndex']);//pager不能有‘page'参数
+        if ($search['startTime']) $search['startTime'] = date('Y-m-d', (int)$search['startTime']);
+        if ($search['endTime']) $search['endTime'] = date('Y-m-d', (int)$search['endTime']);
+        $data['pagination'] = MyHelpLx::pager(array(),$total,$search['pageSize'],$search);
+        $data['search'] = $search;
+        $data['conditions'] = array('A' => '活动','T' => '任务');
+        $data['finishType'] = array('T' => '完成','F' => '未完成');
+        $data['prize'] = array('rmbb' => '人民币','youb' => '游币','gift' => '礼包','good' => '商品');
+        return $this->display('variation/v4share-record',$data);
+    }
+
+    public function getV4shareUsers()
+    {
+        $data = array();
+        $input = $search = Input::get();
+        $search['pageSize'] = 10;
+        $pageIndex = (int)Input::get('page',1);
+        $search['offset'] = ($pageIndex-1)*$search['pageSize'];
+        $total = 0;
+        if($input){
+            $res = V4shareService::excute2(array_filter($search),"GetShareRanking");
+            if($res['data']&&isset($res['data']['list'])&&isset($res['data']['totalCount'])){
+                $data['data'] = $res['data']['list'];
+                $total = $res['data']['totalCount'];
+                $uids = array();
+                foreach($data['data'] as $row){
+                    $uids[] = $row['upperUid'];
+                }
+                $tmp_users = UserService::getMultiUserInfoByUids($uids,'full');
+                if(is_array($tmp_users)){
+                    foreach($tmp_users as $user){
+                        $users[$user['uid']] = $user;
+                    }
+                    $data['users'] = $users;
+                }
+            }
+        }
+        unset($search['page']);unset($search['pageIndex']);//pager不能有‘page'参数
+        $data['pagination'] = MyHelpLx::pager(array(),$total,$search['pageSize'],$search);
+        $data['search'] = $search;
+        $data['conditions'] = array('A' => '活动','T' => '任务');
+        $data['prize'] = array('rmbb' => '人民币','youb' => '游币','gift' => '礼包','good' => '商品');
+        return $this->display('variation/v4share-users',$data);
+    }
+
+    public function getV4shareReward()
+    {
+        $data = array();
+        $input = Input::get();
+        if($input){
+            $res = V4shareService::excute2($input,"GetShareRewardList");
+            if($res['data']){
+                $data['data'] = $res['data'];
+            }
+        }
+        return $this->display('variation/v4share-reward',$data);
+    }
+
+    public function postAjaxGetUrl()
+    {
+        $data = Input::all();
+        $res = V4shareService::excute2($data,"GetShare");
+        echo json_encode($res);
+    }
+
+    public function postAjaxOpen()
+    {
+        $data = Input::all();
+        $type = $data['type'];unset($data['type']);
+        if($type == "0"){
+            $res = V4shareService::excute2($data,"EnableShareConfig");
+        }else{
+            $res = V4shareService::excute2($data,"DisableShareConfig");
+        }
+        echo json_encode($res);
+    }
+
+    public function getV4shareSearch()
+    {
+        $keyword = Input::get('keyword');
+        $data = $search = $input = array();
+        $pageSize = 5;
+        $search['size'] = $pageSize;
+        $search['offset'] = 0;
+        $totalPage = 0;
+        $input = Input::get();
+        $search['title'] = $keyword;
+        $pageIndex = (int)Input::get('page',0);
+        $search['offset'] = $pageIndex;
+        $search['shareType'] = "T";
+        $data['keyword'] = $keyword;
+        $res = V4shareService::excute2($search,"GetShareConfigList");
+        unset($search['page']);unset($search['pageIndex']);//pager不能有‘page'参数
+        if($res['success']){
+            $data['list'] = $res['data']['list'];
+            $total = $res['data']['totalCount'];
+            foreach($data['list'] as $k=>&$v){
+                if(isset($v['rewards'])){
+                    $v['rewards'] = json_encode($v['rewards']);
+                }
+            }
+        }
+//        print_r($data['list']);
+        $data['pagelinks'] = MyHelpLx::pager(array(),$total,$pageSize,$search);
+        $data['search'] = $search;
+        $html = $this->html('pop-v4share-list',$data);
+        return $this->json(array('html'=>$html));
+    }
+
+
 }

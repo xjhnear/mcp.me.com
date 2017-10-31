@@ -1,6 +1,8 @@
 <?php
 namespace modules\wxshare\controllers;
 
+use Yxd\Services\UserService;
+
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Paginator;
 use Illuminate\Support\Facades\Validator;
@@ -57,12 +59,30 @@ class ActivityController extends BackendController
 	
 	public function getReport()
 	{
-		$search = array();
+		$search = Input::only('activity_id','uid');
+		$sort = Input::get('sort','id');
+		$search['sort'] = $sort;
 		$data = array();
 		$pageIndex = Input::get('page',1);
 		$pageSize = 10;
-		$data['activitys'] = ActivityService::getAllActivityToKV();
-		$result = ActivityService::searchUserActivity($search,$pageIndex,$pageSize);
+		$activitys = ActivityService::getAllActivityToKV();
+		$data['activitys'] = $activitys;
+		$data['search_activitys'] = array('0'=>'所有活动')+$activitys;
+		$data['sort'] = $sort;
+		$result = ActivityService::searchUserActivity($search,$pageIndex,$pageSize,array($sort=>'desc'));
+		$uids = array();
+		foreach($result['result'] as $row){
+			$uids[] = $row['uid'];
+		}
+		if($uids){
+		$data['users'] = UserService::getBatchUserInfo($uids);
+		}
+		
+		$pager = Paginator::make(array(),$result['totalCount'],$pageSize);				
+		$pager->appends($search);
+		$data['search'] = $search;
+		$data['pagelinks'] = $pager->links();
+		
 		$data['datalist'] = $result['result'];
 		return $this->display('activity-user-report',$data);
 	}
@@ -75,6 +95,10 @@ class ActivityController extends BackendController
 		$pageSize = 10;
 		$result = ActivityService::searchUserActivityHistory($search,$pageIndex,$pageSize);
 		$data['datalist'] = $result['result'];
+		$pager = Paginator::make(array(),$result['totalCount'],$pageSize);				
+		$pager->appends($search);
+		$data['search'] = $search;
+		$data['pagelinks'] = $pager->links();
 		return $this->display('activity-user-history',$data);
 	}
 }

@@ -149,7 +149,16 @@ class ShopController extends BaseController
 		}
 				
 		return $this->success(array('result'=>$out));		
-	}	
+	}
+
+    public function exchange_list()
+	{
+		$id = Input::get('atid');
+		$pageIndex = (int)Input::get('pageIndex',1);
+		$pageSize = (int)Input::get('pageSize',10);
+		$result = ShoppingService::exchangeListPage($id,$pageIndex,$pageSize);
+		return $this->success(array('result'=>$result['result'],'totalCount'=>$result['totalCount']));		
+	}
 	
 	/**
 	 * 兑换商品

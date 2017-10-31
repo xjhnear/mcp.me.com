@@ -1,0 +1,161 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    商品管理
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('IOS_yiyuan/goods/list')}}-->" class="">
+                        <table class="table-filter">
+                            <tr>
+                                <td class="span6">
+                                    <input type="text" placeholder="商品名字" class="span10" value="<!--{{ search.title }}-->" name="title">
+                                </td>
+                                <td>
+                                    <select style="width:80px;margin-bottom:0px" name="status">
+                                        <option value="">请选择</option>
+                                        <option value="U"
+                                            <!--{% if search.status == 'U' %}-->
+                                                selected
+                                            <!--{% endif %}-->
+                                                >上架</option>
+                                        <option value="D"
+                                            <!--{% if search.status == 'D' %}-->
+                                                selected
+                                            <!--{% endif %}-->
+                                                >下架</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn btn-teal">
+                                        <i class="icon-search"></i>
+                                        搜索
+                                    </button>
+                                </td>
+                                <td>
+                                    <a class="btn btn-teal" href="<!--{{url('IOS_yiyuan/goods/add')}}-->"><i title="添加商品" class="icon-plus"></i></a>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-120">商品ID</th>
+                        <th class="col-150">商品名称</th>
+                        <th class="col-120">持续时间</th>
+                        <th class="col-120">游币价格</th>
+                        <th class="col-120">钻石价格</th>
+                        <th class="col-120">剩余量/总量</th>
+                        <th class="col-100">排序</th>
+                        <th class="col-120">状态</th>
+                        <th class="col-120">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for item in list%}-->
+                        <tr>
+                            <td><!--{{item.id}}--></td>
+                            <td><!--{{item.title}}--></td>
+                            <td><!--{{item.maxStandTimePreDraw}}--></td>
+                            <td><!--{{item.numberPrice}}--></td>
+                            <td><!--{{item.diamondsPrice}}--></td>
+                            <td><!--{{item.count}}-->/<!--{{item.totalCount}}--></td>
+                            <td><!--{{item.hot}}--></td>
+                            <td>
+                                <!--{% if item.status == 'U' %}-->
+                                <span class="badge badge-success">上架</span>
+                                <!--{% elseif item.status == 'D' %}-->
+                                <span class="badge badge-important">下架</span>
+                                <!--{% elseif item.status == 'A' %}-->
+                                <span class="badge badge-important">下架</span>
+                                <!--{% endif %}-->
+
+                            </td>
+
+                            <td>
+                                <a href="<!--{{url('IOS_yiyuan/goods/add')}}-->?id=<!--{{ item.id }}-->" class="btn btn-primary">编辑</a>
+                                <div class="btn-group">
+                                    <a data-toggle="dropdown" href="#" class="btn btn-primary dropdown-toggle">其他操作<span class="caret"></span></a>
+                                    <ul class="dropdown-menu dropdown-primary">
+                                        <!--{% if item.status == 'U' %}-->
+                                            <li>
+                                                <a class="changeStatus" statusId="<!--{{ item.id }}-->" statusData="D">下架</a>
+                                            </li>
+                                        <!--{% elseif item.status == 'D' %}-->
+                                            <li>
+                                                <a class="changeStatus" statusId="<!--{{ item.id }}-->" statusData="U">上架</a>
+                                            </li>
+                                        <!--{% elseif item.status == 'A' %}-->
+                                            <li>
+                                                <a class="changeStatus" statusId="<!--{{ item.id }}-->" statusData="U">上架</a>
+                                            </li>
+                                        <!--{% endif %}-->
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    $(function(){
+        $(document).off('click', '.changeStatus');
+        $(document).on('click', '.changeStatus', function(){
+            var obj = $(this);
+            var statusData = obj.attr('statusData');
+            var id = obj.attr('statusId');
+
+            $.ajax({
+                type: "GET",
+                url: "<!--{{ url('IOS_yiyuan/goods/edit') }}-->",
+                data: {id:id, statusData:statusData},
+                dataType: "json",
+                success: function(data){
+                    if (data.success == 200) {
+                        var statusHtml = '';
+                        var changeStatusHtml = '';
+                        var statusObj = obj.parent().parents("td").prev();
+                        var changeStatusObj = obj.parent().parent();
+                        statusObj.html('');
+                        changeStatusObj.html('');
+
+                        if (data.data == 'U') {
+                            statusHtml = '<span class="badge badge-success">上架</span>';
+                            changeStatusHtml = '<li><a class="changeStatus" statusdata="D" statusid="'+id+'">下架</a></li><li><a class="delStatus" statusid="'+id+'"><i class="icon-trash"></i>删除</a></li>';
+                        } else if (data.data == 'D' || data.data == 'A') {
+                            statusHtml = '<span class="badge badge-important">下架</span>';
+                            changeStatusHtml = '<li><a class="changeStatus" statusdata="U" statusid="'+id+'">上架</a></li><li><a class="delStatus" statusid="'+id+'"><i class="icon-trash"></i>删除</a></li>';
+                        }
+
+                        statusObj.html(statusHtml);
+                        changeStatusObj.html(changeStatusHtml);
+
+                        alertify.success(data.msg);
+                    } else {
+                        alertify.error(data.msg);
+                    }
+                }
+            });
+        });
+
+    });
+</script>
+<!--{%endblock%}-->

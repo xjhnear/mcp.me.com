@@ -27,7 +27,7 @@
 								<td>
 									<input  name="onOrOff" data-on-color="success" data-on-text="启用" data-off-color="danger" data-off-text="不启用" class="switchbox" type="checkbox" <!--{{datalist.0.onOrOff ? 'checked' : '' }}-->/>
 								</td>
-								<td><a href="javascript:;" id="insert_fangan" class="btn btn-primary"><i class="icon-plus" title="添加奖品到方案">添加奖品到方案</i></a></td>
+								<td><a href="javascript:;" id="insert_fangan" class="btn iCheck"><i class="icon-plus" title="添加奖品到方案">添加奖品到方案</i></a></td>
 							</tr>
 						</table>
 				</div>
@@ -230,6 +230,7 @@
 					$.ajax({
 
 						url:'/v4lotteryproduct/bigwheel/select-pop-gift',
+						data:{virtualUse:4},
 						dataType:'json',
 						success:function(json){
 							var html = json.html;
@@ -237,7 +238,7 @@
 							$("#myModal").modal("hide");
 						}
 
-                        /***
+						/***
                         url:'/v4giftbag/package/cate-card-select',
                         dataType:'json',
                         success:function(json){

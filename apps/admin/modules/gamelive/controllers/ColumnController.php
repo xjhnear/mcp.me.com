@@ -8,6 +8,7 @@ use Yxd\Modules\Core\BackendController;
 
 use Youxiduo\Helper\Utility;
 use modules\gamelive\models\Navigation;
+use modules\gamelive\models\Anchor;
 
 
 class ColumnController extends BackendController
@@ -42,6 +43,16 @@ class ColumnController extends BackendController
             $column['peoples'] = implode(',',$column['peoples']);
             $data['column'] = $column;
         }
+        if(isset($data['column']['peoples'])){
+            $peopleIds = $data['column']['peoples'];
+            if($peopleIds){
+                $peopleNames = Anchor::GetPeopleNames($peopleIds);
+                if($peopleNames){
+                    $data['column']['peopleNames'] = $peopleNames;
+                }
+            }
+        }
+
         return $this->display('column-edit',$data);
     }
 

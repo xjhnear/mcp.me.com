@@ -1,0 +1,73 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					收货地址
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('IOS_yiyuan/address/list')}}-->" class="">
+				    <table class="table-filter">
+				        <tr>
+                            <td>
+                                <input name="userId" type="text" class="input-medium" placeholder="玩家UID" value="<!--{{search.userId}}-->">
+                            </td>
+                            <td>
+                                <input name="userPhone" type="text" class="input-medium" placeholder="玩家手机号" value="<!--{{search.userPhone}}-->">
+                            </td>
+                            <td><button class="btn btn-teal"><i class="icon-search"></i>查询</button></td>
+                        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-120">用户信息</th>
+							<th class="col-120">地址</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for key,item in list%}-->
+						<tr>
+							<td><!--{{item.userhtml}}--></td>
+                            <td><!--{{item.userAddress}}--></td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>			    
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    /*
+    $('a.ajax-del').bind('click',function(){
+        if(confirm('确定要删除数据吗？')){
+            var id = $(this).attr('id');
+            obj = $(this);
+            $.post('<!--{{url('yxvl_eSports/VltvLive/ajax-del')}}-->',{id:id,api:"RemoveLiveGraphical"},function(data){
+                if(data.success){
+                    obj.parent().parent().hide();
+                }else{
+                    alert(data.error);
+                }
+            },"json")
+        }
+    });
+    */
+});    
+</script>
+<!--{%endblock%}-->

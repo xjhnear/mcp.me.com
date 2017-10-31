@@ -19,7 +19,7 @@ class OutUtility
 {
 	public static function outSuccess($result,$append=array())
 	{
-		$openlog = false;
+		$openlog = true;
 		//程序执行性能日志
 		$time = round((microtime(true) - LARAVEL_START)*1000,2);
 		$time = number_format($time,4,'.','');		
@@ -42,7 +42,11 @@ class OutUtility
 	
 	public static function outError($error_code,$error_id)
 	{
-		$message = Lang::get('out_error.'.$error_id);
+		if(Lang::has('out_error.'.$error_id)){
+		    $message = Lang::get('out_error.'.$error_id);
+		}else{
+			$message = $error_id;
+		}
 		$error = array('errorCode'=>$error_code,'errorDescription'=>$message);
 		return Response::json($error);
 	}

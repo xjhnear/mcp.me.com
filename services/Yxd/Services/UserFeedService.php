@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Input;
 use Yxd\Services\Service;
 use Yxd\Services\Cms\GameService;
 use Yxd\Models\Cms\Game;
+use Yxd\Services\Models\FeedUserFlow;
 
 class UserFeedService extends Service
 {
@@ -64,7 +65,7 @@ class UserFeedService extends Service
 		    'score'=>time(),
 		    'data'=>serialize($data)
 		);
-		self::dbClubMaster()->table('feed_userflow')->insert($input);
+		FeedUserFlow::db()->insert($input);
 		return true;
 	}
 	
@@ -88,8 +89,8 @@ class UserFeedService extends Service
 	 */
 	public static function getDataFeedByDb($uid,$page=1,$pagesize=10)
 	{
-		$total = self::dbClubSlave()->table('feed_userflow')->where('uid','=',$uid)->count();
-		$feeds = self::dbClubSlave()->table('feed_userflow')
+		$total = FeedUserFlow::db()->where('uid','=',$uid)->count();
+		$feeds = FeedUserFlow::db()
 		->where('uid','=',$uid)
 		->orderBy('score','desc')
 		->forPage($page,$pagesize)
@@ -104,7 +105,7 @@ class UserFeedService extends Service
 	{
 		$queue_name = 'queue:feed:user';
 		$data = serialize($data);
-		self::queue()->rpush($queue_name,$data);
+		//self::queue()->rpush($queue_name,$data);
 		return true;
 	}
 	

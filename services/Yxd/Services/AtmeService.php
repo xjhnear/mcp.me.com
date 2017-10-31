@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\DB as DB;
 
 use Yxd\Models\User;
 use Yxd\Models\Passport;
+use Yxd\Services\Models\Atme;
+use Yxd\Services\Models\FeedAtme;
+use Yxd\Services\Models\Comment;
 
 class AtmeService extends Service
 {
@@ -48,8 +51,8 @@ class AtmeService extends Service
 	 */
 	public static function getDataFeedByDb($uid,$page=1,$pagesize=10)
 	{
-		$total = self::dbClubSlave()->table('feed_atme')->where('uid','=',$uid)->count();
-		$feeds = self::dbClubSlave()->table('feed_atme')
+		$total = FeedAtme::db()->where('uid','=',$uid)->count();
+		$feeds = FeedAtme::db()
 		->where('uid','=',$uid)
 		->orderBy('score','desc')
 		->forPage($page,$pagesize)
@@ -71,7 +74,7 @@ class AtmeService extends Service
 			$data = serialize($row);
 		    //self::queue()->rpush($queue_name,$data);
 		}
-		if($atme) self::dbClubMaster()->table('atme')->insert($atme);
+		if($atme) Atme::db()->insert($atme);
 				
 		return true;
 	}
@@ -121,7 +124,7 @@ class AtmeService extends Service
 	 */
 	public static function distributeComment($id,$to_uid)
 	{
-		$comment = self::dbClubSlave()->table('comment')->where('id','=',$id)->first();
+		$comment = Comment::db()->where('id','=',$id)->first();
 		if(!$comment) return null;
 		$table = $comment['target_table'];
 		$data = array();
@@ -129,7 +132,7 @@ class AtmeService extends Service
 		$data['comment'] = $comment;
 		$data['comment']['user'] = UserService::getUserInfo($comment['uid']);
 		if($comment['pid']>0){
-			$data['reply'] = self::dbClubSlave()->table('comment')->where('id','=',$comment['pid'])->first();
+			$data['reply'] = Comment::db()->where('id','=',$comment['pid'])->first();
 			$data['reply']['user'] = UserService::getUserInfo($data['reply']['uid']);
 		}
 		switch($table){
@@ -188,7 +191,7 @@ class AtmeService extends Service
 		    'score'=>time(),
 		    'data'=>serialize($data)
 		);
-		self::dbClubMaster()->table('feed_atme')->insert($input);
+		FeedAtme::db()->insert($input);
 		return true;
 	}
 }

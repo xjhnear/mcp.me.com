@@ -191,10 +191,22 @@ class ArticleService extends BaseService
 		return self::trace_result(array('result'=>$out,'totalCount'=>$total));
 	}
 	
-	public static function getVideoList($pageIndex,$pageSize,$type)
+	public static function getVideoList($pageIndex,$pageSize,$type,$gid=0,$vid=0)
 	{
-		$total = Video::getCount($type);
-		$result = Video::getList($pageIndex,$pageSize,$type);
+	    if($vid){
+	        $vids = explode(',',$vid);
+	        $total = count($vids);
+	        $result = Video::getList($pageIndex,$pageSize,$type,$vids);
+	    } elseif($gid){
+	        $gids = explode(',',$gid);
+	        $vids = VideoGame::getVideoIdsByGameIds($gids);
+	        $total = count($vids);
+	        $result = Video::getList($pageIndex,$pageSize,$type,$vids);
+	    } else {
+	        $total = Video::getCount($type);
+	        $result = Video::getList($pageIndex,$pageSize,$type);
+	    }
+
 		$out = array();
 		
 		foreach($result as $row){
@@ -207,6 +219,8 @@ class ArticleService extends BaseService
 			$data['editor'] = $row['writer'];
 			$data['updatetime'] = date('Y-m-d',$row['addtime']);
 			$data['viewcount'] = $row['viewtimes'];
+			$gids = VideoGame::getGameIdsByVideoId($row['id']);
+			$data['gid'] = implode(',',$gids);
 			$out[] = $data;
 		}
 		
@@ -382,11 +396,23 @@ class ArticleService extends BaseService
     /**
      * 获取游戏视频列表
      */
-    public static function getGamevideos($gid=0)
+    public static function getGamevideos($gid=0,$vid=NULL)
     {
         $out = array();
-        if($gid){
-            $out = GameVideo::getGameVideos($gid);
+        if($vid){
+            if(strpos($vid,',')!==false){
+                $vids = explode(',',$vid);
+                $out = GameVideo::getGameVideosbyGids($vids,'id');
+            }else{
+                $out = GameVideo::getGameVideos((int)$vid,'id');
+            }
+        } elseif($gid){
+            if(strpos($gid,',')!==false){
+                $gids = explode(',',$gid);
+                $out = GameVideo::getGameVideosbyGids($gids);
+            }else{
+                $out = GameVideo::getGameVideos((int)$gid);
+            }
         }
         return self::trace_result(array('result'=>$out));
     }

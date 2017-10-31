@@ -411,6 +411,7 @@ Route::get('adv/advstat',array('before'=>'uri_verify','uses'=>'AdvController@adv
  * @param string idfa
  */
 Route::get('advcate/activestat',array('uses'=>'AdvController@activestat'));
+Route::get('advcate/testLog',array('uses'=>'AdvController@testLog'));
 /*-------------------------------临时版-----------------------------*/
 //新闻√
 Route::get('beta/news',array('before'=>'uri_verify','uses'=>'BetaController@news'));
@@ -432,7 +433,12 @@ Route::any('xgame/count',array('before'=>'uri_verify','uses'=>'XgameController@a
 //banner list
 Route::get('xgame/bannerlist',array('before'=>'uri_verify','uses'=>'XgameController@getBannerList'));
 
-//require_once 'routes_v4.php';
+//年终总结留言
+Route::post('year/comment',array('uses'=>'EndYearSummaryController@addComment'));
+//年终总结留言列表
+Route::get('year/list',array('uses'=>'EndYearSummaryController@getlist'));
+
+require_once 'routes_v4.php';
 
 /*App::missing(function($exception){
 	return Response::json(array('result'=>array(),'errorCode'=>11211,'errorMessage'=>'Page Is Not Exists!!'));

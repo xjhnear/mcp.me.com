@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Config;
 use Youxiduo\Base\Model;
 use Youxiduo\Base\IModel;
 
+use Youxiduo\User\Model\AccountAdmin;
 use Youxiduo\Helper\Utility;
 /**
  * 账号模型类
@@ -24,6 +25,7 @@ final class Account extends Model implements IModel
 	const IDENTIFY_FIELD_EMAIL    = 'email';
 	const IDENTIFY_FIELD_MOBILE   = 'mobile';
 	const IDENTIFY_FIELD_NICKNAME = 'nickname';
+	const IDENTIFY_FIELD_IDFA = 'idfa';
 	
 	
     public static function getClassName()
@@ -34,13 +36,18 @@ final class Account extends Model implements IModel
 	/**
 	 * 创建用户通过手机号
 	 */
-	public static function createUserByPhone($mobile,$password,$params=array())
+	public static function createUserByPhone($mobile,$password,$params=array(),$platform='android',$client='android',$idfa='')
 	{
 		$data = array();
 		$data['mobile'] = $mobile;
 		$data['password'] = Utility::cryptPwd($password);
 		$data['dateline'] = time();
-		$data['client'] = 'android';
+		if ($client == 'glwzry') {
+		    $data['client'] = $client;
+		} else {
+		    $data['client'] = $platform;
+		}
+		$data['idfa'] = $idfa;
 		$data['zhucema'] = Utility::makeInvitationCode();	
 		$data['reg_ip'] = isset($params['ip']) ? $params['ip'] : '';
 		$data['idcode'] = isset($params['idcode']) ? $params['idcode'] : '';
@@ -76,16 +83,21 @@ final class Account extends Model implements IModel
 		$data['zhucema'] = Utility::makeInvitationCode();	
 		isset($params['mobile']) && $data['mobile'] = $params['mobile'];
 		isset($params['email']) && $data['email'] = $params['email'];
+		isset($params['avatar']) && $data['avatar'] = $params['avatar'];
 		$uid = self::db()->insertGetId($data);
 		return $uid;
 	}
 	
-	public static function isExistsByField($identify,$identify_field,$uid=0)
+	public static function isExistsByField($identify,$identify_field,$uid=0,$count=false)
 	{
-		if(!in_array($identify_field,array('mobile','email','nickname'))) return true;
+		if(!in_array($identify_field,array('mobile','email','nickname','idfa'))) return true;
 		$tb = self::db()->where($identify_field,'=',$identify);
 		if($uid){
 			$tb = $tb->where('uid','!=',$uid);
+		}
+		if ($count == true) {
+		    $user = $tb->count();
+		    return $user;
 		}
 		$user = $tb->first();
 		return $user ? true : false;
@@ -96,7 +108,7 @@ final class Account extends Model implements IModel
 	 */
 	public static function doLocalLogin($identify,$identify_field,$password)
 	{
-		if(!in_array($identify_field,array('uid','mobile','email'))) return false;
+		if(!in_array($identify_field,array('uid','mobile','email','vuser'))) return false;
 		if(strlen($password) != 32){
 			$password = Utility::cryptPwd($password);
 		}
@@ -111,20 +123,29 @@ final class Account extends Model implements IModel
      * @param string $filter
      * @return array
      */
-	public static function getUserInfoById($uid,$filter='info')
+	public static function getUserInfoById($uid,$filter='info',$appname=NULL)
 	{
-		$info = self::db()->where('uid','=',$uid)->first();
+		$info = self::db()->where('uid','=',$uid);
+		if ($appname) {
+		    $info = $info->where('client',$appname);
+		}
+		$info = $info->first();
 		if(!$info) return null;
 		$info && $info['avatar'] = Utility::getImageUrl($info['avatar']);
 		$info && $info['homebg'] = Utility::getImageUrl($info['homebg']);
 		$info && $info['dateline'] = date('Y-m-d H:i:s',$info['dateline']);
+		$info && $info['admin_lv'] = AccountAdmin::isAdmin($uid)?1:0;
 		return self::filterUserFields($info,$filter);
 	}
 	
-	public static function getMultiUserInfoByUids(array $uids,$filter='info')
+	public static function getMultiUserInfoByUids(array $uids,$filter='info',$appname=NULL)
 	{
 		if(!$uids) return array();
-		$users = self::db()->whereIn('uid',$uids)->get();
+		$users = self::db()->whereIn('uid',$uids);
+		if ($appname) {
+		    $users = $users->where('client',$appname);
+		}
+		$users = $users->get();
 		foreach($users as $key=>$info){
 			$info['avatar'] = Utility::getImageUrl($info['avatar']);
 			$info['homebg'] = Utility::getImageUrl($info['homebg']);
@@ -134,12 +155,34 @@ final class Account extends Model implements IModel
 		return $users;
 	}
 	
+	public static function getMultiUserInfolist($filter='info',$pageIndex,$pageSize,$hastoken,$appname=NULL)
+	{
+	    $tb = self::db();
+	    if($hastoken){
+	        $tb = $tb->where('apple_token','<>','');
+	    }
+	    if($appname){
+	        $tb = $tb->where('client',$appname);
+	    }
+	    if($pageIndex && $pageSize){
+	        $tb = $tb->forPage($pageIndex,$pageSize);
+	    }
+	    $users = $tb->get();
+	    foreach($users as $key=>$info){
+	        $info['avatar'] = Utility::getImageUrl($info['avatar']);
+	        $info['homebg'] = Utility::getImageUrl($info['homebg']);
+	        $info['dateline'] = date('Y-m-d H:i:s',$info['dateline']);
+	        $users[$key] = self::filterUserFields($info,$filter);
+	    }
+	    return $users;
+	}
+	
 	/**
 	 * 
 	 */
 	public static function getUserInfoByField($identify,$identify_field)
 	{
-		if(!in_array($identify_field,array('mobile','email','uid','zhucema'))) return false;
+		if(!in_array($identify_field,array('mobile','email','uid','zhucema','nickname'))) return false;
 		$user = self::db()->where($identify_field,'=',$identify)->first();
 		
 		return $user;
@@ -197,20 +240,21 @@ final class Account extends Model implements IModel
 		    'uid','nickname','avatar',
 		    'email','mobile','sex','birthday','summary','homebg','score','experience','dateline','reg_ip',
 		    'apple_token','idfa','mac','openudid','osversion','zhucema','province','city','region','is_open_android_money',
-		    'groups','authorize_nodes'
+		    'groups','authorize_nodes','vuser'
+            ,'alipay_num','alipay_name','admin_lv'
 		);
 		
 		if(is_string($filter)){
 			if($filter === 'short'){
 				$fields = array('uid','nickname','avatar');
 			}elseif($filter === 'info'){
-				$fields = array('uid','nickname','avatar','email','mobile','sex','birthday','summary','zhucema','province','city','region','is_open_android_money');	
+				$fields = array('uid','nickname','avatar','email','mobile','sex','birthday','summary','zhucema','province','city','region','is_open_android_money','alipay_num','alipay_name','admin_lv');
 			}elseif($filter === 'basic'){
 				$fields = array(
 				    'uid','nickname','avatar','summary','homebg','sex','mobile',
 				    'score','experience','dateline','reg_ip','is_first',
 				    'apple_token','idfa','mac','openudid','osversion','zhucema','province','city','region','is_open_android_money',
-				    'groups'
+				    'groups','vuser','alipay_num','alipay_name','admin_lv'
 				);
 			}
 		}		
@@ -254,7 +298,7 @@ final class Account extends Model implements IModel
 	protected static function buildSearchByNickname($nickname)
 	{
 		return self::db()->where(function($query)use($nickname){
-			    $query = $query->where('nickname','=',$nickname)->orWhere('nickname','like',''.$nickname.'%');
+			    $query = $query->where('nickname','=',$nickname)->orWhere('nickname','like','%'.$nickname.'%');
 			})
 			->where('vuser','=',0);
 	}

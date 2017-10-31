@@ -73,7 +73,8 @@
                                         商品
                                     <!--{% elseif  item.linkType == 3 %}-->
                                         抽奖机会
-
+                                    <!--{% elseif  item.linkType == 6 %}-->
+                                        人民币
                                    <!--{% endif %}-->
                                 </td>
                                 <td>
@@ -173,6 +174,14 @@
                                 </div>
                             </div>
                             -->
+							<div class="control-group" id="input_6" style="display:none;">
+								 <label class="control-label">人民币（元）:</label>
+								 <div class="controls">
+									<div class="input-append">
+										<input type="text"  id="rmb" name="rmb" class="input-medium" value="" />
+									</div>
+								 </div>
+							</div>
 						</div>
 						<div class="control-group"  >
 								<label class="control-label">发放数量:</label>
@@ -215,7 +224,7 @@
         <!--{% endif %}-->
             $("#insert_fangan").bind("click",function(){
 				$("#myModal").modal("show");
-                var radio='<!--{{form_radio("linkType",0,"")}}-->游币&nbsp&nbsp<!--{{form_radio("linkType",1,"")}}-->礼包&nbsp&nbsp<!--{{form_radio("linkType",2,"")}}-->商城&nbsp&nbsp<!--{{form_radio("linkType",3,"")}}-->抽奖机会';
+                var radio='<!--{{form_radio("linkType",0,"")}}-->游币&nbsp&nbsp<!--{{form_radio("linkType",1,"")}}-->礼包&nbsp&nbsp<!--{{form_radio("linkType",2,"")}}-->商城&nbsp&nbsp<!--{{form_radio("linkType",3,"")}}-->抽奖机会&nbsp&nbsp<!--{{form_radio("linkType",6,"")}}-->人民币';
             $("#myradio").html(radio);
             $('input:radio').iCheck({
                 checkboxClass: 'icheckbox_square-orange',
@@ -331,6 +340,15 @@
 					   		}
 					   		prizeName=$("#choujiangjihui").val();
 						    linkname='抽奖机会';
+					   break;
+					   case '6':
+					   		if(!$("#rmb").val())
+					   		{
+					   			alertify.error('奖品未填写'); 
+					   			return false;
+					   		}
+					   		prizeName=$("#rmb").val();
+						    linkname='元人民币';
 					   break;
 					};
 

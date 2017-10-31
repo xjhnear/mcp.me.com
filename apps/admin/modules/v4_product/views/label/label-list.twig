@@ -50,7 +50,7 @@
                             <td><!--{{item.tagSort}}--></td>
                             <td>
                                 <a href="<!--{{url('v4product/label/edit',{id:item.tagId,key:'tagId'})}}-->"                           class="btn btn-primary">编辑</a>
-                                <a href="javascript:;"   url="<!--{{url('v4product/label/set',{type:'top'})}}-->"    data='{"tagId":"<!--{{item.tagId}}-->"}'   class="btn btn-primary caozuo">置顶</a>
+                                <a href="javascript:;"   url="<!--{{url('v4product/label/set',{type:'top',method:'get'})}}-->"    data='{"tagId":"<!--{{item.tagId}}-->"}'   class="btn btn-primary caozuo">置顶</a>
                                 <a href="javascript:;" url="<!--{{url('v4product/label/set',{type:'edit',method:'post'})}}-->"  id="<!--{{item.tagId}}-->" data='{"tagId":"<!--{{item.tagId}}-->","active":"false"}' class="btn btn-primary del" >删除</a>
                             </td>
                         </tr>

@@ -8,6 +8,8 @@ use Yxd\Services\Service;
 use Yxd\Models\Cms\Game;
 use Yxd\Services\ForumService;
 use Yxd\Services\Cms\GameCircleService;
+use Yxd\Services\TaskV3Service;
+use Illuminate\Support\Facades\log;
 
 class AdvService extends Service
 {	
@@ -132,7 +134,7 @@ class AdvService extends Service
 	/**
 	 * 首页幻灯
 	 */
-	public static function getHomeSlide($appname,$version)
+	public static function getHomeSlide($appname,$version,$uid=0)
 	{
 		$appname = '';
 		//轮播推荐位
@@ -179,6 +181,9 @@ class AdvService extends Service
             $adv = self::filterCommonParams($row);
             $adv['title'] = $row['advname'];
             $adv['img'] = self::joinImgUrl($row['litpic']);
+            if(strpos($row['downurl'],'youxiduo')!==false){
+            	$adv['downurl'] = $row['downurl'] . (strpos($row['downurl'],'?')!==false ? '&uuid='.$uid : '?uuid='.$uid); 
+            }
         	$position_advs[$row['location']-1] = $adv;
         }
         
@@ -652,11 +657,29 @@ class AdvService extends Service
 		if($idfa){
 			$count = self::dbCmsSlave()->table('appadv_active_stat')->where('idfa','=',$idfa)->where('aid','=',$advid)->count(); 
 			if($count==0){
+                $data['type'] = 1;
+                $statisticssRes = self::dbAdvMaster()->table('statisticss')->where('idfa','=',$idfa)->where('aid','=',$advid)->first();
+                if($statisticssRes && $statisticssRes['appname'] == 'yxdjqb'){
+                    $data['type'] = 2;
+                } elseif ($statisticssRes && $statisticssRes['appname'] == 'glwzry') {
+                    $data['type'] = 3;
+                } elseif ($statisticssRes && $statisticssRes['appname'] == 'youxiduojiu3') {
+                    $data['type'] = 4;
+                } elseif ($statisticssRes && $statisticssRes['appname'] == 'lionRoars') {
+                    $data['type'] = 5;
+                }
+
 				$data['aid'] = $advid;
 				$data['code'] = $code;
 				$data['idfa'] = $idfa;
 				$data['addtime'] = $date;
 				self::dbCmsMaster()->table('appadv_active_stat')->insertGetId($data);
+				
+				$input = array();
+				$input['advid'] = $advid;
+				$input['idfa'] = $idfa;
+				$input['source'] = isset($statisticssRes['appname'])?$statisticssRes['appname']:'yxdjqb';
+				$res = TaskV3Service::adv_active($input);
 				return true;
 			}
 			return null;
@@ -673,4 +696,14 @@ class AdvService extends Service
 			return null;
 		}
 	}	
+	
+	public static function isactive($advid,$idfa)
+	{
+	    $count = self::dbCmsSlave()->table('appadv_active_stat')->where('idfa','=',$idfa)->where('aid','=',$advid)->count();
+	    if($count>0){
+	        return true;
+	    }
+	    return false;
+	}
+	
 }

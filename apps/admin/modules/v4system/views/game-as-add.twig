@@ -1,0 +1,117 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>添加游戏区服</h3>
+            </div>
+            <div class="box-content">
+                <form action="<!--{{url('v4system/game/as-add')}}-->" method="POST" class='form-horizontal'>
+
+                    <div class="control-group">
+                        <label class="control-label">游戏</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="selected_game_id" name="game_id" type="hidden" value="<!--{{game.id}}-->" />
+                                <img id="selected_game_icon" alt=""  class="add-on" src="/static/img/wu_ss.gif" />
+                                <input type="text" id="selected_game_name" name="game_name" class="input-xlarge" value="<!--{{game.shortgname}}-->" data-rule-required="true" data-msg-required="关联游戏不能为空" />
+                                <span class="add-on select-pop-game">选择游戏</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">渠道</label>
+                        <div class="controls">
+                            <!--{{form_select('type',channels)}}-->
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">
+                            <label class="radio radio-inline">
+                            <!--{{form_radio('optype',1,true)}}-->单个
+                            </label>
+                        </label>
+                        <div id="add-as-div" class="controls">
+                            <div class="input-append input-prepend">
+                                <span class="add-on">区</span><input name="area_name[]" type="text" class="input-small" /><span class="add-on">服</span><input name="server_name[]" type="text" class="input-small" /><span class="add-on btn-add-as">+</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">
+                            <label class="radio radio-inline">
+                                <!--{{form_radio('optype',2,false)}}-->批量
+                            </label>
+                        </label>
+                        <div class="controls">
+
+                            <div class="input-append input-prepend">
+                                <span class="add-on">区</span><input name="start_area" type="text" class="input-small" /><span class="add-on">-</span><input name="end_area" type="text" class="input-small" />
+                            </div>
+                            <br/><br/>
+                            <div class="input-append input-prepend">
+                                <span class="add-on">服</span><input name="start_server" type="text" class="input-small" /><span class="add-on">-</span><input name="end_server" type="text" class="input-small" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">操作方式</label>
+                        <div class="controls">
+                            <label class="radio radio-inline">
+                                <!--{{form_radio('datatype',1,true)}}-->追加新区服
+                            </label>
+                            <label class="radio radio-inline">
+                                <!--{{form_radio('datatype',2,false)}}-->替换现有区服
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    var set_selected_game = function(game_id,game_name,icon){
+        $('#selected_game_id').val(game_id);
+        $('#selected_game_icon').attr('src',icon);
+        $('#selected_game_name').val(game_name);
+    };
+    $(function(){
+        $('.select-pop-game').bind('click',function(){
+            $.ajax({
+                url:'/game/api/game-search',
+                dataType:'json',
+                success:function(json){
+                    var html = '';
+                    html = json.html;
+                    $.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+                }
+            });
+        });
+
+        $('.btn-add-as').live('click',function(){
+            var html = '';
+            html += '<br/><br/><div class="input-append input-prepend">';
+            html += '<span class="add-on">区</span><input name="area_name[]" type="text" class="input-small" /><span class="add-on">服</span><input name="server_name[]" type="text" class="input-small" /><span class="add-on btn-add-as">+</span><span class="add-on btn-del-as">-</span>';
+            html += '</div>';
+            $('#add-as-div').append(html);
+        });
+
+        $('.btn-del-as').live('click',function(){
+            $(this).parent().prev().remove();
+            $(this).parent().prev().remove();
+            $(this).parent().remove();
+        });
+
+    });
+</script>
+<!--{%endblock%}-->

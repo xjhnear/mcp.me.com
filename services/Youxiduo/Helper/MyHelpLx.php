@@ -14,6 +14,7 @@ use Youxiduo\V4\Game\GameService;
 use Illuminate\Support\Facades\Paginator;
 use Youxiduo\V4\User\UserService;
 use Youxiduo\Helper\Utility;
+use Config;
 class MyHelpLx
 {		
         /***
@@ -174,7 +175,7 @@ class MyHelpLx
 	    }
 
         public static function save_img($img){
-            $titlePic ="";
+            $titlePic = false;
             if($img) {
                 if (!isset($dir)) {
                     $dir = '/userdirs/' . date('Y') . '/' . date('m') . '/';
@@ -202,7 +203,13 @@ class MyHelpLx
     public static function pager($data,$totle,$size,$search){
         $pager = Paginator::make($data,$totle,$size);
         $pager->appends($search);
-       return $pager->links();
+         return $pager->links();
+    }
+    public static function pager_new($data,$totle,$size,&$search){
+        unset($search['page']);unset($search['pageIndex']);//pager不能有‘page'参数
+        $pager = Paginator::make($data,$totle,$size);
+        $pager->appends($search);
+        return $pager->links();
     }
 
     public static function baidu_weburl($urls,$api){
@@ -227,5 +234,89 @@ class MyHelpLx
         fclose($myfile);
     }
 
+    public function postAjaxUploadImg()
+    {
+        if(Input::file('pic')){
+            $dir = '/userdirs/' . date('Y') . '/' . date('m') . '/';
+            $path = storage_path() . $dir;
+            $file_arr = Input::file('prize_pic');
+            $file = $file_arr[0];
+            $new_filename = date('YmdHis') . str_random(4);
+            $mime = $file->getClientOriginalExtension();
+            $file->move($path,$new_filename . '.' . $mime );
+            $icon = $dir . $new_filename . '.' . $mime;
+            echo json_encode(array('success'=>"true",'mess'=>'修改成功','data'=>$icon));
+        }else{
+            echo json_encode(array('success'=>"false",'mess'=>'修改失败','data'=>"图片丢失"));
+        }
+    }
+
+    //给特定模块加参数
+    public static function add_keys_for_modules($url="",$param=array(),$platform='android',$filter=array()){
+        //默认的徐毅迅需求模块
+        if(!$filter){
+            $filter = array('module_mall','module_account','module_virtual','module_material');
+        }
+        foreach($filter as $v){
+            if(strpos($url,$v)){
+                if(!array_key_exists('platform',$param)){
+                    $param['platform'] = $platform;
+                }
+            }
+        }
+        return $param;
+    }
+
+    //在结果中插入用户信息，结果中要带用户的id暂时支持accountId、userId、uid、luckyUserId四种key
+    public static function insertUserhtmlIntoRes($res){
+        foreach($res as &$row){
+            $row['uid'] = isset($row['uid'])?$row['uid']:"";
+            isset($row['accountId']) && $row['uid'] = $row['accountId'];
+            isset($row['userId']) && $row['uid'] = $row['userId'];
+            isset($row['luckyUserId']) && $row['uid'] = $row['luckyUserId'];
+            $user = $row['uid'] ? UserService::getUserInfoByUid($row['uid']) : array();
+            if($user&&isset($user['uid'])){
+                $html = '<span class="badge badge-info">'.$user['uid'].'</span><br/><a href="'.url('v4user/users/edit',array('id'=>$user['uid'])).'" target="_blank">'.$user['nickname'].'<br>'.$user['mobile'].'</a>';
+                $row['userhtml'] = $html;
+                $row['nickname'] = $user['nickname'];
+                $row['mobile'] = $user['mobile'];
+            }
+        }
+        return $res;
+    }
+
+    //时间转换（毫秒）
+    public static function microtime_format($tag,$time)
+    {
+        if (!$tag || !$time) return '';
+        $timeArr = explode(".", $time);
+        $date = date($tag, $timeArr[0]);
+        $timeArrCount = count($timeArr);
+        if ($timeArrCount == 2) return str_replace('x', $timeArr[1], $date);
+        return str_replace(' x', '', $date) . ' 000';
+    }
+
+    //获取ip地址
+    public static function get_real_ip(){
+        $realip = "";
+        if(isset($_SERVER)){
+            if(isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
+                $realip=$_SERVER['HTTP_X_FORWARDED_FOR'];
+            }else if(isset($_SERVER['HTTP_CLIENT_IP'])){
+                $realip=$_SERVER['HTTP_CLIENT_IP'];
+            }else{
+                $realip=$_SERVER['REMOTE_ADDR'];
+            }
+        }else{
+            if(getenv('HTTP_X_FORWARDED_FOR')){
+                $realip=getenv('HTTP_X_FORWARDED_FOR');
+            }else if(getenv('HTTP_CLIENT_IP')){
+                $realip=getenv('HTTP_CLIENT_IP');
+            }else{
+                $realip=getenv('REMOTE_ADDR');
+            }
+        }
+        return $realip;
+    }
 
 }

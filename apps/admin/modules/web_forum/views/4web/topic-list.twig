@@ -45,8 +45,11 @@
 								<td>
 									<span class="label label-blue"><!--{{form_checkbox('notice','1',notice==1)}}-->公告</span>
 								</td>
+                                <td>
+                                    <span class="label label-blue"><!--{{form_checkbox('normal','1',normal==1)}}-->普通帖</span>
+                                </td>
 								<td rowspan=2>
-									<span class="label label-blue"><!--{{form_checkbox('s_type[]','3',3 in search.s_type)}}-->回收站</span>
+									<span class="label label-blue laji"><!--{{form_checkbox('s_type[]','3',3 in search.s_type)}}-->回收站</span>
 								</td>
 								<td rowspan=2>
 									<span class="label label-blue"><!--{{form_checkbox('s_type[]','4',4 in search.s_type)}}-->管理员</span>
@@ -66,7 +69,8 @@
 							<input type="checkbox" name="all" value="" /><div class="btn-group">
 								<a data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></a>
 								<ul class="dropdown-menu">
-									<li><a href="javascript:void(0);" data-act="del" class="ajax-del">删除</a></li>
+									<li><a href="javascript:void(0);" data-act="del" class="ajax-del del">删除</a></li>
+                                    <li><a href="javascript:void(0);" data-act="reborn" class="ajax-del reborn">恢复</a></li>
 								</ul>
 							</div>
 						</th>
@@ -97,7 +101,7 @@
 						<td><!--{{item.replies}}--></td>
 						<td>
 							<!--{% if users[item.uid] %}-->
-							<span class="badge badge-info"><!--{{item.uid}}--></span><br/><a href="<!--{{url('user/users/edit',{'id':item.uid})}}-->" target="_blank"><!--{{users[item.uid]['nickname']}}--></a>
+							<span class="badge badge-info"><!--{{item.uid}}--></span><br/><a href="<!--{{url('v4user/users/edit',{'id':item.uid})}}-->" target="_blank"><!--{{users[item.uid]['nickname']}}--></a>
 							<!--{% else %}-->
 							<span style="color: red; ">该用户已删除</span>
 							<!--{% endif %}-->
@@ -107,7 +111,7 @@
 							<!--{%if item.isGood%}--><img alt="精华" src="/static/img/common/digest.gif" /><!--{%endif%}-->
 						</td>
 						<td>
-							<a href="<!--{{url('web_forum/topic/bbs-edit',{tid:item.tid})}}-->" class="btn btn-primary" title="编辑"><i class="icon-edit"></i></a>
+							<a href="<!--{{url('web_forum/topic/bbs-edit',{tid:item.tid})}}-->" target="_blank" class="btn btn-primary" title="编辑"><i class="icon-edit"></i></a>
 							<div class="btn-group">
 								<a data-toggle="dropdown" class="btn  btn-primary dropdown-toggle"><span class="caret"></span></a>
 								<ul class="dropdown-menu dropdown-primary">
@@ -115,19 +119,20 @@
 									<!--{%if item.isGood%}-->
 									<li><a href="<!--{{url('web_forum/topic/bbs-digest')}}-->" data-act="off" data-tid="<!--{{item.tid}}-->" class="ajax-digest">取消加精</a></li>
 									<!--{%else%}-->
-									<li><a href="<!--{{url('web_forum/topic/bbs-digest')}}-->" data-act="on" data-tid="<!--{{item.tid}}-->" class="ajax-digest">加精</a></li>
+									<li><a href="<!--{{url('web_forum/topic/bbs-digest')}}-->?content=<!--{{item.subject}}-->&uid=<!--{{item.uid}}-->&award=<!--{{item.award}}-->" data-act="on" data-tid="<!--{{item.tid}}-->" class="ajax-digest">加精</a></li>
 									<!--{%endif%}-->
 									<!--{%if item.isTop%}-->
 									<li><a href="<!--{{url('web_forum/topic/bbs-stick')}}-->" data-act="off" data-tid="<!--{{item.tid}}-->" class="ajax-stick">取消置顶</a></li>
 									<!--{%else%}-->
-									<li><a href="<!--{{url('web_forum/topic/bbs-stick')}}-->" data-act="on" data-tid="<!--{{item.tid}}-->" class="ajax-stick">置顶</a></li>
+									<li><a href="<!--{{url('web_forum/topic/bbs-stick')}}-->?content=<!--{{item.subject}}-->&uid=<!--{{item.uid}}-->" data-act="on" data-tid="<!--{{item.tid}}-->" class="ajax-stick">置顶</a></li>
 									<!--{%endif%}-->
 								</ul>
 							</div>
 							<!--{%if search.recycle==1%}-->
 							<a href="#" class="btn btn-primary">恢复</a>
 							<!--{%else%}-->
-							<a href="<!--{{url('web_forum/topic/bbs-del',{'tid':item.tid})}}-->" class="btn btn-primary ajax-del" title="删除"><i class="icon-trash"></i></a>
+							<a  href="<!--{{url('web_forum/topic/bbs-del',{'tid':item.tid,'type':'true'})}}-->?content=<!--{{item.fid}}-->,<!--{{item.tid}}-->&uid=<!--{{item.uid}}-->&title=<!--{{item.subject}}-->&type=6&linkType=1&query=<!--{{query}}-->" class="btn btn-primary del" title="删除"><i class="icon-trash"></i></a>
+                            <a  href="<!--{{url('web_forum/topic/bbs-del',{'tid':item.tid,'type':'false'})}}-->" class="btn btn-info reborn" title="恢复">恢复</a>
 							<!--{%endif%}-->
 						</td>
 					</tr>
@@ -218,16 +223,17 @@
 			if(!confirm('确定要删除数据吗？')){
 				return false;
 			}
+            var tids = [];
+            $('input[name="tids"]:checked').each(function(){
+                tids.push($(this).val());
+            });
+            if(tids.length==0) return false;
+
 			if($(this).attr('data-act')=='del'){
-				var tids = [];
-				$('input[name="tids"]:checked').each(function(){
-					tids.push($(this).val());
-				});
-				if(tids.length==0) return false;
 				$.ajax({
 					url:'<!--{{url('web_forum/topic/bbs-del')}}-->',
 					type:'POST',
-					data:{'tids':tids},
+					data:{'tids':tids,'type':'true'},
 					dataType:'json',
 					success:function(data){
 						if(data.status){
@@ -238,7 +244,22 @@
 						}
 					}
 				});
-			}
+			}else if($(this).attr('data-act')=='reborn'){
+                $.ajax({
+                    url:'<!--{{url('web_forum/topic/bbs-del')}}-->',
+                    type:'POST',
+                    data:{'tids':tids,'type':'false'},
+                    dataType:'json',
+                    success:function(data){
+                        if(data.status){
+                            alertify.success(data.msg);
+                            window.location.href = window.location.href;
+                        }else{
+                            alertify.error(data.msg);
+                        }
+                    }
+                });
+            }
 		});
 
 		$('a.ajax-digest').bind('click',function(){
@@ -378,5 +399,21 @@
 		});
 		
 	})
+    $(function(){
+        var type = $(".laji").children("div").children("input").attr("checked");
+        if(type=="checked"){
+            $(".reborn").show();
+            $(".del").hide();
+        }else{
+            $(".reborn").hide();
+            $(".del").show();
+        }
+
+        $(".del").click(function(){
+            if(!confirm('确定要删除数据吗？')){
+                return false;
+            }
+        })
+    })
 </script>
 <!--{%endblock%}-->

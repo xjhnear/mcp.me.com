@@ -13,7 +13,7 @@
 				    <table class="table-filter">
 				        <tr>				       
 				            <td>
-				            	
+							<a href="<!--{{url('game/mustplay/edit')}}-->" class="btn btn-teal">添加经典必玩</a>
 				            </td>
 				        </tr>
 				    </table>	
@@ -37,15 +37,16 @@
 					<tbody>
 					    <!--{%for item in datalist%}-->
 						<tr>
-							<td><!--{{item.agid}}--></td>
+							<td><!--{{item.gid}}--></td>
 							<td><!--{{item.gname}}--></td>
 							<td><!--{% if item.gid > 0 and item.agid > 0 %}-->IOS/安卓<!--{% else %}-->IOS<!--{%endif%}--></td>
-							<td><img src="http://img.youxiduo.com/<!--{{item.pic}}-->" ></td>
+							<td><img src="http://img.youxiduo.com/<!--{{item.pic}}-->" width="150px" ></td>
 							<td><!--{{item.title}}--></td>
 							<td><!--{{item.addtime|default(item.addtime)|date('Y-m-d G:i:s')}}--></td>
 							<td id="<!--{{item.id}}-->_sort"><!--{{item.sort}}--></td>
 							<td>
 							    <a id="sort_" class="btn btn-primary sort_" href="javascript:;" data-val='<!--{{item.sort}}-->' data-id="<!--{{item.id}}-->">设置排序值</a>
+								<a href="<!--{{url('game/mustplay/edit',{id:item.id})}}-->" class="btn btn-primary">修改</a>
 							</td>
 						</tr>
 						<!--{%endfor%}-->

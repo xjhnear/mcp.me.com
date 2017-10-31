@@ -1,0 +1,175 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/plugins/tagsinput/jquery.tagsinput.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>发布</h3>
+            </div>
+            <div class="box-content">
+                <form id="form_article" action="<!--{{url('zhuanqu/home/add')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+
+
+
+                    <div class="control-group">
+                        <label class="control-label link">标题</label>
+                        <div class="controls">
+                            <div class=" input-append">
+                                <input type="text" name="title" class="input" value="<!--{{data.title}}-->"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label link">path</label>
+                        <div class="controls">
+                            <div class=" input-append">
+                                <input type="text" name="path" class="input" value="<!--{{data.path}}-->"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">内容<i class="tip-star">*</i></label>
+                        <div class="controls">
+                            <textarea name="content" >
+                                <!--{{data.content}}-->
+                            </textarea>
+                        </div>
+                    </div>
+
+                    <table class="table"  id="input_params_table">
+                        <thead>
+                        <tr>
+                            <td>tag</td>
+                            <td>size</td>
+                            <td>map</td>
+                            <td>type</td>
+                            <td>
+                                <a class="add_input_param_button"><i class="icon-plus"></i></a>
+                            </td>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody">
+                        <!--{% if data.data%}-->
+                        <!--{% for key,item in data.data%}-->
+                        <tr>
+                            <td><input type="text" placeholder="必填" name="tag[]" value="<!--{{item.tag}}-->"></td>
+                            <td><input type="text" placeholder="必填" name="size[]" value="<!--{{item.size}}-->"></td>
+                            <td><input type="text" placeholder="必填" name="map[]" value="<!--{{item.map}}-->"></td>
+                            <td><input type="text" placeholder="必填" name="type[]" value="<!--{{item.type}}-->"></td>
+
+                            <td>
+                                <a class="delete_param_button"><i class="icon-minus"></i></a>
+                            </td>
+                        </tr>
+                        <!--{%endfor%}-->
+                        <!--{%endif%}-->
+                        </tbody>
+                    </table>
+
+
+                    <div class="form-actions">
+                        <input type="hidden" name="id" value="<!--{{data.id}}-->"/>
+                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+
+    $(function(){
+//        UE.getEditor('container');
+
+        function getOutTpl(){
+            var html = template.render('tpl_out_param');
+            return html;
+        }
+
+        function getErrorTpl(){
+            var html = template.render('tpl_error_param');
+            return html;
+        }
+
+
+        $("table td a").click(function() {
+            var row = $(this).parents("tr");
+            if ($(this).hasClass("delete_param_button")) {
+                var ids_del = $("#ids_del").val();
+                $("#ids_del").val(ids_del+row.children('.del').val()+',');
+                row.remove();
+            }else{
+                var table = $(this).parents("table");
+                if($(this).hasClass("add_input_param_button")){
+                    addAfterTableRow(this,getInputTpl);
+                }else if($(this).hasClass("add_out_param_button")){
+                    addAfterTableRow(this,getOutTpl);
+                }else if($(this).hasClass("add_error_param_button")){
+                    addAfterTableRow(this,getErrorTpl);
+                }
+            }
+            $('.switchbox').bootstrapSwitch();//是否
+        });
+
+        $('.back').bind('click',function(){
+            window.location.href = '<!--{{url('a_yiyuan/template/list')}}-->';
+        });
+
+    });
+
+    function getInputTpl(){
+        i=0;
+        var html =new Array();
+        html['0']="<tr id='add_"+i+"'>";
+        html['1']='<td><input type="text" placeholder="必填" name="tag[]" value="<!--{{item.tag}}-->"></td>';
+        html['2']='<td><input type="text" placeholder="必填" name="size[]" value="<!--{{item.size}}-->"></td>';
+        html['3']='<td><input type="text" placeholder="必填" name="map[]" value="<!--{{item.map}}-->"></td>';
+        html['4']='<td><input type="text" placeholder="必填" name="type[]" value="<!--{{item.type}}-->"></td>';
+        html['5']="</tr>";
+        return html.join('');
+    }
+
+
+    function addAfterTableRow(a, rowStringFunc){
+        var row = $(a).parents("tr");
+        //row.appendTo(table.find("tbody"));
+        var table = $(a).parents("table");
+        row.after(rowStringFunc());
+        row.next().find("a").click(function() {
+            if($(this).hasClass('delete_param_button')){
+                deleteTableRow($(this).parent().parent());
+            }else if($(this).hasClass('add_input_param_button') || $(this).hasClass('add_out_param_button') || $(this).hasClass('add_error_param_button')){
+                addAfterTableRow(this,rowStringFunc)
+            }
+        });
+        return row
+    }
+
+    function deleteTableRow(row) {
+        row.remove();
+    }
+    $('.td').live('click',function(){
+        if($(this).find(".switchbox").prop("checked")){
+            $(this).find(".hide").val(1);
+        }else{
+            $(this).find(".hide").val(0);
+        }
+
+    })
+</script>
+<!--{%endblock%}-->

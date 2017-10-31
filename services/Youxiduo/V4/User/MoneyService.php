@@ -68,11 +68,12 @@ class MoneyService extends BaseService
 	/**
 	 * 注册账号
 	 */
-	public static function registerAccount($uid)
+	public static function registerAccount($uid,$platform='android')
 	{
 		$params = array(
 		    'id'=>$uid,
-		    'experience'=>0
+		    'experience'=>0,
+		    'platform'=>$platform
 		);
 		$url = Config::get('app.account_api_url') . 'account/register';
 		$result = Utility::loadByHttp($url,$params,'POST');
@@ -82,6 +83,22 @@ class MoneyService extends BaseService
 		return false;
 	}
 	
+	public static function checkAccount($uid,$platform)
+	{
+	    $params = array(
+	        'accountId'=>$uid,
+	        'currencyType'=>1,
+	        'platform'=>$platform
+	    );
+	    $url = Config::get('app.account_api_url') . 'account/query';
+	    $result = Utility::loadByHttp($url,$params,'GET');
+	    if($result && $result['errorCode']=='0'){
+	        self::registerAccount($uid,$platform);
+	        return true;
+	    }
+	    return false;
+	}
+
 	/**
 	 * 开通账号
 	 */
@@ -129,6 +146,26 @@ class MoneyService extends BaseService
 		}
 		return false;
 	}
+
+    /**
+     * 处理用户人民币币
+     */
+    public static function doRmb($params)
+    {
+        if(!$params['rechargeAccountId'] || $params['balanceChange']==0) return false;
+        $exists = Account::getUserInfoByField($params['rechargeAccountId'],'uid');
+        if(!$exists){
+            return false;
+        }elseif($exists['is_open_android_money']==0){
+            self::registerAccount($params['rechargeAccountId']);
+        }
+        $url = Config::get('app.48080_api_url') . 'module_rmb/account/updatebalance';
+        $result = Utility::loadByHttp($url,$params,'GET');
+        if($result && $result['errorCode']=='0'){
+            return true;
+        }
+        return false;
+    }
 	
 	public static function getQueryResult($uids)
 	{
@@ -164,4 +201,22 @@ class MoneyService extends BaseService
 		}
 		return array('result'=>$out,'total'=>$total);
 	}
+
+    public static function getRmbHistory($search,$pageIndex,$pageSize)
+    {
+        $total = 0;
+        $out = array();
+        $url = Config::get('app.48080_api_url') . 'module_rmb/account/';
+        $params = $search;
+        $result = Utility::loadByHttp($url.'operation_querynum',$params,'GET');
+        if($result && $result['errorCode']=='0'){
+            $total = $result['totalCount'];
+        }
+        $params['pageIndex'] = $pageIndex;
+        $params['pageSize'] = $pageSize;
+        $result = Utility::loadByHttp($url.'operation_query',$params,'GET');
+        if($result && $result['errorCode']=='0'){
+            return $result;
+        }
+    }
 }

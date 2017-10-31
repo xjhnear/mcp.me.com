@@ -1,0 +1,154 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    广告位
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('IOS_yiyuan/adv/list')}}-->" class="">
+                        <table class="table-filter">
+                            <tr>
+                                <td class="span5">
+                                    <input type="text" placeholder="名字" class="span10" value="<!--{{ search.title }}-->" name="title">
+                                </td>
+                                <td>
+                                    <button class="btn btn-teal">
+                                        <i class="icon-search"></i>
+                                        搜索
+                                    </button>
+                                </td>
+                                <td>
+                                    <select style="width:120px;margin-bottom:0px" name="type">
+                                        <option value="">请选择</option>
+                                        <!--{% for key,value in typeArr %}-->
+                                        <option value="<!--{{ key }}-->"
+
+                                            <!--{% if key == search.type %}-->
+                                            selected
+                                            <!--{% endif %}-->
+
+                                            ><!--{{ value }}--></option>
+                                        <!--{% endfor %}-->
+
+                                    </select>
+                                </td>
+                                <td>
+                                    <a class="btn btn-teal" href="<!--{{url('IOS_yiyuan/adv/add')}}-->"><i title="新建" class="icon-plus"></i></a>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <!--{% if (search.type) %}-->
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <!--{% if search.type == 'spin' or search.type == 'recommend' %}-->
+                        <th class="col-200">ID</th>
+                        <th class="col-200">位置</th>
+                        <th class="col-200">名称</th>
+                        <th class="col-200">开启时间</th>
+                        <th class="col-200">结束时间</th>
+                        <th class="col-200">状态</th>
+                        <th class="col-200">操作</th>
+                        <!--{% elseif search.type == 'duobao' or search.type == 'calculate' %}-->
+                        <th class="col-400">位置</th>
+                        <th class="col-400">名称</th>
+                        <th class="col-400">操作</th>
+                        <!--{% endif %}-->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for item in list%}-->
+                        <!--{% if search.type == 'spin' or search.type == 'recommend' %}-->
+                        <tr>
+                            <td><!--{{item.id}}--></td>
+                            <td><!--{{item.idx}}--></td>
+                            <td><!--{{item.title}}--></td>
+                            <td><!--{{item.startTime}}--></td>
+                            <td><!--{{item.endTime}}--></td>
+                            <td>
+                                <!--{% if item.enableSign and item.enable == '1' %}-->
+                                上架
+                                <!--{% else %}-->
+                                下架
+                                <!--{% endif %}-->
+                            </td>
+                            <td>
+                                <a href="<!--{{url('IOS_yiyuan/adv/add')}}-->?id=<!--{{ item.id }}-->" class="btn btn-primary">编辑</a>
+                                <!--{% if item.enableSign %}-->
+                                    <!--{% if item.enable == '1' %}-->
+                                    <a data-id="<!--{{ item.id }}-->" data-val="0" class="btn btn-primary changeEnable">隐藏</a>
+                                    <!--{% elseif item.enable == '0' %}-->
+                                    <a data-id="<!--{{ item.id }}-->" data-val="1" class="btn btn-primary changeEnable">显示</a>
+                                    <!--{% endif %}-->
+                                <!--{% endif %}-->
+                            </td>
+                        </tr>
+                        <!--{% elseif search.type == 'duobao' or search.type == 'calculate' %}-->
+                        <tr>
+                            <td><!--{{ item.idx }}--></td>
+                            <td><!--{{ item.title }}--></td>
+                            <td>
+                                <a target="_blank" href="<!--{{url('IOS_yiyuan/adv/add')}}-->?id=<!--{{ item.id }}-->" class="btn btn-primary">编辑</a>
+                            </td>
+                        </tr>
+                        <!--{% endif %}-->
+                    <!--{% endfor %}-->
+
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+            <!--{% endif %}-->
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    $(function(){
+        $(document).off('click', '.changeEnable');
+        $(document).on('click', '.changeEnable', function(){
+            var obj = $(this);
+            var id = obj.attr('data-id');
+            var val = obj.attr('data-val');
+
+            $.ajax({
+                type: "GET",
+                url: "<!--{{ url('IOS_yiyuan/adv/edit') }}-->",
+                data: {id:id, val:val},
+                dataType: "json",
+                success: function(data){
+                    if (data.success == 200) {
+                        var statusHtml = '';
+                        var parentobj = obj.parent();
+                        obj.remove();
+
+                        if (data.data == '1') {
+                            statusHtml = '<a data-id="' + id + '" data-val="0" class="btn btn-primary changeEnable">隐藏</a>';
+                        } else if (data.data == '0') {
+                            statusHtml = '<a data-id="' + id + '" data-val="1" class="btn btn-primary changeEnable">显示</a>';
+                        }
+                        parentobj.append(statusHtml);
+
+                        alertify.success(data.msg);
+                    } else {
+                        alertify.error(data.msg);
+                    }
+                }
+            });
+        });
+
+    });
+</script>
+<!--{%endblock%}-->

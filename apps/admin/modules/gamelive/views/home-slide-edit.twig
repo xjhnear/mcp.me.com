@@ -82,26 +82,52 @@
 				<div class="control-group div-type-2">
 					<label class="control-label">标题<i class="tip-star">*</i></label>
 					<div class="controls">
-					    <input name="summary" type="text" class="input-xxlarge" value="<!--{{setting.summary}}-->" />
+					    <input name="summary" type="text" class="input-xxlarge" data-rule-required="true" data-msg-required="请填写标题" value="<!--{{setting.summary}}-->" />
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label">直播代码</label>
+                <div class="control-group linkType">
+                    <div class="control-group">
+                        <label class="control-label">跳转类型</label>
+                        <div class="controls">
+                            <!--{{form_radio('selLinkType',0,linkType==0)}}-->直播代码
+                            <!--{{form_radio('selLinkType',1,linkType==1)}}-->视频链接
+                            <!--{{form_radio('selLinkType',2,linkType==2)}}-->外部跳转
+                        </div>
+                    </div>
+                </div>
+				<div class="control-group live">
+					<label class="control-label">移动端直播代码</label>
 					<div class="controls">
 						<div class=" input-append">
-							<textarea type="text" name="videoLive" class="input-xxlarge"><!--{{setting.videoLive}}--></textarea>
+							<textarea type="text" name="liveMobileUrl" class="input-xxlarge"><!--{{setting.liveMobileUrl}}--></textarea>
 						</div>
 					</div>
 				</div>
-				<div class="control-group">
-					<label class="control-label">视频URL</label>
+                    <div class="control-group live">
+                        <label class="control-label">PC直播代码</label>
+                        <div class="controls">
+                            <div class=" input-append">
+                                <textarea type="text" name="videoLive" class="input-xxlarge"><!--{{setting.videoLive}}--></textarea>
+                            </div>
+                        </div>
+                    </div>
+                <div class="control-group video">
+                    <label class="control-label">移动端视频URL</label>
+                    <div class="controls">
+                        <div class=" input-append">
+                            <textarea id="murl" name="videoMobileUrl" class="input-xxlarge" rows="6"><!--{{setting.videoMobileUrl}}--></textarea>
+                        </div>
+                    </div>
+                </div>
+				<div class="control-group video">
+					<label class="control-label">PC视频URL</label>
 					<div class="controls">
 						<div class=" input-append">
-							<textarea name="videoUrl" class="input-xxlarge" rows="6"><!--{{setting.videoUrl}}--></textarea>
+							<textarea id="purl" name="videoUrl" class="input-xxlarge" rows="6"><!--{{setting.videoUrl}}--></textarea>
 						</div>
 					</div>
 				</div>
-				<div class="control-group">
+				<div class="control-group imgurl">
 					<label class="control-label">图片跳转URL</label>
 					<div class="controls">
 						<div class=" input-append">
@@ -110,7 +136,7 @@
 					</div>
 				</div>
 				<div class="form-actions">
-					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+					<button type="submit" id="sub" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
 				</div> 
 			    </form>	    
 			</div>
@@ -122,15 +148,62 @@
 <!--{%block footer_js%}-->
 <script src="/static/js/jquery.validationEngine.js"></script>
 <script src="/static/js/jquery.validationEngine-en.js"></script>
+<script src="/static/js/plugins/multiselect/bootstrap-multiselect.js"></script>
 <script>
 
 $(function(){
-    
+
+
     if($('input[name="picUrl"]').length>0){
         $('input[name="filedata"]').removeClass('validate[required]');
     }
     
     $('#form_slide').validationEngine({promptPosition : "topRight",autoPositionUpdate:true});
+
+    $("#sub").click(function(){
+        var murl = $("#murl").val();
+        var purl = $("#purl").val();
+        if(murl){
+            if(!purl){
+                alert("pc视频和移动端视频链接需要配套上传，或都不填");
+                return false;
+            }
+        }else{
+            if(purl){
+                alert("pc视频和移动端视频链接需要配套上传，或都不填");
+                return false;
+            }
+        }
+    })
+
+//checkbox 1直播2视频3图片跳转
+    //关键代码
+    $('input:radio').iCheck({
+        checkboxClass: 'icheckbox_square-orange',
+        radioClass: 'iradio_square-orange',
+        increaseArea: '20%'
+    });
+    var linkType = "<!--{{linkType|default("0")}}-->";
+    check_linkType(linkType);
+    $("input[name='selLinkType']").on('ifChecked',function(e){
+        var check_val = e.currentTarget.value;
+        check_linkType(check_val);
+    });
+    function check_linkType(type){
+        if(type=="0"){
+            $(".live").show();
+            $(".video").hide();
+            $(".imgurl").hide();
+        }else if(type=="1"){
+            $(".live").hide();
+            $(".video").show();
+            $(".imgurl").hide();
+        }else if(type=="2"){
+            $(".live").hide();
+            $(".video").hide();
+            $(".imgurl").show();
+        }
+    }
 });    
 </script>
 <!--{%endblock%}-->

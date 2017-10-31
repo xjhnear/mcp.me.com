@@ -28,4 +28,6 @@ final class VideoGame extends Model implements IModel
 		$gid = self::db()->where('vid','=',$vid)->where($field,'>',0)->pluck($field);
 		return $gid;
 	}
+
+
 }

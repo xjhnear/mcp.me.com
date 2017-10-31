@@ -4,7 +4,7 @@ return array(
     'module_name'  => 'yxvl_eSports',
     'module_alias' => 'VLongTV后台',
     'module_icon'  => 'core',
-    'default_url'=>'yxvl_eSports/article/index',
+    'default_url'=>'yxvl_eSports/VltvLive/index',
     'child_menu' => array(
         array('name'=>'直播代码管理','url'=>'yxvl_eSports/VltvLive/index','separator'=>'vlong直播'),
         array('name'=>'用户管理','url'=>'yxvl_eSports/VltvLive/user'),

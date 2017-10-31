@@ -9,6 +9,8 @@ use Yxd\Modules\Core\BackendController;
 use Youxiduo\Helper\Utility;
 use modules\gamelive\models\Video;
 use modules\gamelive\models\Navigation;
+use modules\gamelive\models\Game;
+use modules\gamelive\models\Anchor;
 
 class VideoController extends BackendController
 {
@@ -52,6 +54,27 @@ class VideoController extends BackendController
         }
         $data['catalogs'] = $catalogs;
         */
+
+
+        if(isset($data['article']['refGameId'])){
+            $gameIds = $data['article']['refGameId'];
+            if($gameIds){
+                $gameNames = Game::GetGameNames($gameIds);
+                if($gameNames){
+                    $data['article']['gameNames'] = $gameNames;
+                }
+            }
+        }
+        if(isset($data['article']['refPeopleId'])){
+            $peopleIds = $data['article']['refPeopleId'];
+            if($peopleIds){
+                $peopleNames = Anchor::GetPeopleNames($peopleIds);
+                if($peopleNames){
+                    $data['article']['peopleNames'] = $peopleNames;
+                }
+            }
+        }
+        
         $data['columns'] = Navigation::GetColumnOptions();
         return $this->display('video-edit',$data);
     }

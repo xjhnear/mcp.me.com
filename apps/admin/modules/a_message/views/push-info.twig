@@ -33,6 +33,16 @@
 					    <label class="checkbox inline"><!--{{form_checkbox('is_push',1,false)}}-->通知栏推送</label>
 					</div>
 				</div>
+
+                <div class="control-group">
+                    <label for="textfield" class="control-label">版本</label>
+                    <div class="controls">
+                        <label class="checkbox inline"><input type="checkbox" name="c0" id="c0"/>全部</label>
+                        <label class="checkbox inline"><input type="checkbox" name="version[]" value="3.0.2" class="ck1"/>3.0.2</label>
+                        <label class="checkbox inline"><input type="checkbox" name="version[]" value="3.1.0" class="ck1"/>3.1.0</label>
+                    </div>
+                </div>
+
 				<div class="control-group">
 					<label for="textfield" class="control-label">链接类型</label>
 					<div class="controls">
@@ -117,5 +127,14 @@ jQuery(document).ready(function(){
 	show_tips($('#linktype').val());
 	gameselect('#gameselect');	
 });
+$(function(){
+    $("#c0").click(function(){
+        if($("#c0").prop("checked")){
+            $(".ck1").attr("disabled","disabled");
+        }else{
+            $(".ck1").removeAttr("disabled");
+        }
+    })
+})
 </script>
 <!--{%endblock%}-->   

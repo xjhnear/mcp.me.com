@@ -52,10 +52,13 @@ final class News extends Model implements IModel
 	protected static function buildCond($platform,$type_id,$game_id,$series=0,$keyword)
 	{
 		$tb = self::db();
-		if($platform=='ios'){
-			if($game_id>0) $tb = $tb->where('gid','=',$game_id); 
+		if($game_id == 0){
+		    $tb = $tb->where('gid','=',$game_id);
+		    $tb = $tb->where('agid','=',$game_id);
+		}elseif($platform=='ios'){
+			$tb = $tb->where('gid','=',$game_id); 
 		}elseif($platform=='android'){
-			if($game_id>0) $tb = $tb->where('agid','=',$game_id);
+			$tb = $tb->where('agid','=',$game_id);
 		}
 		
 		if($type_id){
@@ -149,4 +152,10 @@ final class News extends Model implements IModel
         }
         return $out;
     }
+
+    public static function getAutoSearch($name)
+    {
+        return  self::db()->where('title','like',"%{$name}%")->select('id','title as value ')->get();
+    }
+
 }

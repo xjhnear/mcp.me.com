@@ -28,7 +28,7 @@ class MonitorService extends BaseService
 	public static function isExistsChannel($channel_id)
 	{
 		$exists = self::http(self::getServerURI() . 'channel',array('channel_id'=>$channel_id));
-		return $exists===false ? false : true;
+		return ($exists===false || $exists===null) ? false : true;
 	}
 	
 	public static function createChannel($channel_id,$channel_name,$is_active=true)
@@ -41,7 +41,7 @@ class MonitorService extends BaseService
 	public static function isExistsConfig($config_id)
 	{
 		$exists = self::http(self::getServerURI() . 'config',array('config_id'=>$config_id));
-		return $exists===false ? false : true;
+		return ($exists===false||$exists===null) ? false : true;
 	}
 	
 	public static function createConfig($config_id,$config_name,$config_os,$redirect_url,$channel_id,$click_callback_url='',$is_active=true)

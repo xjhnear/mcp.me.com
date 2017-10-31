@@ -1,0 +1,84 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    每日签到统计
+                </h3>
+                <div class="actions">
+                    <form id="formObj" action="<!--{{url('v4_task/task/task-sign-statistics')}}-->" method="GET">
+                        <table class="table-filter">
+                            <tr>
+                                <td><span class="label label-blue">开始时间</span>
+                                    <div class="input-append date " >
+                                        <input name="beginTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{search.beginTime}}-->" readonly>
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td><span class="label label-blue">结束时间</span>
+                                    <div class="input-append date "  data-date="">
+                                        <input name="endTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker"  value="<!--{{search.endTime}}-->" id="date_timepicker_end" readonly>
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                                <td><a class="btn btn-teal" id="export">导出</a></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-150">日期</th>
+                        <th class="col-150">签到人数</th>
+                        <th class="col-150">发放狮牙</th>
+                        <th class="col-150">发放狮毛</th>
+                        <th class="col-150">发放经验</th>
+                        <th class="col-150">发放勋章</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for item in datalist%}-->
+                    <tr>
+                        <td><!--{{item.dailyDate}}--></td>
+                        <td><!--{{item.signNumber}}--></td>
+                        <td><!--{{item.shiyaNumber}}--></td>
+                        <td><!--{{item.shimaoNumber}}--></td>
+                        <td><!--{{item.experienceNumber}}--></td>
+                        <td><!--{{item.medalNumber}}--></td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script language="JavaScript">
+
+    $(function(){
+        //导出
+        $('#export').click(function(){
+            var data = $('#formObj').serialize();
+            location.href = "<!--{{ export_url }}-->" + '?' + data;
+        });
+    });
+
+</script>
+
+<!--{%endblock%}-->

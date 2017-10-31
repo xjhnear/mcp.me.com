@@ -19,7 +19,7 @@
                         <label class="control-label">栏目名称<i class="tip-star">*</i></label>
                         <div class="controls">
                             <div class=" input-append">
-                                <input type="text" name="name" class="input-xxlarge" value="<!--{{column.name}}-->" />
+                                <input type="text" name="name" class="input-xxlarge" data-rule-required="true" data-msg-required="请填写名称" value="<!--{{column.name}}-->" />
                             </div>
                         </div>
                     </div>
@@ -89,14 +89,21 @@
                         <label class="control-label">关联主播<i class="tip-star">*</i></label>
                         <div class="controls">
                             <div class="input-append">
-                                <input type="text" id="anchor_id" name="peoples" class="input-xlarge" value="<!--{{column.peoples}}-->" /><span class="add-on select-anchor">选择</span>
+                                <input type="hidden" id="anchor_id" name="peoples" class="input-xlarge" value="<!--{{column.peoples}}-->"/>
+                                <input type="text" id="people" class="tagsinput" value="<!--{{column.peopleNames}}-->" /><span class="add-on select-anchor">选择</span>
                             </div>
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label">直播代码<i class="tip-star">*</i></label>
+                        <label class="control-label">H5直播代码<i class="tip-star">*</i></label>
                         <div class="controls">
                             <textarea name="H5Code" class="input-xxlarge"><!--{{column.h5Code}}--></textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">PC直播代码<i class="tip-star">*</i></label>
+                        <div class="controls">
+                            <textarea name="PCCode" class="input-xxlarge"><!--{{column.pccode}}--></textarea>
                         </div>
                     </div>
                     <div class="control-group">
@@ -147,7 +154,7 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+                        <button type="submit" class="sub btn btn-primary"><i class="icon-ok"></i>保存</button>
                     </div>
                 </form>
             </div>
@@ -163,8 +170,25 @@
 <script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
 <script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
 <script>
-    var set_selected_anchor = function(anchor_id){
+    var peopleArr = new Array();
+    var set_selected_anchor = function(anchor_id,anchor_name){
+        var people = $('#people').val();
+        if(people.length>0){
+            var a = people.split(',');
+            if(a.indexOf(anchor_name)!=-1){
+                alert(anchor_name+" 已在列表中！");return false;
+            }
+            a.push(anchor_name);
+            var b = a.join(',');
+            //console.log(b);
+            $('#people').val(b);
+        }else{
+            $('#people').val(anchor_name);
+        }
+
         var anchor_ids = $('#anchor_id').val();
         if(anchor_ids.length>0){
             var a = anchor_ids.split(',');
@@ -175,6 +199,8 @@
         }else{
             $('#anchor_id').val(anchor_id);
         }
+        peopleArr[anchor_name] = anchor_id;
+
     };
     $(function(){
         UE.getEditor('summary',{initialFrameWidth:800});
@@ -195,6 +221,30 @@
                 }
             });
         });
+        setArr();
+        function setArr(){
+            var anchor_ids = $('#anchor_id').val();
+            var people = $('#people').val();
+
+            var anchorIdArr = anchor_ids.split(',');
+            var anchorNameArr = people.split(',');
+            $.each(anchorNameArr,function(n,val){
+                peopleArr[val] = anchorIdArr[n];
+            })
+        }
+
+        $(".sub").click(function(){
+            var anchor_ids = "";
+            var people = $('#people').val();
+
+            var anchorNameArr = people.split(',');
+
+            $.each(anchorNameArr,function(n,val){
+                anchor_ids += peopleArr[val]+",";
+            })
+            anchor_ids = anchor_ids.substr(0,anchor_ids.length-1);
+            $('#anchor_id').val(anchor_ids);
+        })
     });
 </script>
 <!--{%endblock%}-->

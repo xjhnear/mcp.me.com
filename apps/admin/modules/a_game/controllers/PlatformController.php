@@ -12,13 +12,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
-
 use Yxd\Modules\Core\BackendController;
-
 use Youxiduo\Android\Model\Game;
 use Youxiduo\Android\Model\GamePlatform;
 
-class PlatformController extends BackendController
+class PlatformController  extends BackendController
 {
 	
 	public function _initialize()
@@ -26,7 +24,7 @@ class PlatformController extends BackendController
 		$this->current_module = 'a_game';
 	}
 	
-	public function getIndex($game_id)
+	public function getIndex($game_id=0)
 	{
 		$page = Input::get('page',1);
 		$pagesize = 10;

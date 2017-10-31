@@ -27,6 +27,27 @@ class GameInfo extends BaseService
 			return array();
 		}
 	}
+
+    /**
+     * 获取mobile端游戏详情
+     * @param number $gid
+     * @param number $agid
+     * @return unknown|multitype:
+     */
+    public static function getMobileNameGame($gameName , $gid = 0,$agid = 0){
+        $arc = Archives::getMobileNameGame($gameName,$gid,$agid);
+        if(!empty($arc)){
+            $addon = Addongame::getMobileGame($arc['id']);
+            $arc += $addon;
+            $arc['gid'] = $gid;
+            $arc['agid'] = $agid;
+            return $arc;
+        }else{
+            return array();
+        }
+    }
+
+
 	/**
 	 * 查询多款游戏信息
 	 * @param array $gids
@@ -42,7 +63,7 @@ class GameInfo extends BaseService
 				$where[$id] = 'g_'.$id;
 			}
 			$rs = Archives::getMobileGames($where);
-			if($rs){ 
+			if($rs){
 				foreach($rs as &$v){
 					if(in_array($v['yxdid'], $where)){
 						$v['gid'] = current(array_keys($where,$v['yxdid']));
@@ -69,8 +90,8 @@ class GameInfo extends BaseService
 		}
 		return $arc;
 	}
-	
-/**
+
+    /**
 	 * 获取所要添加的栏目的父栏目的ID
 	 * @param array $gameId
 	 * @param string $typename

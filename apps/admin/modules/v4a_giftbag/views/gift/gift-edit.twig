@@ -161,11 +161,8 @@
 
 									<input type="text" name="time_value" data-rule-digits="true" data-rule-min="1" data-msg-min="最小为1"
 										 class="daily-limit-1 validate[condRequired[mt-count]]" data-msg-digits="请填写整数" style="width:30px" value="<!--{{ giftbag.timeValue }}-->">
-									<select name="time_type" style="width:80px" >
-										<option value="day">天</option>
-										<option value="hour">小时</option>
-									</select>
-								</div>
+                                    <!--{{form_select('time_type',{'day':'天','hour':'小时'},giftbag.timeType,{'style':"width:80px"})}}-->
+                                </div>
 							</div>
 						</div>
 						<div class="span4 limit">
@@ -181,7 +178,7 @@
 					<div class="control-group append">
 						<label class="control-label">追加发布设定</label>
 						<div class="controls">
-							<input id="is-append" name="is_append" <!--{{ giftbag.extraReq.addType == '0' ? '' : 'checked' }}--> data-on-color="success" data-on-text="追加" data-off-color="danger" data-off-text="不追加" class="switchbox" type="checkbox"/>
+							<input  id="is-append" name="is_append" <!--{{ giftbag.extraReq.addType == '0' ? '' : 'checked' }}--> data-on-color="success" data-on-text="追加" data-off-color="danger" data-off-text="不追加" class="switchbox" type="checkbox"/>
 						</div>
 					</div>
 
@@ -257,6 +254,13 @@
                     </div>
 
                     <div class="control-group">
+                        <label class="control-label">是否推荐</label>
+                        <div class="controls">
+                            <input id="isRecommend" name="isRecommend" <!--{{giftbag.isRecommend ? 'checked' : '' }}--> data-on-color="success" data-on-text="是" data-off-color="danger" data-off-text="否" class="switchbox" type="checkbox"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
                         <label class="control-label">淘号</label>
                         <div class="controls">
                             <input id="is_draw" name="isDraw" <!--{{giftbag.isDraw ? 'checked' : '' }}--> data-on-color="success" data-on-text="淘号"
@@ -322,29 +326,29 @@
 						</div>
 					</div>
 
-					<div class="row-fluid">
-						<div class="span3">
-							<div class="control-group">
-								<label class="control-label">上架设定</label>
-								<div class="controls">
-									<input name="shelf_set" type="radio" value="1"
-											<!--{{ giftbag.isOnshelf ? 'checked' : '' }}-->/>上架
-								</div>
-							</div>
-						</div>
-						<div class="span3">
-							<div class="controls">
-								<input name="shelf_set" type="radio" value="2"
-										<!--{{ giftbag.isOnshelf ? '' : 'checked' }}-->/>下架
-							</div>
-						</div>
-						<div class="span3">
-							<div class="controls">
-								<input name="shelf_set" type="radio" value="3"
-										<!--{{ giftbag.extraReq.onshelfAtBegin == 'true' ? 'checked' : '' }}-->/>自动上架（礼包开始时间）
-							</div>
-						</div>
-					</div>
+                        <div class="row-fluid">
+                            <div class="span3">
+                                <div class="control-group">
+                                    <label class="control-label">上架设定</label>
+                                    <div class="controls">
+                                        <input name="shelf_set" type="radio" value="1"
+                                           <!--{{ giftbag.isOnshelf ? 'checked' : '' }}-->/>上架
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span3">
+                                <div class="controls">
+                                    <input name="shelf_set" type="radio" value="2"
+                                            <!--{{ giftbag.isOnshelf ? '' : 'checked' }}-->/>下架
+                                </div>
+                            </div>
+                            <div class="span3">
+                                <div class="controls">
+                                    <input name="shelf_set" type="radio" value="3"
+                                            <!--{{ giftbag.extraReq.onshelfAtBegin == 'true' ? 'checked' : '' }}-->/>自动上架（礼包开始时间）
+                                </div>
+                            </div>
+                        </div>
 
 					<div class="form-actions">
 						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
@@ -499,6 +503,12 @@
             }
         });
 
+		//限制追加次数
+		//var append_disabled = $("input[name='is_append']:checked").prop("disabled");
+		//if (append_disabled) {
+		//	$(".appends input").attr("disabled","disabled");
+		//	$(".appends select").attr("disabled","disabled");
+		//}
 
         $("#dataType").val("<!--{{giftbag.drawConf.dataType}}-->");
         $("#is_draw").on('switchChange.bootstrapSwitch',function(e,data){

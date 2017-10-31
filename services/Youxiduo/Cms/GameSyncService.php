@@ -151,7 +151,7 @@ class GameSyncService extends BaseService
         $pics = array();
         $pics_res = $game['pics'] ? explode(',',$game['pics']) : array();
         foreach($pics_res as $row){
-        	$pics[] = Config::get('app.image_url') . $row['litpic'];
+        	$pics[] = Config::get('app.image_url') . $row;
         } 
 		self::saveArchivesIcon($game_id, $icon, $pics, $device);
 	}

@@ -13,10 +13,12 @@ namespace Youxiduo\MyService;
 use Youxiduo\Helper\MyHelp;
 use Yxd\Modules\Core\BackendController;
 use Youxiduo\MyService\QueryService;
+use Youxiduo\Cache\CacheService;
 use Validator;
 use Input;
 use Cache;
 use Log,App,Request;
+use modules\v4_adv\models\Core;
 //如果继承该类
 
 class  SuperController extends BackendController
@@ -78,13 +80,16 @@ class  SuperController extends BackendController
         if(!empty($inputinfo['page'])) $inputinfo['pageIndex']=Input::get('page',1);
         $inputinfo=self::_setCallBack('BeforeList',$inputinfo);
         $result=self::getResult($inputinfo);
+        //var_dump($result['result'][2]['items']);die;
         self::_looklog($result,$this->_config['isFirePHP']);
         if($result['errorCode'] == 0){
             if($this->_config['isSql']){
                 $inputinfo=$inputinfo['where'];
             }
-            list($result['inputinfo'],$result)=array($inputinfo,MyHelp::processingInterface($result, $inputinfo, 15));
+            $pageSize = isset($inputinfo['pageSize'])?$inputinfo['pageSize']:10;
+            list($result['inputinfo'],$result)=array($inputinfo,MyHelp::processingInterface($result, $inputinfo,$pageSize));
             $result=self::_setCallBack('AfterList',$result);
+           // var_dump($result['datalist'][2]['items']);die;
             return $this->display($this->_config['controller'].'/'.$this->_config['controller'].'-list',$result);
         }
         return $this->back()->with('global_tips',$result['errorDescription']);
@@ -143,7 +148,22 @@ class  SuperController extends BackendController
     public function postAdd(){
         $inputinfo=self::_setCallBack('BeforePostAdd',Input::all());
         self::_ByValidator($inputinfo);//验证
+        $arr_controller = array( 'popup','carousel','video','recommend','banner','vicebanner','indexbanner','gameinfo','gameinfotop','startup','task');
+        if(in_array($this->_config['controller'],$arr_controller)){
+            if($inputinfo['adv_href_type'] != '外部url' && $inputinfo['adv_href_type'] != '内部safari'){
+                $inputinfo['isAutoLogin'] = 2;
+            }
+        }
         self::_looklog($inputinfo,$this->_config['isFirePHP']);
+        if (isset($this->_config['except'])) {
+            $except = array();
+            foreach ($this->_config['except'] as $k) {
+                if (isset($inputinfo[$k])) {
+                    $except[$k] = $inputinfo[$k];
+                    unset($inputinfo[$k]);
+                }
+            }
+        }
         if($this->_config['isSql']){
             QueryService::$databas_table=$this->_config['databas_table'];
             $result=QueryService::addData($inputinfo);
@@ -151,9 +171,24 @@ class  SuperController extends BackendController
             $result=MyHelp::curldata($this->url_array['post_add'],$inputinfo,'POST',$this->_config['lookLog']);
         }
         $result['url']=$this->url_array['post_add'];
+        if (isset($except)) {
+            $inputinfo = array_merge($inputinfo,$except);
+        }
         $result['inputinfo']=$inputinfo;
         self::_looklog($result,$this->_config['isFirePHP']);
         if($result['errorCode']==0){
+            $arr_adv_controller = array( 'popup','carousel','video','recommend','banner','vicebanner','indexbanner','gameinfo','webgame','pcgame');
+            if (isset($inputinfo['platform']) && $inputinfo['platform'] == 'iosyn') {
+                $appname = 'youxiduojiu3';
+            } else {
+                $appname = 'yxdjpb';
+            }
+            if(in_array($this->_config['controller'],$arr_adv_controller)) $data_del_cache = Core::delcache(array('type'=>1,'appname'=>$appname));
+            if (isset($data_del_cache)&&$data_del_cache==false) {
+                $this->callback_url['add']=$this->redirect(str_replace('_','',$this->current_module).'/'.$this->_config['controller'].'/list')->with('global_tips','添加成功,缓存失败');
+                self::_setCallBack('AfterPostAdd',$result);
+                return  $this->callback_url['add'];
+            }
             $this->callback_url['add']=$this->redirect(str_replace('_','',$this->current_module).'/'.$this->_config['controller'].'/list')->with('global_tips','添加成功');
             self::_setCallBack('AfterPostAdd',$result);
             return  $this->callback_url['add'];
@@ -165,8 +200,26 @@ class  SuperController extends BackendController
     public function postEdit()
     {
         $inputinfo=self::_setCallBack('BeforePostEdit',Input::all());
+        if (isset($inputinfo['id'])) {
+            $id = $inputinfo['id'];
+        }
         self::_ByValidator($inputinfo);//验证
+        $arr_controller = array( 'popup','carousel','video','recommend','banner','vicebanner','indexbanner','gameinfo','gameinfotop','startup','task');
+        if(in_array($this->_config['controller'],$arr_controller)){
+            if($inputinfo['adv_href_type'] != '外部url' && $inputinfo['adv_href_type'] != '内部safari'){
+                $inputinfo['isAutoLogin'] = 2;
+            }
+        }
         self::_looklog($inputinfo,$this->_config['isFirePHP']);
+        if (isset($this->_config['except'])) {
+            $except = array();
+            foreach ($this->_config['except'] as $k) {
+                if (isset($inputinfo[$k])) {
+                    $except[$k] = $inputinfo[$k];
+                    unset($inputinfo[$k]);
+                }
+            }
+        }
         if($this->_config['isSql']){
             QueryService::$databas_table=$this->_config['databas_table'];
             if(!empty($inputinfo['id'])){
@@ -179,10 +232,36 @@ class  SuperController extends BackendController
             $result=MyHelp::curldata($this->url_array['post_edit'],$inputinfo,'POST',$this->_config['lookLog']);
         }
         $result['url']=$this->url_array['post_add'];
+        if (isset($except)) {
+            $inputinfo = array_merge($inputinfo,$except);
+        }
+        if (isset($id)) {
+            $inputinfo['id'] = $id;
+        }
         $result['inputinfo']=$inputinfo;
         self::_looklog($result,$this->_config['isFirePHP']);
-
         if($result['errorCode']==0){
+            //2V4商城福利管理界面
+            $data =array();
+            if($this->_config['controller'] == 'welfare') $data = CacheService::cache_del_key(4);
+            if(isset($data['errorCode'])&&$data['errorCode']!=0){
+                $this->callback_url['edit']=$this->redirect(str_replace('_','',$this->current_module).'/'.strtolower($this->_config['controller']).'/list')->with('global_tips','修改成功,缓存失败');
+                self::_setCallBack('AfterPostEdit',$inputinfo);
+                return $this->callback_url['edit'];
+            }
+            //v4广告缓存
+            $arr_adv_controller = array( 'popup','carousel','video','recommend','banner','vicebanner','indexbanner','gameinfo','webgame','pcgame');
+            if (isset($inputinfo['platform']) && $inputinfo['platform'] == 'iosyn') {
+                $appname = 'youxiduojiu3';
+            } else {
+                $appname = 'yxdjpb';
+            }
+            if(in_array($this->_config['controller'],$arr_adv_controller)) $data_del_cache = Core::delcache(array('type'=>1,'appname'=>$appname));
+            if (isset($data_del_cache)&&$data_del_cache == false) {
+                $this->callback_url['edit']=$this->redirect(str_replace('_','',$this->current_module).'/'.strtolower($this->_config['controller']).'/list')->with('global_tips','修改成功,缓存失败');
+                self::_setCallBack('AfterPostEdit',$inputinfo);
+                return $this->callback_url['edit'];
+            }
             $this->callback_url['edit']=$this->redirect(str_replace('_','',$this->current_module).'/'.strtolower($this->_config['controller']).'/list')->with('global_tips','修改成功');
             self::_setCallBack('AfterPostEdit',$inputinfo);
             return $this->callback_url['edit'];
@@ -205,9 +284,10 @@ class  SuperController extends BackendController
         if(method_exists($this->_config['obj'],'set_inputinfo')){
             $inputinfo=$this->set_inputinfo($inputinfo,$type);
         }
+        $inputinfo['modifier'] = parent::getSessionUserName();
         $result=MyHelp::curldata($this->url_array['set'][$type],$inputinfo,$method,$this->_config['lookLog']);
         if(method_exists($this->_config['obj'],'set_result')){
-            $result=$this->set_result($result,$type);
+            $result=$this->set_result($result,$type,$inputinfo);
         }
         $result=$result['errorCode'] == 0 ? array('errorCode'=>0,'msg'=>'操作成功','val'=>$inputinfo,'result'=>!empty($result['result'])?$result['result']:array()) : array('errorCode'=>1,'msg'=>$result['errorDescription'],'val'=>$inputinfo,'result'=>!empty($result['result'])?$result['result']:array());
         echo  json_encode($result);
@@ -218,7 +298,7 @@ class  SuperController extends BackendController
      * @param $inputinfo
      * @ret   urn mixed
      */
-    private function getResult($inputinfo=array())
+    protected function getResult($inputinfo=array())
     {
         $this->Cache['key']='list_'.$this->_config['controller'].'_'.Input::get('page',1);
         if($this->Cache['is_cache'] and Cache::has($this->Cache['key'])){

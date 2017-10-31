@@ -103,6 +103,7 @@ class ESportsService extends BaseService{
         'RemoveAppAccount' => array("yxvl-backstage/RemoveAppAccount",'GET',"new"),//删除--用户
         'GetAppAccountList' => array("yxvl-backstage/GetAppAccountList",'GET',"new"),//列表--用户
 
+
     );
 
     //完成

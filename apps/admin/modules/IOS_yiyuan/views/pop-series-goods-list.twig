@@ -1,0 +1,85 @@
+<div class="box">
+    <div class="actions">
+        <table class="table-filter">
+            <tr>
+                <td>
+                    系列商品名称
+                </td>
+                <td>
+                    <input id="keyword" type="text" class="input-medium" placeholder="" value="<!--{{search.seriesName}}-->">
+                </td>
+                <td>
+                    <a href="javascript:searchSeriesGoods();" class="btn btn-teal">按条件搜索</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table class="table table-hover table-nomargin">
+        <thead>
+        <tr>
+            <th class="col-110">ID</th>
+            <th class="col-400">系列商品名称</th>
+            <th class="table-btn-group">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{%for item in data%}-->
+        <tr>
+            <td><!--{{item.seriesId}}--></td>
+            <td id="series_goods_name_<!--{{item.seriesId}}-->"><!--{{item.seriesName}}--></td>
+            <td>
+                <a href="javascript:void(0);" data-id="<!--{{item.seriesId}}-->" class="btn btn-primary select-series-goods-id">选择</a>
+            </td>
+        </tr>
+        <!--{%endfor%}-->
+        </tbody>
+    </table>
+    <div class="pagelink">
+        <!--{{pagelinks}}-->
+    </div>
+</div>
+<script>
+    function searchSeriesGoods()
+    {
+        var keyword = $('#keyword').val();
+        $.ajax({
+            url:'/IOS_yiyuan/adv/series-goods-search',
+            data:{keyword:keyword},
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog.list['pop-series-goods-list'].content(html);
+            }
+        });
+    }
+
+    $(function() {
+        $(document).off('click', '.select-series-goods-id');
+        $(document).on('click', '.select-series-goods-id', function(){
+            var series_goods_id = $(this).attr('data-id');
+            var series_goods_name = $(this).parent().prev().text();
+            selectObj.parent().find(".selected_series_goods_id").val(series_goods_id);
+            selectObj.parent().find(".selected_series_goods_name").val(series_goods_name);
+            $.dialog.list['pop-series-goods-list'].close();
+            return false;
+        });
+
+        $(document).off('click', '.pagelink a');
+        $(document).on('click', '.pagelink a', function(){
+            var url = $(this).attr('href');
+            $(this).attr('href','javascript:void(0);');
+            $.ajax({
+                url:url,
+                dataType:'json',
+                success:function(json){
+                    var html = '';
+                    html = json.html;
+                    $.dialog.list['pop-series-goods-list'].content(html);
+                }
+            });
+        });
+
+    });
+
+</script>

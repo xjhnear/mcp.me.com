@@ -59,6 +59,7 @@ class SettingController extends BackendController
 		}else{
 			$data['version'] = array('versionstate'=>2,'scorestate'=>2);
 		}
+        print_r($data);
 		return $this->display('app-version-info',$data);
 	}
 	

@@ -44,7 +44,7 @@ final class AdvAppLink extends Model implements IModel
 	{
 		return self::db()->where('place_type_badge','=',$place_type_badge)		    
 	        ->where('appname','=',$appname)
-	        ->where('channel','=',$channel)
+	        //->where('channel','=',$channel)
 	        ->where('version','=',$version)
 	        ->lists('adv_id');
 	}

@@ -1,0 +1,214 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					比赛管理
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('liansai/home/match-list')}}-->" class="">
+                <!--
+				    <table class="table-filter">				        
+				        <tr>
+                            <td><span class="label label-blue">开始时间</span>
+                                <div class="input-append date " >
+                                    <input name="activityStartTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{search.createTimeBegin}}-->" readonly>
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+                            </td>
+                            <td>结束时间
+                                <div class="input-append date "  data-date="">
+                                    <input name="activityEndTime" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker"  value="<!--{{search.createTimeEnd}}-->" id="date_timepicker_end" readonly>
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+                            </td>
+                            <td>
+                                <input name="keyword" type="text" class="input-medium" placeholder="队伍名称" value="<!--{{search.keyword}}-->">
+                            </td>
+							<td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+                -->
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+						    <th class="col-120">序列</th>
+							<th class="col-120">主队名称</th>
+							<th class="col-120">队长信息</th>
+                            <th class="col-120">胜负</th>
+                            <th class="col-120">客队名称</th>
+                            <th class="col-120">队长信息</th>
+                            <th class="col-120">胜负</th>
+                            <th class="col-120">比赛时间</th>
+                            <th class="col-120">状态</th>
+
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					    <!--{%for key,item in list%}-->
+						<tr>
+							<td><!--{{key}}--></td>
+                            <td><!--{{item.oneTeam.teamName}}--></td>
+                            <td><!--{{item.oneTeam.leaderNick}}--></td>
+                            <td><!--{{resultArr[item.oneTeam.result]}}--></td>
+                            <td><!--{{item.twoTeam.teamName}}--></td>
+                            <td><!--{{item.twoTeam.leaderNick}}--></td>
+                            <td><!--{{resultArr[item.twoTeam.result]}}--></td>
+                            <td><!--{{item.matchTime}}--></td>
+                            <td><!--{{item.status}}--></td>
+
+							<td>
+                                <a href="javascript:void(0)" data-target="#exampleModal"  data-toggle="modal"   imgs_one="<!--{%for icon in item.oneTeam.resultImg%}--><!--{{icon}}-->^<!--{%endfor%}-->" imgs_two="<!--{%for icon in item.twoTeam.resultImg%}--><!--{{icon}}-->^<!--{%endfor%}-->" <!--{%if item.status=="争议"%}--> style="background-color: #5CB811"<!--{%endif%}-->  class="btn btn-primary b_button">查看截图</a>
+                                <a href="#nogo" data-target="#exampleModal2"  data-toggle="modal" oneId="<!--{{item.oneTeam.teamId}}-->" twoId="<!--{{item.twoTeam.teamId}}-->" matchId="<!--{{item.matchId}}-->" class="btn btn-primary ajax-open">改判</a>
+							</td>
+						</tr>
+						<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>			    
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--{#模态框#}-->
+<div class="modal fade" style="width: 900px; margin-left: -500px" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog bs-example-modal-lg"  role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="exampleModalLabel">
+                    <ul class="nav nav-pills">
+                        <li role="presentation" class="active" id="img1_bt" ><a href="#nogo">主队截图</a></li>
+                        <li role="presentation" id="img2_bt"><a href="#nogo">客队截图</a></li>
+                    </ul></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group img_list1" style="text-align: center">
+
+                </div>
+                <div class="form-group img_list2" style="text-align: center;display: none">
+
+                </div>
+
+                <input type="hidden"  id="b_uid" name="b_uid" value="" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{#模态框_改判#}-->
+<div class="modal fade" style="width: 400px; margin-top: 300px" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2">
+    <div class="modal-dialog bs-example-modal-lg"  role="document" >
+        <div class="modal-content" style="text-align: center;padding: 10px">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="exampleModalLabel2">
+            </h4>
+            <div class="modal-body" style="float:left;">
+                <button type="button" class="btn btn-danger btn-lg ajax-gaipan" id="one" teamId="" matchId=""  style="width: 160px;height: 80px;font-size: large">主队胜</button>
+            </div>
+
+            <div class="modal-body" style="float:left;">
+                <button type="button" class="btn btn-success btn-lg ajax-gaipan" id="two" teamId="" matchId="" style="width: 160px;height: 80px;font-size: large">客队胜</button>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+    function load_img1(ob){
+        var imgs_one = ob.attr('imgs_one');
+        var strs= new Array(); //定义一数组
+        strs=imgs_one.split("^"); //字符分割
+        $(".img_list1").html("");
+        for (i=0;i<strs.length ;i++ )
+        {
+            if(strs[i]){
+                $(".img_list1").append('<img src="'+strs[i]+'" border="1px solid"/>')
+            }
+        }
+
+        obj = ob;
+    }
+
+    function load_img2(ob){
+        var imgs_two = ob.attr('imgs_two');
+        var strs    =   new Array(); //定义一数组
+        strs=imgs_two.split("^"); //字符分割
+        $(".img_list2").html("");
+        for (i=0;i<strs.length ;i++ )
+        {
+            if(strs[i]){
+                $(".img_list2").append('<img src="'+strs[i]+'" border="1px solid"/>')
+            }
+
+        }
+
+        obj = ob;
+    }
+
+    function load_img(ob){
+        load_img1(ob);
+        load_img2(ob);
+
+    }
+    $(".b_button").click(function(){
+        load_img($(this));
+    })
+    $("#img1_bt").click(function(){
+        $(".img_list1").show();
+        $(".img_list2").hide();
+        $("#img2_bt").removeClass("active");
+        $("#img1_bt").addClass("active");
+    })
+    $("#img2_bt").click(function(){
+        $(".img_list2").show();
+        $(".img_list1").hide();
+        $("#img1_bt").removeClass("active");
+        $("#img2_bt").addClass("active");
+    })
+
+    $(".ajax-open").click(function(){
+        $("#one").attr("teamId",$(this).attr("oneId"));
+        $("#two").attr("teamId",$(this).attr("twoId"));
+
+        $("#one").attr("matchId",$(this).attr("matchId"));
+        $("#two").attr("matchId",$(this).attr("matchId"));
+    })
+
+    $(".ajax-gaipan").click(function(){
+        var obj = $(this);
+        var teamId = obj.attr('teamId');
+        var matchId = obj.attr('matchId');
+        if(!confirm("是否确定"+$(this).html()+"？")){
+            return false;
+        }
+        $.post('<!--{{url('liansai/home/ajax-do')}}-->',{teamId:teamId,adminId:"186c00178bb84bfd866aecc34a4b355a",url:"confirmMatchResult",matchId:matchId,isWinner:"true"},function(data){
+            if(data.success){
+                alert("改判成功");
+                $(".close").click();
+            }else{
+                alert(data.error);
+            }
+        },"json")
+    })
+});    
+</script>
+<!--{%endblock%}-->

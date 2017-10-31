@@ -87,6 +87,21 @@ abstract class BaseModel
 	{
 		return DB::connection('yxd');
 	}
+
+	/**广告表***/
+	public static function dbAdvMaster()
+	{
+		return DB::connection('adv');
+	}
+
+	public static function DB($database='')
+	{
+		return DB::connection($database);
+	}
+
+	public static  function getlog(){
+		return DB::getQueryLog();
+	}
 	
 	public static function getAppVersion($field = 'version')
 	{

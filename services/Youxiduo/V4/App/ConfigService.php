@@ -34,8 +34,39 @@ class ConfigService extends BaseService
 		
 	    if($format==true){
 			$result['append'] = json_decode($result['append'],true);
+			if(version_compare($result['append']['updateversion'], $version) > 0){
+				$result['append']['isupdate'] = true;
+			}else{
+				$result['append']['isupdate'] = false;
+			}
 		}		
 		return $platform=='ios' ? self::outFormatToIos($result) : self::outFormatToAndroid($result);
+	}
+	
+	public static function getcheckVersion($platform,$appname,$channel,$version)
+	{
+	    $app = AppConfig::getVersionInfo($appname, $version, $channel);
+	    if(!$app) return self::ERROR_CONFIG_NOT_EXISTS;
+	
+	    if($app && $app['append']){
+	        $data = json_decode($app['append'],true);
+	        $result = array();
+	        $result['word'] = $data['updateword'];
+	        $result['isforce'] = $data['isforce'];
+	        $result['intro_html'] = $app['intro'];
+	        $result['sys_img'] = $app['sys_img'];
+	        $result['appstore'] = $app['appstoreurl'];
+	        if (version_compare($data['updateversion'], $version) > 0) {
+	            $result['isupdate'] = 1;
+	            $result['version'] = $data['updateversion'];
+	            return $result;
+	        } else {
+	            $result['isupdate'] = 0;
+	            $result['version'] = '';
+	            return $result;
+	        }
+	    }
+
 	}
 	
 	protected static function outFormatToIos($result)
@@ -44,6 +75,8 @@ class ConfigService extends BaseService
 			'appstore' => $result['appstoreurl'],
 			'open_rate' => $result['scorestate']==1 ? true : false,
 			'open_beta' =>  $result['versionstate']==1 ? true : false,
+		    'intro_html' => $result['intro'],
+		    'sys_img' => $result['sys_img'],
 		);
 		
 		$append = $result['append'];
@@ -54,6 +87,7 @@ class ConfigService extends BaseService
 		$config['h5_url'] = $append['lm'];
 		$config['short_url'] = $append['ss'];
 		$config['force_update'] = $append['isforce'] ? true : false;
+		$config['isupdate'] = $append['isupdate'];
 		$config['last_version'] = $append['updateversion'];
 		$config['updateword'] = $append['updateword'];
 		$config['open_download'] = $append['dl']==1 ? true : false;

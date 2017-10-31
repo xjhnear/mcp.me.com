@@ -14,7 +14,27 @@
 
 <!--{%block main_content%}-->
 <a href="<!--{{url('doc/interface-create',[project.id])}}-->" class="btn" style="margin-top:20px">新增接口</a>
-
+<table class="table table-bordered" style="margin-top:20px">
+    <!--{%for group in interfacelist%}-->			
+	<tr class="info"><td><!--{{group.name}}--></td></tr>					
+	<tr>
+		<td>
+		<div class="row-fluid">
+		    <div class="span12"></div>
+		<!--{%for item in group.interfaces%}-->
+		    <div class="span3" style="margin-left:20px;">
+				<a href="<!--{{url('doc/interface-info',[item.id])}}-->">
+					<!--{{item.name}}-->
+				</a>
+			</div>
+		<!--{%endfor%}-->
+		    <div class="span12"></div>
+		</div>
+		</td>
+	</tr>	
+	<!--{%endfor%}-->
+</table>
+<!--{#
 <table class="table table-bordered" style="margin-top:20px">
     <!--{%for group in interfacelist%}-->			
 	<tr class="info"><td><!--{{group.name}}--></td></tr>
@@ -35,4 +55,5 @@
 	<!--{%endfor%}-->
 	<!--{%endfor%}-->
 </table>
+#}-->
 <!--{%endblock%}-->

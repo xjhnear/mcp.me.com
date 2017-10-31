@@ -55,9 +55,9 @@ class BaiduPushService extends BaseService
      *
      * @return bool
      */
-	public static function sendMessage($title,$content,$linkType,$link,$type,$toUid,$isPush,$allUser,$version,$pushType,$channel_id,$tag_name,$pushPlatform=1)
+	public static function sendMessage($title,$content,$linkType,$link,$type,$toUid,$isPush,$allUser,$version,$pushType,$channel_id,$tag_name,$pushPlatform=1,$version)
 	{
-        return YouPushService::sendMessage($title,$content,$type,$linkType,$link,$isPush,$version,$toUid,$tag_name,$allUser,$pushPlatform);
+        return YouPushService::sendMessage($title,$content,$type,$linkType,$link,$isPush,$version,$toUid,$tag_name,$allUser,$pushPlatform,$version);
         $params['title'] = $title;
         $params['content'] = $content;
         $params['linkType'] = $linkType;
@@ -73,7 +73,6 @@ class BaiduPushService extends BaseService
 
 	    $url = Config::get('app.push_api_url').'android/push_message';
         $result = Utility::loadByHttp($url,$params,'POST');
-        print_r($result);exit;
         if($result && $result['errorCode']=='0' && $result['result']){
             return true;
         }else{
@@ -262,7 +261,7 @@ class BaiduPushService extends BaseService
      * @return bool
      */
     public static function pushUnicastMessage($title,$img,$type,$linktype,$link,$toUid,$channelId,$userId,
-                                              $appends=array(),$isTop=false,$isPush=false,$allUser=false,$pushPlatform=1){
+                                              $appends=array(),$isTop=false,$isPush=false,$allUser=false,$pushPlatform=1,$version=""){
         //if(!$toUid || !$channelId) return false;
 
         if($type){
@@ -281,7 +280,7 @@ class BaiduPushService extends BaseService
             $content = $appends;
         }
 
-        return self::sendMessage($title,$content,$linktype,$link,$type,$toUid,$isPush,$allUser,'',self::PUSH_TYPE_UNICAST,$channelId,'',$pushPlatform);
+        return self::sendMessage($title,$content,$linktype,$link,$type,$toUid,$isPush,$allUser,'',self::PUSH_TYPE_UNICAST,$channelId,'',$pushPlatform,$version);
         
         /*
         $params['msgId'] = 'pushmessage'.date('YmdHis').Str::random(3);

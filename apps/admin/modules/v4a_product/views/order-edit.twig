@@ -82,23 +82,23 @@
 									<label class="control-label">订单状态</label>
 								    <div class="control-group">
 								    	<label class="control-label">
-											<!--{% if item.orderStatus == 0 %}-->
+											<!--{% if goods.orderStatus == 0 %}-->
 												买家未付款
-											<!--{% elseif item.orderStatus == 1 %}-->
+											<!--{% elseif goods.orderStatus == 1 %}-->
 												买家已付款，卖家未发货 
-											<!--{% elseif item.orderStatus == 2 %}-->
+											<!--{% elseif goods.orderStatus == 2 %}-->
 												买家已付款，确认收货
-											<!--{% elseif item.orderStatus == 3 %}-->
+											<!--{% elseif goods.orderStatus == 3 %}-->
 												买家已收货
-											<!--{% elseif item.orderStatus == 4 %}-->
+											<!--{% elseif goods.orderStatus == 4 %}-->
 												交易取消
-											<!--{% elseif item.orderStatus == 5 %}-->
+											<!--{% elseif goods.orderStatus == 5 %}-->
 												买家发起退款，等待卖家受理
-											<!--{% elseif item.orderStatus == 6 %}-->
+											<!--{% elseif goods.orderStatus == 6 %}-->
 												卖家受理 
-											<!--{% elseif item.orderStatus == 7 %}-->
+											<!--{% elseif goods.orderStatus == 7 %}-->
 												卖家进行退款
-											<!--{% elseif item.orderStatus == 8 %}-->
+											<!--{% elseif goods.orderStatus == 8 %}-->
 												交易完成
 											<!--{%endif%}-->
 									</label>					

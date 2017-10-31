@@ -20,7 +20,7 @@ use Youxiduo\Android\Model\CreditLevel;
 */
 class GoodsController extends BackendController
 {
-        
+
     private $myurl='';
     public function _initialize()
     {
@@ -35,16 +35,17 @@ class GoodsController extends BackendController
         $params['pageSize'] =10;
         $params['active'] ='true';
         $input=Input::only("ascOrDesc","productName",'isOnshelf','categoryId','productStock');
-        $params['ascOrDesc']='false';  
+        $params['ascOrDesc']='false';
+        $params['sortType']='Product_Sort';
         if(!empty($input['ascOrDesc']) && $input['ascOrDesc']==1){
-             $params['ascOrDesc']='true';   
+            $params['ascOrDesc']='false';
         }elseif(!empty($input['ascOrDesc']) && $input['ascOrDesc']==2){
-             $params['ascOrDesc']='false';   
+            $params['ascOrDesc']='true';
         }else{
             unset($params['ascOrDesc']);
         }
         if(!empty($input['isOnshelf']) && $input['isOnshelf']=='true'){
-            $params['isOnshelf']='true';  
+            $params['isOnshelf']='true';
         }elseif(!empty($input['isOnshelf']) && $input['isOnshelf']=='false'){
             $params['isOnshelf']='false';
         }else{
@@ -53,7 +54,7 @@ class GoodsController extends BackendController
         if(!empty($input['productName'])){
             $params['productName']=$input['productName'];
         }
-         if(!empty($input['categoryId'])){
+        if(!empty($input['categoryId'])){
             $params['categoryId']=$input['categoryId'];
         }
         $params['productType']='0,1,3,4';
@@ -120,13 +121,13 @@ class GoodsController extends BackendController
                     }
                 }
                 if(!empty($data['goods']['cardCode'])){
-                        $caeddesc=ProductService::getvirtualcardlist(array('cardCode'=>$data['goods']['cardCode']));
-                        if($caeddesc['errorCode'] != null){
-                            $data['goods']['cardDesc']=!empty($caeddesc['result']['0']['cardDesc'])? $caeddesc['result']['0']['cardDesc'] : '';
-                        }
-                    } 
+                    $caeddesc=ProductService::getvirtualcardlist(array('cardCode'=>$data['goods']['cardCode']));
+                    if($caeddesc['errorCode'] != null){
+                        $data['goods']['cardDesc']=!empty($caeddesc['result']['0']['cardDesc'])? $caeddesc['result']['0']['cardDesc'] : '';
+                    }
+                }
                 if(!empty($data['goods']['accountList'])){
-                      $data['goods']['exclusiveAccount']=join(',',$data['goods']['accountList']);
+                    $data['goods']['exclusiveAccount']=join(',',$data['goods']['accountList']);
                 }
                 $data['edit'] =1;
                 $data['goods']['isBelongUs'] = !empty($data['goods']['isBelongUs']) ? 'true' : 'false';
@@ -141,7 +142,7 @@ class GoodsController extends BackendController
         }
         return $this->display('goods-edit',$data);
     }
-    
+
     /**视图：商品种类列表**/
     public function getCateList()
     {
@@ -157,7 +158,7 @@ class GoodsController extends BackendController
 
     /** 视图： 商品订单列表**/
     public function getProductOrderList()
-    {   
+    {
         $input=Input::only('biller','orderStatus','orderDesc');
         $data=array('pageIndex'=>Input::get('page',1),'pageSize'=>10,'active'=>'true');
         if(!empty($input['biller'])){
@@ -171,10 +172,11 @@ class GoodsController extends BackendController
         }
         //print_r($data);exit;
         $result=ProductService::ProductOrderList($data);
+
         if($result['errorCode']==0 ){
             $params=array();
             foreach($result['result'] as $val){
-                $params[]=$val['biller']; 
+                $params[]=$val['biller'];
             }
             $uids=array_flip(array_flip($params));
             $users_level = CreditAccount::getUserCreditByUids(array_flip(array_flip($uids)));
@@ -200,7 +202,7 @@ class GoodsController extends BackendController
                     $data['userinfo']=array();
                     foreach($params as $val_){
                         $data['userinfo'][$val_['uid']]=array('nickname'=>$val_['nickname'],'mobile'=>$val_['mobile']);
-                    }   
+                    }
                 }
             }
 
@@ -250,7 +252,7 @@ class GoodsController extends BackendController
                     }
                 }
             }
-            
+
             $html = $this->html('pop-cate-list',$data);
             return $this->json(array('html'=>$html));
         }
@@ -260,24 +262,24 @@ class GoodsController extends BackendController
     /**视图：添加/修改 商品种类  **/
     public function getCateAddEdit($cate_id=0)
     {
-        
+
         $data=$datainfo= array();
         $datainfo['isBelongUs']='true';
         if(!empty($cate_id)){
             $data['categoryId']=$cate_id;
             $result=ProductService::queryCategory($data);
             if($result['errorCode'] == 0 ){//不为0就在查询一次
-                
+
                 $datainfo['cate']=$result['result']['0'];
                 if(!empty($datainfo['cate']['categoryImgpath'])){
                     $datainfo['cate']['xcategoryImgpath']=strstr($datainfo['cate']['categoryImgpath'], '/userdirs/');
                 }
                 $datainfo['cate']['isBelongUs']=!empty($datainfo['isBelongUs']) ? 'true' : 'false';
-                
+
                 if(!empty($datainfo['cate']['parentId']) && $datainfo['cate']['parentId'] != 0){
                     $data['categoryId']=$datainfo['cate']['parentId'];
                     $result=ProductService::queryCategory($data);
-                   
+
                     if($result['errorCode'] != 0){
                         self::error_html($result);
                     }
@@ -291,7 +293,7 @@ class GoodsController extends BackendController
             }
 
         }
-        
+
         return $this->display('cate-edit',$datainfo);
     }
 
@@ -348,7 +350,7 @@ class GoodsController extends BackendController
         $params['pageIndex'] = Input::get('page',1);
         $params['pageSize'] =10;
         $result=ProductService::searchProductActivityList($params);
-        //print_r($result);//exit;  
+        //print_r($result);//exit;
         if($result['errorCode']==0){
             $data=self::processingInterface($result,$data);
             return $this->display('activity-list',$data);
@@ -412,6 +414,7 @@ class GoodsController extends BackendController
     {
         $data = $params = array();
         $params['pageIndex'] = Input::get('page');
+        $params['isActive'] = 'true';
         $params['pageSize'] =5;
         if(Input::get('keyword')){
             $data['keyword']=$params['cardDesc']=Input::get('keyword');
@@ -453,6 +456,9 @@ class GoodsController extends BackendController
             case 'lightDelivery':
                 $data['lightDelivery']=$val;
                 break;
+            case 'isnew':
+                $data['newest']=$val;
+                break;
             default:
                 # code...
                 return $this->back()->with('global_tips','商品修改属性失败');
@@ -469,11 +475,11 @@ class GoodsController extends BackendController
     'gid' => $input['game_id'] ? $input['game_id'] : self::YXD_GID,
     'gname' => $input['game_name'] ? $input['game_name'] : '',**/
     public function postProductAddEdit()
-    {	 
+    {
         $type='增加';//
 
         $input = Input::only('productName','categoryId','gid','gname','cardCode','productType','isNeedTemplate','templateId','productGamePrice','productPrice','productCost','inventedType','isOnshelf','productStock','isNotice','isBelongUs','productSummary','productSort','exclusiveAccount','shelf_set','productInstruction','singleLimit','isTop','isHot','isNewest','isRecommend','lightDelivery','productDesc'
-  );
+        );
         //$input['gid']=!empty($input['gameId'])?$input['gameId']:'';
         $biTian=array('productCode','productName','productGamePrice','productPrice','productStock');
         $input['isExclusive']='false';
@@ -508,7 +514,7 @@ class GoodsController extends BackendController
 
         $dir = '/userdirs/' . date('Y') . '/' . date('m') . '/';
         $path = storage_path() . $dir;
-        
+
         //大图
         if(Input::hasFile('bigpic_1')){
             //$input['productImgpath']['detailPic']='12345';
@@ -583,7 +589,7 @@ class GoodsController extends BackendController
         }
     }
 
-    
+
 
 
 
@@ -608,7 +614,7 @@ class GoodsController extends BackendController
         $path = storage_path() . $dir;
         //列表图
         if(Input::hasFile('categoryImgpath')){
-            $file = Input::file('categoryImgpath'); 
+            $file = Input::file('categoryImgpath');
             $new_filename = date('YmdHis') . str_random(4);
             $mime = $file->getClientOriginalExtension();
             $file_path =$file->move($path,$new_filename . '.' . $mime );
@@ -616,6 +622,7 @@ class GoodsController extends BackendController
             if($file_path)  $input['categoryImgpath']=$dir.$new_filename . '.' . $mime;
         }
         $input['currencyType']=0;
+
         $result=ProductService::addEditCate($input,$url);
         if($result['errorCode'] == 0){
             return $this->redirect('v4aproduct/goods/cate-list')->with('global_tips','商品种类（增加/修改）成功');
@@ -631,11 +638,11 @@ class GoodsController extends BackendController
             if($result['errorCode'] == 0){
                 return $this->redirect('v4aproduct/goods/product-activity-list')->with('global_tips','操作成功');
             }else{
-                return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']); 
+                return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
             }
         }else{
-           header("Content-type: text/html; charset=utf-8");
-           return $this->back()->with('global_tips','操作失败->编号丢失'); 
+            header("Content-type: text/html; charset=utf-8");
+            return $this->back()->with('global_tips','操作失败->编号丢失');
         }
     }
     //增加/修改 商品活动
@@ -685,15 +692,15 @@ class GoodsController extends BackendController
             $input['isDiscount'] = 'true';
         }
         if($input['onOrOff'] == 'on'){
-            $input['onOrOff'] = 'true'; 
+            $input['onOrOff'] = 'true';
         }
         //统一做了 添加修改
         $result=ProductService::addProductActivity($input,$url);
         if($result['errorCode'] == 0){
             return $this->redirect('v4aproduct/goods/product-activity-list')->with('global_tips','操作成功');
         }else{
-             header("Content-type: text/html; charset=utf-8");
-             return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
+            header("Content-type: text/html; charset=utf-8");
+            return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
         }
 
     }
@@ -761,7 +768,7 @@ class GoodsController extends BackendController
             $params['cardDesc']=Input::get('cardDesc');
         }
         $result=ProductService::getvirtualcardlist($params);
-        
+
         if($result['errorCode']==0){
             $data=self::processingInterface($result,$data,$params['pageSize']);//print_r($data);
             $data['url']=ProductService::getReturnUrl();
@@ -774,67 +781,67 @@ class GoodsController extends BackendController
     {
         $data['edit']=0;
         if(!empty($cardid)){
-                $data['edit']=1;
-                $params['cardCode']=$cardid;
-                $result=ProductService::getvirtualcardlist($params);//print_r($result);exit;
-                if($result['errorCode']==0){
-                    if(!empty($result['result']['0'])){
-                        $data['card']=$result['result']['0'];
-                        return $this->display('card-edit',$data);
-                    }else{
-                        return $this->back()->with('global_tips','查询失败');
-                    }
-                   
+            $data['edit']=1;
+            $params['cardCode']=$cardid;
+            $result=ProductService::getvirtualcardlist($params);//print_r($result);exit;
+            if($result['errorCode']==0){
+                if(!empty($result['result']['0'])){
+                    $data['card']=$result['result']['0'];
+                    return $this->display('card-edit',$data);
                 }else{
-                    return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
+                    return $this->back()->with('global_tips','查询失败');
                 }
+
+            }else{
+                return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
+            }
         }
-        
+
         return $this->display('card-edit',$data);
 
     }
     /**卡密种类修改添加 **/
     public function postCardAddEdit(){
-           $input = Input::only('cardCode','cardType','cardDesc');
-           $biTian=array('cardCode','cardType');
-           $url='virtualcard/add';
+        $input = Input::only('cardCode','cardType','cardDesc');
+        $biTian=array('cardCode','cardType');
+        $url='virtualcard/add';
 
-           //如果是数据修改
-           if(!empty($_POST['id'])){
-                 $url='virtualcard/list_update';
-                 $input['id']=$_POST['id'];
-            }else{
-                 $str='cardCode';
-                 $input['cardCode']= md5(uniqid($str));
+        //如果是数据修改
+        if(!empty($_POST['id'])){
+            $url='virtualcard/list_update';
+            $input['id']=$_POST['id'];
+        }else{
+            $str='cardCode';
+            $input['cardCode']= md5(uniqid($str));
+        }
+        foreach($biTian as $key => $value){
+            if(empty($input[$value]) && $input[$value] !=0){
+                return $this->back()->with('global_tips','操作失败');
             }
-            foreach($biTian as $key => $value){
-                if(empty($input[$value]) && $input[$value] !=0){
-                    return $this->back()->with('global_tips','操作失败');
-                }
-            }
-           $result=ProductService::addeditcard($input,'virtualcard/add');
-           if($result['errorCode']==0){
-                return $this->redirect('v4aproduct/goods/card-list')->with('global_tips','操作成功');
-           }else{
-                header("Content-type: text/html; charset=utf-8");
-                return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
-           }
-           
-           
+        }
+        $result=ProductService::addeditcard($input,'virtualcard/add');
+        if($result['errorCode']==0){
+            return $this->redirect('v4aproduct/goods/card-list')->with('global_tips','操作成功');
+        }else{
+            header("Content-type: text/html; charset=utf-8");
+            return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
+        }
+
+
     }
 
     /** 卡密导入 */
     public function postImport()
-    {   
+    {
         if(!Input::hasFile('importFile')){
-             return $this->back()->with('global_tips','卡密文件不存在');
+            return $this->back()->with('global_tips','卡密文件不存在');
         }
         $input['cardCode']=Input::get('cardCode');
         $input['importDesc']=Input::get('importDesc');
         $input['expTimeStr']=Input::get('expTimeStr');
         $input['type']='txt';
         $input['cardAmountStr']=Input::get('cardAmountStr');
-        
+
         $result=ProductService::importcard($input,$_FILES);
         if($result['errorCode']==0){
             return $this->redirect('v4aproduct/goods/card-list')->with('global_tips','导入成功');
@@ -847,25 +854,25 @@ class GoodsController extends BackendController
 
     /**视图 卡密导入*/
     public function getImport($cardcode='')
-    {  
+    {
         $data['card']['cardCode']=$cardcode;
         return $this->display('card-import',$data);
-    } 
+    }
 
     /** 卡密列表 date('Y-m-d H:i:s',strtotime($expTimeStr));**/
     public function getCardCodeList($cardcode=''){
-            $data = $params = array();
-            $params['pageIndex'] = Input::get('page',1);
-            $params['pageSize'] =10;
-            $params['cardCode'] = $cardcode;
-            $result=ProductService::getvirtualcardcodelist($params);
-            
-            if($result['errorCode']==0){
-                $data=self::processingInterface($result,$data);
-                return $this->display('cardcode-list',$data);
-            }
-            header("Content-type: text/html; charset=utf-8");
-            return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
+        $data = $params = array();
+        $params['pageIndex'] = Input::get('page',1);
+        $params['pageSize'] =10;
+        $params['cardCode'] = $cardcode;
+        $result=ProductService::getvirtualcardcodelist($params);
+
+        if($result['errorCode']==0){
+            $data=self::processingInterface($result,$data);
+            return $this->display('cardcode-list',$data);
+        }
+        header("Content-type: text/html; charset=utf-8");
+        return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
     }
 
     public function getCardDel($cardinfoId='',$cardcode='')
@@ -895,25 +902,25 @@ class GoodsController extends BackendController
         $params['onOrOff']=$status;
         $result=ProductService::changestatuscard($params);
         if($result['errorCode']==0){
-              return $this->redirect('v4aproduct/goods/card-list')->with('global_tips','卡密属性修改成功');
+            return $this->redirect('v4aproduct/goods/card-list')->with('global_tips','卡密属性修改成功');
         }
         header("Content-type: text/html; charset=utf-8");
         return $this->back()->with('global_tips','操作失败->'.$result['errorDescription']);
     }
-    
+
     /***商城数据*****/
     public function getProductDataList()
     {
         $data = $params = array();
         $params['pageIndex'] = Input::get('page',1);
-        $params['pageSize'] =17;
+        $params['pageSize'] =10;
         $arr=array('timeBegin','timeEnd','onOrOff','productName');
         foreach ($arr as $key => $value) {
-             $val=Input::get($value);
-             if(!empty($val) and ($value == 'timeBegin' or $value == 'timeEnd')){
-                 $val=date('Y-m-d H:i:s',strtotime($val));
-             }
-             $data[$value]=$params[$value]=$val;
+            $val=Input::get($value);
+            if(!empty($val) and ($value == 'timeBegin' or $value == 'timeEnd')){
+                $val=date('Y-m-d H:i:s',strtotime($val));
+            }
+            $data[$value]=$params[$value]=$val;
         }
         $result=ProductService::getExportquery($params);
         if($result['errorCode']==0){
@@ -931,13 +938,13 @@ class GoodsController extends BackendController
         $params=array();
         $arr=array('timeBegin','timeEnd','onOrOff','productName');
         foreach ($arr as $key => $value) {
-             $val=Input::get($value);
-             if(!empty($val) && $value == 'timeBegin'){ 
+            $val=Input::get($value);
+            if(!empty($val) && $value == 'timeBegin'){
                 $val=date('Y-m-d H:i:s',strtotime($val));
-             }elseif(!empty($val) &&  $value == 'timeEnd'){
+            }elseif(!empty($val) &&  $value == 'timeEnd'){
                 $val=date('Y-m-d H:i:s',strtotime($val));
-             }
-             $data[$value]=$params[$value]=$val;
+            }
+            $data[$value]=$params[$value]=$val;
         }
         $result=ProductService::getexport($params);
         if($result['errorCode']==0){
@@ -947,40 +954,40 @@ class GoodsController extends BackendController
     }
 
     public function getCardDownload()
-    {   
+    {
         $status=Input::get('status');
-        $cardNumber=Input::get('cardNumber'); 
+        $cardNumber=Input::get('cardNumber');
         $data['url']=ProductService::getReturnUrl();
         $cardCode=Input::get('cardCode');
-        if(!empty($cardNumber)){ 
-           $data['url']=ProductService::getReturnUrl().'?status='.$status.'&cardNumber='.$cardNumber.'&cardCode='.$cardCode;
+        if(!empty($cardNumber)){
+            $data['url']=ProductService::getReturnUrl().'?status='.$status.'&cardNumber='.$cardNumber.'&cardCode='.$cardCode;
         }else{
-           $data['url']=ProductService::getReturnUrl().'?status='.$status.'&cardCode='.$cardCode;
-        } 
+            $data['url']=ProductService::getReturnUrl().'?status='.$status.'&cardCode='.$cardCode;
+        }
         $str=date("YmdHis").'卡密数据提取.txt';
         header("Content-Type: application/force-download");
-        header("Content-Disposition: attachment; filename=$str"); 
+        header("Content-Disposition: attachment; filename=$str");
         readfile($data['url']);
         exit;
     }
-    
+
     public function getProductDataDownload()
-    {   
+    {
         $params='';
         $arr=array('timeBegin','timeEnd','onOrOff','productName');
         foreach ($arr as $key => $value){
-             $val=Input::get($value);
-             if(!empty($val) && $value == 'timeBegin'){ 
+            $val=Input::get($value);
+            if(!empty($val) && $value == 'timeBegin'){
                 $val=date('Y-m-d H:i:s',strtotime($val));
                 $val = urlencode($val);
-             }elseif(!empty($val) &&  $value == 'timeEnd'){
+            }elseif(!empty($val) &&  $value == 'timeEnd'){
                 $val=date('Y-m-d H:i:s',strtotime($val));
                 $val = urlencode($val);
-             }
-             if(!empty($val)){
-                 $params.=$value.'='.$val.'&';
-             }
-            
+            }
+            if(!empty($val)){
+                $params.=$value.'='.$val.'&';
+            }
+
         }
         $params=rtrim($params,'&');
         $data['url']=ProductService::getExportUrl();
@@ -988,7 +995,7 @@ class GoodsController extends BackendController
             $data['url']=ProductService::getExportUrl().'?'.$params;
             Log::info($data['url']);
         }
-        $str=date("YmdHis").'商城数据提取.xls'; 
+        $str=date("YmdHis").'商城数据提取.xls';
         header("Content-Type: application/force-download");
         header("Content-Disposition: attachment; filename=$str");
         readfile($data['url']);
@@ -997,42 +1004,42 @@ class GoodsController extends BackendController
 
 
     public function  getForm()
-    {   
+    {
         $data = $params = array();
         $params['pageIndex'] = Input::get('page',1);
         $params['pageSize'] =10;
         if(Input::get("templateName")){
-             $params['templateName']=Input::get("templateName");
+            $params['templateName']=Input::get("templateName");
         }
-        $result=ProductService::getFormList($params); 
+        $result=ProductService::getFormList($params);
         //print_r($result);exit;
         if($result['errorCode']==0){
             $data=self::processingInterface($result,$params);
             return $this->display('form-list',$data);
         }
-        self::error_html($result);    
+        self::error_html($result);
     }
     /***
     [detailId] =&gt; 1
     [templateId] =&gt; 1
     [detailKey] =&gt; 电话
     [sort] =&gt; 1
-    [notNull] =&gt; 
-    [needEncrypt] =&gt; 
+    [notNull] =&gt;
+    [needEncrypt] =&gt;
     [isActive] =&gt; 1
-    ***/
+     ***/
     public function getAddEditForm($id=0,$name='')
-    {   
+    {
         $data=array();$data['count']=0;
         if(empty($id)) return $this->display('add-edit-form',$data);
         $uid=$this->getSessionData('youxiduo_admin');
-        if(empty($uid['id'])) return $this->redirect('v4aproduct/goods/form')->with('global_tips','用户名获取失败');  
+        if(empty($uid['id'])) return $this->redirect('v4aproduct/goods/form')->with('global_tips','用户名获取失败');
         $data=ProductService::getTemplate(array('templateId'=>$id));
         if($data['errorCode']==0){
-            $sort=end($data['result']); 
+            $sort=end($data['result']);
             return $this->display('add-edit-form',array('info'=>$data['result'],'count'=>!empty($sort['sort'])?$sort['sort']:0,'templateName'=>$name,'templateId'=>$id));
         }
-        return $this->redirect('v4aproduct/goods/form')->with('global_tips','编辑接口调用失败。');  
+        return $this->redirect('v4aproduct/goods/form')->with('global_tips','编辑接口调用失败。');
     }
 
     public function postFormSave()
@@ -1040,68 +1047,68 @@ class GoodsController extends BackendController
         $input=Input::only('templateId','sort','notNull','detailId','templateName','input_name','needEncrypt','count');
         $params['templateName']=$input['templateName'];
         $size=sizeof($input['input_name']);
-        
+
         for($i=0;$i<$size;$i++){
             if(!empty($input['input_name'][$i])){
-                   
-                    $params['templateDetailList'][$i]=array(
-                       'detailKey'=>$input['input_name'][$i],
-                       'sort'=>intval($input['sort'][$i]),
-                       'notNull'=>!empty($input['notNull'][$i]) && $input['notNull'][$i]==1?'true':'false',
-                       'needEncrypt'=>!empty($input['needEncrypt'][$i]) && $input['needEncrypt'][$i]==1?'true':'false',
-                    );
-                     if(!empty($input['detailId'][$i])){
-                            $params['templateDetailList'][$i]['detailId']=$input['detailId'][$i];
-                          //$params['templateDetailList'][$i]['sort']=intval($input['sort'][$i]);      
-                    }
-                    /****
-                    if(!empty($input['detailId'][$i])){
-                            $params['templateDetailList'][$i]['detailId']=$input['detailId'][$i];
-                            $params['templateDetailList'][$i]['sort']=intval($input['sort'][$i]);
-                    }else{  
-                           $input['count']=$input['count']+1;
-                           $params['templateDetailList'][$i]['sort'] =$input['count'];
-                    }
-                    ***/
-                    //'sort'=>!empty($input['sort'][$i]) ? intval($input['sort'][$i])+1:intval($input['sort'][$i])++,
+
+                $params['templateDetailList'][$i]=array(
+                    'detailKey'=>$input['input_name'][$i],
+                    'sort'=>intval($input['sort'][$i]),
+                    'notNull'=>!empty($input['notNull'][$i]) && $input['notNull'][$i]==1?'true':'false',
+                    'needEncrypt'=>!empty($input['needEncrypt'][$i]) && $input['needEncrypt'][$i]==1?'true':'false',
+                );
+                if(!empty($input['detailId'][$i])){
+                    $params['templateDetailList'][$i]['detailId']=$input['detailId'][$i];
+                    //$params['templateDetailList'][$i]['sort']=intval($input['sort'][$i]);
+                }
+                /****
+                if(!empty($input['detailId'][$i])){
+                $params['templateDetailList'][$i]['detailId']=$input['detailId'][$i];
+                $params['templateDetailList'][$i]['sort']=intval($input['sort'][$i]);
+                }else{
+                $input['count']=$input['count']+1;
+                $params['templateDetailList'][$i]['sort'] =$input['count'];
+                }
+                 ***/
+                //'sort'=>!empty($input['sort'][$i]) ? intval($input['sort'][$i])+1:intval($input['sort'][$i])++,
             }else{
-                 return $this->back()->with('global_tips','操作失败');
-            } 
-       }
-       if(!empty($input['templateId'])){
+                return $this->back()->with('global_tips','操作失败');
+            }
+        }
+        if(!empty($input['templateId'])){
             $params['templateId']=$input['templateId'];
-       }
-      
-       $result=ProductService::add_form($params);
-       if($result['errorCode']==0)
-       {
-          return $this->redirect('v4aproduct/goods/form')->with('global_tips','操作成功');
-       }
-     }
+        }
 
-     public function getDeleteForm($id=0)
-     {
-            if(empty($id)){
-                return $this->back()->with('global_tips','操作失败-ID缺失');
-            }
-            $result=ProductService::deleteForm(array('templateId'=>$id));
-            if($result['errorCode']==0){
-                 return $this->redirect('v4aproduct/goods/form')->with('global_tips','操作成功');
-            }
-            return $this->back()->with('global_tips','操作失败');
-     }
+        $result=ProductService::add_form($params);
+        if($result['errorCode']==0)
+        {
+            return $this->redirect('v4aproduct/goods/form')->with('global_tips','操作成功');
+        }
+    }
+
+    public function getDeleteForm($id=0)
+    {
+        if(empty($id)){
+            return $this->back()->with('global_tips','操作失败-ID缺失');
+        }
+        $result=ProductService::deleteForm(array('templateId'=>$id));
+        if($result['errorCode']==0){
+            return $this->redirect('v4aproduct/goods/form')->with('global_tips','操作成功');
+        }
+        return $this->back()->with('global_tips','操作失败');
+    }
 
 
-     //商品推荐位列表
-     public function getRecommend()
-     {
+    //商品推荐位列表
+    public function getRecommend()
+    {
         $params = array();
         $params['pageIndex'] = Input::get('page',1);
         $params['pageSize'] =10;
         $params['location']=Input::get('location');
         $result=ProductService::RecommendList($params);
 
-         if($result['errorCode']==0){
+        if($result['errorCode']==0){
             $data=self::processingInterface($result,$params);
             return $this->display('recommend-list',$data);
         }
@@ -1121,19 +1128,19 @@ class GoodsController extends BackendController
 
     //商品推荐位添加修改
     public function getRecommendAddEdit($id=0)
-    {   
-       $data=array();
-       if(empty($id)) return $this->display('recommend-edit',$data);
-       $params['recommendId']=$id;
-       $result=ProductService::RecommendList($params);
-       if($result['errorCode'] == 0){
+    {
+        $data=array();
+        if(empty($id)) return $this->display('recommend-edit',$data);
+        $params['recommendId']=$id;
+        $result=ProductService::RecommendList($params);
+        if($result['errorCode'] == 0){
             $data['recommend']=$result['result']['0'];
             return $this->display('recommend-edit',$data);
-       }
-       self::error_html($result);
+        }
+        self::error_html($result);
     }
 
-    
+
     public function postRecommendAddEdit()
     {
         $input=Input::only('recommendId','isTop','location','showTime','productCode','title','sort','description');
@@ -1189,9 +1196,9 @@ class GoodsController extends BackendController
         $params['pageIndex'] = Input::get('page',1);
         $params['pageSize'] =7;
         if(Input::get("templateName")){
-             $params['templateName']=Input::get("templateName");
+            $params['templateName']=Input::get("templateName");
         }
-        $result=ProductService::getFormList($params); 
+        $result=ProductService::getFormList($params);
         if($result['errorCode']==0){
             $data=self::processingInterface($result,$params,$params['pageSize']);
 
@@ -1210,21 +1217,23 @@ class GoodsController extends BackendController
                 $params[$value]=Input::get($value);
             }
         }
-        $result=ProductService::query($params); 
+        $params['addTimeBegin'] = Input::get('addTimeBegin')?Input::get('addTimeBegin').' 00:00:00':'';
+        $params['addTimeEnd'] = Input::get('addTimeEnd')?Input::get('addTimeEnd').' 23:59:59':'';
+        $result=ProductService::query($params);
         if($result['errorCode']==0){
-            $data=self::processingInterface($result,$params);
+            $data=self::processingInterface($result,$params,$params['pageSize']);
             return $this->display('query-list',$data);
         }
 
     }
     /****商城列表删除***/
     public function getGoodsdelete($id=0)
-    {   
+    {
         if(empty($id)){
             //return $this->redirect('v4aproduct/goods/list')->with('global_tips','删除出错-Code丢失');
             return $this->json(array('error'=>1));
         }
-        $result=ProductService::DeleteProduct(array('productCode'=>$id)); 
+        $result=ProductService::DeleteProduct(array('productCode'=>$id));
         if($result['errorCode']==0){
             //return $this->redirect('v4aproduct/goods/list')->with('global_tips','商品删除成功');
             return $this->json(array('error'=>0));
@@ -1234,7 +1243,7 @@ class GoodsController extends BackendController
 
     //需要处理的订单
     public function getNeedOrderList()
-    {   
+    {
 
         $input=Input::all();
         $input['pageSize']=15;
@@ -1286,7 +1295,7 @@ class GoodsController extends BackendController
                     $data['userinfo']=array();
                     foreach($params as $val_){
                         $data['userinfo'][$val_['uid']]=array('nickname'=>$val_['nickname'],'mobile'=>$val_['mobile']);
-                    }   
+                    }
                 }
             }
             $data=self::processingInterface($result,$input,15);
@@ -1294,14 +1303,14 @@ class GoodsController extends BackendController
             return $this->display('need-list',$data);
         }
         self::error_html($result);
-    
+
     }
 
     public function getDelivery($id='', $uid='',$productcode,$orderSmsInfo='')
     {
 
         if(empty($id) || empty($uid) || empty($productcode)){
-             return $this->redirect('v4aproduct/goods/need-order-list')->with('global_tips','参数缺失');
+            return $this->redirect('v4aproduct/goods/need-order-list')->with('global_tips','参数缺失');
         }
 
         $result=ProductService::update_orderdeliver(array('orderId'=>$id));
@@ -1365,12 +1374,12 @@ class GoodsController extends BackendController
             if(empty($arr['0'])){ return $this->back()->with('global_tips','订单号失败'); }
             $result=ProductService::update_orderdeliver(array('orderId'=>$arr['0']));
             if($result['errorCode']==0){
-                 $info = UserDevice::getNewestInfoByUid($arr['1']);
-                 if(!$info) return $this->back()->with('global_tips','订单号：'.$arr['0'].' 调用失败-device_id获取失败');;
-                 $channelId = $info['channel_id'];
-                 $userId = $info['device_id'];
-                 $append = array('msg'=>'您购买的'.empty($arr['3'])?$arr['3']:''.'已经发货成功，如有问题请联系客服QQ：2985659531','linktype'=>16,'link'=>$arr['2']);
-                 BaiduPushService::pushUnicastMessage('商城购买(订单号:'.$arr['0'].')','',16,-1,0,$arr['1'], $channelId, $userId,$append,false,true);
+                $info = UserDevice::getNewestInfoByUid($arr['1']);
+                if(!$info) return $this->back()->with('global_tips','订单号：'.$arr['0'].' 调用失败-device_id获取失败');;
+                $channelId = $info['channel_id'];
+                $userId = $info['device_id'];
+                $append = array('msg'=>'您购买的'.empty($arr['3'])?$arr['3']:''.'已经发货成功，如有问题请联系客服QQ：2985659531','linktype'=>16,'link'=>$arr['2']);
+                BaiduPushService::pushUnicastMessage('商城购买(订单号:'.$arr['0'].')','',16,-1,0,$arr['1'], $channelId, $userId,$append,false,true);
             }else{
                 return $this->back()->with('global_tips','订单号：'.$arr['0'].' 请求失败');
             }
@@ -1381,21 +1390,21 @@ class GoodsController extends BackendController
         return $this->redirect('v4aproduct/goods/need-order-list')->with('global_tips','操作成功');
     }
 
-   public function postRelease(){
-       $value = Input::get('value');
-       $code = Input::get('code');
-       $uid=$this->getSessionData('youxiduo_admin');
-       if(empty($uid['id'])){
-           echo json_encode(array('success'=>"false",'mess'=>'需重新登录','data'=>""));
-       };
-       $data = array('productCode'=>$code,'productStock'=>$value,'uid'=>$uid['id']);
-       $res =  ProductService::release($data);
-       if(!$res['errorCode']&&$res['result']){
-           echo json_encode(array('success'=>"true",'mess'=>'修改成功','data'=>""));
-       }else{
-           echo json_encode(array('success'=>"false",'mess'=>$res['errorDescription'],'data'=>""));
-       }
-   }
+    public function postRelease(){
+        $value = Input::get('value');
+        $code = Input::get('code');
+        $uid=$this->getSessionData('youxiduo_admin');
+        if(empty($uid['id'])){
+            echo json_encode(array('success'=>"false",'mess'=>'需重新登录','data'=>""));
+        };
+        $data = array('productCode'=>$code,'productStock'=>$value,'uid'=>$uid['id']);
+        $res =  ProductService::release($data);
+        if(!$res['errorCode']&&$res['result']){
+            echo json_encode(array('success'=>"true",'mess'=>'修改成功','data'=>""));
+        }else{
+            echo json_encode(array('success'=>"false",'mess'=>$res['errorDescription'],'data'=>""));
+        }
+    }
 
 
     //用于生成符合前台页面SELECT标签的数组

@@ -22,6 +22,14 @@
 			    <table class="table table-hover table-nomargin">
 			        <thead>
 						<tr>
+						    <th class="col-40">
+						        <div class="btn-group">
+							        <a data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></a>
+							        <ul class="dropdown-menu">
+							            <li><a href="javascript:void(0);" data-target="#upgrade-version" data-toggle="modal">升级版本</a></li>
+							        </ul>
+							    </div>
+							</th>
 						    <th class="col-50">ID</th>
 						    <th>名称</th>
 							<th class="col-80">版本</th>
@@ -35,6 +43,7 @@
 					<tbody>
 					    <!--{%for item in datalist%}-->
 						<tr>
+						    <td><input type="checkbox" name="ids" value="<!--{{item.id}}-->" /></td>
 							<td><!--{{item.id}}--></td>
 							<td><!--{{item.showname}}--></td>
 							<td><!--{{item.version}}--></td>
@@ -52,8 +61,45 @@
 			    <div class="pagelink">
 			        <!--{{pagelinks}}-->
 			    </div>
+			    
+			    <div class="modal fade" id="upgrade-version" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" id="myModalLabel">升级版本</h4>
+				      </div>
+				      <div class="modal-body">
+				          				      	
+				      </div>
+				      <div class="modal-footer">
+				      	<button id="save-apint-uids" type="button" class="btn btn-success">保存</button>
+				        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+			    
 			</div>
 		</div>
 	</div>
 </div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+$(function(){
+
+    $('a.ajax-upgrade').bind('click',function(){
+        
+    });
+
+    $('input[name="all"]').bind('click',function(){
+        if($(this).prop('checked')==true){
+            $('input[name="ids"]').prop('checked',true);
+        }else{
+            $('input[name="ids"]').prop('checked',false);
+        }
+    });
+});
+</script>
 <!--{%endblock%}-->

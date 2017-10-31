@@ -1,0 +1,79 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                   任务奖励钻石
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('v4statistics/appaccount/task-diamonds')}}-->" class="">
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+                                    <input type="text" class="input-small" name="taskName" placeholder="任务名称" value="<!--{{ search.taskName }}-->">
+                                </td>
+						        <td>
+									<input id="gameselect" name="game_id" data-from="ios" type="hidden" value="<!--{{search.game_id}}-->"
+									       class="bigdrop select2-offscreen width_150" tabindex="-1">
+						        </td>
+                                <td><span class="label label-blue">开始时间</span>
+                                    <div class="input-append date " >
+                                        <input name="startDate" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker" id="date_timepicker_start" value="<!--{{search.startTime}}-->" readonly>
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td><span class="label label-blue">结束时间</span>
+                                    <div class="input-append date "  data-date="">
+                                        <input name="endDate" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" type="text" class="input-medium datetimepicker"  value="<!--{{search.endTime}}-->" id="date_timepicker_end" readonly>
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-120"></th>
+                        <th class="col-120">钻石</th>
+                        <th class="col-120">人数</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for key,item in list%}-->
+                    <tr>
+                        <td><!--{{item.taskName}}--></td>
+                        <td><!--{{item.prizeKey}}--></td>
+                        <td><!--{{item.number}}--></td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    <tr>
+                        <td style="font-weight: 600;"><!--{{give}}--></td>
+                        <td style="font-weight: 600;"><!--{{total}}--></td>
+                        <td style="font-weight: 600;"><!--{{number}}--></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+$(function(){
+	gameselect('#gameselect');
+
+});
+
+</script>
+<!--{%endblock%}-->

@@ -17,7 +17,7 @@ class RecommendController extends BackendController
 	public function getList()
 	{	
 		$search=array();
-		$search['page']=Input::get('page',1);
+		$search['pageIndex']=Input::get('page',1);
 		$search['pageSize']=15;
 		$search['%yxd_advert_recommend.name']=Input::get('%name');
 		$search['=yxd_advert_recommend.is_show']='1';
@@ -39,6 +39,7 @@ class RecommendController extends BackendController
 	public function getRecommendAddEdit($id=0)
 	{
 		$datainfo['datalist']['is_show']=1;
+		
 		if(empty($id)){
 			return $this->display('/apptypes/recommend-addedit',$datainfo);
 		}

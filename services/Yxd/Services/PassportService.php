@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Yxd\Models\Passport;
+use Yxd\Services\Models\AccountThirdLogin;
+use Yxd\Services\Models\Account;
 
 class PassportService extends Service
 {
@@ -80,16 +82,16 @@ class PassportService extends Service
 	{
 		return self::verifyWebUser($third_type, $third_uid);
 		if(!in_array($identify_type,array('idfa','mac'))) return false;
-		$uids = DB::table('account')->where($identify_type,'=',$identify)->lists('uid');
+		$uids = Account::db()->where($identify_type,'=',$identify)->lists('uid');
 		$insert = true;
 		if(!$uids){
-			$third = DB::table('account_thirdlogin')->where('type','=',$third_type)->where('type_uid','=',$third_uid)->first();
+			$third = AccountThirdLogin::db()->where('type','=',$third_type)->where('type_uid','=',$third_uid)->first();
 			if($third) return $third['uid'];
 		}else{
-			$thirds = DB::table('account_thirdlogin')->whereIn('uid',$uids)->where('type','=',$third_type)->get();
+			$thirds = AccountThirdLogin::db()->whereIn('uid',$uids)->where('type','=',$third_type)->get();
 			if(!$thirds){
 				$data = array('uid'=>$uids[0],'type'=>$third_type,'type_uid'=>$third_uid);
-				DB::table('account_thirdlogin')->insertGetId($data);
+				AccountThirdLogin::db()->insertGetId($data);
 				return $uids[0];
 			}
 			
@@ -103,7 +105,7 @@ class PassportService extends Service
 		}
 		if($insert===true){
 			$data = array('uid'=>$uids[0],'type'=>$third_type,'type_uid'=>$third_uid);
-			DB::table('account_thirdlogin')->insertGetId($data);
+			AccountThirdLogin::db()->insertGetId($data);
 			return $uids[0];
 		}
 		return false;
@@ -111,7 +113,7 @@ class PassportService extends Service
 	
 	public static function verifyWebUser($third_type,$third_uid)
 	{
-		$third = DB::table('account_thirdlogin')->where('type','=',$third_type)->where('type_uid','=',$third_uid)->first();
+		$third = AccountThirdLogin::db()->where('type','=',$third_type)->where('type_uid','=',$third_uid)->first();
 		if(!$third){
 			return false;
 		}

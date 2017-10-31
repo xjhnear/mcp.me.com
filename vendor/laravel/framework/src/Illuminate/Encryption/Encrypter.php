@@ -226,7 +226,6 @@ class Encrypter {
 	 */
 	protected function getRandomizer()
 	{
-		return 2;
 		if (defined('MCRYPT_DEV_URANDOM')) return MCRYPT_DEV_URANDOM;
 
 		if (defined('MCRYPT_DEV_RANDOM')) return MCRYPT_DEV_RANDOM;

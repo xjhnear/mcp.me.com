@@ -23,7 +23,7 @@ class DataSync extends Command
 		//DataSyncService::syncFeedUser();
 		//DataSyncService::syncGiftbag();//安卓礼包
 		//DataSyncService::outEveryDayGameDown();
-                DataSyncService::autoSendMessage();
+		DataSyncService::autoSendMessage();
 		$this->info('data-sync command is called success');
 	}
 }

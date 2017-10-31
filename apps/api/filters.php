@@ -70,7 +70,16 @@ Route::filter('uri_verify',function(){
     foreach($params as $k=>$v){
     	$query .= $k.'='.$v.'&';
     }
-    $query .= 'key=' . Config::get('app.urlsecret');
+    if(empty($input['version'])){
+        return Response::json(array('result'=>'','errorCode'=>'11211','errorMessage'=>'版本号丢失'));
+    }
+    if(version_compare($input['version'],'3.3.0') > 0){
+    	$query .= 'key=';
+    }else{
+        $query .= 'key=' . Config::get('app.urlsecret');
+    }
+
+	
     $secret = md5($query);
     if($secret != $source){
     	$error = serialize($input) . "\r\n";

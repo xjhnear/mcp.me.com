@@ -22,21 +22,30 @@ final class Video extends Model implements IModel
 		return __CLASS__;
 	}
 	
-	public static function getCount($type)
+	public static function getCount($type,$name="")
 	{
 		$tb = self::db()->where('apptype','!=',1);
 		if($type){
 			$tb = $tb->where('type','=',$type);
 		}
+        if($name){
+            $tb = $tb->where('vname','=',$name);
+        }
 		return $tb->count();
 	}
 	
-	public static function getList($pageIndex,$pageSize,$type)
+	public static function getList($pageIndex,$pageSize,$type,$vids=NULL,$name="")
 	{
 	    $tb = self::db()->where('apptype','!=',1);
 		if($type){
 			$tb = $tb->where('type','=',$type);
 		}
+		if($vids){
+		    $tb = $tb->whereIn('id',$vids);
+		}
+        if($name){
+            $tb = $tb->where('vname',$name);
+        }
 		$result = $tb->orderBy('id','desc')->forPage($pageIndex,$pageSize)->get();
 		return $result;
 	}

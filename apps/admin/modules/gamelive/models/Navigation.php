@@ -137,7 +137,7 @@ class Navigation extends BaseHttp
     public static function RemoveColumn($id)
     {
         $url = self::HOST_URL . 'RemoveColumn';
-        $params = array('columnid'=>$id);
+        $params = array('columnId'=>$id);
         $result = self::http($url,$params);
         if($result['errorCode']==0){
             return true;

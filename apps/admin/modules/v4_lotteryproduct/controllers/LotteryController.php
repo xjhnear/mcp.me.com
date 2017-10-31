@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Yxd\Modules\Core\BackendController;
+use Youxiduo\Helper\MyHelpLx;
 
 class LotteryController  extends BackendController{
     public function _initialize(){
@@ -30,6 +31,7 @@ class LotteryController  extends BackendController{
         $inputinfo=MyHelp::get_Input_value($input,$params);//$inputinfo['activityStartTime']=date('Y-m-d H:i:s',strtotime($inputinfo['activityStartTime']));
         $inputinfo['isLoadCount']='true';
         $result=LotteryproductService::query_lottery($inputinfo,$params);
+        $data['select'] = array();
         if($result['errorCode']==0){
             $data=MyHelp::processingInterface($result,$inputinfo,$inputinfo['pageSize']);
             $data['prize']=LotteryproductService::query_prize();
@@ -54,6 +56,16 @@ class LotteryController  extends BackendController{
                        $data['user_max_purchase_number']=array('dicId'=>$val['id'],'dicValue'=>$val['dicValue']);
                 }
             }
+            if(!isset($data['select']) || !is_array($data['select'])) $data['select'] = array();
+            $xxxx = array();
+            $num = 10000;
+            if(isset($current['result']['periodId'])){
+                $num = $current['result']['periodId'];
+            }
+            for($i=$num;$i>=1;$i--){
+                $xxxx[$i] = $i;
+            }
+            $data['allPeriodId'] = $xxxx;
             return $this->display('lottery/lottery-list',$data);
         }
 	}
@@ -62,13 +74,15 @@ class LotteryController  extends BackendController{
     public function postZjhm()
     {   
         $input = Input::all();
-        $rule = array('periodId'=>'required','lotteryNumber'=>array('integer','min:100','max:999'));
+        $input['lotteryNumber'] = (int)$input['lotteryNumber'];
+        $rule = array('periodId'=>'required','lotteryNumber'=>array('integer','min:0','max:999'));
         $prompt = array('periodId.required'=>'彩票ID为空','lotteryNumber'=>'请填写3位数的彩票号码');
         $valid = Validator::make($input,$rule,$prompt);
         if($valid->fails()) {
             echo  json_encode(array('errorCode'=>1,'msg'=>$valid->messages()->first()));
             exit; //
-        } 
+        }
+        $input['lotteryNumber'] = str_pad($input['lotteryNumber'],3,"0",STR_PAD_LEFT);
         $result=LotteryproductService::publish_lottery_number($input);
         $result=$result['errorCode'] == 0 ? array('errorCode'=>0,'msg'=>'更新成功') : array('errorCode'=>1,'msg'=>$result['errorDescription']); 
         echo  json_encode($result);
@@ -94,8 +108,8 @@ class LotteryController  extends BackendController{
     public function postUpdatedic()
     {
         $input = Input::all();
-        $rule = array('dicId'=>'required');
-        $prompt = array('dicId.required'=>'主键ID为空');
+        $rule = array('id'=>'required');
+        $prompt = array('id.required'=>'主键ID为空');
         $valid = Validator::make($input,$rule,$prompt);
         if($valid->fails()) {
             echo  json_encode(array('errorCode'=>2,'msg'=>$valid->messages()->first()));
@@ -165,6 +179,82 @@ class LotteryController  extends BackendController{
             return $this->redirect('/v4lotteryproduct/lottery/users/'.$id)->with('global_tips','操作成功');
         }
         return $this->redirect('/v4lotteryproduct/lottery/users/'.$id)->with('global_tips','操作失败');
+    }
+
+
+    //天天彩游币管理
+    public function getYb(){
+        $data = $search = $input = array();
+        $pageSize = 5;
+        $count = 0;
+        $input = Input::get();
+        $search = array_filter($input);//array_filter去空函数      
+        $pageIndex = (int)Input::get('page',1);
+        $search['pageIndex'] = $pageIndex;
+        $search['pageSize'] = $pageSize;
+        $search['timeBegin'] = Input::get('timeBegin','');
+        $search['timeEnd'] = Input::get('timeEnd','');
+        $res = LotteryproductService::statistics_yb($search);
+        if(!$res['errorCode']){
+            $data['val1'] = $res['result'];
+        }
+        $search['operationType'] = "lottery_consume";//发放游币
+        $res = LotteryproductService::statistics_yb($search);
+        if(!$res['errorCode']){
+            $data['val2'] = $res['result'];
+        }
+
+
+        if($res['errorCode']){
+            $count = $res['count'];
+        }
+
+        unset($search['page']);unset($search['pageIndex']);//pager不能有‘page'参数
+        $data['pagelinks'] = MyHelpLx::pager(array(),$count,$pageSize,$search);
+        $data['search'] = $search;//回调函数
+        return $this->display('lottery/lottery-yb',$data);
+    }
+ 
+    //大转盘游币管理
+    public function getBigYb(){
+        $data = $search = $input = array();
+        $pageSize = 5;
+        $count = 0;
+        $input = Input::get();
+        $search = array_filter($input);//array_filter去空函数
+        $pageIndex = (int)Input::get('page',1);
+        $search['pageIndex'] = $pageIndex;
+        $search['pageSize'] = $pageSize;
+        $search['timeBegin'] = Input::get('timeBegin','');
+        $search['timeEnd'] = Input::get('timeEnd','');
+        $res = LotteryproductService::statistics_yb($search);
+        if(!$res['errorCode']){
+            $data['val1'] = $res['result'];
+        }
+
+        $search['operationType'] = "wheel_consume";
+        $res = LotteryproductService::statistics_yb($search);
+        if(!$res['errorCode']){
+            $data['val2'] = $res['result'];
+        }
+
+
+        $search['operationType'] = "wheel_award";
+        $res = LotteryproductService::statistics_diamond($search);
+        if(!$res['errorCode']){
+            $data['val3'] = $res['result'];
+        }
+        if($res['errorCode']){
+            $count = $res['count'];
+        }
+
+        unset($search['page']);unset($search['pageIndex']);//pager不能有‘page'参数
+        $data['pagelinks'] = MyHelpLx::pager(array(),$count,$pageSize,$search);
+        $data['search'] = $search;//回调函数
+        return $this->display('bigwheel/bigwheel-yb',$data);
+
+
+
     }
     
 }

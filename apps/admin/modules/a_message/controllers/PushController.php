@@ -81,10 +81,16 @@ class PushController extends BackendController
 		$csrf_token = Input::get('csrf_token');
 		$session_token = Session::get('csrf_token');
 		$pushPlatform = Input::get('pushPlatform',1);
+        $version = Input::get('version',array());
+        if(Input::get("c0","")){
+            $version = "";
+        }else{
+            $version = implode(',',$version);
+        }
+
 		if($csrf_token != $session_token){
 			return $this->back('令牌验证失败，重复或无效提交');
 		}
-		
 		if($to_uids){
 			$uids = explode(',',$to_uids);
 		}else{
@@ -118,10 +124,10 @@ class PushController extends BackendController
 			$toUids = explode(',',$to_uids);
 			$isPush = $push==1 ? true : false;
             if(!$link) $link = 0;
-			NoticeService::sendMessage($title, $content, $linkType, $link, $toUids, $isPush,false,0,$pushPlatform);
+			NoticeService::sendMessage($title, $content, $linkType, $link, $toUids, $isPush,false,0,$pushPlatform,$version);
 		}elseif($msgtype == 2){
 			$isPush = $push==1 ? true : false;
-			NoticeService::sendOneMessage($title, $content, $linkType, $link, 0, $isPush,true,0,$pushPlatform);
+			NoticeService::sendOneMessage($title, $content, $linkType, $link, 0, $isPush,true,0,$pushPlatform,$version);
 		}
 				
 		return $this->redirect('a_message/push/list');

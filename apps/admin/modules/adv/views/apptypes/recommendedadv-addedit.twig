@@ -17,7 +17,7 @@
                                 <input type="hidden" name="nature_id" value="<!--{{nature_info.Id}}-->">
                             <!--{% else%}-->
                                
-                                <select id="nature_id"  name="nature_id" data-rule-required="true" data-msg-required="推荐类型不能为空">
+                            <select id="nature_id"  name="nature_id" data-rule-required="true" data-msg-required="推荐类型不能为空">
                                     <option value=""></option>
                                     <!--{%for item in nature%}-->
                                         <option  datatype="<!--{{item.recommend_type}}-->" <!--{%if item.Id==adv.nature_id %}--> selected <!--{%endif%}-->value="<!--{{item.Id}}-->"><!--{{item.natureName}}--></option> 
@@ -30,6 +30,16 @@
 			    <div class="control-group">
                         <label class="control-label">对应类型</label>
                         <div class="controls" id="type"></div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">推荐发布类型</label>
+                    <div class="controls" >
+                        <select name="adv_type" id="adv_type">
+                            <!--{%for type_ in type%}-->
+                                <option  <!--{%if type_==adv.adv_type %}-->selected<!--{%endif%}--> value="<!--{{type_}}-->"><!--{{type_}}--></option>
+                            <!--{%endfor%}-->
+                        </select>
+                    </div>
                 </div>
                 <div class="control-group" >
                            <label class="control-label">排序<span class="help-block"></span></label>
@@ -47,18 +57,17 @@
                                 </select>
                             </div>
                     </div>
-                <div id="tuijianwei"  style="display:none">
-    			    <div class="control-group">
-    						<label for="textfield" class="control-label">选择系统与版本<span class="nes-star">*</span></label>
+                <div class="control-group">
+                            <label for="textfield" class="control-label">选择系统与版本<span class="nes-star">*</span></label>
                             <div class="controls">
                                 <select  name="apptypes_id" data-rule-required="true" data-msg-required="系统与版本不能为空">
-                                	<option value=""></option>
-                                	<!--{%for item in apptypesselect%}-->
-    									<option <!--{%if item.Id==adv.apptypes_id %}--> selected <!--{%endif%}-->value="<!--{{item.Id}}-->"><!--{{item.name}}--></option> 
-    								<!--{%endfor%}-->
+                                    <option value=""></option>
+                                    <!--{%for item in apptypesselect%}-->
+                                        <option <!--{%if item.Id==adv.apptypes_id %}--> selected <!--{%endif%}-->value="<!--{{item.Id}}-->"><!--{{item.name}}--></option> 
+                                    <!--{%endfor%}-->
                                 </select>
-    						</div>
-    				</div>
+                            </div>
+                    </div>
                     <div class="control-group">
                             <label class="control-label">对应版本号</label>
                             <div class="controls" id="version"></div>
@@ -68,6 +77,8 @@
                             <label class="control-label">推荐位类型</label>
                             <div class="controls" id="selectrecommend"></div>
                     </div>
+                <div id="tuijianwei"  style="display:none">
+    			    
                     <div class="control-group" >
                            <label class="control-label">关联ID<span class="nes-star">*</span></label>
                             <div class="controls" >
@@ -96,7 +107,7 @@
                                 </div>
                                 <span class="help-inline"></span>
                             </div>
-                         </div>   
+                     </div>   
 
     				<div class="control-group">
                             <label class="control-label">选项卡 </label>
@@ -119,15 +130,44 @@
                     		</div>
                     </div>
                     <div class="control-group"id="a_type">
-                            <label class="control-label">显示位置<span class="help-block">仅限安卓2.9版</span></label>
+                            <label class="control-label">显示位置</label>
+                            <div class="controls" id="get_location" >
+                              
+
+                            </div>
+                    </div>
+                     <div class="control-group">
+                            <label class="control-label">描述</label>
                             <div class="controls" >
-                                <label class="radio inline"><!--{{form_radio('location','应用首页',adv.location=='应用首页')}}-->应用首页</label>
-                                <label class="radio inline"><!--{{form_radio('location','商城首页 ',adv.location=='商城首页')}}-->商城首页</label>
-                                <label class="radio inline"><!--{{form_radio('location','论坛首页',adv.location=='论坛首页')}}-->论坛首页</label>
+                                <textarea id="words" name="words" style="width:544px;height:200px;"><!--{{adv.words}}--></textarea>
                             </div>
                     </div>
                 </div>
+
                 <div id="youxiquan" style="display:none">
+                    <div class="control-group">
+                            <label class="control-label">推荐位标题<span class="nes-star">*</span></label>
+                            <div class="controls" >
+                                <input class="input-large" type="text" value="<!--{{adv.title}}-->" data-rule-required="true" data-msg-required="推荐位标题不能为空" name="youxiTitle">   
+                            </div>
+                    </div>
+                    <input type="hidden" name="youxi_litpic_" value="<!--{{ adv.litpic_ }}-->">
+                    <div class="control-group">
+                            <label class="control-label">推荐位图<span class="nes-star">*</span></label>
+                            <div class="controls">
+                                <div class="fileupload fileupload-new" data-provides="fileupload">
+                                    <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;">
+                                        <img id="youxi_listpic_img" src="<!--{% if adv.litpic %}-->http://img.youxiduo.com<!--{{adv.litpic}}--><!--{%else%}-->/static/img/nopic.gif<!--{%endif%}-->" />
+                                    </div>
+                                    <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;">
+                                    </div>
+                                    <div>
+                                        <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择位图</span><span class="fileupload-exists">重新选择</span><input id="youxi_litpic" type="file" name='youxi_litpic' /></span>
+                                    </div>
+                                </div>
+                                <span class="help-inline"></span>
+                            </div>
+                     </div> 
                     <div class="control-group" id="getgame_id"  >
                             <div class="control-group" id="game_id">
                             <label class="control-label">关联的游戏<span class="nes-star">*</span></label>
@@ -140,6 +180,19 @@
                                     <span class="add-on select-pop-game">选择游戏</span>
                                 </div>
                             </div>
+                            </div>
+                    </div>
+                    <div class="control-group"id="a_type">
+                            <label class="control-label">显示位置</label>
+                            <div class="controls" id="youxi_get_location" >
+                              
+
+                            </div>
+                    </div>
+                    <div class="control-group">
+                            <label class="control-label">描述</label>
+                            <div class="controls" >
+                                <textarea id="youxi_words" name="youxiWords" style="width:544px;height:200px;"><!--{{adv.words}}--></textarea>
                             </div>
                     </div>
                 </div>
@@ -174,71 +227,101 @@ function apptypes(id){
 								html+="<option value="+json.selectrecommend[i].Id+">"+json.selectrecommend[i].name+"</option>";
 		                    }
 		                    
-		                 	$("#selectrecommend").html("<select  data-rule-required='true' data-msg-required='推荐性质不能为空' name='recommended_id'>"+html+"</select>");
-                 		}
+		                 	$("#selectrecommend").html("<select  data-rule-required='true' data-msg-required='推荐性质不能为空' id='recommended_id' name='recommended_id'>"+html+"</select>");
+                 		}else{
+                            $("#selectrecommend").html("");
+                        }
                  }else{
                  	$("#version,#selectrecommend").html('请求完毕 没有数据');
                  }
             }
         });  
 }
+function get_location(nid)
+{
+    var get_location=$("#get_location"),youxi_get_location=$("#youxi_get_location");
+    get_location.html("位置加载准备中....");
+    youxi_get_location.html("位置加载准备中....");
+    $.ajax({
+            url:'/adv/recommendedadv/locationinfo',
+            dataType:'json',
+            data:{id:nid},
+            success:function(json){
+                if(json.status == 1 && json.datainfo){
+                    var html='';
+                    for(var i in json.datainfo ){
+                        html+="<option value="+json.datainfo[i].Id+">"+json.datainfo[i].name+"</option>";
+                    }
+                    var html_="<select id='location_id'  data-rule-required='true' data-msg-required='广告位置不能为空' name='location_id'>"+html+"</select>";
+                    get_location.html(html_);
+                    youxi_get_location.html(html_);
+                    <!--{% if nature_info.Id %}-->
+                        $("#location_id").val(<!--{{nature_info.Id}}-->);
+                        <!--{% if nature_info.recommend_type== '推荐位' %}-->
+                            $("#youxiquan").find(":input").attr("disabled",true);
+                            $("#tuijianwei").find(":input").removeAttr("disabled");
+                        <!--{% else %}-->
+                            $("#tuijianwei").find(":input").attr("disabled",true);
+                            $("#youxiquan").find(":input").removeAttr("disabled");
+                        <!--{% endif %}-->
+                    <!--{%endif%}-->
+
+                    
+            }else{
+                    get_location.html("");
+            }
+        }
+    });
+
+}
 $(function(){
-    
-	<!--{%if nature_info.recommend_type== '推荐位' and adv.apptypes_id %}--> 
+    <!--{% if nature_info.recommend_type== '推荐位' %}-->
+        $("#youxiquan").hide().find(":input").attr("disabled",true);
+        $("#tuijianwei").show().find(":input").removeAttr("disabled");
+        $("#type").html("<!--{{nature_info.recommend_type}}-->");
+    <!--{% else %}--> 
+        $("#tuijianwei").hide().find(":input").attr("disabled",true);
+        $("#youxiquan").show().find(":input").removeAttr("disabled");
+        $("#type").html("<!--{{nature_info.recommend_type}}-->");
+        $("#form-adv").attr("action","<!--{{url('adv/recommendedadv/youxiquan-add-edit')}}-->");
+        
+    <!--{% endif %}--> 
+	<!--{%if adv.apptypes_id %}--> 
 		var id=<!--{{adv.apptypes_id}}-->;
     	apptypes(id);
-	<!--{%endif%}-->
-    
-    <!--{% if adv.versionform== 'ios' %}--> 
-            $("#a_type").hide();
-    <!--{%endif%}-->
-    
-     $("#versionform").val('<!--{{adv.versionform}}-->');
-    $("#versionform").change(function(){
-        if($(this).val() == 'android'){
-            $("#a_type").hide();
-        }else{
-            $("#a_type").show();
-        }
-    })
-     
-    $("#nature_id").change(function(){
+        $("#recommended_id").val("<!--{{adv.recommended_id}}-->");
 
-        var id=$(this).val();
-       
+	<!--{%endif%}-->
+    <!--{% if nature_info.Id %}-->
+        get_location(<!--{{nature_info.Id}}-->);
+    <!--{%endif%}-->
+    $("#versionform").val('<!--{{adv.versionform}}-->');
+   
+    $("#nature_id").change(function(){
+        var id=$(this).val();alert(id);
         if(id == ''){
             $("#youxiquan,#tuijianwei").hide();
+            $("#type").html('');
             return false;
         }
-        var datatype=$(this).find("option:selected").attr('datatype');
-         if($("#type").html() == datatype){
+        var datatype=$(this).find("option:selected").val();
+        if($("#type").html() == datatype){
              return false;
          }
         $("#type").html(datatype);
-
         gethtml(id);
+        get_location(id);
+
+
     })
     $("#form-adv").find("[name='apptypes_id']").change(function(){ 
         var id=$(this).val();
         $("#appname").val($(this).find("option:selected").text());  
         apptypes(id);
     });
-    <!--{% if nature_info.recommend_type== '推荐位' %}-->
-        $("#youxiquan").hide();
-        $("#tuijianwei").show();
-        $("#type").html("<!--{{nature_info.recommend_type}}-->");
-    <!--{% else %}-->
-        if($('#type').html() != ''){
-            $("#tuijianwei").hide();
-            $("#youxiquan").show();
-            $("#type").html("<!--{{nature_info.recommend_type}}-->");
-            $("#form-adv").attr("action","<!--{{url('adv/recommendedadv/youxiquan-add-edit')}}-->");
-        }
-        
-    <!--{% endif %}--> 
+   
+});
 
-
-})
 var set_selected_agame = function(game_id,game_name,icon){
     $('#selected_game_id').val(game_id);
     $('#selected_game_icon').attr('src',icon);
@@ -277,11 +360,13 @@ $('.select-pop-game').bind('click',function(){
                     //推荐位,热门推荐,游戏圈-热门推荐,游戏详情-猜你喜欢
                     if(json.type == '推荐位'){
                         $("#youxiquan,#loading").hide();
-                        $("#tuijianwei").show();
+                        $("#youxiquan").find(":input").attr("disabled",true);
+                        $("#tuijianwei").show().find(":input").removeAttr("disabled");
                         $("#form-adv").attr("action","<!--{{url('adv/recommendedadv/recommendedadv-add-edit')}}-->");
                     }else{
                         $("#tuijianwei,#loading").hide();//
-                        $("#youxiquan").show();
+                        $("#tuijianwei").find(":input").attr("disabled",true);
+                        $("#youxiquan").show().find(":input").removeAttr("disabled");
                         $("#form-adv").attr("action","<!--{{url('adv/recommendedadv/youxiquan-add-edit')}}-->");
                     }
 
@@ -292,3 +377,5 @@ $('.select-pop-game').bind('click',function(){
     }
 </script>
 <!--{%endblock%}-->
+
+

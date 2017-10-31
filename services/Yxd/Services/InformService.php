@@ -3,7 +3,7 @@ namespace Yxd\Services;
 
 use Yxd\Services\Service;
 use Illuminate\Support\Facades\DB;
-
+use Yxd\Services\Models\Inform;
 /**
  * 举报
  */
@@ -25,7 +25,7 @@ class InformService extends Service
 		    'num'=>0,
 		    'addtime'=>time()
 		);
-		return self::dbClubMaster()->table('inform')->insertGetId($data);
+		return Inform::db()->insertGetId($data);
 	}
 	
 	/**
@@ -53,6 +53,6 @@ class InformService extends Service
 		    'num'=>0,
 		    'addtime'=>time()
 		);
-		return self::dbClubMaster()->table('inform')->insertGetId($data);
+		return Inform::db()->insertGetId($data);
 	}
 }

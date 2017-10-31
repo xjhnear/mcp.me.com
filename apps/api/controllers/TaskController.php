@@ -29,6 +29,12 @@ class TaskController extends BaseController
 		$checkin_reward_list = isset($checkin_credit['data']) ?  $checkin_credit['data'] : array();
 		$coincentercoin = array();
 		foreach($checkin_reward_list as $coin){
+			$time = time();
+			$startdate = mktime(0,0,0,2,14,2015);
+			$enddate = mktime(0,0,0,2,25,2015);
+			if($time>$startdate && $time<$enddate){
+				$coin = $coin * 2;
+			}
 			$coincentercoin[] = array('coincentercoin'=>$coin);
 		}
 		$tasks['checkinlist'] = $coincentercoin;
@@ -111,7 +117,7 @@ class TaskController extends BaseController
 	{
 		$uid = Input::get('uid',0);
 		if(!$uid){
-			return $this->fail(1121,'未登录');
+			return $this->fail(11211,'未登录');
 		}
 		$result = TaskService::doCheckin($uid);
 		if($result===true){
@@ -129,11 +135,20 @@ class TaskController extends BaseController
 			}else{
 				$score= $coincentercoin[7]['coincentercoin'];
 			}
-			$msg = '签到成功！ 游币+' . $score . '';
+                        $time = time();
+                        $startdate = mktime(0,0,0,2,14,2015);
+                        $enddate = mktime(0,0,0,2,25,2015);
+                        
+                        if($time>$startdate && $time<$enddate){
+                            $score = $score * 2;
+                            $msg = '春节签到奖励双倍游币'.$score;
+                        }else{
+			    $msg = '签到成功！ 游币+' . $score . '';
+                        }
 			//return $this->success(array('result'=>$out));
 			return $this->fail(600,$msg);
 		}else{
-			return $this->fail(1121,'今日已经签到');
+			return $this->fail(11211,'今日已经签到');
 		}
 	}
 	
@@ -171,7 +186,7 @@ class TaskController extends BaseController
 			}
 			return $this->success(array('result'=>$out,'total'=>$total));
 		}else{
-			return $this->fail(1121,'没有签到记录');
+			return $this->fail(11211,'没有签到记录');
 		}
 	}
 }

@@ -53,9 +53,13 @@ final class Checkinfo extends Model implements IModel
 		return $checkin_list;
 	}
 	
-	public static function getCurrentMonthCheckinsTimes($uid)
+	public static function getCurrentMonthCheckinsTimes($uid,$start_time=0)
 	{
-		$month_start = mktime(0,0,0,date('m'),1,date('Y'));
+		if($start_time>0){
+			$month_start = $start_time;
+		}else{
+		    $month_start = mktime(0,0,0,date('m'),1,date('Y'));
+		}
 		return self::db()->where('uid','=',$uid)->where('ctime','>',$month_start)->count();		
 	}
 	

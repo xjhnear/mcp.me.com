@@ -119,5 +119,14 @@ class VariationActivity extends Model implements IModel
         return self::db()->where('is_show',1)->get();
     }
 
-
+    /**
+     * 获取活动时间内（开始~结束半小时）内的推广员活动
+     * @return mixed
+     */
+    public static function getSpreadActivities(){
+        $now = time();
+        $for_30_now = $now - 1800;
+        return self::db()->where('is_show',1)->where('is_spread',1)->where('starttime','<=',$now)
+            ->where('endtime','>',$for_30_now)->lists('activity_id');
+    }
 }

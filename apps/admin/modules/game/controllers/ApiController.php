@@ -16,7 +16,7 @@ class ApiController extends BackendController
 	}
 	
 	public function getGameSelectSearch()
-	{
+	{	
 		$out = array();
 		$keyword = Input::get('q');
 		$search = array();
@@ -65,8 +65,8 @@ class ApiController extends BackendController
 		$data['gametype'] = array('0'=>'未分类')+(GameService::getGameTypeOption());
 		$data['pricetype'] = Config::get('yxd.game_pricetype');
 		$data['zonetype'] = Config::get('yxd.game_zonetype');
-		$data['imgurl'] = 'http://img.youxiduo.com';
-		$result = GameModel::search($search,$page,$pagesize);			
+		$data['imgurl'] = Config::get('app.img_url');
+		$result = GameModel::search($search,$page,$pagesize);	
 		$data['games'] = $result['result'];
 		$pager = Paginator::make(array(),$result['total'],$pagesize);
 		$pager->appends(array('keytype'=>$keytype,'keyword'=>$keyword));

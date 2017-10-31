@@ -20,9 +20,8 @@
 								<td>当前个人最大购买数量:<span id="user_max_purchase_number"><!--{{user_max_purchase_number.dicValue}}--></span></td>
 							</tr>
 							<tr>
-								<td>当前期数：<!--{{periodId}}--></td>
+								<td>当前期数：<!--{{form_select('periodId',allPeriodId,periodId,{'style':'width:80px;margin-bottom:0px','id':'periodId'})}}--></td>
 								<td>
-									<input type="hidden" id="periodId" name="periodId" value="<!--{{periodId}}-->">
 										<div class="input-append">
 									         <input name="lotteryNumber" id="zjhm"  placeholder="中奖号码" style="width:100px;" type="text" class="input-small"  value="" >
 									         <span  class="add-on" id="zj" >设置中奖号码</span>
@@ -170,7 +169,7 @@
                         alertify.error('设置失败');
                         return false;
                     }
-                    $.post('/v4lotteryproduct/lottery/updatedic', {'dicValue': Gms, 'dicId': id}, function (data) {
+                    $.post('/v4lotteryproduct/lottery/updatedic', {'dicValue': Gms, 'id': id}, function (data) {
                         if (data.errorCode == 1) {
                             alertify.error(data.msg);
                         } else {

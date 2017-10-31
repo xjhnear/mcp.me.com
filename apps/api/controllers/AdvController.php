@@ -11,6 +11,8 @@ use Yxd\Services\Cms\GameService;
 use Yxd\Modules\Core\CacheService;
 use Yxd\Services\Cms\AdvService;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\log;
+use Yxd\Utility\OutLog;
 /**
  * 广告接口
  * 
@@ -71,6 +73,8 @@ class AdvController extends BaseController
 		$type = Input::get('type',0);
 		$os = Input::get('os');
 		$version = Input::get('version','3.0.0');
+        $params = Input::all();
+        OutLog::outLog($params);
 		if($version=='3.0.0'){//只在3.0版本统计
 		    GameService::download($linkid,0);
 		}
@@ -88,8 +92,21 @@ class AdvController extends BaseController
 	{
 		$code = Input::get('mac','');
 		$idfa = Input::get('idfa','');
-		$advid = Input::get('advid','');
+		if (Input::get('adid')) {
+		    $advid = Input::get('adid','');
+		} else {
+		    $advid = Input::get('advid','');
+		}
+		
 		$res = AdvService::active($code, $idfa, $advid);
+        $params = array(
+            'mac'   => $code,
+            'idfa'  => $idfa,
+            'advid' => $advid,
+        );
+
+        OutLog::outLog($params);
+
 		if($res === null){
 			echo json_encode(array('errorCode'=>'1','errorMessage'=>''));
 		    exit;
@@ -99,4 +116,11 @@ class AdvController extends BaseController
 		}
 		
 	}
+
+    public function testLog () {
+        $str = array(
+            'ceshi','测试'
+        );
+        OutLog::outLog($str);
+    }
 }

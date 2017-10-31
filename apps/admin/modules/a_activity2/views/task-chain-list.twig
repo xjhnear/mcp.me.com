@@ -13,7 +13,7 @@
 				    <input name="action_type" type="hidden" value="<!--{{action_type}}-->" />		
 				    <table class="table-filter">				        
 				        <tr>
-                            <td><!--{{form_select('line_type',line_type,line_type,{'id':'complete_type','style':'margin-top:10px;width:80px'})}}--></td>
+                            <td><!--{{form_select('lineType',line_type,search.lineType,{'id':'complete_type','style':'margin-top:10px;width:80px'})}}--></td>
 
                             <td>
                                 <input name="title"  placeholder="活动标题" style="width:177px;" type="text" class="input-small" value="<!--{{title}}-->" >
@@ -47,11 +47,11 @@
 
 						    <td>
                                 <!--{%if item.lineType==1%}-->
-                                持续性任务线
+                                默认
                                 <!--{%elseif item.lineType==2%}-->
-                                累计性任务线
+                                持续性任务线
                                 <!--{%elseif item.lineType==3%}-->
-                                主线任务
+                                非连续性任务线
                                 <!--{%endif%}-->
                             </td>
 
@@ -62,17 +62,19 @@
 							<td><!--{{item.startTime}}--></td>
 							<td ><!--{{item.endTime}}--></td>
 							<td  >
-                                <span class="badge "><!--{{item.processingCount}}--></span>
-                                <span class="badge badge-info"><!--{{item.completeCount}}--></span>
-                                <span class="badge badge-success"><!--{{item.totalCount}}--></span>
+                                <span class="badge "><!--{{item.processingCount|default('0')}}--></span>
+                                <span class="badge badge-info"><!--{{item.completeCount|default('0')}}--></span>
+                                <span class="badge badge-success"><!--{{item.totalCount|default('0')}}--></span>
 							</td>
                             <td class="isOpen">
                                 <!--{%if item.offline==1%}--><span class="badge">下线</span><!--{%else%}--><!--{%if item.isOpen==1%}--><span class="badge badge-success">开启</span><!--{%else%}--><span class="badge">关闭</span><!--{%endif%}--><!--{%endif%}-->
                             </td>
 							<td>
                                 <a href="<!--{{url('a_activity2/task/task-list')}}-->?lineId=<!--{{item.taskId}}-->&lineName=<!--{{item.taskName}}-->&lineType=<!--{{item.lineType}}-->" class="btn btn-primary" <!--{%if item.auditFlag==1%}--> style="background-color: #5CB811"<!--{%endif%}-->>查看子任务</a>
+                                <!--
                                 <a href="<!--{{url('a_activity2/task/task-add')}}-->?lineId=<!--{{item.taskId}}-->&lineName=<!--{{item.taskName}}-->&lineType=<!--{{item.lineType}}-->" class="btn btn-primary">添加子任务</a>
-							    <a href="<!--{{url('a_activity2/task/task-chain-add')}}-->?id=<!--{{item.taskId}}-->" class="btn btn-primary">编辑</a>
+							   -->
+							     <a href="<!--{{url('a_activity2/task/task-chain-add')}}-->?id=<!--{{item.taskId}}-->" class="btn btn-primary">编辑</a>
                                 <!--{%if item.offline==1%}-->
                                 <a href="#nogo" id="<!--{{item.taskId}}-->" class="btn btn-drop ajax-open">显示</a>
                                 <a href="#nogo>" id="<!--{{item.taskId}}-->" class="btn btn-drop ajax-open" style="display: none">隐藏</a>

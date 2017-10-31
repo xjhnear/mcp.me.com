@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
 class RmbController  extends BackendController
 {
-    const MALL_DIAMOND_API_URL = 'app.mall_module_diamond';
+    const MALL_DIAMOND_API_URL = 'app.48080_api_url';
     const ACCOUNT_API_URL = 'app.account_api_url';
     public function _initialize()
     {
@@ -26,7 +26,8 @@ class RmbController  extends BackendController
         if($result['errorCode'] == 0){
             $data['rmb']['gameRate']=$result['result'];
         }
-        $result=MyHelp::getdata(Config::get(self::MALL_DIAMOND_API_URL).'/diamond/rate',array());
+        $input['confKey']='diamondRate';
+        $result=MyHelp::getdata(Config::get(self::MALL_DIAMOND_API_URL).'module_rmb/account/configlist',$input);
         if($result['errorCode'] == 0){
             $data['rmb']['diamondRate']=$result['result'];
         }
@@ -38,8 +39,9 @@ class RmbController  extends BackendController
     {
         $input['rate']=Input::get('gameRate');
         MyHelp::getdata(Config::get(self::ACCOUNT_API_URL).'rate/update',$input);
-        $input['rate']=Input::get('diamondRate');
-        $result=MyHelp::getdata(Config::get(self::MALL_DIAMOND_API_URL).'/rate/update',$input);
+        $input['confKey']='diamondRate';
+        $input['confValue']=Input::get('diamondRate');
+        $result=MyHelp::getdata(Config::get(self::MALL_DIAMOND_API_URL).'module_rmb/account/setconfig',$input);
 
         return $this->redirect('v4product/rmb/list')->with('global_tips','更改成功');
     }

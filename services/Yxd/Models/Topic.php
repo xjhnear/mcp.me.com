@@ -4,6 +4,7 @@ namespace Yxd\Models;
 use Yxd\Services\UserService;
 
 use Illuminate\Support\Facades\DB;
+use Yxd\Services\Models\Like;
 
 class Topic
 {
@@ -212,7 +213,7 @@ class Topic
 	 */
 	public static function isLike($tid,$uid)
 	{
-		$count = DB::table('like')
+		$count = Like::db()
 		         ->where('target_id','=',$tid)
 		         ->where('target_table','=','forum_thread')
 		         ->where('uid','=',$uid)
@@ -231,14 +232,14 @@ class Topic
 		    'target_table'=>'forum_thread',
 		    'ctime'=>(int)microtime(true)
 		);		
-		return DB::table('like')->insertGetId($data);
+		return Like::db()->insertGetId($data);
 	}
 	/**
 	 * 获取赞过帖子的用户
 	 */
 	public static function getThreadLikes($tid,$page=1,$size=20)
 	{
-		$uids =  DB::table('like')
+		$uids =  Like::db()
 		         ->where('target_id','=',$tid)
 		         ->where('target_table','=','forum_thread')
 		         ->forPage($page,$size)

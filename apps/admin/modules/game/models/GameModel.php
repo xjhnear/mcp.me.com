@@ -9,7 +9,7 @@ class GameModel extends BaseModel
 		$out = array();
 		$out['total'] = self::buildSearch($search)->count();
 		$tb = self::buildSearch($search)->forPage($pageIndex,$pageSize);
-		
+
 		foreach($sort as $field=>$order){
 			$tb = $tb->orderBy($field,$order);
 		}

@@ -2,7 +2,7 @@
 return array(
 	'module_name' => 'cms',
 	'module_alias' => '资讯',
-	'default_url' => '',
+	'default_url' => 'cms/news/search',
 	'child_menu' => array(
 		array('name' => '新闻','url' => 'cms/news/search'),
 		array('name' => '攻略','url' => 'cms/guide/search'),

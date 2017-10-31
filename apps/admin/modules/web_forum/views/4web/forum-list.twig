@@ -41,8 +41,10 @@
 			    <div class="actions">
 			        <form action="<!--{{url('web_forum/forum/forum-list')}}-->">
 						<table class="table-filter">
-							<tr>								
-								<td>
+							<tr>
+                                <td><input id="gameselect" name="game_id"  type="hidden" value="<!--{{search.game_id}}-->" class="bigdrop select2-offscreen width_150" tabindex="-1"></td>
+
+                                <td>
 									<input name="name" type="text" type="text" class="input-small" placeholder="论坛名称" value="<!--{{ search.name }}-->" >
 								</td>
 								
@@ -69,6 +71,8 @@
 						<th class="col-100">总回复数</th>
 						<th class="col-100">昨日复数</th>
 						<th class="col-150">今日回复数</th>
+                        <th class="col-150">关联状态</th>
+                        <th class="col-150">关联游戏</th>
 						<th class="col-150">操作</th>
 					</tr>
 					</thead>
@@ -83,20 +87,47 @@
 						<td><!--{{ item.totalReplyNumber }}--></td>
 						<td><!--{{ item.yesterdayReplyNumber }}--></td>
 						<td><!--{{ item.todayReplyNumber }}--></td>
+                        <td>
+                            <!--{%if item.gid%}-->
+                            <!--{%if item.isOpen%}-->
+                            开启
+                            <!--{%else%}-->
+                            关闭
+                            <!--{%endif%}-->
+                            <!--{%else%}-->
+                            未关联
+                            <!--{%endif%}-->
+                        </td>
+                        <td>
+                            <!--{{ item.gname }}-->
+                        </td>
 						<td>
 							<div class="btn-group">
 								<a data-toggle="dropdown" href="#" class="btn btn-primary dropdown-toggle"><i class="icon-cog"></i> <span class="caret"></span></a>
 								<ul class="dropdown-menu dropdown-primary">
-								    <!--{%if item.isActive%}-->
-									<li><a href="<!--{{url('web_forum/forum/open',{fid:item.fid,status:0})}}-->">关闭</a></li>
-									<!--{%else%}-->
-									<li><a href="<!--{{url('web_forum/forum/open',{fid:item.fid,status:1})}}-->">开启</a></li>
-									<!--{%endif%}-->
+
+                                    <!--{%if item.gid%}-->
+                                    <!--{%if item.isOpen%}-->
+                                    <li><a href="<!--{{url('web_forum/forum/open',{fid:item.fid,status:0,gid:item.gid})}}-->">关闭</a></li>
+                                    <!--{%else%}-->
+                                    <li><a href="<!--{{url('web_forum/forum/open',{fid:item.fid,status:1,gid:item.gid})}}-->">开启</a></li>
+                                    <!--{%endif%}-->
+                                    <!--{%else%}-->
+                                    <!--{%endif%}-->
+                                    <li><a href="<!--{{url('web_forum/forum/bbs-relation-game')}}-->?linkId=<!--{{item.gameLinkId}}-->&game=<!--{{item.gname|default("")}}-->&fid=<!--{{item.fid}}-->&gid=<!--{{item.gid}}-->" >关联游戏</a></li>
+                                    <!--{%if item.place!="0" %}-->
+                                    <li><a href="#nogo" fid="<!--{{item.fid}}-->" class="set_hot" >设为热门</a></li>
+                                    <!--{%endif%}-->
 									<li><a href="<!--{{ url('web_forum/forum/forum-board-list',{'fid':item.fid}) }}-->">版块编辑</a></li>
-								</ul>
+                                    </ul>
 							</div>
-							<a href="<!--{{url('web_forum/forum/edit',{ id:item.fid })}}-->" class="btn btn-primary"><i class="icon-edit" title="编辑"></i></a>
-							<!--{#<a href="javascript:void(0);" data="<!--{{ item.fid }}-->" class="btn btn-primary ajax-del"><i class="icon-trash" title="删除"></i></a>#}-->
+                            <a href="<!--{{url('web_forum/forum/edit',{ id:item.fid })}}-->" class="btn btn-primary"><i class="icon-edit" title="编辑"></i></a>
+                            <!--
+                            <li><a href="<!--{{url('web_forum/forum/bbs-relation-game')}}-->?linkId=<!--{{item.gameLinkId}}-->&game=<!--{{item.name}}-->&fid=<!--{{item.fid}}-->" >关联游戏</a></li>
+
+                            <a href="<!--{{url('web_forum/forum/edit',{ id:item.fid })}}-->" class="btn btn-primary"><i class="icon-edit" title="编辑"></i></a>
+							<a href="javascript:void(0);" data="<!--{{ item.fid }}-->" class="btn btn-primary ajax-del"><i class="icon-trash" title="删除"></i></a>
+                            -->
 						</td>
 					</tr>
 					<!--{%endfor%}-->
@@ -113,7 +144,8 @@
 <!--{%block footer_js%}-->
 <script>
 	$(function(){
-		$('input').iCheck({
+        gameselect('#gameselect');
+        $('input').iCheck({
 			checkboxClass: 'icheckbox_square-orange',
 			radioClass: 'iradio_square-orange',
 			increaseArea: '20%' // optional
@@ -135,6 +167,25 @@
 				}
 			});
 		});
+        $(".set_hot").click(function(){
+            obj = $(this);
+            if(confirm('确定要设为吗？')){
+                var id = obj.attr('fid');
+                var html = obj.html();
+                var type = '-1';
+                if(html == "设为热门"){
+                    type = '1';
+                }
+                $.post('<!--{{url('web_forum/forum/set-hot')}}-->',{id:id,type:type},function(data){
+                    if(data.success=="true"){
+                        alert(data.mess);
+                        window.location.reload();
+                    }else{
+                        alert(data.mess);
+                    }
+                },"json")
+            }
+        })
 	});
 </script>
 <!--{%endblock%}-->

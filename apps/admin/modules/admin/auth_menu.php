@@ -4,8 +4,8 @@ return array(
     'module_name'  => 'admin',
     'module_alias' => '高级管理',
     'module_icon'  => 'core',
-    'default_url'=>'admin/setting/index',
-    'child_menu' => array(        
+    'default_url'=>'admin/group/list',
+    'child_menu' => array(
         array('name'=>Lang::get('description.lm_xt_qxz'),'url'=>'admin/group/list'),
         array('name'=>Lang::get('description.lm_xt_glylb'),'url'=>'admin/admin/list'),
         array('name'=>Lang::get('description.lm_xt_mkgl'),'url'=>'admin/module/list'),

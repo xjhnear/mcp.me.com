@@ -65,4 +65,10 @@ class Videos extends BaseModel
 		return self::dbCmsMaster()->table(self::TABLE)->where($op,'=',$gid)->where('pid','=','-1')->orderBy('addtime','desc')->get();
 	}
 
+
+    public static function getAutoSearch($name)
+    {
+        return  self::dbCmsMaster()->table(self::TABLE)->where('vname','like',"%{$name}%")->select('id','vname as value ')->get();
+    }
+
 }

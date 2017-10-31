@@ -115,7 +115,7 @@ class ShareService extends BaseService
 	 * @param int $end_time
 	 * @param int $is_show
 	 */
-	public static function saveAdvInfoByTargetId($target_id,$target_title,$platform,$tpl_ename,$title,$icon,$content,$redirect_url,$start_time,$end_time,$is_show)
+	public static function   saveAdvInfoByTargetId($target_id,$target_title,$platform,$tpl_ename,$title,$icon,$content,$redirect_url,$start_time,$end_time,$is_show,$shareId_v4)
 	{
 		$exists = ShareAdv::db()->where('target_id','=',$target_id)->where('tpl_ename','=',$tpl_ename)->where('platform','=',$platform)->first();
 		if($exists){
@@ -129,7 +129,8 @@ class ShareService extends BaseService
 			$data['start_time'] = $start_time;
 			$data['end_time'] = $end_time;
 			$data['is_show'] = $is_show;
-			
+            $data['shareId_v4'] = $shareId_v4;
+
 			return ShareAdv::db()->where('id','=',$id)->update($data);
 		}else{
 			$data = array();
@@ -145,6 +146,7 @@ class ShareService extends BaseService
 			$data['start_time'] = $start_time;
 			$data['end_time'] = $end_time;
 			$data['is_show'] = $is_show;
+            $data['shareId_v4'] = $shareId_v4;
 			return ShareAdv::db()->insertGetId($data);
 		}
 	}
@@ -203,6 +205,7 @@ class ShareService extends BaseService
 				if(!empty($adv['icon'])) $out['pic'] = Utility::getImageUrl($adv['icon']);
 				if(!empty($adv['weixin'])) $out['weixin'] = $adv['weixin'];
 				if(!empty($adv['weibo'])) $out['weibo'] = $adv['weibo'];
+				if(isset($adv['shareId_v4'])) $out['shareId_v4'] = $adv['shareId_v4'];
 				if(!empty($adv['redirect_url'])) {					
 					$redirect_url = $adv['redirect_url'];
 					//追加用户参数
@@ -234,10 +237,10 @@ class ShareService extends BaseService
 		if($config_exists===false){
             $success = MonitorService::createConfig($config_id,$config_name,$config_os,$redirect_url,$channel_id,$callback_url,true);
             if($success){            	
-               	$redirect_url = 'http://h5.youxiduo.com/statistic/click/' . $config_id;
+               	$redirect_url = 'http://statistic.youxiduo.com/click/' . $config_id;
             }            
 		}else{
-			$redirect_url = 'http://h5.youxiduo.com/statistic/click/' . $config_id;
+			$redirect_url = 'http://statistic.youxiduo.com/click/' . $config_id;
 		}
 		return $redirect_url;
 	}
@@ -255,12 +258,16 @@ class ShareService extends BaseService
 		if(!$exists){
 			$data = array('CONFIG_ID'=>$config_id,'CONFIG_NAME'=>$config_name,'CONFIG_OS'=>$config_os,'CHANNEL_ID'=>$channel_id,'REDIRECT_URL'=>$redirect_url,'CREATE_TIME'=>date('Y-m-d H:i:s'));
 		    $data['CLICK_CALL_BACK_URL'] = $callback_url;
-            $success = StatisticConfig::db()->insert($data);
-             if($success){  
-             	$redirect_url = 'http://h5.youxiduo.com/statistic/click/' . $config_id;
-             }
+		    try{
+                $success = StatisticConfig::db()->insert($data);
+		    }catch(\Exception $e){
+		    	$success = true;
+		    }
+            if($success){  
+            	$redirect_url = 'http://statistic.youxiduo.com/click/' . $config_id;
+            }
 		}else{
-			$redirect_url = 'http://h5.youxiduo.com/statistic/click/' . $config_id;
+			$redirect_url = 'http://statistic.youxiduo.com/click/' . $config_id;
 		}
 		return $redirect_url;
 	}

@@ -6,13 +6,25 @@ use Yxd\Services\Cms\ShareService;
  */
 class ShareController extends BaseController
 {
+	public function trigger()
+	{
+		$type = (int)Input::get('type',0);
+		$shareid = (int)Input::get('shareid');
+		$uid = (int)Input::get('uid');
+		$idfa = Input::get('idfa');
+		
+		return $this->success(array('result'=>true));
+	}
+	
 	public function to()
 	{		
 		/**
 		*
 		*/
 		$type = (int)Input::get('type',0);
-		$shareid = (int)Input::get('shareid');
+		$shareid = Input::get('shareid');
+		$shareid = str_replace('ios', '', $shareid);
+		$shareid = (int)$shareid;
 		$ishtml5 = 1;//(int)Input::get('ishtml5',0);
 		if($type==1){
 		    $result = ShareService::shareGame($shareid,4,$ishtml5);
@@ -83,7 +95,7 @@ class ShareController extends BaseController
 			if($result){
 				return $this->success(array('result'=>$result));
 			}else{
-				return $this->fail('11211','信息不存在');
+				return $this->fail('11222','信息不存在');
 			}
 		}elseif($type==11){
 			$result = ShareService::shareGoods($shareid,13,$ishtml5);

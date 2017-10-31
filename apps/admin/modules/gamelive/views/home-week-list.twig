@@ -26,14 +26,16 @@
                     <tr>
                         <td><!--{{item.idx}}--></td>
                         <td>周<!--{{item.day}}--></td>
-                        <!--{%for week in item.result%}-->
+
                         <td>
+                            <!--{%for week in item.result%}-->
                             <div class="table-list-img"><a href="#bigimg" data-toggle="modal"><img src="<!--{{week.picUrl}}-->" /></a></div>
                             <p><!--{{ week.title }}--></p>
                             <p><!--{{ week.summary }}--></p>
                             <p><!--{{ week.starttime|date('Y-m-d H:i') }}-->至<!--{{ week.endtime|date('Y-m-d H:i') }}--></p>
+                            <!--{%endfor %}-->
                         </td>
-                        <!--{%endfor %}-->
+
                         <td>
                             <a href="<!--{{url('gamelive/home/week-edit')}}-->?day=<!--{{item.day}}-->&idx=<!--{{item.idx}}-->" class="btn btn-primary">编辑</a>
                         </td>

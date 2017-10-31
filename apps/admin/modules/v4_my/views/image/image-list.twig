@@ -1,0 +1,58 @@
+<!--{%extends "sub-layout-giftbag.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    游戏相册
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('/v4my/image/list')}}-->">
+				    <table class="table-filter">
+				        <tr>
+							<td><!--{{form_select('keytype',{nickname:'用户名',uid:'用户UID'},search.keytype,{'style':'width:80px;margin-bottom:0px'})}}--></td>
+							<td><input type="text" name="keyword" id="keyword" class="input-medium" placeholder="用户名" value="<!--{{search.keyword}}-->"/> </td>
+				            <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+				        </tr>
+				    </table>
+                    </form>
+                </div>
+            </div>
+            
+            
+            <div class="box-content nopadding">
+            	<div class="table table-hover table-nomargin pagelink">
+                    <!--{% for key,item in datalist%}-->
+					<div style="float: left;padding:2%;width:120px;">
+					    <div style="width:100%;text-align: center;padding: 5px;height:110px;">
+					    <a href="<!--{{ item.fileId }}-->" target="_blank">
+					    <img src="<!--{{ item.fileId }}-->" style="width:100px;height:100px;" alt="">
+					    </a>
+					    <p style="padding-top: 5px;"><a href="/v4user/users/edit/<!--{{item.uid}}-->" class='label label-warning' target="_blank"><!--{{item.nickname}}--></a></p>
+					    </div>
+					    <div style="width:100%;text-align: center;padding: 20px 5px 5px;">
+					    <a class="btn btn-danger" href="/v4my/image/del?id=<!--{{item.id}}-->&uid=<!--{{item.uid}}-->&">删除</a>
+						</div>
+					</div>
+                    <!--{%endfor%}-->
+				</div>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/MyHelp.js')}}-->"></script>
+<script>
+
+</script>
+<!--{%endblock%}-->

@@ -2,6 +2,7 @@
 namespace Yxd\Services;
 
 use modules\game\models\GameModel;
+use Yxd\Services\Models\Games;
 /**
  * 游戏服务
  */

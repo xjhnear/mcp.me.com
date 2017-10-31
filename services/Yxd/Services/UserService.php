@@ -11,8 +11,19 @@ use Yxd\Models\Passport;
 use Illuminate\Support\Facades\Config;
 use Yxd\Services\TaskService;
 
+use Yxd\Services\Models\TuiguangAccount;
+use Yxd\Services\Models\Account;
+use Yxd\Services\Models\CreditAccount;
+use Yxd\Services\Models\AccountBan;
+use Yxd\Services\Models\SystemSetting;
+use Youxiduo\Helper\Utility;
+use Yxd\Modules\Core\BaseService;
+
 class UserService extends Service
 {	
+    const OTHER_API_URL = 'app.other_api_url';
+    const MALL_API_ACCOUNT = 'app.account_api_url';
+    const REDIS_V4USER = 'v4::user';
 	/**
 	 * 检查该手机设备是否已经被注册过
 	 */
@@ -21,13 +32,13 @@ class UserService extends Service
 		if(!$idfa && !$mac){
 			return false;
 		}elseif($idfa){
-			if(self::dbClubMaster()->table('tuiguang_account')->where('idfa', '=', $idfa)->count()){
+			if(TuiguangAccount::db()->where('idfa', '=', $idfa)->count()){
 				return FALSE;
 			}else{
 				return TRUE;
 			}	
 		}elseif($mac){
-			if(self::dbClubMaster()->table('tuiguang_account')->where('mac', '=', $mac)->count() || $mac = '02:00:00:00:00:00'){
+			if(TuiguangAccount::db()->where('mac', '=', $mac)->count() || $mac = '02:00:00:00:00:00'){
 				return FALSE;
 			}else{
 				return TRUE;
@@ -41,7 +52,7 @@ class UserService extends Service
 	 */
 	public static function getInviteCount($uid)
 	{
-		$num = self::dbClubMaster()->table('tuiguang_account')->where('oldid','=', $uid)->count();
+		$num = TuiguangAccount::db()->where('oldid','=', $uid)->count();
 		return $num;
 	}
 	
@@ -50,7 +61,7 @@ class UserService extends Service
 	 */
     public static function getCheckUserById($zhucema, $newid, $idfa, $mac)
 	{
-		$user = self::dbClubMaster()->table('account')->where('zhucema', $zhucema)->first();
+		$user = Account::db()->where('zhucema', $zhucema)->first();
 		if(!$user){
 			$params = array('zhucema'=>$zhucema);
 			\Yxd\Modules\Message\NoticeService::sendInvalidInviteCode($newid,$params);
@@ -61,11 +72,11 @@ class UserService extends Service
 		if($result){
 			$ctime = mktime('0', '0', '0', date('m'), date('d'), date('Y'));
 			$data=array('oldid'=>$oldid, 'newid'=>$newid, 'ctime'=>$ctime, 'idfa'=>$idfa, 'mac'=>$mac );
-			$res = self::dbClubMaster()->table('tuiguang_account')->insert($data);
+			$res = TuiguangAccount::db()->insert($data);
 						
 			$task_message = Config::get('yxd.task_message');
 			if($res){
-				$data2 = self::dbClubMaster()->table('system_setting')->where('keyname', 'tuiguang_setting')->first();
+				$data2 = SystemSetting::db()->where('keyname', 'tuiguang_setting')->first();
 				$data2 = unserialize($data2['data']);
 				$mtime = mktime('0', '0', '0', date('m'), date('d'), date('Y'));
 				$info = str_replace('[text]', $data2['newtuiguang_1'], $task_message['newtuiguang_1']);
@@ -75,7 +86,7 @@ class UserService extends Service
 				$newuser = array('uid'=>$newid, 'score'=>$data2['newtuiguang_1'], 'num'=>1, 'flag'=>-1,'username'=>$_olduser['nickname']);
 				Event::fire('user.new_register_score',array(array($newuser)));
 				
-				$num = self::dbClubMaster()->table('tuiguang_account')->where('oldid','=', $oldid)->count();
+				$num = TuiguangAccount::db()->where('oldid','=', $oldid)->count();
 				
 				TaskService::doTuiguang($oldid, 'oldtuiguang_1');
 				$olduser = array('uid'=>$oldid, 'score'=>$data2['oldtuiguang_1'], 'num'=>$num, 'flag'=>1,'username'=>$_newuser['nickname']);
@@ -83,15 +94,15 @@ class UserService extends Service
 				
 				
 				
-				if($num>=10){
+				if($num>=10 && $num<100){
 					TaskService::doTuiguangNum($oldid, 'oldtuiguang_10');
 					$olduser = array('uid'=>$oldid, 'score'=>$data2['oldtuiguang_10'], 'num'=>10, 'flag'=>0,'username'=>$_newuser['nickname']);
 					Event::fire('user.new_register_score',array(array($olduser)));
-				}elseif($num>=100){
+				}elseif($num>=100 && $num<500){
 					TaskService::doTuiguangNum($oldid, 'oldtuiguang_100');
 					$olduser = array('uid'=>$oldid, 'score'=>$data2['oldtuiguang_100'], 'num'=>100, 'flag'=>0,'username'=>$_newuser['nickname']);
 					Event::fire('user.new_register_score',array(array($olduser)));
-				}elseif($num>=500){
+				}elseif($num>=500 && $num<1000){
 					TaskService::doTuiguangNum($oldid, 'oldtuiguang_500');
 					$olduser = array('uid'=>$oldid, 'score'=>$data2['oldtuiguang_500'], 'num'=>500, 'flag'=>0,'username'=>$_newuser['nickname']);
 					Event::fire('user.new_register_score',array(array($olduser)));
@@ -111,14 +122,15 @@ class UserService extends Service
 	public static function getUserInfo($uid,$filter='basic')
 	{
 		return self::formatUserFields(self::filterUserFields(self::getUserInfoCache($uid),$filter));
-	}	
-	
-	/**
-	 * 
-	 * @param array $uids
-	 * @param string $filter 过滤器,可选值[short][basic][full]
-	 * 获取一批用户的信息
-	 */
+	}
+
+    /**
+     *
+     * @param array $uids
+     * @param string $filter 过滤器,可选值[short][basic][full]
+     * 获取一批用户的信息
+     * @return array
+     */
 	public static function getBatchUserInfo($uids,$filter='basic')
 	{
 		return self::formatBatchUserFields(self::filterBatchUserFields(self::getUserInfoCacheByUids($uids),$filter));
@@ -148,12 +160,30 @@ class UserService extends Service
 			}
 		}
 		if(empty($data)) return;
-		$success = self::dbClubMaster()->table('account')->where('uid','=',$uid)->update($data);
+	    if(isset($data['idfa']) && $data['idfa']){
+			$exists = Account::db()->where('idfa','=',$data['idfa'])->first();
+			if(!$exists) {
+				$data['is_first'] = 1;
+			}else{
+				$data['is_first'] = 0;
+			}
+		}
+		$success = Account::db()->where('uid','=',$uid)->update($data);
 		if($success===true){
 			Event::fire('user.update_userinfo_cache',array(array($uid)));
 			return true;
 		}
 		return $success;
+	}
+	
+	public static function isNewUser($user)
+	{
+		if($user && isset($user['is_first']) && $user['is_first'] && isset($user['dateline']) && $user['dateline']){
+			$time = time();
+			$expire = $user['dateline']+3600*24*3;
+			return $expire > $time ? 1 : 0;
+		}
+		return 0;
 	}
 	
 	/**
@@ -247,6 +277,23 @@ class UserService extends Service
 			return true;
 		}
 		return $success;
+	}
+	
+	public static function checkEmailVerifycode($email,$verifycode)
+	{
+		$info = self::dbClubMaster()->table('account_verifycode')
+		->where('email','=',$email)
+		->where('verifycode','=',$verifycode)
+		->where('is_send_msg','=',1)
+		->where('is_valid','=',1)
+		->first();
+		
+		return $info ? $info['uid'] : 0;
+	}
+	
+	public static function updateAccountVerifyCode($uid,$data)
+	{
+		return self::dbClubMaster()->table('account_verifycode')->where('uid','=',$uid)->update($data);
 	}
 	
 	/**
@@ -358,7 +405,8 @@ class UserService extends Service
 		$out = array();
 		if(Config::get('app.close_redis_user',true)===true){
 			$users = User::getUserFullInfoList($uids);
-			foreach($users as $user){
+			foreach($users as &$user){
+				if(!$user['nickname']) $user['nickname'] = '玩家'.$user['uid'];
 				$out[$user['uid']] = $user;
 			}
 		}else{
@@ -391,7 +439,7 @@ class UserService extends Service
 			 * 把$users中的空数据给过滤掉
 			 */
 			$ex_uids = array();
-			foreach($users as $k=>$row){
+			foreach($users as $k=>&$row){
 				if($row){
 					$ex_uids[] = $row['uid'];
 				}else{
@@ -411,7 +459,8 @@ class UserService extends Service
 				$users = array_merge($users,self::filterUserFields($no_users,'full'));			
 			}
 			//$out = array(); 放这里会引起报错（当缓存不存在时）
-			foreach($users as $user){
+			foreach($users as &$user){
+				if(!$user['nickname']) $user['nickname'] = '玩家'.$user['uid'];
 				//用用户的uid作为数组的键名来重新重组数组
 				$out[$user['uid']] = $user;
 			}
@@ -446,9 +495,9 @@ class UserService extends Service
 		//默认的fields的字段列表是全部的字段
 		$fields = array(
 		    'uid','nickname','avatar',
-		    'email','mobile','sex','birthday','summary','homebg','score','experience','dateline','reg_ip',
+		    'email','mobile','sex','birthday','summary','homebg','score','experience','dateline','reg_ip','is_first',
 		    'apple_token','idfa','mac','openudid','osversion',
-		    'groups','authorize_nodes'
+		    'groups','authorize_nodes','province','city','region','address','alipay_num','alipay_name'
 		);
 		
 		if(is_string($filter)){
@@ -457,9 +506,9 @@ class UserService extends Service
 			}elseif($filter === 'basic'){
 				$fields = array(
 				    'uid','nickname','avatar','summary','homebg','sex',
-				    'score','experience','dateline','reg_ip',
+				    'score','experience','dateline','reg_ip','is_first',
 				    'apple_token','idfa','mac','openudid','osversion',
-				    'groups'
+				    'groups','address','alipay_num','alipay_name'
 				);
 			}
 		}		
@@ -642,12 +691,21 @@ class UserService extends Service
 	 */
 	public static function getUserRealTimeCredit($uid,$field=null)
 	{
-		$credit = self::dbClubSlave()->table('credit_account')->where('uid','=',$uid)->first();
-		if($field && in_array($field,array('score','experience'))){
-			return $credit ? $credit[$field] : 0;
-		}else{
-			return $credit ? $credit : array('score'=>0,'experience'=>0);
-		}
+	    //迁移后游币获取
+	    if ($field == 'score') {
+	        $params = array('accountId'=>$uid,'platform'=>'ios');
+	        $params_ = array('accountId','platform');
+	        $new = Utility::preParamsOrCurlProcess($params,$params_,Config::get(self::MALL_API_ACCOUNT).'account/query');
+	        if ($new['result']) {
+	            return isset($new['result'][0]['balance']) ? $new['result'][0]['balance'] : 0;
+	        }
+	    }
+	    $credit = CreditAccount::db()->where('uid','=',$uid)->first();
+	    if($field && in_array($field,array('score','experience'))){
+	        return $credit ? $credit[$field] : 0;
+	    }else{
+	        return $credit ? $credit : array('score'=>0,'experience'=>0);
+	    }
 	}
 	
 	/**
@@ -655,7 +713,7 @@ class UserService extends Service
 	 */
 	public static function checkUserBan($uid)
 	{
-		$ban = self::dbClubSlave()->table('account_ban')->where('uid','=',$uid)->where('type','=',1)->first();
+		$ban = AccountBan::db()->where('uid','=',$uid)->where('type','=',1)->first();
 		if(!$ban) return false;
 		$expired = (int)$ban['expired'];
 		if($expired==0) return true;
@@ -683,7 +741,7 @@ class UserService extends Service
 	
 	public static function getUserAppleIdentify($uid)
 	{
-		$user = self::dbClubSlave()->table('account')->select('uid','idfa','mac','openudid')->where('uid','=',$uid)->first();
+		$user = Account::db()->select('uid','idfa','mac','openudid')->where('uid','=',$uid)->first();
 		if(!$user) return false;
 		if(isset($user['idfa']) && !empty($user['idfa'])){
 			return $user['idfa'];
@@ -695,7 +753,7 @@ class UserService extends Service
 	
 	public static function getUserAppleIdentifyBy($uid,$field='')
 	{
-		$user = self::dbClubSlave()->table('account')->select('uid','idfa','mac','openudid')->where('uid','=',$uid)->first();
+		$user = Account::db()->select('uid','idfa','mac','openudid')->where('uid','=',$uid)->first();
 		if(!$user) return false;
 		if($field == 'idfa' && isset($user['idfa']) && !empty($user['idfa'])){
 			return $user['idfa'];
@@ -710,7 +768,7 @@ class UserService extends Service
 	public static function getAppleIdentifyByUids($uids)
 	{
 		if(!$uids) return array();
-		$users = self::dbClubSlave()->table('account')->select('uid','idfa','mac','openudid')->whereIn('uid',$uids)->get();
+		$users = Account::db()->select('uid','idfa','mac','openudid')->whereIn('uid',$uids)->get();
 		$out = array();
 		foreach($users as $user){
 			if($user['idfa']){
@@ -720,5 +778,28 @@ class UserService extends Service
 			}
 		}
 		return $out;
+	}
+
+	public static function getTokenList($uids,$all=false)
+	{
+		if(!$uids && $all==false) return array();
+		$tb = Account::db()->where('apple_token','!=','')->distinct()->select('apple_token','uid');
+		if($uids){
+			$tb = $tb->whereIn('uid',$uids);
+		}
+		return $tb->lists('apple_token','uid');
+	}
+	
+	public static function del_user_pic($uid,$type="true")
+	{
+	    $params = array(
+	        'uid'=>$uid,
+	        'isActive' => $type
+	    );
+	    $result = Utility::loadByHttp(Config::get(self::OTHER_API_URL).'relevance/del_game_file',$params,'POST');
+	    if($result['errorCode']==0){
+	        return true;
+	    }
+	    return false;
 	}
 }

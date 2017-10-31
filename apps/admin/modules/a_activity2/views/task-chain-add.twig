@@ -1,5 +1,6 @@
 <!--{%extends "base-layout.twig"%}-->
 <!--{%block main_content%}-->
+<link href="/static/css/app.css" rel="stylesheet" type="text/css"/>
 <div class="row-fluid">
     <div class="span12">
 		<div class="box">
@@ -15,6 +16,14 @@
 						<input type="text" name="title" class="input-xxlarge" value="<!--{{atask.taskName}}-->" data-rule-required="true" data-msg-required="标题不能为空"  />
 					</div>
 				</div>
+
+                <div class="control-group">
+                    <label class="control-label">*版本限制</label>
+                    <div class="controls">
+                        <!--{{form_select('appVersion',appVersion,atask.appVersion,{'id':'appVersion'})}}-->
+                    </div>
+                </div>
+
                     <div class="control-group">
                         <label class="control-label">*icon</label>
                         <div class="controls">
@@ -46,7 +55,7 @@
                             <label class="control-label">开始时间</label>
                             <div class="controls">
                                 <div class="input-append date">
-                                    <input name="start_time" type="text" class="input-medium" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})"  value="<!--{{atask.startTime|date('Y-m-d H:i:s')}}-->" >
+                                    <input name="start_time" type="text" class="input-medium"  data-rule-required="true" data-msg-required="开始时间不能为空"  onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})"  value="<!--{{atask.startTime}}-->" >
                                     <span class="add-on"><i class="icon-calendar"></i></span>
                                 </div>
                             </div>
@@ -57,13 +66,12 @@
                             <label class="control-label">结束时间</label>
                             <div class="controls">
                                 <div class="input-append date">
-                                    <input name="end_time" type="text" class="input-medium " onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="<!--{{atask.endTime|date('Y-m-d H:i:s')}}-->" >
+                                    <input name="end_time" type="text" class="input-medium " data-rule-required="true" data-msg-required="结束时间不能为空" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="<!--{{atask.endTime}}-->" >
                                     <span class="add-on"><i class="icon-calendar"></i></span>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="control-group">
@@ -89,11 +97,27 @@
                     </div>
                 </div>
 
+                <div class="control-group task_children" >
+                    <div class="control-group">
+                        <label class="control-label">子任务选择</label>
+                        <div class="controls">
+                            <div style="margin-top: -8px" class="block__list block__list_words">
+                                <ul id="editable" style="border: 1px solid;width: 400px;">
+                                    <!--{%for item in task_children%}-->
+                                    <li taskid="" starttime="<!--{{item.startTime}}-->" endtime="<!--{{item.endTime}}-->"><!--{{item.taskName}}--></li>
+                                    <!--{%endfor%}-->
+                                </ul>
+                            </div>
+                            <input type="button" id="show_iframe" value="添加子任务" class="select-task-code"/>
+                        </div>
+                    </div>
+                </div>
 
 
 			    <div class="form-actions">
 					<button type="submit" class="btn btn-primary sub"><i class="icon-ok"></i>保存</button>
                     <input type="hidden" name="id" value="<!--{{id}}-->"/>
+                    <input type="hidden" name="subTaskIds" class="ids" value=""/>
 
 				</div> 
 			    </form>
@@ -110,14 +134,102 @@
 <script src="/static/js/laydate/laydate.js"></script>
 <script src="/static/js/jquery.validationEngine.js"></script>
 <script src="/static/js/jquery.validationEngine-en.js"></script>
+<script src="/static/js/Sortable.js"></script>
 <script>
 
 $(function() {
     var editor = UE.getEditor('container');
     $('input.datetimepicker').datetimepicker({format: 'Y-m-d H:i:s', lang: 'ch'});
+    //选择子任务
+    $(".select-task-code").live('click',function(){
+        $.ajax({
+            url:'/a_activity2/task/iframe-children-task',
+            dataType:'json',
+            success:function(json){
+                var html = json.html;
+                $.dialog({id:'pop-task-list',title:'提示',padding:2,content:html,width:650,height:500});
+            }
+        });
+    })
+    
+    //提交时限制图片为空
+   $(".sub").click(function() {
+        var check = "true";
+        $("input[name='prize_pic[]']").each(function(){
+            var img = $(this).val();
+
+            var old_img = $(this).siblings("input[name='prize_img[]']").val();
+            if(!img&&!old_img){
+                $(this).parent().siblings(".img_note").show();
+                check = "false";
+            }else{
+                $(this).parent().siblings(".img_note").hide();
+            }
+        })
+
+        $("input[name='youb_num[]']").each(function(){
+            var num = $(this).val();
+            var new_num = parseInt(num*100)/100;
+            if(num!=new_num){
+                $(this).val(new_num);
+                if(!confirm("金额只能只能精确到分，多余部分将自动筛除")){
+                    check = "false";
+                }
+            }
+        })
+
+        if(!$("input[name='task_icon']").val()&&!$("#task_img").val()){
+            $("#task_img").parent().siblings(".img_note").show();
+            check = "false";
+        }else{
+            $("#task_img").parent().siblings(".img_note").hide();
+        }
+        if(check=="false"){
+            return false;
+        }
+    }) 
+    
+    
+ 
+    $(".sub").click(function() {
+        var ids = "";
+        $("#editable").children("li").each(function(){
+            var taskId = $(this).attr("taskId");
+            if(taskId){
+
+            ids +=taskId+",";
+            var startTime1 = $(this).attr("startTime");
+            startTime1 = startTime1.replace(/-/g,"/");
+            startTime1 = new Date(Date.parse(startTime1));
+
+            var endTime1 = $(this).attr("endTime");
+            endTime1 = endTime1.replace(/-/g,"/");
+            endTime1 = new Date(Date.parse(endTime1));
+            if($(this).next("li").html()){
+                var startTime2 = $(this).next("li").attr("startTime");
+                startTime2 = startTime2.replace(/-/g,"/");
+                startTime2 = new Date(Date.parse(startTime2));
+                var endTime2 = $(this).next("li").attr("endTime"); 
+               endTime2 = endTime2.replace(/-/g,"/");
+                endTime2 = new Date(Date.parse(endTime2));
+                //比较开始和结束时间的大小---
+//                if(!(startTime1<startTime2&&endTime1<endTime2)){
+//                    alert("子任务排序错误");
+//                    return false;
+//                }
+            }
+            }
+        });
+        $(".ids").val(ids);
+//        return false;
+    })
 })
 
-
+//var el = document.getElementById('editable');
+//new Sortable(el);
+$(".js-remove").live('click',function(){
+    $(this).parent().remove();
+})
 
 
 </script>

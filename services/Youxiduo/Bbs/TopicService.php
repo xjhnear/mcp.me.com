@@ -13,7 +13,13 @@ class TopicService extends BaseService{
     const API_RELATE_CONF = 'app.game_forum_api_url';
     const API_PHONE_CONF = 'app.android_phone_api_url';
     const API_V4_CONF = 'app.php_v4_module_api_url';
+    const API_URL_CONF_MY = 'app.API_MODULE_MEDAL_URL';
+    const API_MESSAGE_CONF = 'app.message_api_url';
+    const API_MESSAGE_LION_CONF = 'app.message_lion_api_url';
+    const API_PUSH_CONF = 'app.push_api_url';
+    const API_PUSH_CONF_NEW = 'app.push_api_url_new';
 
+    const ESSENCE_POST_AWARD = 'essence_post_award';
     /***
      * 帖子限制回复条数修改
      **
@@ -170,20 +176,22 @@ class TopicService extends BaseService{
      * @param bool $hashValue
      * @return bool|mixed|string
      */
-    public static function getForums($name='',$pageIndex=1,$pageSize=10,$platform=false,$fid=false,$hashValue=false,$displayType=2){
+    public static function getForums($name='',$pageIndex=1,$pageSize=10,$game_id=false,$platform=false,$fid=false,$hashValue=false,$displayType=2){
         $params = array(
             'name' => $name,
             'pageIndex' => $pageIndex,
             'pageSize' => $pageSize,
             'displayType' => "2"
         );
-
+        if($game_id) $params['gid'] = $game_id;
         if($platform) $params['platform'] = $platform;
         if($fid) $params['fid'] = $fid;
         if($hashValue) $params['hashValue'] = $hashValue;
         if($displayType!==null) $params['displayType'] = $displayType;
         $api_url = Config::get(self::API_URL_CONF).'module_forum/search_forum';
         $result = Utility::loadByHttp($api_url,$params);
+//         echo $api_url;
+//         print_r($result);
         return $result;
     }
 
@@ -192,8 +200,8 @@ class TopicService extends BaseService{
      * @param $fid
      * @return bool|mixed|string
      */
-    public static function getForumDetail($fid){
-        $params = array('fid'=>$fid);
+    public static function getForumDetail($fid,$platform=1){
+        $params = array('fid'=>$fid,'platform'=>$platform,'displayType'=>$platform);
         $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/forum_detail',$params);
         if($result && $result['errorCode'] == 0 && $result['result']){
             $result['result']['top_pic'] = false;
@@ -212,9 +220,10 @@ class TopicService extends BaseService{
      * @param bool $hashValue
      * @return bool|mixed|string
      */
-    public static function getForumsCount($name='',$hashValue=false,$displayType=2){
+    public static function getForumsCount($name='',$gid=false,$hashValue=false,$displayType=2){
         $params = array();
         if($name) $params['name'] = $name;
+        if($gid) $params['gid'] = $gid;
         if($hashValue) $params['hashValue'] = $hashValue;
         if($displayType!==null) $params['displayType'] = $displayType;
         $api_url = Config::get(self::API_URL_CONF).'module_forum/forum_number';
@@ -255,7 +264,7 @@ class TopicService extends BaseService{
      * @return bool|mixed|string
      */
     public static function getForumAndGameRelation($isActive,$genre,$fid=false,$gid=false,$pageIndex=false,$pageSize=false){
-        $params = array('isActive'=>$isActive,'genre'=>$genre);
+        $params = array('isActive'=>$isActive,'genre'=>$genre,'platform'=>$genre);
         if($fid){
             if(is_array($fid)) $fid = implode(',',$fid);
             $params['fid'] = $fid;
@@ -282,6 +291,7 @@ class TopicService extends BaseService{
      */
     public static function query_game_link_list($isActive,$genre,$fid=false,$gid=false,$fromTag="2",$pageIndex=false,$pageSize=false){
         $params = array('isOpen'=>$isActive,'fromTag'=>$fromTag);
+        
         if($fid){
             if(is_array($fid)) $fid = implode(',',$fid);
             $params['fid'] = $fid;
@@ -292,7 +302,8 @@ class TopicService extends BaseService{
         }
         if($pageIndex) $params['pageIndex'] = $pageIndex;
         if($pageSize) $params['pageSize'] = $pageSize;
-        $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/query_game_link_list',$params,'GET');
+        $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/query_game_link_list',$params);
+        
         return $result;
     }
 
@@ -401,7 +412,10 @@ class TopicService extends BaseService{
 		$result = Utility::loadByHttp($api_url,$params);
 		return $result;
 	}
-
+    public static function topic_list($params){
+        $api_url = Config::get(self::API_URL_CONF).'module_forum/topic_list';
+        $result = Utility::loadByHttp($api_url,$params);
+    }
     /**
      * 帖子总数
      * @param string $fid
@@ -552,9 +566,10 @@ class TopicService extends BaseService{
  * 删除版主
  * @param $id
  */
-    public static function DelMaster($id){
+    public static function DelMaster($id,$uid){
         $params = array(
             'id' => $id,
+            'uid' => $uid,
         );
         $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/delete_master',$params);
         return $result;
@@ -623,11 +638,12 @@ class TopicService extends BaseService{
      * @param bool $isAdmin
      * @return bool|mixed|string
      */
-    public static function updateReply($id,$replier,$content,$formatContent='',$listpic='',$isAdmin=false){
+    public static function updateReply($id,$replier,$content,$formatContent='',$listpic='',$isAdmin=false,$tid=''){
         $params = array(
             'id' => $id,
             'replier' => $replier,
-            'content' => $content
+            'content' => $content,
+            'tid' => $tid
         );
         $formatContent && $params['formatContent'] = $formatContent;
         $listpic && $params['listpic'] = $listpic;
@@ -751,7 +767,7 @@ class TopicService extends BaseService{
     public static function doPostAdd($fid,$uid,$bid,$subject,$content='',$award='',$fromTag,$displayOrder=0,$isActivity=false,
 									$isAdmin=false,$isRule=false,$isGood=false,$isAsk=false,$askStatus=false,$hashValue=false,
 									$summary=false,$listpic=false,$formatContent=false,$tagid=false,$tid=0,$iosDisplay=false,
-                                    $androidDisplay=false,$webDisplay=false,$isTop=false,$topEndTime=false,$replyInvisible=false){
+                                    $androidDisplay=false,$webDisplay=false,$isTop=false,$topEndTime=false,$replyInvisible=false,$giftId=''){
 		$params = array(
 			'fid' => $fid,
 			'uid' => $uid,
@@ -781,6 +797,7 @@ class TopicService extends BaseService{
         $androidDisplay && $params['androidDisplay'] = $androidDisplay;
         $webDisplay && $params['webDisplay'] = $webDisplay;
         $replyInvisible && $params['replyInvisible'] = $replyInvisible;
+        $giftId && $params['giftId'] = $giftId;
         //给图片加样式
         $params['formatContent'] = preg_replace("/<[img|IMG].*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.png]))[\'|\"].*?[\/]?>/", "<span class='topic-img' >$0</span>", $params['formatContent']);
 		$result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/post_topic',$params,'POST');
@@ -809,7 +826,7 @@ class TopicService extends BaseService{
      * @return bool|mixed|string
      */
     public static function modifyTopic($tid,$uid=false,$fid=false,$bid=false,$subject=false,$content=false,$award=false,$formatContent=false,$listpic=false,
-                                       $hashValue=false,$iosDisplay=false,$androidDisplay=false,$webDisplay=false,$isTop=false,$topEndTime=false,$replyInvisible=false,$displayOrder=0,$summary="")
+                                       $hashValue=false,$iosDisplay=false,$androidDisplay=false,$webDisplay=false,$isTop=false,$topEndTime=false,$replyInvisible=false,$displayOrder=0,$summary="",$giftId='')
     {
         $params = array('tid'=>$tid);
         if($uid) $params['uid'] = $uid;
@@ -824,6 +841,7 @@ class TopicService extends BaseService{
         $iosDisplay && $params['iosDisplay'] = $iosDisplay;
         $androidDisplay && $params['androidDisplay'] = $androidDisplay;
         $webDisplay && $params['webDisplay'] = $webDisplay;
+        $giftId && $params['giftId'] = $giftId;
 
 //        $params['isTop'] = $isTop;
         $params['displayOrder'] = $displayOrder;
@@ -880,7 +898,7 @@ class TopicService extends BaseService{
      * @return mixed
      * @internal param int $version
      */
-	public static function doReplyAdd($replier,$tid,$content='',$formatContent='',$hashValue='',$isAdmin=false,$type='TOPIC',$fromTag=3,$listpic='',$message=''){
+	public static function doReplyAdd($replier,$tid,$content='',$formatContent='',$hashValue='',$isAdmin=false,$type='TOPIC',$fromTag=3,$listpic='',$message='',$id=''){
 		$params = array(
 			'replier' => $replier,
 			'tid' => $tid,
@@ -891,6 +909,7 @@ class TopicService extends BaseService{
 		if($formatContent) $params['formatContent'] = $formatContent;
 		if($hashValue) $params['hashValue'] = $hashValue;
         if($isAdmin) $params['isAdmin'] = $isAdmin;
+        if($id) $params['id'] = $id;
         $listpic && $params['listpic'] = $listpic;
         $message && $params['message'] = $message;
 		$result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/add_reply',$params,'POST');
@@ -945,10 +964,11 @@ class TopicService extends BaseService{
      * @param bool $isAdmin 是否管理员编辑过
      * @return bool|mixed|string
      */
-    public static function doCommentReplyAdd($replyId,$uid,$content='',$formatContent='',$isActive=true,$isAdmin=false){
+    public static function doCommentReplyAdd($replyId,$uid,$content='',$formatContent='',$isActive=true,$isAdmin=false,$fromTag=1){
         $params = array(
             'replyId' => $replyId,
-            'uid' => $uid
+            'uid' => $uid,
+            'fromTag' => $fromTag
         );
         if($content) $params['content'] = $content;
         if($formatContent) $params['formatContent'] = $formatContent;
@@ -1041,7 +1061,16 @@ class TopicService extends BaseService{
         if($isActivity) $params['isActivity'] = $isActivity;
         if($askStatus) $params['askStatus'] = $askStatus;
         if($hashValue) $params['hashValue'] = $hashValue;
-        $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/topic_status',$params);
+        $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/modify_topic',$params,"POST");
+        if ($isGood) {
+            $params['dictKey'] = self::ESSENCE_POST_AWARD;
+            $result_award = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/query_dictionary_list',$params,"GET");
+            if ($result_award['errorCode'] == 0) {
+                $result['award'] = isset($result_award['result'][0]['dictValue'])?$result_award['result'][0]['dictValue']:0;
+            } else {
+                $result['award'] = 0;
+            }
+        }
         return $result;
     }
 
@@ -1090,7 +1119,7 @@ class TopicService extends BaseService{
 		$format_message = '';
         if($message){
             $msg_arr = json_decode($message,true);
-            if($msg_arr){
+            if($msg_arr && is_array($msg_arr)){
                 foreach($msg_arr as $val){
                     if($val['text']){
                         $format_message .= '<p class="topic-text">' . $val['text'] . '</p>';
@@ -1265,12 +1294,30 @@ class TopicService extends BaseService{
     }
 
     public static function system_send($data){
-        $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_message/message/system_send',$data,'POST');
+        $result = Utility::loadByHttp(Config::get(self::API_MESSAGE_CONF).'message/system_send',$data,'POST');
+        return $result;
+    }
+    
+    public static function system_send_lion($data){
+        $result = Utility::loadByHttp(Config::get(self::API_MESSAGE_LION_CONF).'api/common_push',$data,'POST');
+        return $result;
+    }
+    
+    public static function get_sys_mess_template($data){
+        $result = Utility::loadByHttp(Config::get(self::API_MESSAGE_CONF).'sys_mess_template/get_sys_mess_template_list',$data,'GET');
+        return $result;
+    }
+    
+    public static function system_push($data){
+        //老推送 by 李陈毅
+        //$result = Utility::loadByHttp(Config::get(self::API_PUSH_CONF).'ios/push_message',$data,'POST');
+        $data['platform']='ios';
+        $result = Utility::loadByHttp(Config::get(self::API_PUSH_CONF_NEW).'user_push_switch/push',$data,'POST');
         return $result;
     }
 
     public static function query_dictionary_list($data){
-        $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/query_dictionary_list',$data,'POST');
+        $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/query_dictionary_list',$data,'GET');
         return $result;
     }
     public static function update_dictionary($data){
@@ -1283,6 +1330,23 @@ class TopicService extends BaseService{
     }
     public static function update_reply($data){
         $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/update_reply',$data,'POST');
+        return $result;
+    }
+    /**
+     * 添加或取消勋章
+     * @param $uid,$type
+     */
+    public static function grant_user_medal($data){
+        $result = Utility::loadByHttp(Config::get(self::API_URL_CONF_MY).'grant_user_medal',$data);
+        return $result;
+    }
+
+    /**
+     * 封帐号
+     * @param $uid,$type
+     */
+    public static function deactivate_account($data){
+        $result = Utility::loadByHttp(Config::get(self::API_URL_CONF).'module_forum/deactivate_account',$data,'GET');
         return $result;
     }
 }

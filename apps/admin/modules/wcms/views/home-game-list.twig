@@ -32,6 +32,7 @@
 							<th class="col-150">游戏图片</th>
 							<th class="col-120">评分</th>
 							<th class="col-120">新位置</th>
+							<th class="col-100">最后修改人</th>
 							<th class="table-btn-group">操作</th>
 						</tr>
 					</thead>
@@ -46,6 +47,11 @@
 							<td><!--{{item.score}}--></td>
 							<td>
 								<input name="idx_<!--{{item.idx}}-->" type="text" class="input-small" value="<!--{{item.idx}}-->" />
+							</td>
+							<td>
+								<div style="width:80px; white-space:nowrap;text-overflow:ellipsis;overflow:hidden; ">
+									<span title='<!--{{item.userName}}-->'><!--{{item.userName}}--></span>
+								</div>
 							</td>
 							<td>
 							    <a href="<!--{{url('wcms/home/edit-game',{'type':type})}}-->?idx=<!--{{item.idx}}-->" class="btn btn-primary">编辑</a>						    							    								

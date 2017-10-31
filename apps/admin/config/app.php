@@ -16,5 +16,8 @@ $config['installed_modules'] = array(
 	'admin'=>app_path() . '/modules/admin',    
 	'statistics'=>app_path() . '/modules/statistics',  
 	'xgame'=>app_path() . '/modules/xgame',
+    /**4.0新商城**/
+    'product'=> app_path() . '/modules/product',
+  //  'v4a_product'=> app_path() . '/modules/v4a_product',
 );
 return $config;

@@ -5,6 +5,13 @@ use Yxd\Modules\Core\CacheService;
 
 use Illuminate\Support\Facades\DB;
 use Yxd\Services\Service;
+use Yxd\Services\Models\News;
+use Yxd\Services\Models\Gonglue;
+use Yxd\Services\Models\Feedback;
+use Yxd\Services\Models\NewGame;
+use Yxd\Services\Models\GameNotice;
+use Yxd\Services\Models\Videos;
+use Yxd\Services\Models\VideosGames;
 
 class VideoService extends Service
 {
@@ -21,7 +28,7 @@ class VideoService extends Service
 	 */
 	public static function getVideoList($page=1,$pagesize=10,$type=0)
 	{
-		$tb = self::dbCmsSlave()->table('videos')->where(function($query){
+		$tb = Videos::db()->where(function($query){
 			    $query = $query->where('apptype','=',1)->orWhere('apptype','=',3);
 			});
 		if($type==0){
@@ -60,8 +67,8 @@ class VideoService extends Service
 	 */
 	public static function getVideoDetail($id,$page=1,$pagesize=10)
 	{
-		$tb = self::dbCmsSlave()->table('videos')->where(function($query){
-			    $query = $query->where('apptype','=',1)->orWhere('apptype','=',3);
+		$tb = Videos::db()->where(function($query){
+			    //$query = $query->where('apptype','=',1)->orWhere('apptype','=',3);
 			});
 		$cachekey_video = 'object::video::id::' . $id;
 		if(CLOSE_CACHE===false && CacheService::has($cachekey_video)){
@@ -71,15 +78,15 @@ class VideoService extends Service
 		    CLOSE_CACHE===false && CacheService::forever($cachekey_video,$video);
 		}
 		if(!$video) return null;
-		$max_id = self::dbCmsSlave()->table('videos')->max('id');
-		$min_id = self::dbCmsSlave()->table('videos')->min('id');
+		$max_id = Videos::db()->max('id');
+		$min_id = Videos::db()->min('id');
 		$pre_id = $next_id = 0;
 		if($id<$max_id){
-			$res = self::dbCmsSlave()->table('videos')->where('id','>',$id)->orderBy('id','desc')->first();			
+			$res = Videos::db()->where('id','>',$id)->orderBy('id','desc')->first();			
 			$pre_id = isset($res['id']) ? $res['id'] : 0;
 		}
 		if($id > $min_id){
-			$res = self::dbCmsSlave()->table('videos')->where('id','<',$id)->orderBy('id','asc')->first();			
+			$res = Videos::db()->where('id','<',$id)->orderBy('id','asc')->first();			
 			$next_id = isset($res['id']) ? $res['id'] : 0;
 		}
 		
@@ -99,7 +106,7 @@ class VideoService extends Service
 		
 		$out['games'] = array();
 		$out['gfid'] = $video['gfid'];
-		$gids = self::dbCmsSlave()->table('videos_games')->where('vid','=',$id)->where('gid','>',0)->forPage(1,6)->lists('gid');
+		$gids = VideosGames::db()->where('vid','=',$id)->where('gid','>',0)->forPage(1,6)->lists('gid');
 		if($video['gid']>0){
 			$gids[] = $video['gid'];
 		}
@@ -145,6 +152,7 @@ class VideoService extends Service
 			$comment['replyInfo']['fromUser']['userAvator'] = self::joinImgUrl($row['author']['avatar']);
 			$comment['replyInfo']['fromUser']['userLevel'] = $row['author']['level_name'];
 			$comment['replyInfo']['fromUser']['userLevelImage'] = self::joinImgUrl($row['author']['level_icon']);
+			$comment['replyInfo']['fromUser']['isNewUser'] = UserService::isNewUser($row['author']);
 			if(isset($row['quote']) && $row['quote']){
 				$row['quote']['content'] = json_decode($row['quote']['content'],true);
 				if($row['quote']['content'] && count($row['quote']['content'])>0){									
@@ -153,6 +161,7 @@ class VideoService extends Service
 				}
 				$comment['replyInfo']['toUser']['userID'] = $row['author']['uid'];
 				$comment['replyInfo']['toUser']['userName'] = $row['author']['nickname'];
+				$comment['replyInfo']['toUser']['isNewUser'] = UserService::isNewUser($row['quote']['author']);
 			}
 			
 			$out['comments']['commentInfos'][] = $comment;

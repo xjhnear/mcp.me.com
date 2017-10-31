@@ -34,10 +34,12 @@ use Youxiduo\V4\Game\Model\GameBeta;
 use Youxiduo\V4\Game\Model\GameTag;
 use Youxiduo\V4\Game\Model\GameArea;
 use Youxiduo\V4\Game\Model\UserGameArea;
+use Youxiduo\V4\Game\Model\GameRecharge;
 use Youxiduo\V4\Game\Model\GameImage;
 
 use Youxiduo\V4\Game\Model\UserGame;
 use Youxiduo\V4\Game\Model\UserGameReserve;
+use Yxd\Modules\System\SettingService;
 
 class GameService extends BaseService
 {
@@ -64,16 +66,41 @@ class GameService extends BaseService
 	 */
 	public static function getOneInfoById($gid,$platform,$filter='basic')
 	{
+		$recharge_url = $rechargelinkType = $rechargeisAutoLogin = '';
 		if($platform=='ios'){
 			$game = IosGame::getInfoById($gid);
 			$schemes = IosGameSchemes::getSchemesToKeyValue($gid);
+			$recharge = GameRecharge::db()->where('gid','=',$gid)->pluck('url');
+            $rechargelinkType = GameRecharge::db()->where('gid','=',$gid)->pluck('linkType');
+            $rechargeisAutoLogin = GameRecharge::db()->where('gid','=',$gid)->pluck('isAutoLogin');
+			if(!$recharge){
+				$cfg = SettingService::getConfig('game-recharge-default:url');
+				if($cfg && isset($cfg['data'])) {
+				    $recharge_url = $cfg['data'];
+				    $rechargelinkType = 2;
+				    $rechargeisAutoLogin = 1;
+				}
+			}else{
+				$recharge_url = $recharge;
+			}
+			if(!$rechargelinkType){
+			    $rechargelinkType = 2;
+			}
+			if(!$rechargeisAutoLogin){
+			    $rechargeisAutoLogin = 1;
+			}
 		}elseif($platform=='android'){
 			$game = AndroidGame::getInfoById($gid);
 		}
 		if(!$game) return self::ERROR_GAME_NOT_EXISTS;
 		$gametype = GameType::getListToKeyValue();
 		$game = self::filterField($game,$filter,$gametype);		
-		$platform=='ios' && $game['schemes'] = isset($schemes[$game['gid']]) ? $schemes[$game['gid']] : '';		
+		$platform=='ios' && $game['schemes'] = isset($schemes[$game['gid']]) ? $schemes[$game['gid']] : '';
+		$platform=='ios' && $game['recharge_url'] = $recharge_url;
+        $platform=='ios' && $game['recharge_linkType'] = $rechargelinkType;
+        $platform=='ios' && $game['recharge_isAutoLogin'] = $rechargeisAutoLogin;
+		$tags = self::getGameTags($platform,array($gid));
+		$game['tags'] = isset($tags[$gid]) ? implode(',',$tags[$gid]) : '';
 		return $game;
 	}
 
@@ -117,14 +144,18 @@ class GameService extends BaseService
 		return $images;
 	}
 	
-	public static function searchByName($gname,$platform,$pageIndex=1,$pageSize=10,$order=array(),$filter='basic')
+	public static function searchByName($gname,$platform,$pageIndex=1,$pageSize=10,$is_open_forum="",$order=array(),$filter='basic')
 	{
 		$games = array();
 		if($platform == 'ios'){
-			$games = IosGame::db()->where('shortgname','like','%'.$gname.'%')->where('isdel','=',0)->forPage($pageIndex,$pageSize)->get();
+			$gamedb = IosGame::db()->where('shortgname','like','%'.$gname.'%')->where('isdel','=',0);
 		}elseif($platform == 'android'){
-			$games = AndroidGame::db()->where('shortgname','like','%'.$gname.'%')->where('isdel','=',0)->forPage($pageIndex,$pageSize)->get();
+			$gamedb = AndroidGame::db()->where('shortgname','like','%'.$gname.'%')->where('isdel','=',0);
 		}
+        if($is_open_forum!=""){
+            $gamedb = $gamedb->where('is_open_forum','=',$is_open_forum);
+        }
+        $games = $gamedb->forPage($pageIndex,$pageSize)->get();
 		$gametype = GameType::getListToKeyValue();
 		foreach($games as $key=>$game){
 			$games[$key] = self::filterField($game,$filter,$gametype);
@@ -132,27 +163,79 @@ class GameService extends BaseService
 		return $games;
 	}
 	
-	public static function searchByNameCount($gname,$platform)
+	public static function searchByNameCount($gname,$platform,$is_open_forum=0)
 	{
 	    if($platform == 'ios'){
-			return IosGame::db()->where('shortgname','like','%'.$gname.'%')->where('isdel','=',0)->count();
+			$tb = IosGame::db()->where('shortgname','like','%'.$gname.'%')->where('isdel','=',0);
 		}elseif($platform == 'android'){
-			return AndroidGame::db()->where('shortgname','like','%'.$gname.'%')->where('isdel','=',0)->count();
+			$tb = AndroidGame::db()->where('shortgname','like','%'.$gname.'%')->where('isdel','=',0);
 		}
-		return 0;
+        if($is_open_forum) $tb = $tb->where('is_open_forum','=',$is_open_forum);
+		return $tb->count();
+	}
+
+	public static function queryGameList($game_id,$gname,$typeId,$price,$tag,$is_open_forum,$pageIndex=1,$pageSize=10)
+	{
+		$total = self::buildQuery($game_id,$gname,$typeId,$price,$tag,$is_open_forum)->count();
+		$games = self::buildQuery($game_id,$gname,$typeId,$price,$tag,$is_open_forum)->forPage($pageIndex,$pageSize)->get();
+		$gametype = GameType::getListToKeyValue();
+		foreach($games as $key=>$game){
+			$game = self::filterField($game,'basic',$gametype);
+			$games[$key] = $game;
+		}
+		return array('result'=>$games,'totalCount'=>$total);
+	}
+
+	protected static function buildQuery($game_id,$gname,$typeId,$price,$tag,$is_open_forum)
+	{
+		$tb = IosGame::db()->where('isdel','=',0);
+		if(is_numeric($game_id)){
+			$tb = $tb->where('id','=',$game_id);
+		}
+		if(is_array($game_id) && count($game_id)>0){
+			$tb = $tb->whereIn('id',$game_id);
+		}
+		if(!empty($gname)){
+			$tb = $tb->where('shortgname','like','%'.$gname.'%');
+		}
+
+		if($typeId){
+			$tb = $tb->where('type','=',$typeId);
+		}
+
+		if($price !== null && is_numeric($price)){
+			$tb = $tb->where('pricetype','=',$price);
+		}
+
+		if(!empty($tag)){
+			$gids = GameTag::db()->where('tag','=',$tag)->lists('gid');
+			if($gids){
+				$tb = $tb->whereIn('id',$gids);
+			}
+		}
+
+		if($is_open_forum){
+			$tb = $tb->where('is_open_forum','=',$is_open_forum);
+		}
+
+		return $tb;
 	}
 	
 	/**
 	 * 通过类型获取游戏信息
 	 */
-	public static function getGameListByTypeId($platform,$typeId,$pageIndex=1,$pageSize=10)
+	public static function getGameListByTypeId($platform,$typeId,$pageIndex=1,$pageSize=11,$is_open_forum=0)
 	{
 		$games = array();
 	    if($platform == 'ios'){
-			$games = IosGame::db()->where('type','=',$typeId)->where('isdel','=',0)->orderBy('id','desc')->forPage($pageIndex,$pageSize)->get();
+			$gamedb = IosGame::db()->where('type','=',$typeId)->where('isdel','=',0);
 		}elseif($platform == 'android'){
-			$games = AndroidGame::db()->where('type','=',$typeId)->where('isdel','=',0)->orderBy('id','desc')->forPage($pageIndex,$pageSize)->get();
+			$gamedb = AndroidGame::db()->where('type','=',$typeId)->where('isdel','=',0);
 		}
+        if($is_open_forum){
+            $gamedb = $gamedb->where('is_open_forum','=',$is_open_forum);
+        }
+        $games = $gamedb->orderBy('id','desc')->forPage($pageIndex,$pageSize)->get();
 		$gametype = GameType::getListToKeyValue();
 		foreach($games as $key=>$game){
 			$games[$key] = self::filterField($game,'basic',$gametype);
@@ -160,13 +243,21 @@ class GameService extends BaseService
 		return $games;
 	}
 	
-    public static function getGameCountByTypeId($platform,$typeId)
-	{		
-	    if($platform == 'ios'){
-			return IosGame::db()->where('type','=',$typeId)->where('isdel','=',0)->count();
-		}elseif($platform == 'android'){
-			return AndroidGame::db()->where('type','=',$typeId)->where('isdel','=',0)->count();
-		}
+    public static function getGameCountByTypeId($platform,$typeId,$is_open_forum=0)
+	{
+        if($platform == 'ios'){
+            $tb = IosGame::db()->where('type','=',$typeId)->where('isdel','=',0);
+        }elseif($platform == 'android'){
+            $tb = AndroidGame::db()->where('type','=',$typeId)->where('isdel','=',0);
+        }
+        if($is_open_forum) $tb = $tb->where('is_open_forum','=',$is_open_forum);
+        return $tb->count();
+
+//	    if($platform == 'ios'){
+//			return IosGame::db()->where('type','=',$typeId)->where('isdel','=',0)->count();
+//		}elseif($platform == 'android'){
+//			return AndroidGame::db()->where('type','=',$typeId)->where('isdel','=',0)->count();
+//		}
 	}
 	
 	/**
@@ -174,12 +265,12 @@ class GameService extends BaseService
 	 * @param string $place 位置参数 home_hot_network/home_hot_single
 	 * @param int $size 数量限制
 	 */
-	public static function getHotGameList($place,$pageIndex,$pageSize,$platform)
+	public static function getHotGameList($place,$pageIndex,$pageSize,$platform,$is_open_forum=0)
 	{
 		$games = array();
 		if(self::checkPlatform($platform)!==true) return $games;
 		if($platform=='ios'){
-		    $games = self::getIosHotGameList($place,$pageIndex,$pageSize);
+		    $games = self::getIosHotGameList($place,$pageIndex,$pageSize,$is_open_forum);
 		}elseif($platform == 'android'){
 			
 		}
@@ -191,20 +282,23 @@ class GameService extends BaseService
 		return $games;
 	}
 	
-	public static function getHotGameCount($place,$platform)
+	public static function getHotGameCount($place,$platform,$is_open_forum=0)
 	{
 		if(self::checkPlatform($platform)!==true) return 0;
 		if($platform=='ios'){
-		    return self::getIosHotGameCount($place);
+		    return self::getIosHotGameCount($place,$is_open_forum);
 		}elseif($platform == 'android'){
 			return 0;
 		}
 		return 0;
 	}
 	
-	protected static function getIosHotGameList($place,$pageIndex,$pageSize)
+	protected static function getIosHotGameList($place,$pageIndex,$pageSize,$is_open_forum=0)
 	{
 		$tb = IosGame::db()->where('isdel','=',0);
+		if($is_open_forum){
+			$tb = $tb->where('is_open_forum','=',$is_open_forum);
+		}
 		switch($place){
 			case 'home_hot_network':
 				$tb = $tb->where('type','=',11);//->orderBy('sort','desc');
@@ -220,9 +314,12 @@ class GameService extends BaseService
 		return $games;
 	}
 	
-    protected static function getIosHotGameCount($place)
+    protected static function getIosHotGameCount($place,$is_open_forum=0)
 	{
 		$tb = IosGame::db()->where('isdel','=',0);
+		if($is_open_forum){
+			$tb = $tb->where('is_open_forum','=',$is_open_forum);
+		}
 		switch($place){
 			case 'home_hot_network':
 				$tb = $tb->where('type','=',11)->orderBy('sort','desc');
@@ -243,6 +340,8 @@ class GameService extends BaseService
 	 * @param string $tab 开测类型 today:今日开测,soon:即将开测,over:已经开测
 	 * @param int $pageIndex
 	 * @param int $pageSize
+	 *
+	 * @return array
 	 */
 	public static function getBetaTable($platform,$tab,$pageIndex=1,$pageSize=10)
 	{
@@ -257,7 +356,7 @@ class GameService extends BaseService
 			$hot_search['condition'] = array(array('field'=>'istop','logic'=>'=','value'=>1));
 			$hot = GameBeta::search(array_merge($search,$hot_search),1,100,array('addtime'=>'desc','id'=>'desc'));
 			$hot_beta_games = $hot['result'];
-			
+			/*
 			$today_search['condition'] = array(
 			    array('field'=>'istop','logic'=>'=','value'=>0),
 			    array('field'=>'addtime','logic'=>'=','value'=>$start)
@@ -289,7 +388,8 @@ class GameService extends BaseService
 			$bygone_week_beta_games = $bygone['result'];
 
 			$all_beta_games = array_merge($hot_beta_games,$today_beta_games,$tomorrow_beta_games,$future_week_beta_games,$bygone_week_beta_games);
-			
+			*/
+			$all_beta_games = $hot_beta_games;
 			$pages = array_chunk($all_beta_games,$pageSize,false);
 			$beta_games = isset($pages[$pageIndex-1]) ? $pages[$pageIndex-1] : array();
 			$total = count($all_beta_games);
@@ -305,7 +405,7 @@ class GameService extends BaseService
 		}elseif($tab == self::BETA_TABLE_TAB_OVER){//已经开测
 			
 			$order = array('addtime'=>'desc','id'=>'desc');
-			$search['condition'] = array(array('field'=>'addtime','logic'=>'<','value'=>$start));
+			$search['condition'] = array(array('field'=>'addtime','logic'=>'<=','value'=>$start));
 			$result = GameBeta::search($search,$pageIndex,$pageSize,$order);
 			$beta_games = $result['result'];
 			$total = $result['totalCount'];
@@ -699,8 +799,9 @@ class GameService extends BaseService
 			$tmp['typename'] = isset($gametype[$game['type']]) ? $gametype[$game['type']] : '';
 			$tmp['language'] = self::$languages[$game['language']];
 			$platform=='ios' && $tmp['downurl'] = $game['downurl'];
+			$platform=='ios' && $tmp['downurl_linkType'] = isset($game['tosafari']) ? $game['tosafari'] : '';
 			$platform=='ios' && $tmp['schemes'] = isset($schemes[$game['id']]) ? $schemes[$game['id']] : '';
-			
+            $tmp['is_open_forum'] = $game['is_open_forum'];
 			$out[] = $tmp;
 		}
 		return array('result'=>$out,'totalCount'=>$total);
@@ -766,8 +867,8 @@ class GameService extends BaseService
 	{		
 		$fields = array(
 		    'id','gname','shortgname','ico','type','score','downurl','size','language','pricetype','price','addtime','updatetime','oldprice',
-		    'downtimes','commenttimes','description','editorcomt'
-		);
+		    'downtimes','commenttimes','description','editorcomt','tosafari'
+		); 
 		$out = array();
 		foreach($game as $field=>$value){
 			if(in_array($field,$fields)){
@@ -787,6 +888,9 @@ class GameService extends BaseService
 						break;
 					case 'updatetime':
 						$out['updatetime'] = date('Y-m-d H:i:s',$value);
+						break;
+					case 'tosafari':
+						$out['downurl_linkType'] = $value;
 						break;
 					default:
 						$out[$field] = $value;
@@ -894,28 +998,51 @@ class GameService extends BaseService
 		$result = UserGame::getMultiMemberCount($game_ids);
 		return $result;
 	}
-	
+
 	/**
 	 * 添加游戏区服
+	 * @param $uid
+	 * @param $type
+	 * @param $typename
+	 * @param $area_name
+	 * @param $game_id
+	 * @param $platform
+	 * @param $server_name
+	 * @return bool|string
 	 */
-	public static function addGameArea($uid,$type,$area_name,$game_id,$platform)
+	public static function addGameArea($uid,$type,$typename,$area_name,$game_id,$platform,$server_name)
 	{
 		if(self::checkPlatform($platform)!==true) return self::ERROR_PLATFORM_NOT_EXISTS;
-		if(!isset(GameArea::$AREA_TYPE_LIST[$type])) return self::ERROR_GAME_AREA_NOT_EXISTS;
+		//if(!isset(GameArea::$AREA_TYPE_LIST[$type])) return self::ERROR_GAME_AREA_NOT_EXISTS;
+		if($type){
+			$channels = GameAreaService::getGameChannelList(true);
+			if(isset($channels[$type])) $typename=$channels[$type];
+		}else{
+			$type = GameAreaService::addGameChannel($typename);
+		}
+		$user = UserService::getUserInfoByUid($uid);
+		$game = self::getOneInfoById($game_id,$platform);
 		$data = array();
 		$data['pid'] = 0;
 		$data['game_id'] = $game_id;
+		$data['gname'] = isset($game['shortgname']) ? $game['shortgname'] : '';
 		$data['uid'] = $uid;
+		$data['nickname'] = isset($user['nickname']) ? $user['nickname'] : '';
 		$data['type'] = $type;
-		$data['typename'] = GameArea::$AREA_TYPE_LIST[$type];
+		$data['typename'] = $typename;
 		$data['area_name'] = $area_name;
+		$data['server_name'] = $server_name;
 		$data['is_open'] = 0;
 		$success = GameArea::save($data);
 		return $success ? true : false;
 	}
-	
+
 	/**
-	 * 游戏区服
+	 * 获取游戏区服列表
+	 * @param $game_id
+	 * @param $uid
+	 * @param $platform
+	 * @return array|string
 	 */
 	public static function getGameArea($game_id,$uid,$platform)
 	{
@@ -925,14 +1052,15 @@ class GameService extends BaseService
 		$out = array();
 		$area = array();
 		foreach($arealist as $row){
+			$row['server_name'] = $row['server_name'] ? : '';
 			if(!isset($area[$row['type']])){
 				$area[$row['type']] = array(
 				    'type'=>$row['type'],
 				    'typename'=>$row['typename'],
-				    'child'=>array(array('area_id'=>$row['id'],'area_name'=>$row['area_name']))
+				    'child'=>array(array('area_id'=>$row['id'],'area_name'=>$row['area_name'],'server_name'=>$row['server_name']))
 				);
 			}else{
-				$area[$row['type']]['child'][] = array('area_id'=>$row['id'],'area_name'=>$row['area_name']);
+				$area[$row['type']]['child'][] = array('area_id'=>$row['id'],'area_name'=>$row['area_name'],'server_name'=>$row['server_name']);
 			}
 		}
 		
@@ -942,13 +1070,23 @@ class GameService extends BaseService
 		
 		return $out;
 	}
-	
+
 	/**
-	 * 同区玩伴
+	 * 同区玩家
+	 * @param $uid
+	 * @param $game_id
+	 * @param $area_id
+	 * @param int $pageIndex
+	 * @param int $pageSize
+	 * @return array
 	 */
 	public static function getSameAreaUser($uid,$game_id,$area_id,$pageIndex=1,$pageSize=10)
 	{
-		$uids = UserGameArea::db()->where('game_id','=',$game_id)->where('area_id','=',$area_id)->orderBy('game_rolename','desc')->forPage($pageIndex,$pageSize)->distinct()->select('uid')->lists('uid');
+		$tb = UserGameArea::db()->where('game_id','=',$game_id);
+		if($area_id>0){
+			$tb = $tb->where('area_id','=',$area_id);
+		}
+		$uids = $tb->orderBy('game_rolename','desc')->forPage($pageIndex,$pageSize)->distinct()->select('uid')->lists('uid');
 		
 		if($uids && is_array($uids)){
 			$uids = array_unique($uids);
@@ -1001,8 +1139,9 @@ class GameService extends BaseService
 			    'gname'=>$game['shortgname'],
 			    'img'=>Utility::getImageUrl($game['ico']),
 			    'game_rolename'=>$role ? $role['game_rolename'] : '',
-			    'game_server'=>$area ? $area['typename'] : '',
-			    'game_area'=>$area ? $area['area_name'] : ''
+				'game_typename'=>$area ? $area['typename'] : '',
+				'game_server'=>$area ? $area['server_name'] : '',
+				'game_area'=>$area ? $area['area_name'] : ''
 			);
 			$users[$key] = $user;
 		}
@@ -1020,7 +1159,7 @@ class GameService extends BaseService
 			} 
 			$uids[] = $row['uid'];
 		}
-		
+		$size = count($res)>$size ? $size : count($res);
 		$rand_res = array_rand($res,$size);		
 		//print_r($rand_res);exit;		
 		$out = array();
@@ -1036,16 +1175,64 @@ class GameService extends BaseService
 			    'gname'=>$game['shortgname'],
 			    'img'=>Utility::getImageUrl($game['ico']),
 			    'game_rolename'=>$role ? $role['game_rolename'] : '',
-			    'game_server'=>$area ? $area['typename'] : '',
+				'game_typename'=>$area ? $area['typename'] : '',
+			    'game_server'=>$area ? $area['server_name'] : '',
 			    'game_area'=>$area ? $area['area_name'] : ''
 			);
 			$out[] = $user;
 		}
 		return $out;
 	}
-	
+
+	public static function getMatchingArea($uid,$com_uids=array())
+	{
+		if(!$uid || empty($com_uids)) return array();
+		$uids = $com_uids;
+		$uids[] = $uid;
+		$areas = UserGameArea::db()->whereIn('uid',$uids)->get();
+		$user_area_group = array();
+		foreach($areas as $row){
+			$key = $row['game_id'].'_'.$row['area_id'];
+			$user_area_group[$row['uid']][$key] = $row;
+		}
+		$my_areas = isset($user_area_group[$uid]) ? $user_area_group[$uid] : array();
+		if(!$my_areas) return array();
+		$result = array();
+		$area_ids = array();
+		foreach($com_uids as $one_uid){
+			if(!isset($user_area_group[$one_uid])) {
+				$result[$one_uid] = array();
+				continue;
+			}
+			$keys_one = array_keys($user_area_group[$uid]);
+			$keys_tow = array_keys($user_area_group[$one_uid]);
+			$keys_same = array_intersect($keys_one,$keys_tow);
+			$result[$one_uid] = $keys_same;
+		}
+		$out = array();
+		foreach($result as $key=>$row){
+			$tmp = array();
+			if(empty($row)){
+				$tmp = array('uid'=>$key,'areas'=>array());
+			}else{
+				foreach($row as $one){
+					list($game_id,$area_id) = explode('_',$one);
+					$tmp_areas[] = array('game_id'=>$game_id,'area_id'=>$area_id);
+				}
+				$tmp = array('uid'=>$key,'areas'=>$tmp_areas);
+			}
+			$out[] = $tmp;
+		}
+		return $out;
+	}
+
 	/**
 	 * 游戏基因
+	 * @param $uid
+	 * @param $platform
+	 * @param $pageIndex
+	 * @param $pageSize
+	 * @return array
 	 */
 	public static function getUserGene($uid,$platform,$pageIndex,$pageSize)
 	{
@@ -1082,26 +1269,32 @@ class GameService extends BaseService
 			$platform=='ios' && $tmp['schemes'] = isset($schemes[$game['id']]) ? $schemes[$game['id']] : '';
 			$tmp['areaId'] = isset($userarealist[$gid]['area_id']) ? $userarealist[$gid]['area_id'] : '';
 			$tmp['game_rolename'] = isset($userarealist[$gid]['game_rolename']) ? $userarealist[$gid]['game_rolename'] : '';
-			$tmp['game_area'] = isset($userarealist[$gid]) && isset($arealist[$userarealist[$gid]['area_id']]) ? $arealist[$userarealist[$gid]['area_id']]['typename']: '';
-			$tmp['game_server'] = isset($userarealist[$gid]) && isset($arealist[$userarealist[$gid]['area_id']]) ? $arealist[$userarealist[$gid]['area_id']]['area_name']: '';
+			$tmp['game_typename'] = isset($userarealist[$gid]) && isset($arealist[$userarealist[$gid]['area_id']]) ? $arealist[$userarealist[$gid]['area_id']]['typename']: '';
+			$tmp['game_server'] = isset($userarealist[$gid]) && isset($arealist[$userarealist[$gid]['area_id']]) ? $arealist[$userarealist[$gid]['area_id']]['server_name']: '';
+			$tmp['game_area'] = isset($userarealist[$gid]) && isset($arealist[$userarealist[$gid]['area_id']]) ? $arealist[$userarealist[$gid]['area_id']]['area_name']: '';
 			
 			$out[] = array('gid'=>$game['id'],'gname'=>$game['shortgname'],'img'=>Utility::getImageUrl($game['ico']),'game_card'=>$tmp);
 		}
 		return $out;
 	}
-	
+
 	/**
-	 * 
+	 * @param $uid
+	 * @param $platform
+	 * @param int $pageIndex
+	 * @param int $pageSize
+	 * @param int $gid
+	 * @return array
 	 */
-	public static function getUserGameAreaList($uid,$platform,$pageIndex=1,$pageSize=50,$gid=0)
+	public static function getUserGameAreaList($uid,$platform,$pageIndex=1,$pageSize=50,$gid=null)
 	{
-		$all_gids = UserGame::getGids($uid);
+		$_all_gids = UserGame::getGids($uid);
+		$all_gids = array();
 		if($gid){
-			if(in_array($gid,$all_gids)){
-				$all_gids = array($gid);
-			}else{
-				$all_gids = array();
-			}
+		    $gids = explode(',',$gid);
+		    $all_gids = array_intersect($gids,$_all_gids);
+		} else {
+		    $all_gids = $_all_gids;
 		}
 		if($all_gids){
 			$pages = array_chunk($all_gids,$pageSize,false);
@@ -1110,9 +1303,9 @@ class GameService extends BaseService
 			$gids = $all_gids;
 		}		
 		if(!$gids) return array('result'=>array(),'totalCount'=>0);
-		
+
 		$total = count($all_gids);
-				
+		
 		$games = IosGame::getMultiInfoById($gids,true);
 		$schemes = IosGameSchemes::getSchemesToKeyValue($gids);
 		$out = array();
@@ -1120,12 +1313,22 @@ class GameService extends BaseService
 		
 		$area_ids = array();
 		$_userarealist = UserGameArea::db()->where('uid','=',$uid)->get();
+// 		foreach($_userarealist as $row){
+// 		    $area_ids[] = $row['area_id'];
+// 		}
+// 		$arealist = GameArea::getGameAreaListByIds($area_ids);
 		$userarealist = array();
 		foreach($_userarealist as $row){
-			$area_ids[] = $row['area_id'];
-			$userarealist[$row['game_id']] = $row;
+// 			$userarealist[$row['game_id']] = $row;
+// 			$tmp['areaId'] = isset($row['area_id']) ? $row['area_id'] : '';
+			$tmp['game_rolename'] = isset($row['game_rolename']) ? $row['game_rolename'] : '';
+			$tmp['game_area'] = isset($row['area_name']) ? $row['area_name'] : '';
+			
+// 			$tmp['game_typename'] = isset($row) && isset($arealist[$row['area_id']]) ? $arealist[$row['area_id']]['typename']: '';
+// 			$tmp['game_area'] = isset($row) && isset($arealist[$row['area_id']]) ? $arealist[$row['area_id']]['area_name']: '';
+// 			$tmp['game_server'] = isset($row) && isset($arealist[$row['area_id']]) ? $arealist[$row['area_id']]['server_name']: '';
+			$userarealist[$row['game_id']][] = $tmp;
 		}
-		$arealist = GameArea::getGameAreaListByIds($area_ids);
 		//print_r($userarealist);exit;
 		//print_r($arealist);exit;
 		foreach($gids as $gid){
@@ -1143,11 +1346,7 @@ class GameService extends BaseService
 			$tmp['language'] = self::$languages[$game['language']];
 			$platform=='ios' && $tmp['downurl'] = $game['downurl'];
 			$platform=='ios' && $tmp['schemes'] = isset($schemes[$game['id']]) ? $schemes[$game['id']] : '';
-			$tmp['areaId'] = isset($userarealist[$gid]['area_id']) ? $userarealist[$gid]['area_id'] : '';
-			$tmp['game_rolename'] = isset($userarealist[$gid]['game_rolename']) ? $userarealist[$gid]['game_rolename'] : '';
-			$tmp['game_area'] = isset($userarealist[$gid]) && isset($arealist[$userarealist[$gid]['area_id']]) ? $arealist[$userarealist[$gid]['area_id']]['typename']: '';
-			$tmp['game_server'] = isset($userarealist[$gid]) && isset($arealist[$userarealist[$gid]['area_id']]) ? $arealist[$userarealist[$gid]['area_id']]['area_name']: '';
-			
+			$tmp['arealist'] = isset($userarealist[$gid]) ? $userarealist[$gid] : array();
 			$out[] = $tmp;
 		}
 		return array('result'=>$out,'totalCount'=>$total);
@@ -1181,4 +1380,43 @@ class GameService extends BaseService
 			return UserGameArea::db()->insertGetId($data) ? true : false;
 		}
 	}
+	
+	/**
+	 * 全量保存用户区服信息
+	 */
+	public static function saveUserGameAllArea($uid,$game_id,$platform,$arealist)
+	{
+	    $arealist = json_decode($arealist,true);
+	    if (!is_array($arealist)) {
+	        return false;
+	    }
+	    DB::beginTransaction();
+	    try {
+	        UserGameArea::db()
+	        ->where('uid','=',$uid)
+	        ->where('game_id','=',$game_id)
+	        ->where('platform','=',$platform)
+	        ->delete();
+	         
+	        foreach ($arealist as $item) {
+	            $data = array(
+	                'uid'=>$uid,
+	                'game_id'=>$game_id,
+	                'platform'=>$platform,
+	                'game_rolename'=>$item['game_rolename'],
+	                'area_name'=>$item['game_area'],
+	                'area_id'=>'',
+	                'ctime'=>time(),
+	                'updatetime'=>time()
+	            );
+	            UserGameArea::db()->insertGetId($data);
+	        }
+	        DB::commit();
+	    } catch (Exception $e){
+            DB::rollback();
+            return false;
+        }
+        return true;
+	}
+	
 }

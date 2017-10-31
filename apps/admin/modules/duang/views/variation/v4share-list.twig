@@ -1,0 +1,180 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    活动列表
+                </h3>
+                <div class="actions">
+                    <form action="<!--{{url('duang/variation/v4share')}}-->">
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+                                    <input type="text" class="input-small" name="title" placeholder="活动名称" value="<!--{{ search.title }}-->">
+                                </td>
+
+                                <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
+                                <td><a href="<!--{{url('duang/variation/v4share-add')}}-->" class="btn btn-teal">添加活动</a></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-20">ID</th>
+                        <th class="col-80">活动标题</th>
+                        <th class="col-150">新用户奖励</th>
+                        <th class="col-60">老用户奖励</th>
+                        <th class="col-100">开始时间</th>
+                        <th class="col-100">结束时间</th>
+                        <th class="col-60">是否开启</th>
+                        <th class="col-40">达标次数</th>
+                        <th class="col-150">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{% for item in list %}-->
+                    <tr>
+                        <td><!--{{ item.id }}--></td>
+                        <td><span title="<!--{{ item.title }}-->"><!--{{ item.title }}--></span></td>
+
+                        <td class="user-avatar">
+                            <!--{% for depot in item.baits %}-->
+                            <img title="<!--{{ depot.rewardName }}-->" src="<!--{{ depot.iconUrl }}-->">
+                            <!--{% endfor %}-->
+                        </td>
+                        <td class="user-avatar">
+                            <!--{% for depot in item.rewards %}-->
+                            <img title="<!--{{ depot.rewardName }}-->" src="<!--{{ depot.iconUrl }}-->">
+                            <!--{% endfor %}-->
+                        </td>
+                        <td><!--{{ item.startTime|date('Y-m-d H:i:s') }}--></td>
+                        <td><!--{{ item.endTime|date('Y-m-d H:i:s') }}--></td>
+                        <td class="isOpen"><!--{% if item.enableStatus=="T" %}--><span class="badge badge-success">开启</span><!--{% else %}--><span class="badge badge-important">关闭</span><!--{% endif %}--></td>
+                        <td><span class="badge badge-warning"><!--{{ item.minStandard }}--></span></td>
+                        <td>
+
+                            <!--{%if item.enableStatus=="F" %}-->
+                            <a href="#nogo" id="<!--{{item.id}}-->" class="btn btn-drop ajax-open btn-primary">开启</a>
+                            <a href="#nogo>" id="<!--{{item.id}}-->" class="btn btn-drop ajax-open btn-primary" style="display: none">关闭</a>
+                            <!--{%else%}-->
+                            <a href="#nogo" id="<!--{{item.id}}-->" class="btn btn-drop ajax-open btn-primary" style="display: none">开启</a>
+                            <a href="#nogo" id="<!--{{item.id}}-->" class="btn btn-drop ajax-open btn-primary">关闭</a>
+                            <!--{%endif%}-->
+                            <a href="<!--{{url('duang/variation/v4share-add')}}-->?id=<!--{{ item.id }}-->" class="btn btn-primary">编辑</a>
+                            <div class="btn-group">
+                                <a data-toggle="dropdown" href="#" class="btn btn-primary dropdown-toggle">其他操作<span class="caret"></span></a>
+                                <ul class="dropdown-menu dropdown-primary">
+                                    <li><a href="<!--{{url('duang/variation/v4share-reward')}}-->?shareConfigId=<!--{{ item.id }}-->">奖励统计</a></li>
+                                    <li><a href="<!--{{url('duang/variation/v4share-record')}}-->?shareConfigId=<!--{{ item.id }}-->">分享记录</a></li>
+                                    <li><a class="slink" sid="<!--{{ item.id }}-->" href="#nogo" data-target="#myModal"  data-toggle="modal">分享地址</a></li>
+                                    <li><a href="<!--{{url('duang/variation/v4share-users')}}-->?shareConfigId=<!--{{ item.id }}-->">老用户排行</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{ pagelinks }}-->
+                </div>
+
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">分享地址</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>分享地址：<span id="slink">正在加载数据...</span></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+
+    $(function(){
+//        $('#myModal').on('shown.bs.modal', function () {
+//            $('#myInput').focus()
+//        })
+        $('.slink').click(function(){
+            var shareConfigId = $(this).attr("sid");
+            $.post('<!--{{url('duang/variation/ajax-get-url')}}-->',{shareConfigId:shareConfigId,upperUid:"5345536"},function(data){
+                if(data.success){
+                    $('#slink').html(data.data['shareUrl']);
+                }else{
+                    alert(data.error);
+                }
+            },"json")
+
+        });
+        $('a.ajax-del').bind('click',function(){
+            var act_id = $(this).attr('data');
+            alertify.confirm('确定删除数据么？',function(e){
+                if(e){
+                    $.get('/duang/variation/del',{'act_id':act_id},function(resp){
+                        if(resp.state){
+                            alertify.success(resp.msg);
+                            setTimeout(function(){
+                                location.reload();
+                            },1000);
+                        }else{
+                            alertify.error(resp.msg);
+                        }
+                    },'json')
+                }
+            });
+        });
+        $(".ajax-open").click(function(){
+
+            var obj = $(this);
+            var id = $(this).attr('id');
+            var type = $(this).html()=="开启"?"0":"1";
+            if($(this).html() == "开启"){
+                if(confirm("是否确定开启？")){
+
+                }else{
+                    return false;
+                }
+                type = 0;
+            }else if($(this).html() == "关闭"){
+                if(confirm("是否确定关闭？")){
+
+                }else{
+                    return false;
+                }
+                type = 1;
+            }
+            $.post('<!--{{url('duang/variation/ajax-open')}}-->',{shareConfigId:id,type:type},function(data){
+                if(data.success){
+                    obj.hide();
+                    obj.siblings("a").show();
+                    if(type==0){
+                        obj.parent().siblings(".isOpen").children().addClass("badge-success").html("开启");
+                    }else if(type==1){
+                        obj.parent().siblings(".isOpen").children().removeClass("badge-success").html("关闭");
+                    }
+                }
+            },"json")
+        })
+    });
+</script>
+<!--{%endblock%}-->

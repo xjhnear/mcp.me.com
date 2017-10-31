@@ -1,0 +1,104 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box box-color box-bordered">
+            <div class="box-title">
+                <h3>
+                    <i class="icon-table"></i>
+                    留言板列表
+                </h3>
+                <div class="actions">
+                    <form id="ajaxForm" action="<!--{{url('v4messageboard/comment/index')}}-->">
+                        <table class="table-filter">
+                            <tr>
+                                <td>
+                                    <input id="userselect" name="replier" type="hidden" value="<!--{{search.replier}}-->" class="bigdrop select2-offscreen" style="width:120px" tabindex="-1">
+                                </td>
+                                <td>
+                                    <div class="input-append date datepick" id="dpStart" data-date="">
+                                        <input name="startTime" type="text" class="input-small" value="<!--{{search.startTime}}-->" readonly="">
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-append date datepick" id="dpEnd" data-date="">
+                                        <input name="endTime" type="text" class="input-small" value="<!--{{search.endTime}}-->" readonly="">
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-teal"><i class="icon-search"></i>搜索</button>
+                                    <a class="btn btn-teal btn-excel">导出</a> * 每次最多导出1000条数据
+                                </td>
+                                <td><a href="<!--{{url('v4messageboard/comment/add',{'target_table':search.target_table,'target_id':search.target_id})}}-->" class="btn btn-teal">新增</a></td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="box-content nopadding">
+                <table class="table table-hover table-nomargin">
+                    <thead>
+                    <tr>
+                        <th class="col-60">用户信息</th>
+                        <th>内容</th>
+                        <th class="col-120">添加时间</th>
+                        <th class="table-btn-group">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--{%for item in datalist%}-->
+                    <tr>
+                        <td><a href="<!--{{url('v4user/users/edit',{uid:item.replier})}}-->" target="_blank"><!--{{users[item.replier]['nickname']}}--></a></td>
+                        <td>
+                            <!--{%for dt in item.content %}-->
+                            <!--{{dt.text}}-->
+                        <p class="table-list-img"><!--{%if dt.img%}--><a href="#bigimg" data-toggle="modal"><img src="<!--{{dt.img}}-->" /></a><!--{%endif%}--></p>
+                            <!--{%endfor%}-->
+                        </td>
+                        <td><!--{{item.createTime}}--></td>
+                        <td>
+                            <!--{%if item.isBest==false %}--><a href="<!--{{url('v4messageboard/comment/rd',{id:item.id,tid:item.tid,replier:item.replier})}}-->?content=<!--{{games[item.tid]['shortgname']}}-->&uid=<!--{{item.replier}}-->&gameId=<!--{{item.tid}}-->" class="btn btn-primary">推荐</a><!--{%endif%}-->
+                            <!--{%if item.isBest==true %}--><a href="<!--{{url('v4messageboard/comment/unrd',{id:item.id,tid:item.tid,replier:item.replier})}}-->?content=<!--{{games[item.tid]['shortgname']}}-->&uid=<!--{{item.replier}}-->&gameId=<!--{{item.tid}}-->" class="btn btn-primary">取消推荐</a><!--{%endif%}-->
+                            <a href="<!--{{url('v4messageboard/comment/add',{id:item.id})}}-->" class="btn btn-primary" title="编辑"><i class="icon-edit"></i></a>
+                            <a href="<!--{{url('v4messageboard/comment/sub-comment-list',{'rid':item.id})}}-->" class="btn btn-primary" >查看评论</a>
+                            <a href="<!--{{url('v4messageboard/comment/del',{id:item.id})}}-->?content=<!--{{games[item.tid]['shortgname']}}-->&uid=<!--{{item.replier}}-->&gameId=<!--{{item.tid}}-->" class="btn btn-primary ajax-del">删除</a>
+                        </td>
+                    </tr>
+                    <!--{%endfor%}-->
+                    </tbody>
+                </table>
+                <div class="pagelink">
+                    <!--{{pagelinks}}-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script>
+    $(function(){
+        $('a.ajax-del').bind('click',function(){
+            if(!confirm('确定要删除数据吗？')){
+                return false;
+            }
+        });
+
+        gameselect('#gameselect');
+
+        userselect('#userselect');
+
+        $('.btn-excel').click(function(){
+            var ajaxForm = $('#ajaxForm').serialize();
+            console.log(ajaxForm);
+            if(confirm("确定继续操作吗？")){
+                location.href = '/v4messageboard/comment/excel?' + ajaxForm;
+            }
+        });
+    });
+</script>
+<!--{%endblock%}-->

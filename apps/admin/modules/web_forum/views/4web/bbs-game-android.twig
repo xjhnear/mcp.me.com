@@ -7,21 +7,20 @@
 				<h3><i class="icon-edit"></i>关联游戏</h3>
 			</div>
 			<div class="box-content">
-				<form id="form-topic" action="<!--{{url('web_forum/topic/bbs-game-relation')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data">
+				<form id="form-topic" action="<!--{{url('web_forum/forum/bbs-game-relation')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data">
 				   <input id="fid" name="fid" type="hidden" value="<!--{{fid}}-->" />
 				   <input id="type" name="type" type="hidden" value="<!--{{type}}-->" />
-				   <!--{% if game %}-->
-						<div class="control-group"id="inventedType" >
+				   <!--{% if linkId %}-->
+                    <div class="control-group"id="inventedType" >
                         <label for="textfield" class="control-label">所属游戏</label>
                         <div class="controls">
                          		 <label for="textfield" class="control-label" style="width:340px;">已经关联游戏：<!--{{game}}-->
-                         				<a href="<!--{{url('web_forum/topic/del-forum-game',{'fid':fid,'gid':gid,'type':type})}}-->" class="btn btn-primary">解除关联</a>
+                         				<a href="<!--{{url('web_forum/forum/del-forum-game')}}-->?linkId=<!--{{linkId}}-->&gid=<!--{{gid}}-->" class="btn btn-primary">解除关联</a>
 								 </label>
                          </div>
                     </div>
-                    </div>
                     <div class="form-actions">
-						<a href="<!--{{url('web_forum/topic/forum-list')}}-->" class="btn btn-teal">返回论坛列表</a>
+						<a href="<!--{{url('web_forum/forum/forum-list')}}-->" class="btn btn-teal">返回论坛列表</a>
 					</div>
 				  <!--{%else%}-->
 						   	<div class="control-group">
@@ -55,8 +54,8 @@
 <script>
 
 
-var set_selected_agame = function(game_id,game_name,icon){
-		$.get('/web_forum/topic/check-game-relation-bbs',{'gid':game_id,'type':2},function(resp){
+var set_selected_game = function(game_id,game_name,icon){
+		$.get('/web_forum/forum/check-game-relation-bbs',{'gid':game_id,'type':1},function(resp){
 			if(resp.state){
 				$('#selected_game_id').val(game_id);
 				$('#selected_game_icon').attr('src',icon);
@@ -69,7 +68,7 @@ var set_selected_agame = function(game_id,game_name,icon){
 $(function(){
     $('.select-pop-game').bind('click',function(){
 			$.ajax({
-				url:'/a_game/api/game-search',
+				url:'/game/api/game-search',
 				dataType:'json',
 				success:function(json){
 					var html = '';

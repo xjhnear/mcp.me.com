@@ -1,0 +1,268 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>发新贴</h3>
+			</div>
+			<div class="box-content">
+				<form id="form-topic" action="<!--{{url('webt_forum/topic/bbs-add')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data">
+					<div class="control-group">
+						<label for="textfield" class="control-label">发帖人</label>
+						<div class="controls">
+							<input id="userselect" name="author_uid" type="hidden" value="<!--{{uid}}-->" class="bigdrop select2-offscreen" style="width:200px" tabindex="-1">
+						</div>
+					</div>
+                    <div class="control-group">
+                        <label for="textfield" class="control-label">帖子属性</label>
+                        <div class="controls">
+						    <span class="span9">
+						        <label class="radio inline cc">
+                                    <!--{{form_radio('displayOrder',0,true)}}--><span class="sp_r">正常</span>
+                                </label>
+								<label class="radio inline cc">
+                                    <!--{{form_radio('displayOrder',1,false)}}--><span class="sp_r">公告</span>
+                                </label>
+						        <label class="radio inline cc">
+                                    <!--{{form_radio('displayOrder',2,false)}}--><span class="sp_r">全局公告</span>
+                                </label>
+								<div class="input-append input-prepend date inline" >
+                                    <span class="add-on"><!--{{form_checkbox('isTop',1,false)}}-->置顶</span>
+                                    <input name="top_deadline" type="text" class="input-medium datetimepicker" value="<!--{{topic.topEndTime}}-->">
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+						    </span>
+                        </div>
+                    </div>
+					<div class="control-group bbslist">
+						<label for="textfield" class="control-label">所属论坛</label>
+						<div class="controls">
+							<div class="input-append">
+								<input id="selected_bbs_id" name="fid" type="hidden" value="<!--{{input_old('fid')}}-->"/>
+								<input type="text" id="selected_bbs_name" readonly name="bbs_name" class="input-medium" data-rule-required="true" data-msg-required="请选择论坛" />
+								<span class="add-on select-pop-bbs">请选择论坛</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="control-group boardlist">
+						<label for="textfield" class="control-label">所属版块</label>
+						<div class="controls">
+							<!--{{form_select('cid',bk_type,null,{'data-rule-required':true,'data-msg-required':'请选择版块'})}}-->	
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="textfield" class="control-label">悬赏游币</label>
+						<div class="controls">
+							<input type="text" name="reward" class="input-small" value="<!--{{ input_old('reward')|default(0) }}-->"/>
+							<span class="help-inline">非问答版块此处无效</span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="textfield" class="control-label">标题</label>
+						<div class="controls">
+							<input type="text" name="subject" value="<!--{{ input_old('subject') }}-->" class="input-xxlarge" data-rule-required="true" data-msg-required="标题不能为空"/>
+						</div>
+					</div>
+<!--
+                    <div class="control-group">
+                        <label class="control-label">图片 <span class="add_img badge badge-info" >添加</span> </label>
+                        <div class="controls" >
+                            <div data-provides="fileupload" class="fileupload fileupload-new">
+                                <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                    <img id="selected_game_icon" src="<!--{{data.picUrl|default('/static/img/wu_ss.gif')}}-->">
+                                </div>
+                                <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                                <span class="btn btn-file"><i class="icon-picture"></i>
+                                    <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                                    <input id="task_img" name="img[]" type="hidden" value="<!--{{data.picUrl}}-->"/>
+                                    <input type="file"  name="picFile[]" >
+                                </span>
+                                <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                                <input type="button" class="del_img" value="删除"/>
+                            </div>
+                        </div>
+                    </div>
+-->
+
+					<div class="control-group">
+						<label for="textfield" class="control-label">礼包ID</label>
+						<div class="controls">
+							<input id="giftId" type="text" name="giftId" class="input-large" value="" />
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label for="textfield" class="control-label">回复数限制</label>
+						<div class="controls">
+							<input id="limit" type="text" name="limit" class="input-small" value="" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="textfield" class="control-label">回复关闭时间</label>
+
+						<div class="controls">
+							<div class="input-append date">
+								<input name="limit_deadline" type="text" class="input-medium datetimepicker">
+								<span class="add-on"><i class="icon-calendar"></i></span>
+							</div>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label for="textfield" class="control-label">回复限制（秒）</label>
+						<div class="controls">
+							<input id="limit" type="text" name="limit_rate" class="input-small" value="" />
+						</div>
+					</div>
+					<div class="control-group">
+					    <label for="textfield" class="control-label">回复设置</label>
+						<div class="controls">
+						    <label class="radio inline">
+							<!--{{form_radio('limit_status',0,true)}}-->不禁言
+							</label>
+							<label class="radio inline">
+							<!--{{form_radio('limit_status',1,false)}}-->禁言
+							</label>
+							<label class="checkbox inline">
+							<input type="checkbox" name="reply_invisible"> 回复不可见(回复关闭前）								
+							</label>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label for="textfield" class="control-label">内容</label>
+						<div class="controls">
+							<script id="container" name="message" type="text/plain"><!--{{ input_old('message') }}--></script>
+						</div>
+					</div>
+					<div class="form-actions">
+						<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>发表</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+
+    v4userselect('#userselect');
+	var set_selected_bbs = function(fid,bbs_name){
+		$('#selected_bbs_id').val(fid);
+
+		$('#selected_bbs_name').val(bbs_name);
+	};
+	$(function(){
+		UE.getEditor('container');
+
+		$('.select-pop-bbs').bind('click',function(){
+			$.ajax({
+				url:'bbs-search-select',
+				dataType:'json',
+				success:function(json){
+					var html = '';
+					html = json.html;
+					$.dialog({id:'pop-bbs-list',title:'提示',padding:2,content:html,width:700,height:580});
+				}
+			});
+		});
+
+		if($('#selected_bbs_id').val().length){
+			var cid = $('#cid').attr('data-cid');
+		}
+
+        $('.select-bbs-id').live('click',function(){
+            var bbs_id = $("#selected_bbs_id").val();
+            $.post("board-search-select",{bbs_id:bbs_id},function(data){
+                if(data.success==true){
+                    $("select[name='cid']").html(data.data);
+                }else{
+                    $("select[name='cid']").html('<option value="-1">未找到相关模块</option>');
+                }
+
+            },"json");
+        })
+
+
+        $("input[name='displayOrder']").on('ifChecked',function(e){
+            var check_val = $(this).val();
+            if(check_val==1){
+                $(".boardlist").hide();
+                $(".bbslist").show();
+            }else if(check_val==2){
+                $(".boardlist").hide();
+                $(".bbslist").hide();
+            }else if(check_val==0){
+                $(".boardlist").show();
+                $(".bbslist").show();
+            }
+
+        });
+
+        $(".add_img").click(function(){
+            $(this).parent().parent().append('<div class="controls">\
+            <div data-provides="fileupload" class="fileupload fileupload-new">\
+            <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">\
+            <img id="selected_game_icon" src="<!--{{data.picUrl|default('/static/img/wu_ss.gif')}}-->">\
+            </div>\
+            <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>\
+            <span class="btn btn-file"><i class="icon-picture"></i>\
+            <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>\
+            <input id="task_img" name="img[]" type="hidden" value="<!--{{data.picUrl}}-->"/>\
+            <input type="file"  name="picFile[]" >\
+            </span>\
+            <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>\
+            <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>\
+            <input type="button" class="del_img" value="删除"/>\
+            </div>\
+            </div>');
+        });
+        $(".del_img").live('click',function(){
+            if(confirm("确定删除吗？")){
+                $(this).parent().parent().remove();
+            }
+        });
+
+	});
+	jQuery("#form-topic").validationEngine({'custom_error_messages':{
+		"#check-plat":{
+			"minCheckbox": {'message':'<div style="left:230px;position: relative;width: 150px; color: #b94a48; font-size: 13px;">请至少选择一个发布平台</span>'}
+		}
+	}});
+	$('input').iCheck({
+		checkboxClass: 'icheckbox_square-orange',
+		radioClass: 'iradio_square-orange',
+		increaseArea: '20%' // optional
+	});
+	$('input.datetimepicker').datetimepicker({format:'Y-m-d H:i:s',lang:'ch'});
+
+    check_radio();
+    function check_radio(){
+        $(function(){
+            var check_val = $("input[name='displayOrder'][checked='checked']").val();
+            if(check_val==1){
+                $(".boardlist").hide();
+                $(".bbslist").show();
+            }else if(check_val==2){
+                $(".boardlist").hide();
+                $(".bbslist").hide();
+            }else if(check_val==0){
+                $(".boardlist").show();
+                $(".bbslist").show();
+            }
+
+        })
+    }
+
+</script>
+<!--{%endblock%}-->

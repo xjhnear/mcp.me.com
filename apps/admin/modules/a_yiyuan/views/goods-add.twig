@@ -1,0 +1,295 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/plugins/tagsinput/jquery.tagsinput.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>商品新建/编辑</h3>
+            </div>
+            <div class="box-content">
+                <form id="form-goods" action="<!--{{url('a_yiyuan/goods/add')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="<!--{{ data.id }}-->"/>
+                    <input type="hidden" name="totalCount" value="<!--{{ data.totalCount }}-->"/>
+                    <div class="control-group">
+                        <label class="control-label">*商品名字</label>
+                        <div class="controls">
+                            <input name="title" type="text" value="<!--{{ data.title }}-->" data-rule-required="true" data-msg-required="请填写"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*商品价值</label>
+                        <div class="controls">
+                            <input class="span1" name="worth" type="text" value="<!--{{ data.worth }}-->" data-rule-required="true" data-msg-required="请填写"/>
+                            人民币
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*商品类型</label>
+                        <div class="controls">
+                            <div class="span1">
+                                <input type="radio" name="type" value="virtual"
+                                       checked
+                                <!--{% if data.type == 'virtual' %}-->
+                                checked
+                                <!--{% endif %}-->
+                                />
+                                虚拟奖品
+                            </div>
+                            <div class="span1">
+                                <input type="radio" name="type" value="physical"
+                                <!--{% if data.type == 'physical' %}-->
+                                checked
+                                <!--{% endif %}-->
+                                />
+                                实物奖品
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">排序值</label>
+                        <div class="controls">
+                            <input class="span1" name="hot" type="text" value="<!--{{ data.hot }}-->"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*价格</label>
+                        <div class="controls">
+                            <div class="span2">游币价格
+                                <input id="numberPrice" class="span5" name="numberPrice" type="text" value="<!--{{ data.numberPrice }}-->" data-rule-required="true" data-msg-required="请填写"/></div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*份数设置</label>
+                        <div class="controls">
+                            <input class="span1" name="maxNumberPreDraw" type="text" value="<!--{{ data.maxNumberPreDraw }}-->" data-rule-required="true" data-msg-required="请填写" data-rule-max="99999" data-msg-max="最大99999"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*购买起始份数</label>
+                        <div class="controls">
+                            <input class="span1" name="minBuyCount" type="text" value="<!--{{ data.maxNumberPreDraw }}-->" data-rule-required="true" data-msg-required="请填写" data-rule-min="1" data-msg-min="最少1份"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">固定购买份额</label>
+                        <div class="controls ">
+                            <div class="span1 text-right">固定值一:</div>
+                            <div class="span1">
+                                <input id="fixedBuyCount_1" class="span12" type="text" name="fixedBuyCount[]" data-rule-number="true" data-msg-number="请填数字" value="<!--{{ data.fixedBuyCount[0] }}-->"/>
+                            </div>
+                            <div class="span1 text-right">固定值二:</div>
+                            <div class="span1">
+                                <input id="fixedBuyCount_2" class="span12" type="text" name="fixedBuyCount[]" data-rule-number="true" data-msg-number="请填数字" value="<!--{{ data.fixedBuyCount[1] }}-->"/>
+                            </div>
+                            <div class="span1 text-right">固定值三:</div>
+                            <div class="span1">
+                                <input id="fixedBuyCount_3" class="span12" type="text" name="fixedBuyCount[]" data-rule-number="true" data-msg-number="请填数字" value="<!--{{ data.fixedBuyCount[2] }}-->"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*库存</label>
+                        <div class="controls">
+                            <input class="span1" name="count" type="text" value="<!--{{ data.count }}-->" data-rule-required="true" data-msg-required="请填写" <!--{% if data.count %}-->readonly<!--{% endif %}--> />
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*列表小图</label>
+                        <div class="controls">
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;">
+                                    <img src="
+                                        <!--{% if data.titleImg %}-->
+                                            <!--{{ data.titleImg }}-->
+                                        <!--{% else %}-->
+                                            /static/img/nopic.gif
+                                        <!--{% endif %}-->
+                                    " />
+                                </div>
+                                <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+                                <div>
+                                    <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input type="file" name='titleImg'
+                                        <!--{% if data.titleImg is null %}-->data-rule-required="true" data-msg-required="请选择"<!--{% endif %}-->
+
+                                                /></span>
+                                    <input type="hidden" value="<!--{{ data.titleImg }}-->" name="titleImg_old">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*详情大图</label>
+                        <div class="controls">
+                            <a id="addPic" class="btn btn-primary" style="margin-bottom: 20px" onclick="addPic($(this))">添加</a>
+                            <!--{% if data.imgs %}-->
+                            <!--{% for key,value in data.imgs %}-->
+                            <div class="control-group"><div class="fileupload fileupload-new" data-provides="fileupload"><div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img src="<!--{% if value %}--><!--{{ value }}--><!--{% else %}-->/static/img/nopic.gif<!--{% endif %}-->" /></div><div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div><div><span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input type="file" name="imgs[]" /><input type="hidden" value="<!--{{ value }}-->" name="imgs_old[]"></span><a class="btn btn-danger" onclick="delPic($(this))">删除</a></div></div></div>
+                            <!--{%endfor%}-->
+                            <!--{% else %}-->
+                            <div class="control-group"><div class="fileupload fileupload-new" data-provides="fileupload"><div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img src="/static/img/nopic.gif" /></div><div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div><div><span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input type="file" name="imgs[]" data-rule-required="true" data-msg-required="请选择"/><input type="hidden" value="" name="imgs_old[]"></span></div></div></div>
+                            <!--{% endif %}-->
+
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*商品说明</label>
+                        <div class="controls">
+                            <script id="container" name="detail" type="text/plain"><!--{{ data.detail }}--></script>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*持续时间</label>
+                        <div class="controls">
+                            <input class="span1" name="maxStandTimePreDraw" type="text" value="<!--{{ data.maxStandTimePreDraw }}-->" data-rule-required="true" data-msg-required="请填写"/>
+                            天
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="span4">
+                            <label class="control-label">开始时间</label>
+                            <div class="controls" style="margin-bottom: 20px;">
+                                <div class="input-append date">
+                                    <input name="startTime" type="text" class="input-medium datetimepicker" value="<!--{{ data.startTime }}-->">
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <label class="control-label">关闭时间</label>
+                            <div class="controls">
+                                <div class="input-append date">
+                                    <input name="endTime" type="text" class="input-medium datetimepicker" value="<!--{{ data.endTime }}-->">
+                                    <span class="add-on"><i class="icon-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">上架设定</label>
+                        <div class="controls">
+                            <div class="span1">
+                                <input type="radio" name="status" value="U"
+                                       checked
+                                        />上架
+                            </div>
+                            <div class="span1">
+                                <input type="radio" name="status" value="D"
+                                <!--{% if data.status == 'D' %}-->
+                                checked
+                                <!--{% endif %}-->
+                                />下架
+                            </div>
+                            <div class="span2">
+                                <input type="radio" name="status" value="A"
+                                <!--{% if data.status == 'A' %}-->
+                                checked
+                                <!--{% endif %}-->
+                                />自动上下架
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">*收货模板</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="selected_template_id" name="templateId" type="hidden" value="<!--{{ data.templateId }}-->"/>
+                                <input type="text" readonly id="selected_template_name" class="input-medium" value="<!--{{ data.templateName }}-->" data-rule-required="true" data-msg-required="请选择"/>
+                                <span class="add-on select-pop-template">选择模板</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="controls">
+                            <button class=" btn-primary" id="editOrAdd">保存</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script src="/static/js/plugins/multiselect/bootstrap-multiselect.js"></script>
+<script>
+    var set_selected_template=function(template_id,template_name){
+        $('#selected_template_id').val(template_id);
+        $('#selected_template_name').val(template_name);
+    };
+
+    function addPic (obj) {
+        var html = '<div class="control-group"><div class="fileupload fileupload-new" data-provides="fileupload"><div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img src="/static/img/nopic.gif" /></div><div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div><div><span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input type="file" name="imgs[]" data-rule-required="true" data-msg-required="请选择"/><input type="hidden" value="" name="imgs_old[]"></span><a class="btn btn-danger" onclick="delPic($(this))">删除</a></div></div></div>';
+        obj.parent().append(html);
+        return false;
+    }
+
+    function delPic (obj) {
+        obj.parent().parent().parent().remove();
+    }
+    $(function() {
+        var editor = UE.getEditor('container', {initialFrameWidth: 800});
+        $('input.datetimepicker').datetimepicker({format: 'Y-m-d H:i', lang: 'ch'});
+
+        $('.select-pop-template').bind('click',function(){
+            $.ajax({
+                url:'/a_yiyuan/goods/template-search',
+                dataType:'json',
+                success:function(json){
+                    var html = json.html;
+                    $.dialog({id:'pop-template-list',title:'提示',padding:2,content:html,width:600,height:580});
+                }
+            });
+        });
+
+        $('#editOrAdd').click(function(){
+            var fixedBuyCount_1 = $('#fixedBuyCount_1').val();
+            var fixedBuyCount_2 = $('#fixedBuyCount_2').val();
+            var fixedBuyCount_3 = $('#fixedBuyCount_3').val();
+            console.log(fixedBuyCount_1,fixedBuyCount_2,fixedBuyCount_3);
+            if (!((!fixedBuyCount_1 && !fixedBuyCount_2 && !fixedBuyCount_3) ||
+                    (fixedBuyCount_1 && fixedBuyCount_2 && fixedBuyCount_3))) {
+                alertify.error('固定值要么三个都填，要么都不填');
+                return false;
+            }
+
+            var html = editor.getContent();
+            if (!html) {
+                alertify.error('请填写商品说明');
+                return false;
+            }
+
+        });
+
+    });
+
+
+</script>
+<!--{%endblock%}-->

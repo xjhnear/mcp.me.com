@@ -92,10 +92,10 @@ class PackageController extends BackendController{
         $params['isActive']="true";
         $params['signer']= $uid['id'];
         if(Input::get('timeBegin')){
-            $params['timeBegin']=Input::get('timeBegin').' 00:00:00';
+            $params['timeBegin']=date('Y-m-d 00:00:00',strtotime(Input::get('timeBegin')));
         }
         if(Input::get('timeEnd')){
-            $params['timeEnd']=Input::get('timeEnd').' 23:59:59';
+            $params['timeEnd']=date('Y-m-d 23:59:59',strtotime(Input::get('timeEnd')));
         }
         if(!empty($params['editor']) && $params['editor'] == 'true') $params['editor']=$uid['id'];
 //        print_r($params);
@@ -484,6 +484,36 @@ class PackageController extends BackendController{
         }
         self::error_html($result);
     }
+    /**实物列表 15/11/5**/
+    public function getMaterialSelect()
+    {
+
+        $data = $params = array();
+        $params['pageIndex'] = Input::get('page');
+        $params['platform'] = Input::get('platform',"");
+        $params['materialUse'] = Input::get('materialUse',"");
+        $params['pageSize'] =5;
+        $params['onOrOff'] ='true';
+        $params['isActive'] = 'true';
+        if(Input::get('keyword')){
+            $data['keyword']=$params['materialDesc']=Input::get('keyword');
+        }
+        if(Input::get('platform')){
+            $data['platform'] = Input::get('platform');
+        }
+        $result=ProductService::getmateriallist($params);
+        if($result['errorCode'] !=null ){
+            foreach($result['result'] as &$item){
+                $item['can_use'] = $item['materialStock'] + $item['materialUsedStock'] - $item['materialQuota'];
+            }
+            $data=self::processingInterface($result,$data,$params['pageSize']);
+//            print_r($data['datalist']);
+            $html = $this->html('pop-material-list',$data);
+            return $this->json(array('html'=>$html));
+        }
+        self::error_html($result);
+    }
+
 
     /**
      * 处理接口返回数据

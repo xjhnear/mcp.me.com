@@ -1,0 +1,105 @@
+<!--{%extends "sub-layout-forum.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+		<div class="box box-color box-bordered">
+
+			<div class="box-title">
+			    <h3>
+					<i class="icon-table"></i>
+					热门论坛列表
+
+				</h3>
+
+			</div>
+			<div class="box-content nopadding">
+				<table id="bbstable" class="table table-hover table-nomargin">
+					<thead>
+					<tr>
+						<th class="col-60">Logo</th>
+						<th class="col-120">名称</th>
+						<th class="col-100">总帖子数</th>
+						<th class="col-100">昨日发帖数</th>
+						<th class="col-100">今日发帖数</th>
+						<th class="col-100">总回复数</th>
+						<th class="col-100">昨日复数</th>
+						<th class="col-150">今日回复数</th>
+						<th class="col-150">操作</th>
+					</tr>
+					</thead>
+					<tbody>
+					<!--{% for item in list %}-->
+					<tr>
+						<td class="user-avatar"><img src="<!--{{ item.logo }}-->"/></td>
+						<td title="<!--{{ item.fid }}-->"><a href="<!--{{url('webt_forum/topic/bbs-search')}}-->?bbs_id=<!--{{item.fid}}-->"><!--{{ item.name }}--></a></td>
+						<td><!--{{ item.totalTopicNumber }}--></td>
+						<td><!--{{ item.yesterdayTopicNumber }}--></td>
+						<td><!--{{ item.todayTopicNumber }}--></td>
+						<td><!--{{ item.totalReplyNumber }}--></td>
+						<td><!--{{ item.yesterdayReplyNumber }}--></td>
+						<td><!--{{ item.todayReplyNumber }}--></td>
+						<td>
+							<div class="btn-group">
+								<a data-toggle="dropdown" href="#" class="btn btn-primary dropdown-toggle"><i class="icon-cog"></i> <span class="caret"></span></a>
+								<ul class="dropdown-menu dropdown-primary">
+                                    <li><a href="#nogo" fid="<!--{{item.forumRecommendId}}-->" class="set_hot" >取消热门</a></li>
+								</ul>
+							</div>
+							<a href="<!--{{url('webt_forum/forum/edit',{ id:item.fid })}}-->" class="btn btn-primary"><i class="icon-edit" title="编辑"></i></a>
+						</td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script>
+	$(function(){
+		$('input').iCheck({
+			checkboxClass: 'icheckbox_square-orange',
+			radioClass: 'iradio_square-orange',
+			increaseArea: '20%' // optional
+		});
+		$('.ajax-del').bind('click',function(){
+			var fid = $(this).attr('data');
+			alertify.confirm('是否删除该论坛？',function(e){
+				if(e){
+					$.get('/webt_forum/forum/ajax-del/'+ fid,function(resp){
+						if(resp.state){
+							alertify.success(resp.msg);
+							setTimeout(function(){
+								location.reload();
+							},1000);
+						}else{
+							alertify.error(resp.msg);
+						}
+					},'json')
+				}
+			});
+		});
+        $(".set_hot").click(function(){
+            obj = $(this);
+            if(confirm('确定要设为吗？')){
+                var id = obj.attr('fid');
+                var html = obj.html();
+                var type = '-1';
+                if(html == "设为热门"){
+                    type = '1';
+                }
+                $.post('<!--{{url('webt_forum/forum/set-hot')}}-->',{id:id,type:type},function(data){
+                    if(data.success=="true"){
+                        alert(data.mess);
+                        window.location.reload();
+                    }else{
+                        alert(data.mess);
+                    }
+                },"json")
+            }
+        })
+	});
+</script>
+<!--{%endblock%}-->

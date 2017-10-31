@@ -39,7 +39,7 @@
 				<td id="game_name_<!--{{item.id}}-->"><!--{{item.shortgname|default(item.gname)}}--></td>
 				<td><!--{{gametype[item.type]}}--></td>				
 				<td>
-				    <a href="javascript:void(0);" data-id="<!--{{item.id}}-->" class="btn btn-primary select-game-id">选择</a>				    							    
+				    <a href="javascript:void(0);" data-id="<!--{{item.id}}-->" data-downurl="<!--{{item.downurl}}-->" data-tosafari="<!--{{item.tosafari}}-->" class="btn btn-primary select-game-id">选择</a>				    							    
 				</td>
 			</tr>
 			<!--{%endfor%}-->
@@ -73,7 +73,9 @@
                 var game_id = $(this).attr('data-id');
                 var game_name = $('#game_name_'+game_id).text();
                 var game_icon = $('#game_icon_'+game_id).attr('src');
-                set_selected_game(game_id,game_name,game_icon);
+                var downurl = $(this).attr('data-downurl');
+                var downurl_linkType = $(this).attr('data-tosafari');
+                set_selected_game(game_id,game_name,game_icon,downurl,downurl_linkType);
                 $.dialog.list['pop-game-list'].close();
             });
         });

@@ -51,4 +51,15 @@ final class ActivityTaskLimit extends Model implements IModel
 		}
 		return false;
 	}
+    /*
+     * 根据uid 获取单数据
+     */
+    public static function get_limit_by_uid($uid)
+    {
+        if(isset($uid)){
+            return self::db()->where('uid',$uid)->first();
+        }
+        return false;
+    }
+
 }

@@ -9,6 +9,13 @@ use Yxd\Services\CreditService;
 use Yxd\Modules\Message\NoticeService;
 
 use Yxd\Modules\Core\BaseService;
+
+use Yxd\Services\Models\ActivityHunt;
+use Yxd\Services\Models\ActivityHuntAccount;
+use Yxd\Services\Models\HuntTopicClickTimes;
+use Yxd\Services\Models\ActivityPrize;
+use Yxd\Services\Models\Giftbag;
+
 /**
  * 寻宝箱活动服务类
  */
@@ -26,7 +33,7 @@ class HuntService extends BaseService
 		if(!$uid || !$game_id || !$tid) return false;	
 			
 		//检查活动是否存在或是否在进行中
-		$hunt = self::dbClubSlave()->table('activity_hunt')
+		$hunt = ActivityHunt::db()
 		->where('game_id','=',$game_id)
 		->where('startdate','<=',$time)
 		->where('enddate','>=',$time)
@@ -36,7 +43,7 @@ class HuntService extends BaseService
 		}
 		$expire = (int)$hunt['enddate'] - $time;
 		//检查是否已经参加过活动
-		$myhunt = self::dbClubSlave()->table('activity_hunt_account')
+		$myhunt = ActivityHuntAccount::db()
 		->where('uid','=',$uid)
 		->where('hunt_id','=',$hunt['id'])
 		->first();
@@ -50,15 +57,15 @@ class HuntService extends BaseService
 		//self::redis()->incr($clicktimes_key);
 		//self::redis()->expire($clicktimes_key,$expire);
 		//$current_times = (int)self::redis()->get($clicktimes_key);
-		self::dbClubMaster()->table('hunt_topic_clicktimes')->insert(array('hunt_id'=>$hunt['id'],'uid'=>$uid,'ctime'=>time(),'game_id'=>$game_id,'tid'=>$tid));
-		$current_times = self::dbClubSlave()->table('hunt_topic_clicktimes')->where('hunt_id','=',$hunt['id'])->where('uid','=',$uid)->count();
+		HuntTopicClickTimes::db()->insert(array('hunt_id'=>$hunt['id'],'uid'=>$uid,'ctime'=>time(),'game_id'=>$game_id,'tid'=>$tid));
+		$current_times = HuntTopicClickTimes::db()->where('hunt_id','=',$hunt['id'])->where('uid','=',$uid)->count();
 		
 		if($current_times >= $limit_times){
 			//中奖计算
 			
-			$first_reward_num = self::dbClubSlave()->table('activity_hunt_account')->where('hunt_id','=',$hunt['id'])->where('reward_no','=',1)->count();
-			$second_reward_num = self::dbClubSlave()->table('activity_hunt_account')->where('hunt_id','=',$hunt['id'])->where('reward_no','=',2)->count();
-			$third_reward_num = self::dbClubSlave()->table('activity_hunt_account')->where('hunt_id','=',$hunt['id'])->where('reward_no','=',3)->count();
+			$first_reward_num = ActivityHuntAccount::db()->where('hunt_id','=',$hunt['id'])->where('reward_no','=',1)->count();
+			$second_reward_num = ActivityHuntAccount::db()->where('hunt_id','=',$hunt['id'])->where('reward_no','=',2)->count();
+			$third_reward_num = ActivityHuntAccount::db()->where('hunt_id','=',$hunt['id'])->where('reward_no','=',3)->count();
 			$first_reward = json_decode($hunt['first_prize'],true);
 			$second_reward = json_decode($hunt['second_prize'],true);
 			$third_reward = json_decode($hunt['third_prize'],true);
@@ -103,7 +110,7 @@ class HuntService extends BaseService
 					$prize_id = $third_reward['prize_id'];
 				}
 				//
-				$prize = self::dbClubSlave()->table('activity_prize')->where('id','=',$prize_id)->first();
+				$prize = ActivityPrize::db()->where('id','=',$prize_id)->first();
 				
 				if((int)$prize['type'] == 1){//游币
 					$reward_score = $prize['score'];
@@ -115,7 +122,7 @@ class HuntService extends BaseService
 					$card = GiftbagService::lockGiftbagCardNo($prize['gift_id']);
 					if($card){
 						GiftbagService::updateGiftbagCardStatus($card['id']);
-						$giftbag = self::dbClubSlave()->table('giftbag')->where('id','=',$prize['gift_id'])->first();
+						$giftbag = Giftbag::db()->where('id','=',$prize['gift_id'])->first();
 						$reward_cardno = $card['cardno'];						
 						$link = $prize['gift_id'];
 						$name = $giftbag['title'];
@@ -144,7 +151,7 @@ class HuntService extends BaseService
 			    'reward_expense'=>$reward_expense,
 			    'addtime'=>time()
 			);
-			self::dbClubMaster()->table('activity_hunt_account')->insertGetId($data);
+			ActivityHuntAccount::db()->insertGetId($data);
 			if($reward_no > 0){
 				//发送中奖通知
 				$params = array('reward_no'=>$reward_no,'prize_name'=>$prize['name'],'reward_score'=>$reward_score,'reward_cardno'=>$reward_cardno,'reward_expense'=>$reward_expense);

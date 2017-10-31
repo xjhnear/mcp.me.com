@@ -88,7 +88,8 @@ class TopicController extends BackendController
                 }
 
                 $games = GameService::getMultiInfoById($gids, 'android', 'full');
-                if ($games) {
+
+                if (is_array($games)) {
                     foreach ($games as $game) {
                         $key = current(array_keys($fid_gid,$game['gid']));
                         $tmp[$key] = $game;
@@ -108,6 +109,7 @@ class TopicController extends BackendController
             $data['users'] = $uinfos;
         }
         $data['datalist'] = $result['errorCode'] ? array() : $result['result'];
+        
         $totalcount = $totalcount['errorCode'] ? 0 : $totalcount['totalCount'];
         $pager = Paginator::make(array(),$totalcount,$pagesize);
         $pager->appends($search);
@@ -118,21 +120,63 @@ class TopicController extends BackendController
         return $this->display('/4web/topic-list',$data);
     }
 
+    public function getTopicSearch()
+    {
+        $data = array();
+        $pageIndex = Input::get('page',1);
+        $pageSize = 5;
+        $search = Input::get();
+        $title = Input::get('keyword','');
+        $type = Input::get('keytype','');
+        $data['keyword'] = $title;
+        $data['keytype'] = $type;
+        $fid = $subj = $uid = $tid = '';
+        switch($type){
+            case 'title':
+                $subj = $title;break;
+            case 'uid':
+                $uid = $title;break;
+            case 'tid':
+                $tid = $title;break;
+        }
+        $res = TopicService::getPostsList('','','',$pageIndex,$pageSize,$subj,'',false,false,false,'true',$uid,$tid,'','','',false,0,false,'true',false);
+        $totalcount = TopicService::getPostsNum($fid,'',$uid,$tid,'','true','','','',0,'','','',$subj,false,'true',false);
+        $totalcount = $totalcount['errorCode'] ? 0 : $totalcount['totalCount'];
+//        print_r($search);
+//        print_r($res);
+        if(!$res['errorCode']&&$res['result']){
+            $total = $totalcount;
+            $data['list'] = $res['result'];
+        }else{
+            $total = 0;
+            $data['list']= array();
+        }
+        unset($search['page']);unset($search['pageIndex']);//pager不能有‘page'参数
+//        print_r($data['list']);
+        $data['pagelinks'] = MyHelpLx::pager(array(),$total,$pageSize,$search);
+        $data['search'] = $search;
+        $html = $this->html('pop-list',$data);
+        return $this->json(array('html'=>$html));
+    }
+
     public function getBbsSearchSelect(){
         $params=array();
         $params['name']='';
         $params['pageIndex'] = Input::get('page',1);
         $params['pageSize'] =7;
         if(Input::get('name')) $params['name'] =Input::get('name');
-        $result=TopicService::getForums($params['name'],$params['pageIndex'],$params['pageSize'],2);
+        $result=TopicService::getForums($params['name'],$params['pageIndex'],$params['pageSize'],false,2);
         $result=self::getdatainfo($result);
+        $datafid=array();
+        
         foreach($result['result'] as $key=>$value){
             $datafid[]=!empty($value['fid'])?$value['fid']:'';
         }
-        $resultinf=TopicService::query_game_link_list("true",2,$datafid);
-
+         
+          $resultinf=TopicService::query_game_link_list("true",2,$datafid);
+               
         $resultinf=isset($resultinf['errorCode']) && $resultinf['result'] ? $resultinf['result'] : array();
-        $datafid=array();
+
         foreach ($resultinf as $key => $value){
             $datafid[]=$value['gid'];
             foreach($result['result'] as $key_=>$value_){
@@ -237,8 +281,10 @@ class TopicController extends BackendController
         }
         $cut_summary = mb_substr(preg_replace('/<[^>]+>/i','',$input['message']),0,130);
         $summary = strlen($cut_summary) > 50 ? $cut_summary.'...' : $cut_summary;
+        $reply_invisible = isset($input['reply_invisible']) ? 'true' : 'false';
         $result = TopicService::doPostAdd($fid,$uid,$bid,$input['subject'],'',$coin,2,0,false,true,false,false,$is_ask,false,
-            false,$summary,implode(',',$imgs),$input['message'],false,0,$ios_disp,$and_disp,$web_disp);
+            false,$summary,implode(',',$imgs),$input['message'],false,0,$ios_disp,$and_disp,$web_disp,false,false,
+            $reply_invisible);        
         if(!$result['errorCode']){
             if((!empty($limit) || !empty($input['limitStatus']) || !empty($input['limitDeadline']) || !empty($input['limitRate']) || $input['limitStatus']==1) && !empty($result['result'])){
                     $params=array();
@@ -251,7 +297,7 @@ class TopicController extends BackendController
                         $params['limitRate']=$input['limitRate'];
                     }
                     $params['limitStatus']='false';
-                    if(!empty($input['limitStatus']) && $input['limitStatus']==1){
+                    if(!empty($input['limitStatus']) && $input['limitStatus']){
                         $params['limitStatus']='true';
                     }
                     if(!empty($input['limitDeadline'])){
@@ -291,7 +337,7 @@ class TopicController extends BackendController
         $params['targetId']=$tid;
         $result=TopicService::replylimitList($params);
         if($result['errorCode'] ==0 && !empty($result['result']) && !empty($result['result']['0']['limitNum'])){
-            $data['topic']['limit']=$result['result']['0']['limitNum'];
+            $data['topic']['limit']=$result['result']['0'];
         }
         return $this->display('/4web/topic-edit',$data);
     }
@@ -360,9 +406,38 @@ class TopicController extends BackendController
             if($plat == 2) $and_disp = 'true';
             if($plat == 3) $web_disp = 'true';
         }
-        $result = TopicService::modifyTopic($input['tid'],$input['author_uid'],$fid,$input['cid'],$input['subject'],false,$award,$input['message'],$listpic,false,$ios_disp,$and_disp,$web_disp);
+        
+        $reply_invisible = isset($input['reply_invisible']) ? 'true' : 'false';
+        $result = TopicService::modifyTopic($input['tid'],$input['author_uid'],$fid,$input['cid'],$input['subject'],false,$award,$input['message'],$listpic,false,$ios_disp,$and_disp,$web_disp,false,false,$reply_invisible);
 
         if($result['errorCode'] == 0){
+            $params=array();
+            $params['createTime']= date('Y-m-d H:i:s');
+            $params['targetType']='TOPIC';
+            if(!empty($limit)){
+                $params['limitNum']=intval($limit);
+            }
+            if(!empty($input['limitRate'])){
+                $params['limitRate']=$input['limitRate'];
+            }
+            $params['limitStatus']='false';
+            if(!empty($input['limitStatus']) && $input['limitStatus']){
+                $params['limitStatus']='true';
+            }
+            if(!empty($input['limitDeadline'])){
+                $params['limitDeadline']=$input['limitDeadline'];
+            }
+            $params['targetId']=$result['result'];
+            
+            if(!$input['limit_id']){
+                //添加
+                $result=TopicService::add_replylimit($params);
+            }else{
+                //编辑
+                $result=TopicService::edit_replylimit($params);
+            
+            }
+            
             return $this->redirect('/weba_forum/topic/bbs-search','数据保存成功');
         }
          return $this->back()->with('global_tips','帖子修改失败');
@@ -578,6 +653,29 @@ class TopicController extends BackendController
         }
     }
 
+    public function postDelSomeReply() {
+        $rids = Input::get('ids');
+        if(count($rids) == 0) return $this->back()->with('global_tips','数据错误');
+        $errorCode = '';
+        foreach($rids as $row) {
+            $temp = explode('/', $row);
+            $tempRid = $temp[0];
+            $tempUid = $temp[1];
+            $res = TopicService::delReply($tempRid,'true','false',$tempUid);
+            if ($res['errorCode']) {
+                $errorCode = $res['errorCode'];
+                break;
+            }
+        }
+
+        if($errorCode){
+            return $this->json(array('status'=>600));
+        }else{
+            return $this->json(array('status'=>200));
+        }
+
+    }
+
     public function getResReply($rid='',$uid=''){
         if(!$rid) return $this->back()->with('global_tips','数据错误');
         $result = TopicService::delReply($rid,'true','true',$uid);
@@ -662,7 +760,7 @@ class TopicController extends BackendController
         $params['pageIndex'] = Input::get('page',1);
         $params['pageSize'] =15;
         if(Input::get('name')) $params['name'] =Input::get('name');
-        $result=TopicService::getForums($params['name'],$params['pageIndex'],$params['pageSize'],2);
+        $result=TopicService::getForums($params['name'],$params['pageIndex'],$params['pageSize'],false,2);
         $result=self::getdatainfo($result);
         foreach($result['result'] as $key=>$value){
             $datafid[]=!empty($value['fid'])?$value['fid']:'';
@@ -705,27 +803,29 @@ class TopicController extends BackendController
        $data['edit']=0;
        
        if(!empty($fid)){
-            $result=TopicService::getForums('',1,10,2,$fid);
+            $result=TopicService::getForums('',1,10,false,2,$fid);
             $result=self::getdatainfo($result);
             $data['edit']=1;
             $bbs=BbsAppend::getBbsinfoByFid($fid);
-            $data['bbs']=$result['result']['0'];
-           if(!empty($bbs['top_pic'])){
-                $data['bbs']['xtop_pic']=$bbs['top_pic'];
-                $data['bbs']['top_pic']=$bbs['top_pic'];
-           }
-           if(!empty($data['bbs']['logo'])){
-                $data['bbs']['xlogo']=strstr($data['bbs']['logo'], '/bbs/');
-           }
-           if(!empty($bbs['short_name'])){
-                $data['bbs']['short_name']=$bbs['short_name'];
-           }
-           if(!empty($bbs['forum_des'])){
-                $data['bbs']['forum_des']=$bbs['forum_des'];
-           }
-           if(!empty($bbs['short_des'])){
-                $data['bbs']['short_des']=$bbs['short_des'];
-           }
+            if (isset($result['result']['0'])) {
+               $data['bbs']=$result['result']['0'];
+               if(!empty($bbs['top_pic'])){
+                    $data['bbs']['xtop_pic']=$bbs['top_pic'];
+                    $data['bbs']['top_pic']=$bbs['top_pic'];
+               }
+               if(!empty($data['bbs']['logo'])){
+                    $data['bbs']['xlogo']=strstr($data['bbs']['logo'], '/bbs/');
+               }
+               if(!empty($bbs['short_name'])){
+                    $data['bbs']['short_name']=$bbs['short_name'];
+               }
+               if(!empty($bbs['forum_des'])){
+                    $data['bbs']['forum_des']=$bbs['forum_des'];
+               }
+               if(!empty($bbs['short_des'])){
+                    $data['bbs']['short_des']=$bbs['short_des'];
+               }
+            }
        }
        
        return $this->display('/4web/bbs-edit',$data);//    
@@ -761,11 +861,12 @@ class TopicController extends BackendController
             $path = storage_path() . $dir;
              //论坛LOGO 小图
             if(Input::hasFile('logo')){
-                        $file = Input::file('logo');
-                        $new_filename = date('YmdHis') . str_random(4);
-                        $mime = $file->getClientOriginalExtension();
-                        $file_path =$file->move($path,$new_filename . '.' . $mime );
-                        if($file_path)  $input['logo']=$dir.$new_filename . '.' . $mime;
+//                        $file = Input::file('logo');
+//                        $new_filename = date('YmdHis') . str_random(4);
+//                        $mime = $file->getClientOriginalExtension();
+//                        $file_path =$file->move($path,$new_filename . '.' . $mime );
+//                        if($file_path)  $input['logo']=$dir.$new_filename . '.' . $mime;
+                $input['logo'] =   MyHelpLx::save_img(Input::file('logo'));
             }else{
                         header("Content-type: text/html; charset=utf-8");
                         return $this->back()->with('global_tips','操作失败->请选择论坛LOGO'); 
@@ -791,17 +892,17 @@ class TopicController extends BackendController
         $path = storage_path() . $dir;
         //论坛标题大图
         if(Input::hasFile('toppic')){
-            $file = Input::file('toppic');
-            $new_filename = date('YmdHis') . str_random(4);
-            $mime = $file->getClientOriginalExtension();
-            $file_path =$file->move($path,$new_filename . '.' . $mime );
-            if($file_path)  $append['top_pic']=$dir.$new_filename . '.' . $mime;
+            $append['top_pic'] =   MyHelpLx::save_img(Input::file('toppic'));
+//            $file = Input::file('toppic');
+//            $new_filename = date('YmdHis') . str_random(4);
+//            $mime = $file->getClientOriginalExtension();
+//            $file_path =$file->move($path,$new_filename . '.' . $mime );
+//            if($file_path)  $append['top_pic']=$dir.$new_filename . '.' . $mime;
         }
         $append['short_des']=!empty($input['short_des'])?$input['short_des']:'';
         $append['forum_des']=!empty($input['forum_des'])?$input['forum_des']:'';
         if(!empty($fid)){
              $datainfo=BbsAppend::getBbsinfoByFid($fid);
-             
              if(!empty($datainfo)){
                     BbsAppend::update($append,$fid);
              }else{
@@ -893,8 +994,10 @@ class TopicController extends BackendController
         }
         if(!empty($result['result']['0']['gid'])){
             $game=GameService::getMultiInfoById(array($result['result']['0']['gid']),'android');
-            $data['game']=!empty($game['0'])?$game['0']['gname']:'';
-            $data['gid']=$result['result']['0']['gid'];
+            if(isset($game['0']['gname'])){
+                $data['game']=!empty($game['0'])?$game['0']['gname']:'';
+                $data['gid']=$result['result']['0']['gid'];
+            }
         }
         return $this->display('/4web/bbs-game-android',$data);  
     }
@@ -1073,19 +1176,19 @@ class TopicController extends BackendController
         $result=TopicService::forum_recommend_list($search);
 //        $result=self::getdatainfo($result);
         foreach($result['result'] as $key=>$value){
-            $datafid[]=!empty($value['fid'])?$value['fid']:'';
+            $datafid[]=!empty($value['gid'])?$value['gid']:'';
         }
-        $resultinf=TopicService::getForumAndGameRelation(1,$this->genre,$datafid);
-        $resultinf=self::getdatainfo($resultinf);
-        $datafid=array();
-        foreach ($resultinf['result'] as $key => $value){
-            $datafid[]=$value['gid'];
-            foreach($result['result'] as $key_=>$value_){
-                if($value_['fid'] == $value['fid']){
-                    $result['result'][$key_]['gid']=!empty($value['gid'])?$value['gid']:0;
-                }
-            }
-        }
+//        $resultinf=TopicService::getForumAndGameRelation(1,$this->genre,$datafid);
+//        $resultinf=self::getdatainfo($resultinf);
+//        $datafid=array();
+//        foreach ($resultinf['result'] as $key => $value){
+//            $datafid[]=$value['gid'];
+//            foreach($result['result'] as $key_=>$value_){
+//                if($value_['fid'] == $value['fid']){
+//                    $result['result'][$key_]['gid']=!empty($value['gid'])?$value['gid']:0;
+//                }
+//            }
+//        }
         $game=GameService::getMultiInfoById(array_flip(array_flip($datafid)),($this->genre==1)?'ios':'android');
         if(!empty($game) && $game != 'game_not_exists'){
             foreach($game as $key => $value){
@@ -1093,7 +1196,7 @@ class TopicController extends BackendController
             }
             foreach($result['result'] as $key=>&$value){
                 if(array_key_exists("gid",$value)){
-                    $value['gname']=$game_[$value['gid']];
+                    $value['gname']=isset($game_[$value['gid']])?$game_[$value['gid']]:"未找到";
                 }
             }
         }

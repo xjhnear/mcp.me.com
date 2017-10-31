@@ -1,0 +1,147 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>评论/回帖</h3>
+			</div>
+			<div class="box-content">
+				<form action="#" method="POST" class='form-horizontal' enctype="multipart/form-data">		
+				<input name="id" type="hidden" value="<!--{{ data.id }}-->" />
+				<input name="tid" type="hidden" value="<!--{{ data.tid }}-->" />
+				<div class="control-group">
+					<label for="textfield" class="control-label">评论者UID</label>
+                        <div class="controls">
+                            <input id="userselect" name="replier" type="hidden" value="<!--{{data.replier}}-->" class="bigdrop select2-offscreen" style="width:200px" tabindex="-1">
+                        </div>
+				</div>
+					<!--{% if new %}-->
+                    <div class="control-group">
+                        <label class="control-label">所属游戏</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input id="selected_game_id" name="game_id" type="hidden" value="<!--{{giftbag.gid}}-->"  data-rule-required="true" data-msg-required="请填写游戏名称"  />
+                                <input type="hidden" id="icon" name="icon" value="<!--{{ giftbag.img.listPic}}-->">
+                                <img id="selected_game_icon" name="icon" class="add-on" src="<!--{{ giftbag.img.listPic|default('/static/img/wu_ss.gif') }}-->"/>
+                                <input type="text" id="selected_game_name" name="game_name" class="input-medium" value="<!--{{ giftbag.gname }}-->"/>
+                                <span class="add-on select-pop-game">选择游戏</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!--{% endif %}-->
+                	<div class="control-group">
+                        <label class="control-label">图片 <span class="add_img badge badge-info" >添加</span> </label>
+                        <!--{% if imgs %}-->
+                        <!--{%for item in imgs%}-->
+                        <div class="controls" >
+                            <div data-provides="fileupload" class="fileupload fileupload-new">
+                                <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                    <img id="selected_game_icon" src="<!--{{item|default('/static/img/wu_ss.gif')}}-->">
+                                </div>
+                                <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                                <span class="btn btn-file"><i class="icon-picture"></i>
+                                    <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                                    <input id="task_img" name="img[]" type="hidden" value="<!--{{item}}-->"/>
+                                    <input type="file"  name="picFile[]" >
+                                </span>
+                                <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                                <input type="button" class="del_img" value="删除"/>
+                            </div>
+                        </div>
+                        <!--{%endfor%}-->
+                        <!--{% else %}-->
+                        <div class="controls" >
+                            <div data-provides="fileupload" class="fileupload fileupload-new">
+                                <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                    <img id="selected_game_icon" src="<!--{{data.picUrl|default('/static/img/wu_ss.gif')}}-->">
+                                </div>
+                                <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                                <span class="btn btn-file"><i class="icon-picture"></i>
+                                    <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                                    <input id="task_img" name="img[]" type="hidden" value="<!--{{data.picUrl}}-->"/>
+                                    <input type="file"  name="picFile[]" >
+                                </span>
+                                <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                                <input type="button" class="del_img" value="删除"/>
+                            </div>
+                        </div>
+                        <!--{% endif %}-->
+                    </div>
+                <div class="control-group">
+                    <label class="control-label">星级</label>
+                    <div class="controls">
+                        <!--{{form_select('score',{'5':'5星','4':'4星','3':'3星','2':'2星','1':'1星'},data.score,{'style':'width:80px;margin-bottom:0px;'})}}-->
+                    </div>
+                </div>
+				<div class="control-group">
+					<label for="textfield" class="control-label">内容</label>
+					<div class="controls">
+					    <textarea name="message" class="input-xxlarge" rows="10"><!--{{ data.formatContent }}--></textarea>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script>
+function set_selected_game(game_id,game_name,icon){
+	$('#selected_game_id').val(game_id);
+	$('#selected_game_icon').attr('src',icon);
+	$("input[name='game_name']").val(game_name);
+	$("input[name='icon']").val(icon);
+};
+$(function(){
+    var editor = UE.getEditor('container');
+    v4useridselect('#userselect');
+		$(".add_img").click(function(){
+            $(this).parent().parent().append('<div class="controls">\
+            <div data-provides="fileupload" class="fileupload fileupload-new">\
+            <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">\
+            <img id="selected_game_icon" src="<!--{{data.picUrl|default('/static/img/wu_ss.gif')}}-->">\
+            </div>\
+            <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>\
+            <span class="btn btn-file"><i class="icon-picture"></i>\
+            <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>\
+            <input id="task_img" name="img[]" type="hidden" value="<!--{{data.picUrl}}-->"/>\
+            <input type="file"  name="picFile[]" >\
+            </span>\
+            <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>\
+            <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>\
+            <input type="button" class="del_img" value="删除"/>\
+            </div>\
+            </div>');
+        });
+        $(".del_img").live('click',function(){
+            if(confirm("确定删除吗？")){
+                $(this).parent().parent().remove();
+            }
+        });
+		$('.select-pop-game').bind('click',function(){
+			$.ajax({
+				url:'/game/api/game-search',
+				dataType:'json',
+				success:function(json){
+					var html = json.html;
+					$.dialog({id:'pop-game-list',title:'提示',padding:2,content:html,width:600,height:580});
+				}
+			});
+		});
+		
+});
+</script>
+<!--{%endblock%}-->   

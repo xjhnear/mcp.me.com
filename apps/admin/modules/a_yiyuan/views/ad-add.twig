@@ -1,0 +1,321 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block header_css%}-->
+<link rel="stylesheet" href="/static/css/plugins/tagsinput/jquery.tagsinput.css">
+<!--{%endblock%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+        <div class="box">
+            <div class="box-title">
+                <h3><i class="icon-edit"></i>广告位新建/编辑</h3>
+            </div>
+            <div class="box-content">
+                <form id="form-topic" action="<!--{{url('a_yiyuan/adv/add')}}-->" method="POST" class="form-horizontal form-validate" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="<!--{{ data.id }}-->"/>
+                    <div class="control-group">
+                        <label class="control-label">*类型</label>
+                        <div class="controls">
+                            <select id="changeType" name="type" data-rule-required="true" data-msg-required="请选择">
+                                <option value="">请选择</option>
+                                <!--{% for key,value in typeArr %}-->
+                                <option value="<!--{{ key }}-->"
+                                <!--{% if key == data.type %}-->
+                                selected
+                                <!--{% endif %}-->
+                                ><!--{{ value }}--></option>
+                                <!--{% endfor %}-->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">标题</label>
+                        <div class="controls">
+                            <input name="title" class="span4" type="text" value="<!--{{ data.title }}-->"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">位置</label>
+                        <div class="controls">
+                            <input class="span1" name="idx" type="text" value="<!--{{ data.idx }}-->"/>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label class="control-label">推荐图</label>
+                        <div class="controls">
+                            <div class="fileupload fileupload-new" data-provides="fileupload">
+                                <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;">
+                                    <img src="
+                                        <!--{% if data.recommendImg %}-->
+                                            <!--{{ data.recommendImg }}-->
+                                        <!--{% else %}-->
+                                            /static/img/nopic.gif
+                                        <!--{% endif %}-->
+                                    " />
+                                </div>
+                                <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
+                                <div>
+                                    <span class="btn btn-file"><i class="icon-picture"></i><span class="fileupload-new">选择图片</span><span class="fileupload-exists">重新选择</span><input type="file" name='recommendImg'
+                                        <!--{% if data.recommendImg is null %}-->data-rule-required="true" data-msg-required="请选择"<!--{% endif %}-->
+                                                /></span>
+                                    <input type="hidden" value="<!--{{ data.recommendImg }}-->" name="recommendImg_old">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="innerHtml">
+                        <!--{% if data.type == 'spin' or data.type == 'recommend' %}-->
+                        <div class="control-group">
+                            <div class="span4">
+                                <label class="control-label">开始时间</label>
+                                <div class="controls" style="margin-bottom: 20px;">
+                                    <div class="input-append date">
+                                        <input id="startTime" name="startTime" type="text" class="input-medium datetimepicker" value="<!--{{ data.startTime }}-->" data-rule-required="true" data-msg-required="请选择">
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <label class="control-label">关闭时间</label>
+                                <div class="controls">
+                                    <div class="input-append date">
+                                        <input id="endTime" name="endTime" type="text" class="input-medium datetimepicker" value="<!--{{ data.endTime }}-->" data-rule-required="true" data-msg-required="请选择">
+                                        <span class="add-on"><i class="icon-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">属性</label>
+                            <div class="controls">
+                                <input type="hidden" name="enable" value="0"/>
+                                <input id="enable" type="checkbox" name="enable"
+                                <!--{% if data.enable == 1 %}-->
+                                checked
+                                <!--{% endif %}-->
+                                value="1"
+                                <!--{% if data.enableSign is sameas(false) %}-->
+                                disabled
+                                <!--{% endif %}-->
+                                >显示</input>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">连接类型</label>
+                            <div class="controls">
+                                <select id="changeLinkType" name="linkType">
+                                    <option value="">请选择</option>
+                                    <!--{% for key,value in linkType %}-->
+                                    <option value="<!--{{ key }}-->"
+                                    <!--{% if key == data.linkType %}-->
+                                    selected
+                                    <!--{% endif %}-->
+                                    ><!--{{ value }}--></option>
+                                    <!--{% endfor %}-->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="linkHtml">
+                            <!--{% if data.linkType == 1 %}-->
+                            <div class="control-group">
+                                <label class="control-label">选择商品</label>
+                                <div class="controls">
+                                    <div class="input-append">
+                                        <input class="input-medium selected_goods_name" type="text" value="<!--{{ data.linkName }}-->" readonly="">
+                                        <input class="input-medium selected_goods_id" type="hidden" name="linkValue" value="<!--{{ data.linkValue }}-->" readonly="">
+                                        <span class="add-on select-pop-goods" style="cursor:pointer">选择</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--{% elseif data.linkType == 2 %}-->
+                            <div class="control-group">
+                                <label class="control-label">选择系列商品</label>
+                                <div class="controls">
+                                    <div class="input-append">
+                                        <input class="input-medium selected_series_goods_name" type="text" value="<!--{{ data.linkName }}-->" readonly="">
+                                        <input class="input-medium selected_series_goods_id" type="hidden" name="linkValue" value="<!--{{ data.linkValue }}-->" readonly="">
+                                        <span class="add-on select-pop-series-goods" style="cursor:pointer">选择</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--{% endif %}-->
+                        </div>
+
+                        <!--{% endif %}-->
+                    </div>
+
+                    <div class="control-group">
+                        <div class="controls">
+                            <button class="btn btn-primary" type="submit">保存</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="<!--{{asset('/static/js/plugins/tagsinput/jquery.tagsinput.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/plugins/jquery-ui/jquery-ui-1.9.2.custom.min.js')}}-->"></script>
+<script src="/static/js/plugins/multiselect/bootstrap-multiselect.js"></script>
+<script>
+    var selectObj = {};
+
+    $(function() {
+        $('input.datetimepicker').datetimepicker({format: 'Y-m-d H:i', lang: 'ch'});
+
+        $('#changeType').change(function(){
+            var htmlObj = $('#innerHtml');
+            var val = $(this).val();
+            var html = '';
+
+            if (!val) {htmlObj.hide(500).html(html); return false;}
+
+            htmlObj.hide(500).html('');
+            if (val == 'spin' || val == 'recommend') {
+                html = '<div class="control-group"><div class="span4"><label class="control-label">开始时间</label><div class="controls" style="margin-bottom: 20px;"><div class="input-append date"><input id="startTime" name="startTime" type="text" class="input-medium datetimepicker" value="" data-rule-required="true" data-msg-required="请选择"><span class="add-on"><i class="icon-calendar"></i></span></div></div></div><div class="span4"><label class="control-label">关闭时间</label><div class="controls"><div class="input-append date"><input id="endTime" name="endTime" type="text" class="input-medium datetimepicker" value="" data-rule-required="true" data-msg-required="请选择"><span class="add-on"><i class="icon-calendar"></i></span></div></div></div></div><div class="control-group"><label class="control-label">属性</label><div class="controls"><input type="hidden" name="enable" value="0"/><input id="enable" type="checkbox" name="enable" value="1" disabled>显示</input></div></div><div class="control-group"><label class="control-label">连接类型</label><div class="controls"><select id="changeLinkType" name="linkType"><option value="">请选择</option>';
+                <!--{% for key,value in linkType %}-->
+                html += '<option value="' + <!--{{ key }}--> + '"><!--{{ value }}--></option>';
+                <!--{% endfor %}-->
+                html += '</select></div></div><div id="linkHtml"></div>';
+                htmlObj.html(html).show(500);
+            }
+            $('input.datetimepicker').datetimepicker({format: 'Y-m-d H:i', lang: 'ch'});
+        });
+
+        $(document).off('change', '#changeLinkType');
+        $(document).on('change', '#changeLinkType', function(){
+            var htmlObj = $('#linkHtml');
+            var val = $(this).val();
+            var html = '';
+
+            if (!val) {htmlObj.hide(500).html(html); return false;}
+
+            htmlObj.hide(500).html('');
+            if (val == 1) {
+                html = '<div class="control-group"><label class="control-label">选择商品</label><div class="controls"><div class="input-append"><input class="input-medium selected_goods_name" type="text" value="" readonly=""><input class="input-medium selected_goods_id" type="hidden" name="linkValue" value="" readonly=""><span class="add-on select-pop-goods" style="cursor:pointer">选择</span></div></div></div>';
+                htmlObj.show(500).html(html);
+            } else if (val == 2) {
+                html = '<div class="control-group"><label class="control-label">选择系列商品</label><div class="controls"><div class="input-append"><input class="input-medium selected_series_goods_name" type="text" value="" readonly=""><input class="input-medium selected_series_goods_id" type="hidden" name="linkValue" value="" readonly=""><span class="add-on select-pop-series-goods" style="cursor:pointer">选择</span></div></div></div>';
+                htmlObj.show(500).html(html);
+            }
+        });
+
+
+        $(document).off('click', '.select-pop-goods');
+        $(document).on('click', '.select-pop-goods', function(){
+            selectObj = $(this);
+            $.ajax({
+                url:'/a_yiyuan/adv/goods-search',
+                dataType:'json',
+                success:function(json){
+                    var html = json.html;
+                    $.dialog({id:'pop-goods-list',title:'提示',padding:2,content:html,width:600,height:580});
+                }
+            });
+        });
+
+        $(document).off('click', '.select-pop-series-goods');
+        $(document).on('click', '.select-pop-series-goods', function(){
+            selectObj = $(this);
+            $.ajax({
+                url:'/a_yiyuan/adv/series-goods-search',
+                dataType:'json',
+                success:function(json){
+                    var html = json.html;
+                    $.dialog({id:'pop-series-goods-list',title:'提示',padding:2,content:html,width:600,height:580});
+                }
+            });
+        });
+
+        $(document).off('blur', '#startTime, #endTime');
+        $(document).on('blur', '#startTime, #endTime', function(){
+            var startTimeVal    = $('#startTime').val();
+            var endTimeVal      = $('#endTime').val();
+            if (!startTimeVal || !endTimeVal) return false;
+
+            var nowTime     = time();
+            var startTime   = strtotime(startTimeVal);
+            var endTime     = strtotime(endTimeVal);
+
+            if (startTime <= nowTime && nowTime <= endTime) {
+                $('#enable').removeAttr("disabled");
+            } else {
+                $('#enable').prop("disabled", true);
+                $('#enable').prop("checked", false);
+            }
+
+        });
+
+
+    });
+
+    /**
+     * 模仿PHP的strtotime()函数
+     * strtotime('2012-07-27 12:43') OR strtotime('2012-07-27')
+     * @return 时间戳
+     */
+    function strtotime(str){
+        var _arr = str.split(' ');
+        var _day = _arr[0].split('-');
+        _arr[1] = (_arr[1] == null) ? '0:0' :_arr[1];
+        var _time = _arr[1].split(':');
+        for (var i = _day.length - 1; i >= 0; i--) {
+            _day[i] = isNaN(parseInt(_day[i])) ? 0 :parseInt(_day[i]);
+        };
+        for (var i = _time.length - 1; i >= 0; i--) {
+            _time[i] = isNaN(parseInt(_time[i])) ? 0 :parseInt(_time[i]);
+        };
+        var _temp = new Date(_day[0],_day[1]-1,_day[2],_time[0],_time[1]);
+        return _temp.getTime() / 1000;
+    }
+
+    /**
+     * 模仿PHP的time()函数
+     * @return 返回当前时间戳
+     */
+    function time(){
+        return (new Date()).getTime() / 1000;
+    }
+
+    /**
+     * 模仿PHP的date()函数
+     * strtotime('Y-m-d H:i:s');
+     * @param format 只支持 'Y-m-d H:i:s','Y-m-d','H:i:s' 三种调用方式
+     * @param time 为空时，取当前时间
+     * @return 日期格式化的字符串
+     */
+    function date(format,time){
+        var _temp = (time != null) ? new Date(time*1000) : new Date();
+        var _return = '';
+
+        if(/Y-m-d/.test(format)){
+            var _day = [_temp.getFullYear(),addzero(1 + _temp.getMonth()),addzero(_temp.getDate())];
+            _return = _day.join('-');
+        }
+        if(/H:i:s/.test(format)){
+            var _time = [addzero(_temp.getHours()),addzero(_temp.getMinutes()),addzero(_temp.getSeconds())];
+            _return += ' ' +_time.join(':');
+        }
+        return _return;
+        function addzero(i){
+            if(i<=9){
+                return '0' + i;
+            }else{
+                return i;
+            }
+        }
+    }
+
+</script>
+<!--{%endblock%}-->

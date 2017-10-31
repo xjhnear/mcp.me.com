@@ -3,6 +3,7 @@ namespace modules\wcms\models;
 
 use Illuminate\Support\Facades\Log;
 use Yxd\Modules\Core\CacheService;
+use Illuminate\Support\Facades\Session;
 
 class HomeSetting extends BaseHttp
 {
@@ -78,6 +79,9 @@ class HomeSetting extends BaseHttp
 		$params['bigPicTopUrl'] = $bigPicTopUrl;
 		$params['bigPicBottomUrl'] = $bigPicBottomUrl;
 		$params['url'] = $url;
+		$userinfo = Session::get('youxiduo_admin');
+		$params['userName'] = $userinfo ? $userinfo['username'] : '';
+		$params['userId'] = $userinfo ? $userinfo['id'] : 0;
 
 		$result = self::http($api_url, $params, 'POST');
 		if ($result !== false && $result['errorCode'] == 0) {
@@ -135,6 +139,10 @@ class HomeSetting extends BaseHttp
 			$params['videoTime'] = $videoTime;
 			$params['autoPlay'] = $autoPlay;
 		}
+		$userinfo = Session::get('youxiduo_admin');
+		$params['userName'] = $userinfo ? $userinfo['username'] : '';
+		$params['userId'] = $userinfo ? $userinfo['id'] : 0;
+		
 		$result = self::http($api_url, $params, 'POST');
 		if ($result !== false && $result['errorCode'] == 0) {
 			return true;
@@ -199,6 +207,10 @@ class HomeSetting extends BaseHttp
 			$params['summary'] = $summary;
 			$params['url'] = $url;
 		}
+		$userinfo = Session::get('youxiduo_admin');
+		$params['userName'] = $userinfo ? $userinfo['username'] : '';
+		$params['userId'] = $userinfo ? $userinfo['id'] : 0;
+		
 		$result = self::http($api_url,$params,'POST');
 		if($result!==false && $result['errorCode']==0){
 			return true;
@@ -263,6 +275,10 @@ class HomeSetting extends BaseHttp
 			$params['summary'] = $summary;
 			$params['url'] = $url;
 		}
+		$userinfo = Session::get('youxiduo_admin');
+		$params['userName'] = $userinfo ? $userinfo['username'] : '';
+		$params['userId'] = $userinfo ? $userinfo['id'] : 0;
+		
 		$result = self::http($api_url,$params,'POST');
 		if($result!==false && $result['errorCode']==0){
 			return true;
@@ -354,6 +370,10 @@ class HomeSetting extends BaseHttp
 			$params['url'] = $url;
 			$params['publishTime'] = time();
 		}
+		$userinfo = Session::get('youxiduo_admin');
+		$params['userName'] = $userinfo ? $userinfo['username'] : '';
+		$params['userId'] = $userinfo ? $userinfo['id'] : 0;
+		
 		$result = self::http($api_url,$params,'POST');
 		if($result!==false && $result['errorCode']==0){
 			return true;
@@ -404,6 +424,9 @@ class HomeSetting extends BaseHttp
 		$params['idx'] = $idx;
 		$params['gameId'] = $gameId;
 		$params['type'] = $type;
+		$userinfo = Session::get('youxiduo_admin');
+		$params['userName'] = $userinfo ? $userinfo['username'] : '';
+		$params['userId'] = $userinfo ? $userinfo['id'] : 0;
 		
 		$result = self::http($api_url,$params,'POST');
 		if($result!==false && $result['errorCode']==0){

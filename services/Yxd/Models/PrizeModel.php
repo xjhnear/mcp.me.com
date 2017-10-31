@@ -2,13 +2,14 @@
 namespace Yxd\Models;
 
 use Yxd\Modules\Core\BaseModel;
+use Yxd\Services\Models\ActivityPrize;
 
 class PrizeModel extends BaseModel
 {
 	public static function getList($ids)
 	{
 		if(!$ids) return array();
-		$list = self::dbClubSlave()->table('activity_prize')->whereIn('id',$ids)->get();
+		$list = ActivityPrize::db()->whereIn('id',$ids)->get();
 		$data = array();
 		foreach($list as $row){
 			$data[$row['id']] = $row;

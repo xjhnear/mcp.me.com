@@ -35,18 +35,20 @@
 	<link rel="stylesheet" href="/static/css/bootstrap-switch.min.css">
 	<link rel="stylesheet" href="/static/css/alertify.core.css">
 	<link rel="stylesheet" href="/static/css/alertify.default.css">
-	
+	<style>
+		table { /*table-layout: fixed;*/word-wrap:break-word;}div { word-wrap:break-word;}
+	</style>
 	<!--{%block header_css%}-->
 	<!--{%endblock%}-->
 </head>
 
 <body>
-    <div id="navigation">
+    <div id="navigation" class="navbar-fixed-top">
         <div class="container-fluid">            
             <a href="javascript:void(0);" class="toggle-nav" rel="tooltip" data-placement="bottom" title="显示/隐藏左侧导航"><i class="icon-reorder"></i></a>
             <ul class="main-nav">
                 <!--{%for item in admin_menu%}-->
-                <!--{%if loop.index<16%}-->
+                <!--{%if loop.index<12%}-->
 				<li class="<!--{{request_segment(1) == item.default_url|split('/')[0] ? 'active' : ''}}-->">
 				    <a href="<!--{{url(item.default_url)}}-->" class='dropdown-toggle' data-toggle="dropdown">
 				    <!--{%if item.module_icon=='android'%}--><span class="cus-android"></span><!--{%endif%}-->
@@ -60,13 +62,13 @@
 				    </ul>
 				</li>
 				<!--{%else%}-->
-				<!--{%if loop.index==16%}-->
+				<!--{%if loop.index==12%}-->
 				<li>
 				    <a href="#" class='dropdown-toggle' data-toggle="dropdown"><span>更多</span><span class="caret"></span></a>
-				    <ul class="dropdown-menu">
-				<!--{%endif%}-->				    
+				    <ul class="dropdown-menu" style=" max-height: 650px; overflow-y: auto;overflow-x: hidden;width: 150px;">
+				<!--{%endif%}-->
 				        <li class="dropdown-submenu">
-						    <a href="<!--{{url(item.default_url)}}-->" class='dropdown-toggle' data-toggle="dropdown">
+						    <a href="<!--{{url(item.default_url)}}-->">
 						    <!--{%if item.module_icon=='android'%}--><span class="cus-android"></span><!--{%endif%}-->
 						    <!--{%if item.module_icon=='ios'%}--><span class="cus-ios"></span><!--{%endif%}-->
 						    <!--{{item.module_alias}}-->
@@ -77,7 +79,7 @@
 								<!--{%endfor%}-->
 						    </ul>
 						</li>				    
-				<!--{%if loop.index>16 and loop.last%}-->
+				<!--{%if loop.index>12 and loop.last%}-->
 				    </ul>
 				</li>
 				<!--{%endif%}-->
@@ -86,7 +88,16 @@
 		    </ul>
 		    <div class="user">
 		        <ul class="icon-nav">
-		            <li></li>
+		            <li class='dropdown'>
+		                <a href="javascript:void(0);" class='dropdown-toggle' data-toggle="dropdown">选定的用户<span id="selected-uids-count" class="label label-lightred"></span></a>
+		                <ul id="selected-pop-ul" class="dropdown-menu pull-right" style="width:800px;height:400px;overflow:auto;">
+		                <!--{%for item in selected_uids%}-->
+		                    <li style="float:left;width:150px;"><a href="javascript:void(0)" data-uid="<!--{{item.uid}}-->" class="delete-selected-uid-ajax"><!--{{item.nickname}}--><i class="icon-trash"></i></a></li>
+		                <!--{%endfor%}-->			                
+						    <li><a id="select-all-uids" href="javascript:void(0);">添加到选择框</a></li>
+						    <li><a id="clear-selected-uid-ajax" href="javascript:void(0);">清除全部</a></li>
+		                </ul>		            	
+		            </li>
 		        </ul>
 		        <div class="dropdown">
 					<a href="javascript:void(0);" class='dropdown-toggle' data-toggle="dropdown"><!--{{current_user.realname}}--><img src="http://img.youxiduo.com/userdirs/common/yxd_logo.png?v=1" width="25px" /></a>
@@ -102,8 +113,8 @@
 		    </div>
         </div>
     </div>
-    <div class="container-fluid" id="content">
-        <div id="left">
+    <div class="container-fluid nav-fixed" id="content">
+        <div id="left" class=" sidebar-fixed hasScroll">
             
             <div class="subnav">
 			    <div class="subnav-title">
@@ -111,6 +122,15 @@
 				</div>
 				<ul class="subnav-menu">
 				<!--{%for item in admin_menu[module_name]['child_menu']%}-->
+				<!--{%if item.separator%}-->
+				</ul>
+			</div>
+			<div class="subnav">
+				<div class="subnav-title">
+					<a href="#" class='toggle-subnav'><i class="icon-angle-down"></i><span><!--{{item.separator}}--></span></a>
+				</div>
+				<ul class="subnav-menu">
+				<!--{%endif%}-->
 				<li class="<!--{{url_current() == url(item.url) ? 'active' : ''}}-->"><a href="<!--{{url(item.url)}}-->"><!--{{item.name}}--></a></li>
 				<!--{%endfor%}-->
 				</ul>
@@ -157,7 +177,7 @@
 	<!-- slimScroll -->
 	<script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 	<!-- Bootstrap -->
-	<script src="/static/js/bootstrap.min.js"></script>	
+	<script src="/static/js/bootstrap.min.js"></script>
 	<!-- Bootbox -->
 	<script src="/static/js/plugins/bootbox/jquery.bootbox.js"></script>
 	<!-- Flot -->
@@ -186,21 +206,21 @@
 	<script src="/static/js/plugins/icheck/jquery.icheck.min.js"></script>
 	<!-- Form -->
 	<script src="/static/js/plugins/form/jquery.form.min.js"></script>
-	
+
 	<script src="/static/js/plugins/validation/jquery.validate.min.js"></script>
 	<script src="/static/js/plugins/validation/additional-methods.min.js"></script>
-	<!-- Wizard -->		
-	<script src="/static/js/plugins/wizard/jquery.form.wizard.min.js"></script>	
+	<!-- Wizard -->
+	<script src="/static/js/plugins/wizard/jquery.form.wizard.min.js"></script>
 	<script src="/static/js/plugins/gritter/jquery.gritter.min.js"></script>
 	<!--/File Upload/-->
-	<script src="/static/js/plugins/fileupload/bootstrap-fileupload.min.js"></script>	
-	<script src="/static/js/plugins/jquery.datetimepicker.js"></script>	
+	<script src="/static/js/plugins/fileupload/bootstrap-fileupload.min.js"></script>
+	<script src="/static/js/plugins/jquery.datetimepicker.js"></script>
 	<script src="/static/js/jquery.artDialog.js"></script>
 	<!-- Theme framework -->
 	<script src="/static/js/eakroko.js"></script>
 	<!-- Theme scripts -->
 	<script src="/static/js/application.js"></script>
-	
+
 	<script src="<!--{{asset('static/js/admin.js')}}-->"></script>
 	<!-- Switch js -->
 	<script src="/static/js/bootstrap-switch.min.js"></script>
@@ -234,6 +254,47 @@
 	$("img").click(function(){
 		$("#big-img").attr("src",$(this).attr('src'));
 	});
+	
+	$('#select-all-uids').click(function(){
+	    var uids = [];
+	    $('#selected-pop-ul li a.delete-selected-uid-ajax').each(function(i){
+	        uids[i] = $(this).attr('data-uid');
+	    });
+	    if(uids.length==0){
+	        alert('您没有选择任何用户');
+	        return false;
+	    }
+	    if($('.input-selected-uids').length>0){
+	        $('.input-selected-uids').val(uids.join(','));
+	        console.log(uids.join(','));
+	    }
+	    
+	});
+	$('#selected-uids-count').text($('.delete-selected-uid-ajax').length);
+	
+	
+	$('a.delete-selected-uid-ajax').bind('click',function(){
+	    var uid = $(this).attr('data-uid');
+	    var li = $(this).parent();
+	    $.get('<!--{{url('user/users/delete-select-user')}}-->',{'uid':uid},function(data){
+            li.remove();
+            $('#selected-uids-count').text($('.delete-selected-uid-ajax').length);
+        });
+	});
+	
+	$('#clear-selected-uid-ajax').bind('click',function(){
+	    
+	    var li = $(this).parent();
+	    $.get('<!--{{url('user/users/clear-select-user')}}-->',null,function(data){
+	        $('#selected-pop-ul li a.delete-selected-uid-ajax').each(function(i){
+                var li = $(this).parent();
+                li.remove();
+            });
+            $('#selected-uids-count').text($('.delete-selected-uid-ajax').length);
+        });
+	});
+	
+	
 	});
 	</script>
 <!--{%block footer_js%}-->

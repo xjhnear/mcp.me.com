@@ -12,11 +12,45 @@ use Youxiduo\Base\Model;
 class QueryService extends Model
 {
     public static $databas_table='';
-    public static $pagesize=10;
+    public static $pagesize=15;
     public function __construct()
     {
 
     }
+
+
+
+    public static function getListByApi($inputinfo)
+    {
+        $where=' WHERE 1=1 ';
+        if(!empty($inputinfo['adv_logo'])){
+            $where.='and adv_logo="'.$inputinfo['adv_logo'].'" and attribute = 1 ';
+        }
+        if(!empty($inputinfo['game_id'])){
+            $where.='and game_id="'.$inputinfo['game_id'].'"';
+        }
+        if(!empty($inputinfo['appname'])){
+            if ($inputinfo['appname'] == 'youxiduojiu3') {
+                $where.='and platform="iosyn"';
+            } else {
+                $where.='and platform="ios"';
+            }
+        }
+        $sqlWhereValue=self::getWheredata(!empty($inputinfo['where'])?$inputinfo['where']:array(),!empty($inputinfo['sqlWhere'])?$inputinfo['sqlWhere']:array());
+        if(!empty($sqlWhereValue['0'])){
+            $where .=' and '. $sqlWhereValue['0'];
+        }
+        if(!empty($inputinfo['orderby']))
+        {
+            $where.=$inputinfo['orderby'];
+        }
+        self::updata_data($inputinfo);
+        return DB::select('SELECT id,adv_logo,attribute,name,adv_name,adv_img,adv_content,adv_href_type,adv_type,game_id,urlId,urlAddress,startTime,endTime,sort,isAutoLogin FROM '.self::$databas_table.$where,$sqlWhereValue['1']);
+
+    }
+
+
+
     //SELECT * FROM `t1` INNER JOIN ( SELECT id FROM `t1` WHERE ftype=1 ORDER BY id DESC LIMIT 935500,10) t2 USING (id)
     //SELECT * FROM (SELECT * FROM `t1` WHERE id > ( SELECT id FROM `t1` WHERE ftype=1 ORDER BY id DESC LIMIT 935510, 1) LIMIT 10) T ORDER BY id DESC;
     public static  function getDatalistByPage($inputinfo)
@@ -50,7 +84,7 @@ class QueryService extends Model
             {
                 $where.=$inputinfo['orderby'];
             }
-
+            /***
             $result=DB::select('SELECT id,startTime,endTime,attribute FROM '.self::$databas_table.'  WHERE adv_logo="'.$inputinfo['adv_logo'].'" and attribute in (2,3) ');
 
             if(!empty($result)){
@@ -74,6 +108,9 @@ class QueryService extends Model
                    DB::update('update '.self::$databas_table.' set is_show = 0,attribute=4  where id in ('.$attribute3.')');
                }
             }
+            ***/
+            self::updata_data($inputinfo);
+
             if($inputinfo['adv_logo'] == '首页弹窗')
             {
                 $limit = ' LIMIT  10 ';
@@ -87,19 +124,19 @@ class QueryService extends Model
             $data=DB::select('SELECT SQL_CALC_FOUND_ROWS *  FROM '.self::$databas_table.$where,$sqlWhereValue['1']);
             $count=DB::select('SELECT FOUND_ROWS() as count');
             $count=current($count);
-            $totalCount=ceil($count['count'] / self::$pagesize);
+            //$totalCount=ceil($count['count'] / self::$pagesize);
         }else{
             if(!empty($inputinfo['limit'])){
                 $limit = $inputinfo['limit'];
             }
             $where.=$limit;
             $data=DB::select('SELECT * FROM '.self::$databas_table.$where,$sqlWhereValue['1']);
-            $totalCount=count($data);
+            $count=count($data);
         }
         if(count($data) < 1){
             return array('errorCode'=>0,'result'=>array());
         }else{
-            $data= array('errorCode'=>0,'result'=>$data,'inputinfo'=>$inputinfo['where'],'totalCount'=>$totalCount);
+            $data= array('errorCode'=>0,'result'=>$data,'inputinfo'=>$inputinfo['where'],'totalCount'=>$count['count']);
             return $data;
         }
     }
@@ -194,6 +231,33 @@ class QueryService extends Model
         return $sqlWhereValue;
     }
 
+
+    private static function updata_data($inputinfo)
+    {
+        $date=date('Y-m-d H:i:s',time());
+        $result=DB::select('SELECT id FROM '.self::$databas_table.'  WHERE adv_logo="'.$inputinfo['adv_logo'].'"  and startTime < "'.$date.'" and endTime  > "'.$date.'" and  attribute = 4 and is_show=0 ');
+        if(!empty($result)) {
+            $arr=array();
+            foreach($result as $key=>$value1){
+                $arr[]="'".$value1['id']."'";
+            }
+            if(count($arr) > 0 ){
+                DB::update('update '.self::$databas_table.' set is_show = 1,attribute=1  where id in ('.join(',',$arr).')');
+            }
+
+        }
+        $result=DB::select('SELECT id FROM '.self::$databas_table.'  WHERE adv_logo="'.$inputinfo['adv_logo'].'"  and (startTime > "'.$date.'" or endTime  < "'.$date.'") and  attribute = 1 and is_show = 1 ');
+        if(!empty($result)) {
+            $arr=array();
+            foreach($result as $key=>$value2){
+                $arr[]="'".$value2['id']."'";
+            }
+            if(count($arr) > 0){
+                DB::update('update '.self::$databas_table.' set is_show = 0,attribute=4  where id in ('.join(',',$arr).')');
+            }
+        }
+        return true;
+    }
 
     protected static function buildSearch()
     {

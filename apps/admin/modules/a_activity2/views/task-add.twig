@@ -3,33 +3,60 @@
 <div class="row-fluid">
     <div class="span12">
 		<div class="box">
-            <!--{%if lineId!="" %}-->
-            <div class="d_chain" >
-                <div class="box-title">
-                    <h3>任务线信息</h3>
-                </div>
-                <div style="font-size: 14px;padding-left: 20px;padding-top: 20px">
-                    <p><span>标题</span> <span style="margin: 50px;"><!--{{lineName}}--></span> </p>
-                    <p><span>类型</span>  <span style="margin: 50px;"><!--{%if lineType==1 %}-->持续性任务线<!--{%elseif lineType==2 %}-->累计性任务线 <!--{%elseif lineType==3 %}-->主线任务<!--{%endif%}--></span> <span>需要连续完成</span>  </p>
-                </div>
-            </div>
-            <!--{%endif%}-->
 			<div class="box-title">
 				<h3>任务信息</h3>
 			</div>
 			<div class="box-content">
 			    <form id="activity-task" action="<!--{{url('a_activity2/task/task-add')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
 				<div class="control-group">
-					<label class="control-label">*标题</label>
+					<label class="control-label">*标题</label>			
 					<div class="controls">
 						<input type="text" name="title" class="input-xxlarge" value="<!--{{atask.taskName}}-->" data-rule-required="true" data-msg-required="标题不能为空"  />
 					</div>
 				</div>
 
-                <div class="control-group">
+                <div class="control-group sort">
                     <label class="control-label">*任务排序</label>
                     <div class="controls">
-                        <input type="text" name="sort" class="input-small" value="<!--{{atask.sort|default('50')}}-->" />
+                        <input type="text" name="sort" class="input-small" value="<!--{{atask.sort|default(50)}}-->" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">*版本限制</label>
+                    <div class="controls">
+                        <!--{{form_select('appVersion',appVersion,atask.appVersion,{'id':'appVersion'})}}-->
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">是否IP限制</label>
+                    <div class="controls">
+                        <input name="ipLimit" <!--{%if atask.ipLimit %}-->checked<!--{% endif %}--> data-on-color="success" data-on-text="开启" data-off-color="danger" data-off-text="关闭" class="switchbox" type="checkbox" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">控量</label>
+                    <div class="controls" >
+                        <label class="radio inline" style="margin-left: -18px"><!--{{form_radio('kl','count',atask.dailyAmount)}}-->数量 <input type="text" name="dailyAmount" class="input-small" value="<!--{{atask.dailyAmount}}-->" /></label>
+                        <label class="radio inline kl_2"><!--{{form_radio('kl','prop',atask.attendRate)}}-->比例 <input type="text" name="attendRate" class="input-small" value="<!--{{atask.attendRate}}-->" />%</label>
+                    </div>
+                </div>
+
+
+                <div class="control-group lastDays">
+                    <label class="control-label">*持续天数</label>
+                    <div class="controls">
+                        <input type="text" name="lastDays" class="input-small" value="<!--{{atask.lastDays}}-->" />
+                    </div>
+                </div>
+
+                <div class="control-group intervalDays">
+                    <label class="control-label">间隔天数</label>
+                    <div class="controls">
+                        <input type="text" name="intervalDays" class="input-small" value="<!--{{atask.intervalDays}}-->" />
+                        选填，第一个子任务不用填写
                     </div>
                 </div>
 
@@ -59,6 +86,15 @@
                 </div>
 
                 <div class="control-group">
+                    <label class="control-label">分成设置</label>
+                    <div class="controls">
+                            <label class="radio inline" style="margin-left: -18px"><!--{{form_radio('fc','count',atask.rmbReward)}}-->人民币数量 <input type="text" name="rmbReward" class="input-small" value="<!--{{atask.rmbReward}}-->" /></label>
+                            <!-- <label class="radio inline"><!--{{form_radio('fc','prop',atask.rmbRate)}}-->人民币比例 <input type="text" name="rmbRate" class="input-small" value="<!--{{atask.rmbRate}}-->" />%</label> -->
+                            <label class="radio inline">游币 <input type="text" name="balanceReward" class="input-small" value="<!--{{atask.balanceReward}}-->" /></label>
+                            <label class="radio inline"> <input type="checkbox" name="isDefaultFee" class="input-small" value="true" />默认</label>
+                    </div>
+                </div>
+                <div class="control-group">
                     <label for="textfield" class="control-label">*任务内容</label>
                     <div class="controls">
                         <script id="container" name="content" type="text/plain"><!--{{atask.taskDesc}}--></script>
@@ -72,6 +108,30 @@
                     </div>
                 </div>
 
+                <div class="control-group">
+                    <label class="control-label">*是否是应用任务</label>
+                    <div class="controls">
+                        <label class="radio inline"><!--{{form_radio('isAppTask','true',atask.gid=="-1")}}-->是</label>
+                        <label class="radio inline"><!--{{form_radio('isAppTask','false',atask.gid!="-1")}}-->否</label>
+                    </div>
+                </div>
+
+                <div class="control-group app_name">
+                    <label class="control-label">*应用名称</label>
+                    <div class="controls">
+                        <input type="text" name="t_gameName" class="input-xxlarge" value="<!--{{atask.typeCondition['gameName']}}-->" data-rule-required="true" data-msg-required="名称不能为空"  />
+                    </div>
+                </div>
+                <div class="control-group t_gname">
+                    <label class="control-label">*关联游戏</label>
+                    <div class="controls">
+                        <div class="input-append">
+                            <input id="selected_game_id" name="game_id" type="hidden" value="<!--{{atask.gid}}-->"/>
+                            <input type="text" readonly id="selected_game_name" name="game_name" class="input-medium"  data-msg-required="请选择游戏" value="<!--{{atask.typeCondition['gameName']}}-->" />
+                            <span class="add-on select-pop-game">选择游戏</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="control-group notice">
                     <label class="control-label">*是否预告</label>
                     <div class="controls">
@@ -79,22 +139,13 @@
                         <label class="radio inline"><!--{{form_radio('forenotice','false',atask.forenotice=="")}}-->否</label>
                     </div>
                 </div>
-                    <div class="control-group">
-                        <label class="control-label">*关联游戏</label>
-                        <div class="controls">
-                            <div class="input-append">
-                                <input id="selected_game_id" name="game_id" type="hidden" value="<!--{{atask.gid}}-->"/>
-                                <input type="text" readonly id="selected_game_name" name="game_name" class="input-medium"  data-msg-required="请选择游戏" value="<!--{{atask.typeCondition['gameName']}}-->" />
-                                <span class="add-on select-pop-game">选择游戏</span>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="control-group">
                         <label class="control-label">*icon</label>
                         <div class="controls">
                             <div data-provides="fileupload" class="fileupload fileupload-new">
                                 <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
-                                    <img id="selected_game_icon" src="<!--{{atask.taskIcon|default('http://test.img.youxiduo.com/userdirs/2015/11/20151117175733BZts.png')}}-->">
+                                    <img id="selected_game_icon" src="<!--{{atask.taskIcon|default('http://img.youxiduo.com/userdirs/2015/20151117175733BZts.png')}}-->">
                                 </div>
                                 <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
 							<span class="btn btn-file"><i class="icon-picture"></i>
@@ -109,13 +160,13 @@
                     </div>
 
                     <div class="control-group">
-                        <label class="control-label">*游戏包名</label>
+                        <label class="control-label">游戏包名</label>
                         <div class="controls">
                             <input type="text" name="game_package_name" class="input-xlarge" value="<!--{{atask.typeCondition['gamePackageName']}}-->" data-msg-required="游戏包名不能为空"  />
                         </div>
                     </div>
                     <div class="control-group" id="url_address" >
-                        <label class="control-label">*下载地址</label>
+                        <label class="control-label">下载地址</label>
                         <div class="controls">
                             <input type="text" name="linkValue_" id="linkValue"  data-msg-required="请填写url地址"
                                    class="input-large linkValue" value="<!--{{atask.typeCondition['gameDownloadUrl']}}-->"/>
@@ -139,9 +190,9 @@
                 </fieldset>
 
                 <fieldset class="f_share">
-                    <legend>V3分享</legend>
+                    <legend>分享</legend>
 
-                    <div class="control-group">
+                    <div class="control-group v3">
                         <label class="control-label">*V3活动</label>
                         <div class="controls">
                             <div class="input-append">
@@ -149,13 +200,25 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="control-group v4">
+                        <label class="control-label">*V4活动</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <span class="add-on select-pop-v4share" data-no="2">选择活动</span>
+                                <input type="hidden" name="rewards" value=''/>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <input type="hidden" name="activity_id" value="<!--{{atask.typeCondition['shareId']}}-->"/>
                     <div class="control-group">
                         <label class="control-label">微信分享LOGO</label>
                         <div class="controls">
                             <div class="fileupload fileupload-new" data-provides="fileupload">
                                 <input name="share_icon" type="hidden" data-rule-required="true" data-msg-required="请选择图片" value="<!--{{atask.typeCondition['shareIcon']}}-->" />
-                                <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img id="share_img" src="<!--{{atask.typeCondition['shareIcon']|default('http://test.img.youxiduo.com/userdirs/2015/11/20151117175733BZts.png')}}-->" /></div>
+                                <div class="fileupload-new thumbnail" style="max-width: 120px; max-height: 120px;"><img id="share_img" src="<!--{{atask.typeCondition['shareIcon']|default('http://img.youxiduo.com/userdirs/2015/20151117175733BZts.png')}}-->" /></div>
                                 <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 120px; max-height: 120px; line-height: 20px;"></div>
                                 <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
                             </div>
@@ -182,7 +245,7 @@
                 </fieldset>
 
                 <fieldset class="f_price">
-                    <legend>奖励内容(单选) <input id="price_add" type="button" CLASS="btn-primary" value="添加"></legend>
+                    <legend>奖励内容(单选) <input id="price_add" type="button" CLASS="btn-primary" value="添加"> <!--{%if atask.taskType==4 %}--> <input id="price_tongbu" shareId="<!--{{atask.typeCondition['shareId']}}-->" type="button" CLASS="btn-primary" value="同步"><!--{%endif%}--></legend>
                     <!--{%if atask.prizeList!=""%}-->
                     <!--{%for item in atask.prizeList%}-->
 
@@ -193,7 +256,7 @@
                                 <div class="controls">
                                     <div data-provides="fileupload" class="fileupload fileupload-new">
                                         <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
-                                            <img src="<!--{{item.prizeIcon|default('http://test.img.youxiduo.com/userdirs/2015/11/20151117175733BZts.png')}}-->">
+                                            <img src="<!--{{item.prizeIcon|default('http://img.youxiduo.com/userdirs/2015/20151117175733BZts.png')}}-->">
                                         </div>
                                         <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
                                     <span class="btn btn-file"><i class="icon-picture"></i>
@@ -216,7 +279,7 @@
                             <div class='control-group'>
                                 <label class='control-label'>奖励内容</label>
                                 <div class="input-append price1">
-                                    <input type="text" name="youb_num[]" class="input-middle" value="<!--{{item.prizeKey}}-->" placeholder="游币金额" data-rule-required="true" data-msg-required="游币金额不能为空"  />
+                                    <input type="text" name="youb_num[]" class="input-middle" value="<!--{{item.prizeKey}}-->" placeholder="金额" data-rule-required="true" data-msg-required="金额不能为空"  />
                                 </div>
                                 <div class="price2" hidden="hidden">
                                     <div class="input-append">
@@ -252,12 +315,12 @@
                             <div class="controls" >
                                 <div data-provides="fileupload" class="fileupload fileupload-new">
                                     <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
-                                        <img src="<!--{{item.gameIcon|default('http://test.img.youxiduo.com/userdirs/2015/11/20151117175733BZts.png')}}-->">
+                                        <img src="<!--{{item.gameIcon|default('http://img.youxiduo.com/userdirs/2015/20151117175733BZts.png')}}-->">
                                     </div>
                                     <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
                                     <span class="btn btn-file"><i class="icon-picture"></i>
                                         <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
-                                        <input name="prize_img[]" type="hidden" value="http://test.img.youxiduo.com/userdirs/2015/11/20151117175733BZts.png"/>
+                                        <input name="prize_img[]" type="hidden" value="http://img.youxiduo.com/userdirs/2015/20151117175733BZts.png"/>
                                         <input type="file" name="prize_pic[]" class="img_validate" >
                                     </span>
                                     <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
@@ -275,7 +338,7 @@
                         <div class='control-group'>
                             <label class='control-label'>奖励内容</label>
                             <div class="input-append price1">
-                                <input type="text" name="youb_num[]" class="input-middle" value="<!--{{item.prizeKey}}-->" placeholder="游币金额" data-rule-required="true" data-msg-required="游币金额不能为空"  />
+                                <input type="text" name="youb_num[]" class="input-middle" value="<!--{{item.prizeKey}}-->" placeholder="金额" data-rule-required="true" data-msg-required="金额不能为空"  />
                             </div>
                             <div class="price2" hidden="hidden">
                                 <div class="input-append">
@@ -309,10 +372,8 @@
                     <input type="hidden" name="lineType" value="<!--{{lineType}}-->"/>
                     <input type="hidden" name="lineName" value="<!--{{lineName}}-->"/>
                     <input type="hidden" name="id" value="<!--{{atask.taskId}}-->"/>
-                    <!--{%for item in atask.prizeList%}-->
-
-                    <!--{%endfor%}-->
-				</div> 
+                    <input type="hidden" name="isSubTask" value="<!--{{isSubTask}}-->"/>
+				</div>
 			    </form>
 			</div>
 		</div>
@@ -336,11 +397,76 @@ var obj= "";
 var complete_type;
 var card_img = "";
 var prize_gid = "";
+//alert(parseInt(10.6));
 $(function() {
-    <!--{%if lineId!="" %}-->
+    <!--{%if isSubTask=="true" %}-->//子任务
     $(".task_time").hide();
     $(".notice").remove();
+    $(".sort").hide();
+    <!--{%else%}-->//独立任务
+    $(".kl_2").hide();
+    $(".intervalDays").hide();
+    $(".lastDays").hide();
     <!--{%endif%}-->
+
+    $("#price_tongbu").click(function(){
+        var shareId = $(this).attr("shareId");
+        $.ajax({
+            type:"GET",
+            url: '/a_activity2/task/ajax-tongbu',
+            dataType: 'json',
+            data:{shareId:$(this).attr("shareId"),taskId:"<!--{{atask.taskId}}-->"},
+            success: function (data) {
+                if(data.success=="true"){
+                    alert("同步成功！");
+                    window.location.reload();
+                }else{
+                    alert(data.mess);
+                }
+            }
+        });
+    });
+
+    $("input[name='kl']").on('ifChecked',function(e){
+        var check_val = $(this).val();
+        if(check_val=="count"){
+            $("input[name='limitCount']").removeAttr('disabled');
+            $("input[name='limitProp']").attr('disabled','disabled');
+        }else{
+            $("input[name='limitProp']").removeAttr('disabled');
+            $("input[name='limitCount']").attr('disabled','disabled');
+        }
+    })
+    //控制分成
+    $("input[name='fc']").on('ifChecked',function(e){
+        var check_val = $(this).val();
+        if(check_val=="count"){
+            $("input[name='fcCount']").removeAttr('disabled');
+            $("input[name='fcProp']").attr('disabled','disabled');
+        }else{
+            $("input[name='fcProp']").removeAttr('disabled');
+            $("input[name='fcCount']").attr('disabled','disabled');
+        }
+    })
+    //应用类型控制
+    $("input[name='isAppTask']").on('ifChecked',function(e){
+        var check_val = $(this).val();
+        set_appTask(check_val);
+
+    })
+    //初始化根据应用类型调整
+    function set_appTask($v){
+        if($v == "true"){
+            $(".app_name").show();
+            $(".t_gname").hide();
+        }else{
+            $(".app_name").hide();
+            $(".t_gname").show();
+        }
+
+    }
+    var isAppTask = $("input[name='isAppTask']:checked").val();
+    set_appTask(isAppTask);
     //根据‘任务类型’调整附加内容
     function set_taskType(type){
         if (type == '1') {
@@ -349,17 +475,30 @@ $(function() {
             $("#dd_total_time").show().removeAttr("disabled");
             $("input[name='game_package_name']").show().removeAttr("disabled").parent().parent().show();
             $("input[name='linkValue_']").show().removeAttr("disabled").parent().parent().show();
+            $(".f_price").show();
         } else if (type == "3") {
             $('.f_running').show().removeAttr("disabled");
             $(".f_share").hide().attr("disabled", "disabled");
             $("#dd_total_time").hide().attr("disabled", "disabled");
             $("input[name='game_package_name']").show().removeAttr("disabled").parent().parent().show();
             $("input[name='linkValue_']").show().removeAttr("disabled").parent().parent().show();
+            $(".f_price").show();
         } else if (type == "2") {
             $('.f_share').show().removeAttr("disabled");
             $(".f_running").hide().attr("disabled", "disabled");
             $("input[name='game_package_name']").hide().attr("disabled", "disabled").parent().parent().hide();
             $("input[name='linkValue_']").hide().attr("disabled", "disabled").parent().parent().hide();
+            $(".v3").show();
+            $(".v4").hide();
+            $(".f_price").show();
+        }else if (type == "4") {
+            $('.f_share').show().removeAttr("disabled");
+            $(".f_running").hide().attr("disabled", "disabled");
+            $("input[name='game_package_name']").hide().attr("disabled", "disabled").parent().parent().hide();
+            $("input[name='linkValue_']").hide().attr("disabled", "disabled").parent().parent().hide();
+            $(".v4").show();
+            $(".v3").hide();
+            $(".f_price").hide();
         }
     }
     complete_type = $("#complete_type").val();
@@ -372,9 +511,9 @@ $(function() {
     //根据‘奖励类型’调整附加内容
     function set_prizeType(obj,model){
         var type = obj.val();
-        if(type == '0'){
+        if(type == '0'||type == '4'){
             obj.parent().parent().next("div").children(".price1").show();
-            obj.parent().parent().parent().children("div").eq(0).children("div").children("div").children().children("input[name='prize_img[]']").val("http://test.img.youxiduo.com/userdirs/2015/11/20151117175733BZts.png");
+            obj.parent().parent().parent().children("div").eq(0).children("div").children("div").children().children("input[name='prize_img[]']").val("http://img.youxiduo.com/userdirs/2015/20151117175733BZts.png");
             obj.parent().parent().next("div").children(".price2").hide();
         }else{
             if(model!="each"){
@@ -403,7 +542,6 @@ $(function() {
     })
 
 
-
     //提交时限制图片为空
     $(".sub").click(function() {
         var check = "true";
@@ -416,6 +554,19 @@ $(function() {
                 check = "false";
             }else{
                 $(this).parent().siblings(".img_note").hide();
+            }
+        })
+
+        $("input[name='youb_num[]']").each(function(){
+            var num = $(this).val();
+            if(num != 2.55){
+                var new_num = parseInt(num*100,10)/100;
+                if(num!=new_num){
+                    $(this).val(new_num);
+                    if(!confirm("金额只能只能精确到分，多余部分将自动筛除")){
+                        check = "false";
+                    }
+                }
             }
         })
 
@@ -464,9 +615,23 @@ $(function() {
         });
     });
 
+    //选择活动弹窗
+    $('.select-pop-v4share').live('click',function(){
+        var url =  '/duang/variation/v4share-search';
+        $.ajax({
+            url:url,
+            dataType:'json',
+            success:function(json){
+                var html = '';
+                html = json.html;
+                $.dialog({id:'pop-variation-list',title:'提示',padding:2,content:html,width:600});
+            }
+        });
+    });
+
     $("#price_add").click(function(){
         if($(".sel_prize").length<4){
-            $(".f_price").append('<div class="for_del"><input type="hidden" name="prizeId[]" value=""/>  <div class="control-group">            <label class="control-label">icon</label>            <div class="controls" >            <div data-provides="fileupload" class="fileupload fileupload-new">            <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">            <img src="http://test.img.youxiduo.com/userdirs/2015/11/20151117175733BZts.png">            </div>            <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>            <span class="btn btn-file"><i class="icon-picture"></i>            <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>   <input name="prize_img[]" type="hidden" value="http://test.img.youxiduo.com/userdirs/2015/11/20151117175733BZts.png" />          <input type="file" name="prize_pic[]"  class="img_validate" >            </span>            <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a> <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>           </div>            </div>            </div><div class="control-group"><label class="control-label">奖励类型</label>        <div class="controls">            <!--{{form_select("prize_type[]",prize,atask.complete_type,{"class":"sel_prize"})}}-->   <input  type="button" CLASS="btn-primary btn-danger prize_del" value="删除奖励">     </div>        </div>        <div class="control-group">        <label class="control-label">奖励内容</label>        <div class="input-append price1">            <input type="text" name="youb_num[]" class="input-middle" value="<!--{{atask.title}}-->" placeholder="游币金额" data-rule-required="true" data-msg-required="游币金额不能为空"  />          </div>            <div class="price2" hidden="hidden">            <div class="input-append">            <input class="selected_cardCode" name="card_code[]" value="<!--{{ input_old('card_code') }}-->" type="hidden"/>            <input type="text"  readonly class="input-small selected_card_name" name="card_des[]" value="<!--{{ input_old('card_des') }}-->" data-rule-required="true" data-msg-required="请选择卡密" />            <span class="add-on select-card-code">选择</span>            <span class="add-on can-use">可上架礼包<span class="text-error">0</span>个</span>   <input type="hidden" name="prize_gid[]" class="prize_gid" value="<!--{{item.gid}}-->" />         </div>            <div class="input-append">            &nbsp;        <input type="text" name="num_get[]" class="input-min" value="<!--{{atask.complete_condition.total_time}}-->" />            <span class="add-on">分配数量</span>            </div>            <div class="input-append">            &nbsp;        <input type="text" name="num_auto[]" class="input-min" value="<!--{{atask.complete_condition.total_time}}-->" />            <span class="add-on">自动补货</span>            </div>            </div>        </div> <hr> </div> ');
+            $(".f_price").append('<div class="for_del"><input type="hidden" name="prizeId[]" value=""/>  <div class="control-group">            <label class="control-label">icon</label>            <div class="controls" >            <div data-provides="fileupload" class="fileupload fileupload-new">            <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">            <img src="http://img.youxiduo.com/userdirs/2015/20151117175733BZts.png">            </div>            <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>            <span class="btn btn-file"><i class="icon-picture"></i>            <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>   <input name="prize_img[]" type="hidden" value="http://img.youxiduo.com/userdirs/2015/20151117175733BZts.png" />          <input type="file" name="prize_pic[]"  class="img_validate" >            </span>            <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a> <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>           </div>            </div>            </div><div class="control-group"><label class="control-label">奖励类型</label>        <div class="controls">            <!--{{form_select("prize_type[]",prize,atask.complete_type,{"class":"sel_prize"})}}-->   <input  type="button" CLASS="btn-primary btn-danger prize_del" value="删除奖励">     </div>        </div>        <div class="control-group">        <label class="control-label">奖励内容</label>        <div class="input-append price1">            <input type="text" name="youb_num[]" class="input-middle" value="<!--{{atask.title}}-->" placeholder="金额" data-rule-required="true" data-msg-required="金额不能为空"  />          </div>            <div class="price2" hidden="hidden">            <div class="input-append">            <input class="selected_cardCode" name="card_code[]" value="<!--{{ input_old('card_code') }}-->" type="hidden"/>            <input type="text"  readonly class="input-small selected_card_name" name="card_des[]" value="<!--{{ input_old('card_des') }}-->" data-rule-required="true" data-msg-required="请选择卡密" />            <span class="add-on select-card-code">选择</span>            <span class="add-on can-use">可上架礼包<span class="text-error">0</span>个</span>   <input type="hidden" name="prize_gid[]" class="prize_gid" value="<!--{{item.gid}}-->" />         </div>            <div class="input-append">            &nbsp;        <input type="text" name="num_get[]" class="input-min" value="<!--{{atask.complete_condition.total_time}}-->" />            <span class="add-on">分配数量</span>            </div>            <div class="input-append">            &nbsp;        <input type="text" name="num_auto[]" class="input-min" value="<!--{{atask.complete_condition.total_time}}-->" />            <span class="add-on">自动补货</span>            </div>            </div>        </div> <hr> </div> ');
         }else{
             alert("最多只能添加4个奖励");
         }
@@ -476,8 +641,9 @@ $(function() {
     $(".select-card-code").live('click',function(){
         obj = $(this);
         $.ajax({
-            url:'/v4giftbag/package/cate-card-select',
+            url:'/v4agiftbag/package/cate-card-select',
             dataType:'json',
+            data:{platform:"android"},
             success:function(json){
                 var html = json.html;
                 $.dialog({id:'pop-card-list',title:'提示',padding:2,content:html,width:600,height:580});
@@ -489,8 +655,9 @@ $(function() {
     $(".select-material-list").live('click',function(){
         obj = $(this);
         $.ajax({
-            url:'/v4giftbag/package/material-select',
+            url:'/v4agiftbag/package/material-select',
             dataType:'json',
+            data:{platform:"android",materialUse:3},
             success:function(json){
                 var html = json.html;
                 $.dialog({id:'pop-card-list',title:'提示',padding:2,content:html,width:600,height:580});
@@ -503,6 +670,12 @@ $(function() {
             $(this).parent().parent().parent(".for_del").remove();
         }
     });
+
+    <!--{%if atask.taskId %}-->//编辑时
+    $(".f_price").show();
+    <!--{%else%}-->
+    <!--{%endif%}-->
+    //控量radio
 })
 
 var set_selected_game=function(game_id,game_name,icon){
@@ -511,7 +684,7 @@ var set_selected_game=function(game_id,game_name,icon){
     $('#selected_game_icon').attr('src',icon);
     $("#task_img").val(icon);
 };
-function set_selected_card(card_code,card_name,card_stock,can_use){
+function set_selected_card(card_code,card_name,card_stock,can_use,card_img){
     card_code1 = card_code;
     card_name1=card_name;
     can_use1=can_use;
@@ -534,6 +707,20 @@ function set_selected_variation(activity_id,share_title,share_pic,share_des,shar
     $("#share_img").attr("src",share_pic);
 }
 
-
+function set_selected_v4share(activity_id,share_title,share_pic,share_des,share_url,rewards){
+    $("input[name='activity_id']").val(activity_id);
+    $("input[name='share_icon']").val(share_pic);
+    $("input[name='share_title']").val(share_title);
+    $("input[name='share_desc']").val(share_des);
+    $("input[name='share_url']").val(share_url);
+    $("input[name='rewards']").val(rewards);
+    $("#share_img").attr("src",share_pic);
+}
+$('input').iCheck({
+    checkboxClass: 'icheckbox_square-orange',
+    radioClass: 'iradio_square-orange',
+    increaseArea: '20%' // optional
+});
+$('.switchbox').bootstrapSwitch();
 </script>
 <!--{%endblock%}-->

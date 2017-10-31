@@ -39,6 +39,7 @@ use Youxiduo\Android\Model\UserDevice;
 use Youxiduo\V4\Activity\Model\ChannelClick;
 use Youxiduo\V4\Activity\Model\DownloadChannel;
 use Youxiduo\V4\Activity\Model\StatisticConfig;
+use Youxiduo\Android\TaskService;
 
 /**
  * 任务封装服务
@@ -146,17 +147,9 @@ class TaskApi extends BaseService
 		$type = (int)Input::get('type');
 		$pageIndex = Input::get('pageIndex',1);
 		$pageSize = Input::get('pageSize',10);
-		$time = time();
-		$search = array();
-		if($type){
-		    $search['action_type'] = $type;
-		}
-		$search['start_time'] = $time;
-		$search['end_time'] = $time;
-		$search['is_show'] = 1;
+		
 		$out = array();
-		$result = ActivityTask::searchList($search,$pageIndex,$pageSize);
-		$total = ActivityTask::searchCount($search);
+			
 		if($uid){
 			$all_user_tasks = ActivityTaskUser::searchTaskStatus(array('uid'=>$uid));
 			$all_user_atids = array_keys($all_user_tasks);
@@ -164,12 +157,32 @@ class TaskApi extends BaseService
 			$all_user_tasks = array();
 			$all_user_atids = array();
 		}
+		
+		$time = time();
+		$search = array('relation_task_id'=>0);
+		if($type){
+		    $search['action_type'] = $type;
+		}
+		$search['start_time'] = $time;
+		$search['end_time'] = $time;
+		$search['is_show'] = 1;
+	    $child_task_ids = self::getChildTaskIds($all_user_atids,null);
+		$all_task_ids = ActivityTask::buildSearch($search)->lists('id');
+		if($child_task_ids && is_array($child_task_ids) && !empty($child_task_ids)){
+			$all_task_ids = array_merge($all_task_ids,$child_task_ids);
+		}
+		
+		$user_search = array('in_ids'=>$all_task_ids);
+		$result = ActivityTask::searchList($user_search,$pageIndex,$pageSize,array('sort'=>'desc','id'=>'desc'));
+		$total = ActivityTask::searchCount($user_search);
+		
 		$gids = array();
 		foreach($result as $row){
 			$gids[] = $row['gid'];
 		}
 		$games = Game::getListByIds($gids);
 		foreach($result as $row){
+			if(!isset($games[$row['gid']])) continue;
 			$tmp = array();
 			$tmp['aid'] = $row['id'];
 			$tmp['title'] = $row['title'];
@@ -353,11 +366,17 @@ class TaskApi extends BaseService
 	
 	protected static function getTaskDayOut($wait_atids,$all_user_atids,$all_user_task_kv)
 	{
-		$search = array('is_show'=>1);
+		$search = array('is_show'=>1,'relation_task_id'=>0);
 		if($wait_atids){
 		    $search['not_in_ids'] = $wait_atids;
 		}
-		$result = ActivityTask::searchList($search,1,3000,array('sort'=>'desc','id'=>'desc'));
+		$child_task_ids = self::getChildTaskIds($all_user_atids,$all_user_task_kv);
+		$all_task_ids = ActivityTask::buildSearch($search)->lists('id');
+		if($child_task_ids && is_array($child_task_ids) && !empty($child_task_ids)){
+			$all_task_ids = array_merge($all_task_ids,$child_task_ids);
+		}
+		
+		$result = ActivityTask::searchList(array('in_ids'=>$all_task_ids),1,3000,array('sort'=>'desc','id'=>'desc'));
 		$min_date = ActivityTask::db()->where('is_show','=',1)->min('start_time');
 		$min_date = strtotime(date('Y-m-d',$min_date));
 		//$max_date = ActivityTask::db()->where('is_show','=',1)->min('end_time');
@@ -409,31 +428,89 @@ class TaskApi extends BaseService
 		}	
 		krsort($all_result);
 		$out = array();
+		//$child_tasks = self::getChildTask($all_user_atids,$all_user_task_kv);
 		foreach($all_result as $date=>$res){
 			$data = array();
 			foreach($res as $key=>$row){
-				if(!isset($games[$row['gid']])) continue;
-				$tmp = array();
-				$tmp['aid'] = $row['id'];
-				$tmp['title'] = $row['title'];
-				$tmp['gname'] = $games[$row['gid']]['shortgname'];
-				$tmp['img'] = Utility::getImageUrl($games[$row['gid']]['ico']);
-				$tmp['game_package_name'] = $row['game_package_name'];
-				$tmp['reward_type'] = $row['reward_type'];
-				$tmp['giftbag_id'] = $row['giftbag_id'];
-				$tmp['goods_id'] = $row['goods_id'];
-				$tmp['money'] = $row['money'];
-				$tmp['complete_type'] = $row['complete_type'];
-				$tmp['start_time'] = date('Y-m-d H:i:s',$row['start_time']);
-				$tmp['end_time'] = date('Y-m-d H:i:s',$row['end_time']);
-				$tmp['complete_status'] = $row['complete_status'];
-				$data[] = $tmp;
+				if(!isset($games[$row['gid']])) continue;				
+				$data[] = self::formatTask($row,$games);
+				/*
+				if($row['is_relation_task']==1 && $row['complete_status']==1){
+					if(isset($child_tasks[$row['id']])){
+						$data[] = self::formatTask($child_tasks[$row['id']],$games);
+						$second = $child_tasks[$row['id']];
+						if($second['is_relation_task']==1 && $second['complete_status']==1){
+							if(isset($child_tasks[$second['id']])){
+								$data[] = self::formatTask($child_tasks[$second['id']],$games);
+							}
+						}
+					}
+				}
+				*/
 			}
 			if($data){
 				$out[] = array(date('Y-m-d',$date),$data);
 			}
 		}
 		return $out;
+	}
+	
+	public static function formatTask($row,$games)
+	{
+		$tmp = array();
+		$tmp['aid'] = $row['id'];
+		$tmp['title'] = $row['title'];
+		$tmp['gname'] = $games[$row['gid']]['shortgname'];
+		$tmp['img'] = Utility::getImageUrl($games[$row['gid']]['ico']);
+		$tmp['game_package_name'] = $row['game_package_name'];
+		$tmp['reward_type'] = $row['reward_type'];
+		$tmp['giftbag_id'] = $row['giftbag_id'];
+		$tmp['goods_id'] = $row['goods_id'];
+		$tmp['money'] = $row['money'];
+		$tmp['complete_type'] = $row['complete_type'];
+		$tmp['start_time'] = date('Y-m-d H:i:s',$row['start_time']);
+		$tmp['end_time'] = date('Y-m-d H:i:s',$row['end_time']);
+		$tmp['complete_status'] = $row['complete_status'];
+		return $tmp;
+	}
+	
+	public static function getChildTaskIds($all_user_atids,$all_user_task_kv)
+	{
+		if(empty($all_user_atids)) return array();
+	    $search = array('is_show'=>1,'is_relation_task'=>1,'child_task'=>1);
+		$time = time();		
+		$search['start_time'] = $time;
+		$search['end_time'] = $time;
+		$search['in_relation_task_id'] = $all_user_atids;
+		$ids = ActivityTask::buildSearch($search,1,100)->lists('id');
+		return $ids;		
+	}
+	
+	public static function getChildTask($all_user_atids,$all_user_task_kv)
+	{
+		$search = array('is_show'=>1,'is_relation_task'=>1,'child_task'=>1);
+		$time = time();		
+		$search['start_time'] = $time;
+		$search['end_time'] = $time;
+		$_child_tasks = ActivityTask::buildSearch($search,1,100)->get();
+		$child_tasks = array();
+		
+		$gids = array();
+		foreach($_child_tasks as $row){
+			$gids[] = $row['gid'];
+		}
+		
+		$games = Game::getListByIds($gids);
+	    foreach($_child_tasks as $row){
+	    	if($all_user_atids && in_array($row['id'],$all_user_atids)){
+	    		$row['complete_status'] = $all_user_task_kv[$row['id']]['complete_status'];
+	    	}else{
+	    		$row['complete_status'] = 0;
+	    	}
+			$child_tasks[$row['relation_task_id']] = $row;
+		}
+		
+		return $child_tasks;
 	}
 	
 	/**
@@ -599,7 +676,16 @@ class TaskApi extends BaseService
 		$uid = Input::get('uid');
 		$download_status = Input::get('download_status');//
 		$total_time = (int)Input::get('total_time');
-		$idcode  = Input::get('idcode');
+        //验证是否在黑名单
+        $idcode  = Input::get('idcode');
+        if(isset($idcode)&&!empty($idcode)){
+            if(self::check_blacklist_by_idcode($idcode)){
+                return "已加入黑名单";
+            }
+        }
+		if($uid==-1) return '尚未登录,不能完成任务';
+
+
 		$time = time();
 		$search['id'] = $aid;
 		$search['start_time'] = $time;
@@ -705,11 +791,11 @@ class TaskApi extends BaseService
 	{
 		$aid = Input::get('aid');
 		$uid = Input::get('uid');
-		$click_ip = Input::get('ip');		
+		$click_ip = Input::get('ip');
 		if(!$aid || !$uid || !$click_ip) return 'params error';
 		$saved = ActivityShareHistory::saveForNotExists($aid,$uid,$click_ip);
 		if(!$saved) return 'db error';
-		 
+
 		$time = time();
 		$search['id'] = $aid;
 		$search['start_time'] = $time;
@@ -757,7 +843,7 @@ class TaskApi extends BaseService
 	{
 		//发送消息
 		$info = UserDevice::getNewestInfoByUid($uid);
-		if(!$info) return false;
+		if(!$info) return;
 		$channelId = $info['channel_id'];
 		$userId = $info['device_id'];
 		$append = array('msg'=>$message,'linktype'=>$linkType,'link'=>$link);		
@@ -774,9 +860,18 @@ class TaskApi extends BaseService
 		$search['id'] = $aid;
 		$search['start_time'] = $time;
 		$search['end_time'] = $time;
-		$search['is_show'] = 1;		
+		$search['is_show'] = 1;
+
+        //验证是否在黑名单
+        $idcode  = Input::get('idcode');
+        if(isset($idcode)&&!empty($idcode)){
+            if(self::check_blacklist_by_idcode($idcode)){
+                return "已加入黑名单";
+            }
+        }
+
 		$task = ActivityTask::findOne($search);
-		
+
 		if(!$task) return '任务不存在';
 		$user_task = ActivityTaskUser::findOne(array('atid'=>$aid,'uid'=>$uid));
 	    if($task['action_type']==1){//试玩
@@ -806,7 +901,7 @@ class TaskApi extends BaseService
 				$data = array('atid'=>$aid,'uid'=>$uid,'complete_status'=>2,'reward_status'=>0,'complete_time'=>time());
 				$success = ActivityTaskUser::saveAddOrUpdate($data);
 				$success_message = '任务已提交,请耐心等待客服人员审核';
-			    return $success ? $success_message : '任务失败';		
+			    return $success ? $success_message : '任务失败';
 			}
 		}
 		return '任务失败';
@@ -819,4 +914,19 @@ class TaskApi extends BaseService
 			ActivityTaskUser::buildSearch(array('in_atid'=>$atids,'complete_status'=>2))->update(array('complete_status'=>3));
 		}
 	}
+
+    /*
+     * 验证用户是否在黑名单
+     * return true: 已入黑名单； false: 不在黑名单
+     */
+    public static function check_blacklist_by_idcode($idcode)
+    {
+        $res = TaskService::find_blacklist_by_key('idcode',$idcode);
+        $now = date("Y-m-d");
+        if($now>=$res['createtime']&&$now<=$res['endtime']){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

@@ -1,0 +1,543 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<link href="/static/css/app.css" rel="stylesheet" type="text/css"/>
+<div class="row-fluid">
+    <div class="box">
+        <div class="box-title">
+            <h3>添加子任务1.4</h3>
+        </div>
+        <div class="box-content">
+            <form id="activity-task" action="<!--{{url('v4_task/task/sub-task-add')}}-->" method="POST" class='form-horizontal form-validate' enctype="multipart/form-data">
+                <div class="control-group">
+                    <label class="control-label">平台类型</label>
+                    <div class="controls appType">
+                        <!--{{form_radio('platformType','I',atask.platformType=='I')}}-->IOS
+                        <!--{{form_radio('platformType','A',atask.platformType=='A')}}-->Android
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">任务版本</label>
+                    <div class="controls">
+                        <input type="text" name="version" class="input-small" value="<!--{{atask.version}}-->" data-rule-required="true" data-msg-required="版本不能为空"  />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">任务标题</label>
+                    <div class="controls">
+                        <input type="text" name="taskName" class="input-xxlarge" value="<!--{{atask.taskName}}-->" data-rule-required="true" data-msg-required="标题不能为空"  />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">标题格式</label>
+                    <div class="controls">
+                        <div class="input-append">
+                            <label class="control-label">字号</label>
+                            <input type="text" name="wordSize" class="input-small" value="<!--{{atask.subStyle.wordSize}}-->" />
+                        </div>
+                        <div class="input-append">
+                            <label class="control-label">颜色</label>
+                            <input type="text" name="titleColor" class="input-small" value="<!--{{atask.subStyle.titleColor}}-->" />
+                        </div>
+                        <div class="input-append">
+                            <label class="control-label">显示大小</label>
+                            <input type="text" name="showSize[]" class="input-small" value="<!--{{atask.subStyle.showSize.0}}-->" />
+                            <input type="text" name="showSize[]" class="input-small" value="<!--{{atask.subStyle.showSize.1}}-->" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">任务标签</label>
+                    <div class="controls">
+                        <select name="taskTags" id="taskTags" class="input-medium">
+                            <!--{% for val in subTaskTagArr %}-->
+                                <option value="<!--{{ val.code }}-->"
+                                    <!--{% if atask.subStyle.taskTagName == val.name %}-->
+                                        selected
+                                    <!--{% endif %}-->
+                                ><!--{{ val.name }}--></option>
+                            <!--{% endfor %}-->
+                        </select>
+                        <input type="text" name="taskTagName" id="taskTagName" class="input-medium" value="<!--{{atask.subStyle.taskTagName}}-->" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">任务奖励</label>
+                    <div class="controls">
+                        <div class="input-append">
+                            <label class="control-label">经验</label>
+                            <input type="text" name="experKey" class="input-small" value="<!--{{atask.prizeList.0.experKey}}-->" />
+                        </div>
+                        <div class="input-append">
+                            <label class="control-label">狮毛</label>
+                            <input type="text" name="shimaoKey" class="input-small" value="<!--{{atask.prizeList.0.shimaoKey}}-->" />
+                        </div>
+                        <div class="input-append">
+                            <label class="control-label">狮牙</label>
+                            <input type="text" name="prizeKey" class="input-small" value="<!--{{atask.prizeList.0.prizeKey}}-->" />
+                        </div>
+                        <div class="input-append">
+                            <label class="control-label">勋章图片</label>
+                            <div data-provides="fileupload" class="fileupload fileupload-new">
+                                <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                    <img src="<!--{{atask.prizeList.0.prizeIcon|default('/static/img/wu_ss.gif')}}-->">
+                                </div>
+                                <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                                <span class="btn btn-file"><i class="icon-picture"></i>
+                                    <span class="fileupload-new">选择照片</span>
+                                    <span class="fileupload-exists">Change</span>
+                                    <input name="prizeIconOld" type="hidden" value="<!--{{atask.prizeList.0.prizeIcon}}-->"/>
+                                    <input type="file"  name="prizeIcon" >
+                                </span>
+                                <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                                <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">奖励图片</label>
+                    <div class="input-append">
+                        <div data-provides="fileupload" class="fileupload fileupload-new">
+                            <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                <img src="<!--{{ img_url }}--><!--{{atask.subStyle.picPath|default('/static/img/wu_ss.gif')}}-->">
+                            </div>
+                            <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                            <span class="btn btn-file"><i class="icon-picture"></i>
+                                <span class="fileupload-new">选择照片</span>
+                                <span class="fileupload-exists">Change</span>
+                                <input name="picPathOld" type="hidden" value="<!--{{atask.subStyle.picPath}}-->"/>
+                                <input type="file"  name="picPath" >
+                            </span>
+                            <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                            <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                        </div>
+                    </div>
+                    <div class="input-append">
+                        <label class="control-label">大小</label>
+                        <input type="text" name="size[]" class="input-small" value="<!--{{atask.subStyle.size.0}}-->" />
+                        <input type="text" name="size[]" class="input-small" value="<!--{{atask.subStyle.size.1}}-->" />
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">*关联游戏</label>
+                    <div class="controls">
+                        <div class="input-append">
+                            <input id="selected_game_id" name="gid" type="hidden" value="<!--{{atask.gid}}-->"/>
+                            <input type="text" readonly id="selected_game_name" name="gname" class="input-medium" data-rule-required="true" data-msg-required="请选择游戏" value="<!--{{ atask.gname }}-->" />
+                            <span class="add-on select-pop-game">选择游戏</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">图片</label>
+                    <div class="controls">
+                        <div data-provides="fileupload" class="fileupload fileupload-new">
+                            <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">
+                                <img id="selected_game_icon" src="<!--{{atask.taskIcon|default('/static/img/wu_ss.gif')}}-->">
+                            </div>
+                            <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>
+                            <span class="btn btn-file"><i class="icon-picture"></i>
+                            <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>
+                            <input id="task_img" name="task_img" type="hidden" value="<!--{{atask.taskIcon}}-->"/>
+                            <input type="file"  name="task_icon" >
+                        </span>
+                            <a data-dismiss="fileupload" class="btn fileupload-exists" href="#">Remove</a>
+                            <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group step_div">
+                    <label class="control-label">提交结构</label>
+                    <div class="controls">
+                        <input type="button"  class="input-small add_down" value="新建结构" step_type="step_1" />
+                    </div>
+                </div>
+
+                <div style="margin-left: 100px; margin-bottom: 10px; " class="step_content">
+
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">互斥任务ID</label>
+                    <div class="controls">
+                        <input type="text" name="mutexTaskId" class="input-xxlarge" value="<!--{{atask.mutexTaskId}}-->" <!--{%if atask.taskId %}-->readonly="readonly"<!--{%endif%}--> />
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary sub"><i class="icon-ok"></i>保存</button>
+                    <input type="hidden" name="stepListStr" value="<!--{{stepListStr}}-->"/>
+                    <input type="hidden" name="taskId"  value="<!--{{atask.taskId}}-->"/>
+                    <input type="hidden" name="stepId"  value="<!--{{atask.lionStepId}}-->"/>
+                    <input type="hidden" name="prizeId"  value="<!--{{atask.prizeList.0.prizeId}}-->"/>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/ajaxfileupload.js"></script>
+<script src="<!--{{asset('/static/js/xheditor/xheditor-1.1.14-zh-cn.min.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.config.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/ueditor.all.js')}}-->"></script>
+<script src="<!--{{asset('/static/js/ueditor/lang/zh-cn/zh-cn.js')}}-->"></script>
+<script src="/static/js/jquery.validationEngine.js"></script>
+<script src="/static/js/jquery.validationEngine-en.js"></script>
+<script src="/static/js/laydate/laydate.js"></script>
+<script src="/static/js/Sortable.js"></script>
+<script src="/static/js/plugins/multiselect/bootstrap-multiselect.js"></script>
+<script>
+
+    $(function() {
+        $('#taskTags').on('change',function () {
+            $('#taskTagName').hide();
+
+            var val = $(this).val();
+            var name = $(this).find("option:selected").text();
+            $('#taskTagName').val(name);
+
+            if (val == 'custom') {
+                $('#taskTagName').show().val('');
+            }
+        });
+        $('#taskTags').trigger('change');
+
+
+        $('input:radio').iCheck({
+            checkboxClass: 'icheckbox_square-orange',
+            radioClass: 'iradio_square-orange',
+            increaseArea: '20%'
+        });
+        var step_model = '<fieldset style="width: 600px; padding: 10px; border-left: groove"><legend class="step">结构  <span> 一</span>  <!--{{form_select('stepType[]',stepType,item.stepType,{'style':'width:160px;margin-left:240px;','class':'stepType'})}}--></legend>    <div style="float: left"><div class="control-group"><label class="control-label">描述:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.title}}-->" />  </div></div>    <div class="control-group" ><label class="control-label">内容:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.content}}-->" />  </div>    </div>    <div class="control-group" >        </div>  </div>  <div style="float: left; margin-left: 60px;">    <input value="插入结构" type="button"class="add_up" /><br><br>    <input value="删除" type="button" class="btn_del" /> </div>    <div style="clear: both"></div>    </fieldset>';
+        var step_cont_1 = '<div class="control-group"><label class="control-label">描述:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.title}}-->" />  </div></div>    <div class="control-group" ><label class="control-label">内容:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.content}}-->" />  </div>    </div>    <div class="control-group" >        </div>';
+        var step_cont_2 = '<div class="control-group"><label class="control-label">内容:</label><div class="controls"><textarea class="xheditor content" style="width:400px;height:200px;"><!--{{item.stepCondition.content}}--></textarea>  </div>    </div>    <div class="control-group" >        </div>';
+        var step_cont_3 = '<div class="control-group"><label class="control-label">描述:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.title}}-->" />  </div></div>    <div class="control-group">    <label class="control-label">图片:</label>                            <div class="controls">                                <div data-provides="fileupload" class="fileupload fileupload-new">                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">                                        <img src="<!--{{item.stepCondition.image|default('/static/img/wu_ss.gif')}}-->">                                    </div>                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>                                    <span class="btn btn-file"><i class="icon-picture"></i>                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>                                        <input name="prize_img[]" type="hidden" value="<!--{{item.stepCondition.image}}-->"/>                                        <input type="file" name="prize_pic[]"  class="img_validate myfile"  >                                    </span>                                    <a data-dismiss="fileupload" class="btn fileupload-exists fileupload-remove" href="#">Remove</a>                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>                                </div>                            </div>                        </div> ';
+        var step_cont_4 = '<div class="control-group"><label class="control-label">随机等级</label><div class="controls"><input type="text"  class="input-small" value="<!--{{item.stepCondition.minlevel}}-->" /> 到 <input type="text"  class="input-small" value="<!--{{item.stepCondition.maxlevel}}-->" /> <span style="color:red">必须为正整数</span>  </div>    </div>    <div class="control-group">    <label class="control-label">上传图片数：</label><div class="controls"><!--{{form_select('uploadPicType[]',uploadPicType,item.stepCondition.uploadPicType,{'style':'width:80px','class':'stepType'})}}--><input type="text"  class="input-small minpic"  value="<!--{{item.stepCondition.uploadPicLimit}}-->" />  </div>    </div><div class="control-group"><label class="control-label">示例图描述</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.content}}-->" />  </div>    </div><div class="control-group">    <label class="control-label">示例图:</label>                            <div class="controls">                <input type="hidden" name="pic_count"  value="<!--{{item.stepCondition.pic_count|default('1')}}-->"/>                <div data-provides="fileupload" class="fileupload fileupload-new">                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">                                        <img src="<!--{{item.stepCondition.image|default('/static/img/wu_ss.gif')}}-->">                                    </div>                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>                                    <span class="btn btn-file"><i class="icon-picture"></i>                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>                                        <input name="prize_img[]" type="hidden" value="<!--{{item.stepCondition.image}}-->" class="picValue"/>                                        <input type="file" name="prize_pic[]"  class="img_validate myfile"  >                                    </span>                                    <a data-dismiss="fileupload" class="btn fileupload-exists fileupload-remove" href="#">Remove</a>                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>                                </div>                            </div>                        </div> <div><div style="margin-top: 20px;"><a class="btn btn-primary addRewardHtml2">添加</a><div><hr style="height:1px;border:none;border-top:1px dashed #555555;" /></div>';
+        var step_cont_5 = '<div class="control-group"><label class="control-label">描述:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.title}}-->" />  </div></div>    <div><div style="margin-top: 20px;"><a class="btn btn-primary addRewardHtml">添加</a><div><hr style="height:1px;border:none;border-top:1px dashed #555555;" /></div>';
+        var step_cont_5_plus = '<div class="control-group"><div class="control-group"><label class="control-label">额度:</label><div class="controls"><input type="text" class="input-small limitValue" value="0" /></div></div><label class="control-label">经验:</label><div class="controls"><input type="text" class="input-small rewardValue" value="0" data-rule-digits="true" data-msg-digits="只能填写正整数"/></div><div style="margin-top: 20px;"><label class="control-label">狮牙:</label><input type="text" class="input-small rewardValue2" value="0" data-rule-digits="true" data-msg-digits="只能填写正整数"/></div><div style="margin-top: 20px;"><label class="control-label">狮毛:</label><input type="text" class="input-small rewardValue4" value="0" data-rule-digits="true" data-msg-digits="只能填写正整数"/></div><div style="margin-top: 20px;">    <label class="control-label">勋章图片:</label>                            <div class="controls">                                <div data-provides="fileupload" class="fileupload fileupload-new ">                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">                                        <img src="<!--{{item.stepCondition.image|default('/static/img/wu_ss.gif')}}-->">                                    </div>                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>                                    <span class="btn btn-file"><i class="icon-picture"></i>                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>                                        <input name="prize_img[]" type="hidden" value="<!--{{item.stepCondition.image}}-->" class="rewardValue3"/>                                        <input type="file" name="prize_pic[]"  class="img_validate myfile"  >                                    </span>                                    <a data-dismiss="fileupload" class="btn fileupload-exists fileupload-remove" href="#">Remove</a>                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>                                </div>                            </div>                        </div><div style="margin-top: 20px;"><a class="btn btn-primary addRewardHtml">添加</a><a class="btn btn-danger delRewardHtml" style="margin-left: 20px;">删除</a><div><hr style="height:1px;border:none;border-top:1px dashed #555555;" /></div>';
+        var step_cont_4_plus = '<div class="control-group"><div class="control-group">    <label class="control-label">示例图:</label>                            <div class="controls">                                <div data-provides="fileupload" class="fileupload fileupload-new">                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">                                        <img src="<!--{{item.stepCondition.image|default('/static/img/wu_ss.gif')}}-->">                                    </div>                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>                                    <span class="btn btn-file"><i class="icon-picture"></i>                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>                                        <input name="prize_img[]" type="hidden" value="<!--{{item.stepCondition.image}}-->" class="picValue"/>                                        <input type="file" name="prize_pic[]"  class="img_validate myfile" >                                    </span>                                    <a data-dismiss="fileupload" class="btn fileupload-exists fileupload-remove" href="#">Remove</a>                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>                                </div>                            </div>                        </div> <div style="margin-top: 20px;"><a class="btn btn-primary addRewardHtml2">添加</a><a class="btn btn-danger delRewardHtml2" style="margin-left: 20px;">删除</a><div><hr style="height:1px;border:none;border-top:1px dashed #555555;" /></div>';
+
+        $(document).off('click', '.addRewardHtml');
+        $(document).on('click', '.addRewardHtml', function(){
+            var _obj = $(this);
+            _obj.parent().parent().parent().append(step_cont_5_plus);
+        });
+
+        $(document).off('click', '.addRewardHtml2');
+        $(document).on('click', '.addRewardHtml2', function(){
+            var _obj = $(this);
+            var pic_count = _obj.parent().parent().parent().find("input[name='pic_count']").val();
+            _obj.parent().parent().parent().find("input[name='pic_count']").val(pic_count-0+1);
+            _obj.parent().parent().parent().append(step_cont_4_plus);
+        });
+
+        $(document).off('click', '.delRewardHtml');
+        $(document).on('click', '.delRewardHtml', function(){
+            var _obj = $(this);
+            _obj.parent().parent().remove();
+        });
+
+        $(document).off('click', '.delRewardHtml2');
+        $(document).on('click', '.delRewardHtml2', function(){
+            var _obj = $(this);
+            var pic_count = _obj.parent().parent().parent().find("input[name='pic_count']").val();
+            _obj.parent().parent().parent().find("input[name='pic_count']").val(pic_count-1);
+            _obj.parent().parent().remove();
+        });
+
+        $(".step_content").html("");
+        <!--{%for item in atask.stepList%}-->
+        $(".step_content").append('<fieldset style="width: 600px; padding: 10px; border-left: groove" class="step_1"><legend class="step">结构  <span> 一</span>  <!--{{form_select('stepType[]',stepType,item.stepType,{'style':'width:160px;margin-left:240px;','class':'stepType'})}}--></legend>    <div style="float: left">        </div>    <div style="float: left; margin-left: 60px;">    <input value="插入结构" type="button"class="add_up" /><br><br>    <input value="删除" type="button" class="btn_del" /> </div>    <div style="clear: both"></div>    </fieldset>');
+        var obj = $(".step_content").children(".step_1:last");
+        <!--{%if item.stepType==1%}-->
+        obj.children("div:first").html('<div class="control-group"><label class="control-label">描述:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.title}}-->" />  </div></div>    <div class="control-group" ><label class="control-label">内容:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.content}}-->" />  </div>    </div>    <div class="control-group" >        </div>');
+        <!--{%elseif item.stepType==2%}-->
+        var tempimage_content = "<!--{{item.stepCondition.content}}-->";
+        var tempHtml = '<div class="control-group"><label class="control-label">内容:</label><div class="controls"><textarea class="xheditor content" style="width:400px;height:200px;">' + unescape(tempimage_content) + '</textarea>  </div>    </div>    <div class="control-group" >        </div>';
+        obj.children("div:first").html(tempHtml);
+        $('.content').xheditor(true);
+        <!--{%elseif item.stepType==3%}-->
+        obj.children("div:first").html('<div class="control-group"><label class="control-label">描述:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.title}}-->" />  </div></div>    <div class="control-group">    <label class="control-label">图片:</label>                            <div class="controls">                                <div data-provides="fileupload" class="fileupload fileupload-new">                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">                                        <img src="<!--{{item.stepCondition.image|default('/static/img/wu_ss.gif')}}-->">                                    </div>                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>                                    <span class="btn btn-file"><i class="icon-picture"></i>                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>                                        <input name="prize_img[]" type="hidden" value="<!--{{item.stepCondition.image}}-->"/>                                        <input type="file" name="prize_pic[]"  class="img_validate myfile"  >                                    </span>                                    <a data-dismiss="fileupload" class="btn fileupload-exists fileupload-remove" href="#">Remove</a>                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>                                </div>                            </div>                        </div> ');
+        <!--{%elseif item.stepType==4%}-->
+        var tempHtml = '<div class="control-group"><label class="control-label">随机等级</label><div class="controls"><input type="text"  class="input-small" value="<!--{{item.stepCondition.minlevel}}-->" /> 到 <input type="text"  class="input-small" value="<!--{{item.stepCondition.maxlevel}}-->" /> <span style="color:red">必须为正整数</span>  </div>    </div>     <div class="control-group">    <label class="control-label">上传图片数：</label><div class="controls"><!--{{form_select('uploadPicType[]',uploadPicType,item.stepCondition.uploadPicType,{'style':'width:80px','class':'stepType'})}}--><input type="text"  class="input-small minpic"  value="<!--{{item.stepCondition.uploadPicLimit}}-->" />  </div>    </div><div class="control-group"><label class="control-label">示例图描述</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.content}}-->" />  </div>    </div>';
+        <!--{%if item.stepCondition.image%}-->
+        var tempimage = "<!--{{item.stepCondition.image}}-->";
+        var tempimageArr = new Array();
+        tempimageArr = tempimage.split(',');
+        var tempimage_show = "<!--{{item.stepCondition.image_show}}-->";
+        var tempimage_showArr = new Array();
+        tempimage_showArr = tempimage_show.split(',');
+        $.each(tempimageArr, function(key, value) {
+            if (key == 0) {
+                tempHtml += '<div class="control-group">    <label class="control-label">示例图:</label>                            <div class="controls">                                <div data-provides="fileupload" class="fileupload fileupload-new">                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">                                        <img src="'+tempimage_showArr[key]+'">                                    </div>                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>                                    <span class="btn btn-file"><i class="icon-picture"></i>                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>                                        <input name="prize_img[]" type="hidden" value="'+value+'"  class="picValue"/>                                        <input type="file" name="prize_pic[]" class="img_validate myfile"  >                                    </span>                                    <a data-dismiss="fileupload" class="btn fileupload-exists fileupload-remove" href="#">Remove</a>                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>                                </div>                            </div>                        </div> <div><div style="margin-top: 20px;"><a class="btn btn-primary addRewardHtml2">添加</a><div><hr style="height:1px;border:none;border-top:1px dashed #555555;" /></div>';
+            } else {
+                tempHtml += '<div class="control-group"><div class="control-group">    <label class="control-label">示例图:</label>                            <div class="controls">                                <div data-provides="fileupload" class="fileupload fileupload-new">                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">                                        <img src="'+tempimage_showArr[key]+'">                                    </div>                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>                                    <span class="btn btn-file"><i class="icon-picture"></i>                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>                                        <input name="prize_img[]" type="hidden" value="'+value+'"  class="picValue"/>                                        <input type="file" name="prize_pic[]" class="img_validate myfile"  >                                    </span>                                    <a data-dismiss="fileupload" class="btn fileupload-exists fileupload-remove" href="#">Remove</a>                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>                                </div>                            </div>                        </div> <div style="margin-top: 20px;"><a class="btn btn-primary addRewardHtml2">添加</a><a class="btn btn-danger delRewardHtml2" style="margin-left: 20px;">删除</a><div><hr style="height:1px;border:none;border-top:1px dashed #555555;" /></div>';
+            }
+        });
+        <!--{%endif%}-->
+
+        obj.children("div:first").html(tempHtml);
+
+        <!--{%elseif item.stepType==5%}-->
+        var tempHtml = '<div class="control-group"><label class="control-label">描述:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.title}}-->" />  </div></div>    <div><div style="margin-top: 20px;"><a class="btn btn-primary addRewardHtml">添加</a><div><hr style="height:1px;border:none;border-top:1px dashed #555555;" /></div>';
+        <!--{%if item.stepCondition.recharge%}-->
+        var tempRecharge = '<!--{{item.stepCondition.recharge}}-->';
+        var tempRecharge = JSON.parse(tempRecharge);
+        //var tempRechargeArr = new Array();
+        //tempRechargeArr = tempRecharge.split(',');
+        $.each(tempRecharge, function(key, value) {
+            tempHtml += '<div class="control-group"><div class="control-group"><label class="control-label">额度:</label><div class="controls"><input type="text" class="input-small limitValue" value="'+value.rechargeNumber+'" /></div></div><label class="control-label">经验:</label><div class="controls"><input type="text" class="input-small rewardValue" value="'+value.experKey+'" data-rule-digits="true" data-msg-digits="只能填写正整数"/></div><div style="margin-top: 20px;"><label class="control-label">狮牙:</label><input type="text" class="input-small rewardValue2" value="'+value.prizeKey+'" data-rule-digits="true" data-msg-digits="只能填写正整数"/></div><div style="margin-top: 20px;"><label class="control-label">狮毛:</label><input type="text" class="input-small rewardValue4" value="'+value.shimaoKey+'" data-rule-digits="true" data-msg-digits="只能填写正整数"/></div><div style="margin-top: 20px;"><label class="control-label">勋章图片:</label>                            <div class="controls">                                <div data-provides="fileupload" class="fileupload fileupload-new">                                    <div style="max-width: 60px; max-height: 60px;" class="fileupload-new thumbnail">                                        <img src="'+value.prizeIcon_show+'">                                    </div>                                    <div style="max-width: 60px; max-height: 60px; line-height: 20px;" class="fileupload-preview fileupload-exists thumbnail"></div>                                    <span class="btn btn-file"><i class="icon-picture"></i>                                        <span class="fileupload-new">选择照片</span><span class="fileupload-exists">Change</span>                                        <input name="prize_img[]" type="hidden" value="'+value.prizeIcon+'" class="rewardValue3"/>                                        <input type="file" name="prize_pic[]" class="img_validate myfile"  >                                    </span>                                    <a data-dismiss="fileupload" class="btn fileupload-exists fileupload-remove" href="#">Remove</a>                                    <span style="color: rgb(185, 74, 72);" class="img_note" hidden="hidden">图片不能为空且限于png,gif,jpeg,jpg格式</span>                                </div>                            </div>                        </div><div style="margin-top: 20px;"><a class="btn btn-primary addRewardHtml">添加</a><a class="btn btn-danger delRewardHtml" style="margin-left: 20px;">删除</a><div><hr style="height:1px;border:none;border-top:1px dashed #555555;" /></div>';
+        });
+        <!--{%endif%}-->
+
+        obj.children("div:first").html(tempHtml);
+
+
+        <!--{%endif%}-->
+        <!--{%endfor%}-->
+
+        //结构选择
+        $(".stepType").live('change',function(){
+            var type = $(this).val();
+            switch(type)
+            {
+                case '1':
+                    $(this).parent().siblings("div").eq(0).html(step_cont_1);
+                    break;
+                case '2':
+                    $(this).parent().siblings("div").eq(0).html(step_cont_2);
+                    $('.content').xheditor(true);
+                    break;
+                case '3':
+                    $(this).parent().siblings("div").eq(0).html(step_cont_3);
+                    break;
+                case '4':
+                    $(this).parent().siblings("div").eq(0).html(step_cont_4);
+                    break;
+                case '5':
+                    $(this).parent().siblings("div").eq(0).html(step_cont_5);
+                    break;
+                default:
+            }
+        });
+
+        //添加
+        $(".add_down").live("click",function(){
+            $(this).parent().parent().parent().children(".step_content").append(step_model);
+            var c = $(this).attr("step_type");
+            $(this).parent().parent().parent().children(".step_content").find("fieldset").each(function(){
+                $(this).addClass(c);
+            })
+            set_step_sort(c);
+        });
+
+        //删除
+        $(".btn_del").live('click',function(){
+            if(confirm("删除后无法恢复，确认删除？")){
+                var c = $(this).parent().parent().parent().find("fieldset").attr('class');
+                var stepId = $(this).siblings(".btn_save").attr("stepId");
+                if(stepId){
+                    $.post('<!--{{url('v4_task/task/step-del')}}-->',{stepId:stepId},function(data){
+                        if(data.success=="true"){
+                            alert(data.mess);
+                        }
+                    },"json")
+                }
+                $(this).parent().parent().remove();
+                set_step_sort(c);
+            }
+        });
+
+        //插入
+        $(".add_up").live('click',function(){
+            var c = $(this).parent().parent().parent().find("fieldset").attr('class');
+            var currentStepId = $(this).siblings(".btn_save").attr("stepId");
+            $(this).parent().parent().before('<fieldset style="width: 600px; padding: 10px; border-left: groove" class="'+c+'" ><legend class="step">结构  <span> 一</span>  <!--{{form_select('stepType[]',stepType,item.stepType,{'style':'width:160px;margin-left:240px;','class':'stepType'})}}--></legend>    <div style="float: left"><div class="control-group"><label class="control-label">描述:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.title}}-->" />  </div></div>    <div class="control-group" ><label class="control-label">内容:</label><div class="controls"><input type="text"  class="input-large" value="<!--{{item.stepCondition.content}}-->" />  </div>    </div>    <div class="control-group" >        </div></div>    <div style="float: left; margin-left: 60px;">    <input value="插入结构" type="button"class="add_up" /><br><br>    <input value="删除" type="button" class="btn_del" /> </div>    <div style="clear: both"></div>    </fieldset>');
+            set_step_sort(c);
+        });
+
+        function set_step_sort(steptype){
+            var sort=1;
+            $("."+steptype).each(function(){
+                $(this).children("legend").children("span").html(sort);
+                sort++;
+            })
+        }
+        set_step_sort("step_1");
+
+        //组合json
+        function set_step_json(steptype){
+            var json = "";
+            $("."+steptype).each(function(){
+
+                var stepType = $(this).children("legend").children(".stepType").val();
+                var json_ = '{"stepType":'+stepType+',"stepCondition":{';
+                var conditon = "";
+                switch(stepType)
+                {
+                    case '1':
+                        var title = $(this).children().eq(1).children("div").eq(0).children("div").children("input").val();
+                        conditon += '"title":"'+title+'",';
+                        var content =  $(this).children().eq(1).children("div").eq(1).children("div").children("input").val();
+                        conditon += '"content":"'+content+'"';
+                        break;
+                    case '2':
+                        var content = $(this).children().eq(1).children("div").eq(0).children("div").children("textarea").val();
+                        conditon += '"content":"'+escape(content)+'"';
+                        break;
+                    case '3':
+                        var title = $(this).children().eq(1).children("div").eq(0).children("div").children("input").val();
+                        conditon += '"title":"'+title+'"';
+                        break;
+                    case '4':
+                        var minlevel = $(this).children().eq(1).children("div").eq(0).children("div").children("input").eq(0).val();
+                        conditon += '"minlevel":"'+minlevel+'",';
+                        var maxlevel = $(this).children().eq(1).children("div").eq(0).children("div").children("input").eq(1).val();
+                        conditon += '"maxlevel":"'+maxlevel+'",';
+                        var uploadPicType =  $(this).children().eq(1).children("div").eq(1).children("div").children("select").val();
+                        conditon += '"uploadPicType":"'+uploadPicType+'",';
+                        var uploadPicLimit =  $(this).children().eq(1).children("div").eq(1).children("div").children("input").val();
+                        conditon += '"uploadPicLimit":"'+uploadPicLimit+'",';
+                        var content = $(this).children().eq(1).children("div").eq(2).children("div").children("input").val();
+                        conditon += '"content":"'+content+'",';
+                        var picValue = '';
+                        $.each($('.picValue'), function(key, value){
+                            picValue += $(this).val()+',';
+                        });
+                        picValue = picValue.substring(0,picValue.length-1);
+                        conditon += '"image":"'+picValue+'"';
+                        break;
+                    case '5':
+                        var title = $(this).children().eq(1).children("div").eq(0).children("div").children("input").val();
+                        conditon += '"title":"'+title+'",';
+                        conditon += '"recharge":[';
+                        $.each($('.limitValue'), function(key, value){
+                            conditon += '{';
+                            var tempLimitValue = $(this).val();
+                            var tempRewardValue = $('.rewardValue').eq(key).val();
+                            var tempRewardValue2 = $('.rewardValue2').eq(key).val();
+                            var tempRewardValue3 = $('.rewardValue3').eq(key).val();
+                            var tempRewardValue4 = $('.rewardValue4').eq(key).val();
+                            conditon += '"rechargeNumber":"'+tempLimitValue+'",';
+                            conditon += '"experKey":"'+tempRewardValue+'",';
+                            conditon += '"prizeKey":"'+tempRewardValue2+'",';
+                            conditon += '"shimaoKey":"'+tempRewardValue4+'",';
+                            conditon += '"prizeIcon":"'+tempRewardValue3+'"';
+                            conditon += '},';
+                        });
+                        conditon = conditon.substring(0,conditon.length-1);
+                        conditon += ']';
+                        break;
+
+                    default:
+                }
+                json_ += conditon+"}}";
+                json += json_+",";
+            });
+
+            json = json.substring(0,json.length-1);
+            return json;
+        }
+
+        $("input[name='platformType']").on('ifChecked',function(e){
+            $('#selected_game_id').val('');
+            $('#selected_game_name').val('');
+            $('#selected_game_icon').attr('src','');
+        });
+
+        //选择游戏
+        $('.select-pop-game').on('click', function () {
+            var platformType=$('input:radio[name="platformType"]:checked').val();
+            if (platformType == 'I') {
+                var url = '/game/api/game-search';
+            } else {
+                var url = '/a_game/api/game-search';
+            }
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                success: function (json) {
+                    var html = json.html;
+                    $.dialog({id: 'pop-game-list', title: '提示', padding: 2, content: html, width: 600, height: 580});
+                }
+            });
+        });
+
+
+        //提交时限制图片为空
+        $(".sub").click(function() {
+            var stepListStr = set_step_json("step_1");
+            $("input[name='stepListStr']").val(stepListStr);
+
+            var can_on = 1;
+            $(".minpic").each(function(){
+                if($(this).val()<1){
+                    alert("上传图片数必须大于等于1");
+                    can_on = 0;
+                    return false;
+                }
+            });
+            if(can_on == 0){
+                return false;
+            }
+
+        });
+
+        $(document).on('change','input.myfile',function(){
+            //if(taskId){
+            var obj =  $(this).parent();
+            var timestamp = new Date().getTime();
+            var img_id = "id"+timestamp;
+            $(this).attr("id",img_id);
+            var btn_save = $(this).parent().parent().parent().parent().parent().siblings().eq(1).children(".btn_save");
+            btn_save.attr("disabled","disabled");
+            $.ajaxFileUpload
+            (
+                {
+                    url:'/v4_task/task/ajax-upload-img', //你处理上传文件的服务端
+                    type : 'post',
+                    fileElementId:img_id,
+                    dataType: 'json',
+                    success: function (data)
+                    {
+                        if(data.success=="true"){
+                            img_path = data.data;
+                            //alert("图片上传完毕！");
+                            obj.children("input[name='prize_img[]']").val(img_path);
+                            btn_save.removeAttr("disabled");
+                        }else{
+                            alert(data.data);
+                        }
+                    }
+                }
+            );
+            //}
+        });
+
+        $(".fileupload-remove").live("click",function(){
+            $(this).parent().find("input[name='prize_img[]']").val('');
+        });
+
+
+    });
+
+    var set_selected_game=function(game_id,game_name,icon){
+        $('#selected_game_id').val(game_id);
+        $('#selected_game_name').val(game_name);
+        $('#selected_game_icon').attr('src',icon);
+        $("#task_img").val(icon);
+    };
+
+</script>
+<!--{%endblock%}-->

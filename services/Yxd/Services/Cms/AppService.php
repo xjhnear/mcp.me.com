@@ -3,6 +3,8 @@ namespace Yxd\Services\Cms;
 
 use Yxd\Modules\Core\CacheService;
 use Yxd\Services\Service;
+use Yxd\Services\Models\Version;
+use Yxd\Services\Models\GameControl;
 
 class AppService extends Service
 {	
@@ -15,7 +17,7 @@ class AppService extends Service
 		if(CLOSE_CACHE===false && CacheService::has($cachekey)){
 			$config = CacheService::get($cachekey);
 		}else{
-			$config =  self::dbCmsSlave()->table('version')
+			$config =  Version::db()
 			    ->where('channel','=','')
 			    ->where('appname','=',$appname)
 			    ->where('version','=',$version)
@@ -30,7 +32,7 @@ class AppService extends Service
 	
 	public static function getSimpleConfig($gid,$type,$version)
 	{
-		$config = self::dbClubSlave()->table('game_control')->where('game_id','=',$gid)->where('zone_type','=',$type)->where('version','=',$version)->first();
+		$config = GameControl::db()->where('game_id','=',$gid)->where('zone_type','=',$type)->where('version','=',$version)->first();
 		if(!$config) return array();
 		$info = unserialize($config['control_data']);
 		return $info;
@@ -41,12 +43,15 @@ class AppService extends Service
 	 */
 	public static function checkVersion($appname,$version)
 	{
-		$app =  self::dbCmsSlave()->table('version')->where('appname','=',$appname)->where('version','=',$version)->first();
+		$app =  Version::db()->where('appname','=',$appname)->where('version','=',$version)->first();
 		if($app && $app['append']){
 			$data = json_decode($app['append'],true);
 		    $result = array();
 			$result['word'] = $data['updateword'];
 			$result['isforce'] = $data['isforce'];
+			$result['intro_html'] = $app['intro'];
+			$result['sys_img'] = $app['sys_img'];
+			$result['appstore'] = $app['appstoreurl'];
 			if (version_compare($data['updateversion'], $version) > 0) {
 				$result['isupdate'] = 1;
 				$result['version'] = $data['updateversion'];

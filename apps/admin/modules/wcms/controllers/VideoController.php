@@ -22,8 +22,9 @@ class VideoController extends BackendController
 	public function getIndex()
 	{
 		$pageIndex = (int)Input::get('page',1);
+		$keyword = Input::get('keyword');
 		$pageSize = 10;
-		$search = array();
+		$search = array('keyword'=>$keyword);
 		$result = Video::searchList($search,$pageIndex,$pageSize);
 		$data['datalist'] = $result['result'];
 		$totalCount = $result['totalCount'];
