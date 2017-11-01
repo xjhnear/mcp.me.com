@@ -18,7 +18,7 @@ use Youxiduo\Helper\MyHelp;
 /**
  * 应用配置模型类
  */
-final class AppConfig extends Model implements IModel
+final class PhoneBatch extends Model implements IModel
 {		
     public static function getClassName()
 	{

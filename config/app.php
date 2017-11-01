@@ -208,7 +208,7 @@ return array(
 	|
 	*/
 
-	'key' => 'zhonghuarenmingongheguo!!',
+	'key' => 'zhonghuarenmingongheguo!',
     'verifycode'=>true,
 
     'oauth2'=>array(

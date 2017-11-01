@@ -5,7 +5,7 @@ $v4_tables = array(
     'youxiduo_system_model_admin'=>array('db'=>'cms','table'=>'admin'),
     'youxiduo_system_model_module'=>array('db'=>'system','table'=>'module'),
     'youxiduo_system_model_authgroup'=>array('db'=>'system','table'=>'auth_group'),
-    'youxiduo_system_model_appconfig'=>array('db'=>'cms','table'=>'version'),
+    'youxiduo_system_model_phonebatch'=>array('db'=>'cms','table'=>'phone_batch')
 
 
 );

@@ -41,10 +41,10 @@ class AuthService extends BaseService
 		$admin = Admin::getInfoByUsername($username);
 		if($admin){
 			if($admin['password']===$password && $admin['isopen']==1){				
-				Session::put('youxiduo_admin',$admin);
+				Session::put('mcp_admin',$admin);
 				if($remember===true){
 					$local_login = Crypt::encrypt($username.'@'.$password);
-					$cookie = Cookie::make('youxiduo_local_hash',$local_login,60*24*7);
+					$cookie = Cookie::make('mcp_local_hash',$local_login,60*24*7);
 					$admin['cookie'] = $cookie;					
 				}
 				return $admin;
@@ -60,7 +60,7 @@ class AuthService extends BaseService
 	public static function doLogout()
 	{
 		Session::flush();
-		$cookie = Cookie::forget('youxiduo_local_hash');
+		$cookie = Cookie::forget('mcp_local_hash');
 		return $cookie;
 	}
 	
@@ -126,10 +126,10 @@ class AuthService extends BaseService
 	 */
 	public static function getAuthAdmin()
 	{
-	    if(Session::has('youxiduo_admin')){
-			$admin = Session::get('youxiduo_admin');
+	    if(Session::has('mcp_admin')){
+			$admin = Session::get('mcp_admin');
 			return Admin::getInfoById($admin['id']);
-		}elseif(($local_login = Cookie::get('youxiduo_local_hash',false))!==false)
+		}elseif(($local_login = Cookie::get('mcp_local_hash',false))!==false)
 		{
 			list($username,$password) = explode('@',Crypt::decrypt($local_login));
 			if($username && $password){
