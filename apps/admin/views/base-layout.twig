@@ -87,20 +87,22 @@
 				<!--{%endfor%}-->              				
 		    </ul>
 		    <div class="user">
+				<!--{%if 1!=1 %}-->
 		        <ul class="icon-nav">
 		            <li class='dropdown'>
 		                <a href="javascript:void(0);" class='dropdown-toggle' data-toggle="dropdown">选定的用户<span id="selected-uids-count" class="label label-lightred"></span></a>
 		                <ul id="selected-pop-ul" class="dropdown-menu pull-right" style="width:800px;height:400px;overflow:auto;">
 		                <!--{%for item in selected_uids%}-->
 		                    <li style="float:left;width:150px;"><a href="javascript:void(0)" data-uid="<!--{{item.uid}}-->" class="delete-selected-uid-ajax"><!--{{item.nickname}}--><i class="icon-trash"></i></a></li>
-		                <!--{%endfor%}-->			                
+		                <!--{%endfor%}-->
 						    <li><a id="select-all-uids" href="javascript:void(0);">添加到选择框</a></li>
 						    <li><a id="clear-selected-uid-ajax" href="javascript:void(0);">清除全部</a></li>
-		                </ul>		            	
+		                </ul>
 		            </li>
 		        </ul>
+				<!--{%endif%}-->
 		        <div class="dropdown">
-					<a href="javascript:void(0);" class='dropdown-toggle' data-toggle="dropdown"><!--{{current_user.realname}}--><img src="http://img.youxiduo.com/userdirs/common/yxd_logo.png?v=1" width="25px" /></a>
+					<a href="javascript:void(0);" class='dropdown-toggle' data-toggle="dropdown"><!--{{current_user.realname}}--><img src="/static/img/demo/user-3.jpg?v=1" width="25px" /></a>
 					<ul class="dropdown-menu pull-right">	
 					    <li>
 							<a href="<!--{{url('common/home/edit-profile')}}-->">修改资料</a>

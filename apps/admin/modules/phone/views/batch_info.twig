@@ -1,0 +1,33 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>批次信息</h3>
+			</div>
+			<div class="box-content">
+				<form id="batch-edit" action="<!--{{url('phone/batch/save')}}-->" method="POST" class='form-horizontal form-validate'>
+				<input name="batch_id" type="hidden" value="<!--{{info.batch_id}}-->" />
+				
+				<div class="control-group">
+					<label for="username" class="control-label">批次Code</label>
+					<div class="controls">
+					    <!--{%if info.batch_id%}-->
+						<label><!--{{info.batch_code}}--></label>
+						<input name="batch_code" type="hidden" value="<!--{{info.batch_code}}-->" />
+						<!--{%else%}-->
+						<input type="text" name="batch_code" class="input-normal" value="<!--{{info.batch_code}}-->" data-rule-required="true" data-msg-required="不能为空">
+						<!--{%endif%}-->
+					</div>
+				</div>
+
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->

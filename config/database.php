@@ -46,26 +46,6 @@ return array(
 
 	'connections' => array(
 
-		'mysql' => array(
-			'driver'    => 'mysql',
-			'host'      => '127.0.0.1',
-			'database'  => 'mcp_www',
-			'username'  => 'root',
-			'password'  => '',
-			'charset'   => 'utf8',
-			'collation' => 'utf8_bin',
-			'prefix'    => 'yxd_',
-		),
-		'club' => array(
-			'driver'    => 'mysql',
-			'host'      => '127.0.0.1',
-			'database'  => 'mcp_www',
-			'username'  => 'root',
-			'password'  => '',
-			'charset'   => 'utf8',
-			'collation' => 'utf8_bin',
-			'prefix'    => 'yxd_',
-		),
 		'system' => array(
 			'driver'    => 'mysql',
 			'host'      => '127.0.0.1',
@@ -76,7 +56,7 @@ return array(
 			'collation' => 'utf8_bin',
 			'prefix'    => 'core_',
 		),
-		'cms' => array(
+		'www' => array(
 		    'driver'    => 'mysql',
 			'host'      => '127.0.0.1',
 			'database'  => 'mcp_www',

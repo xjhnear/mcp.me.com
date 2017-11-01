@@ -57,6 +57,7 @@ class ModuleController extends BackendController
 		
 		$input = Input::only('module_name','module_type','module_alias','module_desc');
 		$input['sort'] = Input::get('sort',9);
+		if ($input['sort'] == '') $input['sort'] = 9;
 		//验证
 		$rules = array(
 		    'module_name'=>'required',
@@ -73,7 +74,7 @@ class ModuleController extends BackendController
 			}
 			return $this->redirect('admin/module/install',$errors);
 		}
-		
+
 		$result = Module::saveInfo($input);
 		if($result){
 			return $this->redirect('admin/module/list',$this->lang('system.module_install_success'));
