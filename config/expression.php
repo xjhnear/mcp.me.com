@@ -26,14 +26,5 @@ return array(
         '[pig]'=>array('title'=>'猪头','emotion'=>'猪头','filename'=>'pig.gif'),
         '[yun]'=>array('title'=>'晕','emotion'=>'晕','filename'=>'yun.gif'),
         '[ok]'=>array('title'=>'OK','emotion'=>'OK','filename'=>'ok.gif'),        
-    ),
-    'youxiduo'=>array(
-        array('title'=>'','emotion'=>'','filename'=>''),
-        array('title'=>'','emotion'=>'','filename'=>''),
-        array('title'=>'','emotion'=>'','filename'=>''),
-        array('title'=>'','emotion'=>'','filename'=>''),
-        array('title'=>'','emotion'=>'','filename'=>''),
-        array('title'=>'','emotion'=>'','filename'=>''),
-        array('title'=>'','emotion'=>'','filename'=>''),
     )
 );
