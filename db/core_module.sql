@@ -4,13 +4,13 @@ Navicat MySQL Data Transfer
 Source Server         : localhost
 Source Server Version : 50714
 Source Host           : localhost:3306
-Source Database       : yxd_club_beta
+Source Database       : mcp_www
 
 Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-11-01 10:01:13
+Date: 2017-11-01 17:27:37
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -28,10 +28,11 @@ CREATE TABLE `core_module` (
   `installed` tinyint(1) NOT NULL,
   `sort` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- ----------------------------
 -- Records of core_module
 -- ----------------------------
-INSERT INTO `core_module` VALUES ('20', 'core', '高级管理', 'admin', '包括模块管理、账号管理、权限管理等', '0', '0');
-INSERT INTO `core_module` VALUES ('92', 'ios', '狮吼分发平台任务', 'v4_task', '包括任务管理等', '0', '8');
+INSERT INTO `core_module` VALUES ('1', 'core', '通用接口', 'common', '包括图片上传接口等', '0', '0');
+INSERT INTO `core_module` VALUES ('2', 'core', '高级管理', 'admin', '包括模块管理、账号管理、权限管理等', '0', '0');
+INSERT INTO `core_module` VALUES ('3', 'ios', '狮吼分发平台任务', 'v4_task', '包括任务管理等', '0', '8');

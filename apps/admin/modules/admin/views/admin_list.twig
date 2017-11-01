@@ -65,6 +65,9 @@
 							<!--{%else%}-->
 							<a href="<!--{{url('admin/admin/change-status',{'admin_id':item.id,'status':'1'})}}-->" class="btn btn-primary">设为启用</a>
 							<!--{%endif%}-->
+							<!--{%if item.isopen == 2%}-->
+							<a href="<!--{{url('admin/admin/del',{'admin_id':item.id})}}-->" class="btn btn-danger">删除</a>
+							<!--{%endif%}-->
 						</td>
 					</tr>
 					<!--{%endfor%}-->

@@ -72,9 +72,18 @@ class GroupController extends BackendController
 			}
 		}
 		$input['menus_nodes'] = json_encode(array('menus'=>$group_menus,'nodes'=>$group_nodes));
-		
+
 		$group_id = AuthGroup::saveInfo($input);
 		
-		return $this->redirect('admin/group/edit/'.$group_id,'组权限修改成功');
+		return $this->redirect('admin/group/list','组权限修改成功');
 	}
+
+	public function getDelete($group_id=0)
+	{
+		if($group_id){
+			AuthGroup::del($group_id);
+		}
+		return $this->redirect('admin/group/list','组权限删除成功');
+	}
+
 }

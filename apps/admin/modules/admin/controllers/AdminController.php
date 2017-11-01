@@ -92,6 +92,18 @@ class AdminController extends BackendController
 			return $this->back('账号保存成功');
 		}
 	}
+
+	public function getDel($admin_id=0)
+	{
+		if($admin_id){
+			$data['admininfo'] = Admin::getInfoById($admin_id);
+			if ($data['admininfo']['isopen'] <> 2) {
+				return $this->back('只能删除禁用状态的账号');
+			}
+			Admin::del($admin_id);
+		}
+		return $this->redirect('admin/admin/list','组权限删除成功');
+	}
 	
 	public function getChangeStatus($admin_id,$status)
 	{

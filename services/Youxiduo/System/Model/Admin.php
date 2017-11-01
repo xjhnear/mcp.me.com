@@ -76,4 +76,12 @@ final class Admin extends Model implements IModel
 	{
 		return self::db()->where('id','=',$admin_id)->update(array('isopen'=>$status));
 	}
+
+	public static function del($admin_id)
+	{
+		if($admin_id > 0){
+			$re = self::db()->where('id','=',$admin_id)->delete();
+		}
+		return $re;
+	}
 }

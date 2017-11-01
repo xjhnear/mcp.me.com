@@ -54,7 +54,16 @@ final class AuthGroup extends Model implements IModel
 			self::db()->where('group_id','=',$group_id)->update($data);
 			return $group_id;
 		}else{
+			unset($data['group_id']);
 			return self::db()->insertGetId($data);
 		}
+	}
+
+	public static function del($group_id)
+	{
+		if($group_id > 0){
+			$re = self::db()->where('group_id','=',$group_id)->delete();
+		}
+		return $re;
 	}
 }
