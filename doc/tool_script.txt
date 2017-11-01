@@ -1,1 +1,0 @@
-UPDATE yxd_giftbag AS a, (SELECT giftbag_id,COUNT(*) AS total FROM yxd_giftbag_card WHERE is_get=0 GROUP BY giftbag_id) AS b   SET a.last_num=b.total  WHERE a.id=b.giftbag_id
