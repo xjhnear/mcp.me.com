@@ -15,7 +15,8 @@
 				        <tr>
 				            <td><input name="batch_code" type="text" class="input-small" value="<!--{{search.batch_code}}-->" /></td>
 				            <td><button class="btn btn-teal"><i class="icon-search"></i>搜索</button></td>
-				            <td><a href="<!--{{url('phone/batch/add')}}-->" class="btn btn-teal">添加批次</a></td>
+				            <!--<td><a href="<!--{{url('phone/batch/add')}}-->" class="btn btn-teal">添加批次</a></td>-->
+							<td><a class="btn btn-teal ajax-append" href="javascript:void(0);">添加批次</a></td>
 				        </tr>
 				    </table>
 				    </form>
@@ -58,4 +59,70 @@
 		</div>
 	</div>
 </div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<!--榜单导入-->
+	<div id="dialog-append">
+		<div class="box-content">
+			<div class="control-group">
+				<label class="control-label">文字说明</label>
+				<div class="controls">
+					<input type="text" name="footer" class="input-large" value="" />
+				</div>
+			</div>
+			<div class="control-group">
+				<input type="hidden" name="tmp" id="tmp" value="">
+				<input type="hidden" name="filename" id="filename" value="">
+				<label class="control-label">榜单文件</label>
+				<div class="controls">
+					<input name="append_file" id="file_upload" type="file">
+					<a href="javascript:void(0);" class="btn btn-primary append_">确定</a>
+					<p class="text-error card-line"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 模态框（Modal） -->
+
+<!--{%endblock%}-->
+
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script src="<!--{{asset('/static/js/ajaxfileupload.js')}}-->"></script>
+<script>
+	$(function(){
+		$(".ajax-append").bind('click',function(){
+			var html=$("#dialog-append").html();
+			$.dialog({id:'pop-fafang-html',title:'提示',padding:2,content:html,width:410,height:120});
+			var can_up = true;
+			$("a.append_").bind('click',function(){
+				alertify.confirm('确认上传该文件？',function(e){
+					if(e && can_up){
+						var footer =  $("input[name='footer']").val();
+						can_up = false;
+						$.ajaxFileUpload({
+							url:'/v4_task/task/ajax-upload-file?footer='+footer,
+							type : 'post',
+							secureuri :false,
+							fileElementId :'file_upload',
+							dataType : 'JSON',
+							success : function (data){
+								can_up = true;
+								data = eval("("+data+")");
+								if(data.state){
+									alertify.success(data.msg);
+									setTimeout(function(){location.reload();},1000);
+								}else{
+									alertify.error(data.msg);
+								}
+							}
+						})
+					}
+				});
+			});
+		});
+	});
+</script>
 <!--{%endblock%}-->
