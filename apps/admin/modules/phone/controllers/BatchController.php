@@ -119,6 +119,50 @@ class BatchController extends BackendController
 		}
 	}
 
+	public function postAjaxDownFile(){
+		ini_set('max_execution_time', '0');
+		$batch_id = Input::get('batch_id');
+		if(!$batch_id) return json_encode(array('state'=>0,'msg'=>'数据异常'));
+		$info_batch = PhoneBatch::getInfo($batch_id);
+		if(!$info_batch) return json_encode(array('state'=>0,'msg'=>'批次不存在'));
+		$search = array();
+		$search['batch_id'] = $info_batch['batch_id'];
+		$info_num = PhoneNumbers::getList($search);
+		if ($info_num) {
+			require_once base_path() . '/libraries/PHPExcel.php';
+			$excel = new \PHPExcel();
+			$excel->setActiveSheetIndex(0);
+			$excel->getDefaultStyle()->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+			$excel->getDefaultStyle()->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
+			$excel->getActiveSheet()->setTitle('批次导出');
+			$excel->getActiveSheet()->getColumnDimension('A')->setWidth(30);
+			$excel->getActiveSheet()->setCellValue('A1','标题');
+			$excel->getActiveSheet()->freezePane('A2');
+			foreach($info_num as $index=>$row){
+				$phone_number = isset($row['phone_number'])?$row['phone_number']:'';
+
+				$excel->getActiveSheet()->setCellValue('A'.($index+2), $phone_number);
+
+			}
+			$filename = '批次导出--'. date('Y-m-d');
+			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+			header('Content-Disposition: attachment;filename="'. $filename.'.xlsx"');
+			header('Cache-Control: max-age=0');
+			$writer = \PHPExcel_IOFactory::createWriter($excel,'Excel2007');
+			function saveExcelToLocalFile($writer,$filename){
+				// make sure you have permission to write to directory
+				$filePath = 'tmp/'.$filename.'.xlsx';
+				$writer->save($filePath);
+				return $filePath;
+			}
+			$writer = new \PHPExcel_Writer_Excel2007($excel);
+			$url = self::saveExcelToLocalFile($writer,$filename);
+			$response = array( 'success'=>true, 'url'=>$url );
+			return json_encode($response);
+		}
+
+	}
+
 	/**
 	 * excel导出
 	 */
@@ -152,26 +196,6 @@ class BatchController extends BackendController
 		$search = array('pageSize'=>$pageSize,'pageNow'=>$pageIndex,'stepId'=>$stepId,'startTime'=>$startTime,'endTime'=>$endTime,'uid'=>$name,'stepStatus'=>$stepStatus,'add_user'=>$add_user,'isIssue'=>$isIssue);
 		$res = TaskLionService::task_checked(array_filter($search));
 		if(!$res['errorCode']&&$res['result']){
-
-			if($add_user=='true'){
-				$search_all = array('pageSize'=>$pageSize,'pageNow'=>$pageIndex,'stepId'=>$stepId,'startTime'=>$startTime,'endTime'=>$endTime,'uid'=>$name,'stepStatus'=>1,'add_user'=>$add_user,'isIssue'=>$isIssue);
-				$res_all = TaskLionService::task_checked(array_filter($search_all));
-				if ($res_all['result']) {
-					$admin_id = $this->current_user['id'];
-					$keyname = 'selected_' . $admin_id . '_uids';
-					$selecteds = array();
-					if(Session::has($keyname)){
-						$selecteds = Session::get($keyname);
-					}
-					foreach($res_all['result'] as $uid){
-						if (isset($uid['uid'])) {
-							$selecteds[$uid['uid']]  = array('uid'=>$uid['uid'],'nickname'=>'玩家'.$uid['uid']);
-						}
-					}
-					Session::put($keyname,$selecteds);
-					sleep(3);
-				}
-			}
 
 			$total = $res['totalCount'];
 			$result = $res['result'];
@@ -292,6 +316,19 @@ class BatchController extends BackendController
 		}else{
 		}
 		return $array_temp;
+	}
+
+	//生成xls文件
+	//  header('Content-Type: application/vnd.ms-excel');
+	//  header('Content-Disposition: attachment;filename="'.$filename.'.xls"');
+	//  header('Cache-Control: max-age=0');
+	//  $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+	//生成xlsx文件并存入当前文件目录
+	private function saveExcelToLocalFile($objWriter,$filename){
+		// make sure you have permission to write to directory
+		$filePath = 'tmp/'.$filename.'.xlsx';
+		$objWriter->save($filePath);
+		return $filePath;
 	}
 
 }

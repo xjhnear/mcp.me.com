@@ -49,6 +49,7 @@
 						<td>
 							<a href="<!--{{url('phone/batch/edit',{'admin_id':item.batch_id})}}-->" class="btn btn-primary">编辑</a>
 							<a href="<!--{{url('phone/batch/del',{'admin_id':item.batch_id})}}-->" class="btn btn-danger">删除</a>
+							<a class="btn btn-teal ajax-down" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">导出</a>
 						</td>
 					</tr>
 					<!--{%endfor%}-->
@@ -76,7 +77,7 @@
 			<div class="control-group">
 				<input type="hidden" name="tmp" id="tmp" value="">
 				<input type="hidden" name="filename" id="filename" value="">
-				<label class="control-label">榜单文件</label>
+				<label class="control-label">批次文件</label>
 				<div class="controls">
 					<input name="append_file" id="file_upload" type="file">
 					<a href="javascript:void(0);" class="btn btn-primary append_">确定</a>
@@ -124,6 +125,34 @@
 					}
 				});
 			});
+		});
+
+		$(".ajax-down").bind('click',function(){
+
+			var obj = $(this);
+			var batch_id = $(this).attr('batch_id');
+			$.ajax({
+				url: '/phone/batch/ajax-down-file',
+				dataType:"json",
+				data:{batch_id: batch_id},
+				type:'POST',
+				async:true,
+				beforeSend:function(){
+					$("body").showLoading();
+				},//下面就是获取到的下载地址，直接通过document.location函数获取下载
+				success:function(output){
+
+					$("body").hideLoading();
+					alert(output.url);
+					document.location.href =("data/"+output.url);
+
+				},
+				error: function(){
+					$("body").hideLoading();
+					sweetAlert("错误", "导出excel出错!", "error");
+				},
+			});
+
 		});
 	});
 </script>
