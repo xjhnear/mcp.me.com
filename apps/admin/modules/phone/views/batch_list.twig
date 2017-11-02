@@ -31,6 +31,7 @@
 							</th>
 						    <th class="col-50">ID</th>
 							<th class="col-150">批次Code</th>
+							<th class="col-150">数量</th>
 							<th class="col-150">创建时间</th>
 							<th class="col-150">修改时间</th>
 							<th class="table-btn-group">操作</th>
@@ -42,6 +43,7 @@
 						<td></td>
 						<td><!--{{item.batch_id}}--></td>
 						<td><!--{{item.batch_code}}--></td>
+						<td><!--{{item.count}}--></td>
 						<td><!--{{item.created_at}}--></td>
 						<td><!--{{item.updated_at}}--></td>
 						<td>
@@ -61,14 +63,14 @@
 </div>
 
 <!-- 模态框（Modal） -->
-<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<!--榜单导入-->
 	<div id="dialog-append">
 		<div class="box-content">
 			<div class="control-group">
-				<label class="control-label">文字说明</label>
+				<label class="control-label">批次Code</label>
 				<div class="controls">
-					<input type="text" name="footer" class="input-large" value="" />
+					<input type="text" name="batch_code" class="input-large" value="" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -95,15 +97,15 @@
 	$(function(){
 		$(".ajax-append").bind('click',function(){
 			var html=$("#dialog-append").html();
-			$.dialog({id:'pop-fafang-html',title:'提示',padding:2,content:html,width:410,height:120});
+			$.dialog({id:'pop-daoru-html',title:'提示',padding:2,content:html,width:410,height:120});
 			var can_up = true;
 			$("a.append_").bind('click',function(){
 				alertify.confirm('确认上传该文件？',function(e){
 					if(e && can_up){
-						var footer =  $("input[name='footer']").val();
+						var batch_code =  $("input[name='batch_code']").val();
 						can_up = false;
 						$.ajaxFileUpload({
-							url:'/v4_task/task/ajax-upload-file?footer='+footer,
+							url:'/phone/batch/ajax-upload-file?batch_code='+batch_code,
 							type : 'post',
 							secureuri :false,
 							fileElementId :'file_upload',

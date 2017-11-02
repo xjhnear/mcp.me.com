@@ -45,6 +45,13 @@ final class PhoneBatch extends Model implements IModel
 		if(!$batch) return array();
 		return $batch;
 	}
+
+	public static function getInfoByCode($batch_code)
+	{
+		$batch = self::db()->where('batch_code','=',$batch_code)->first();
+		if(!$batch) return array();
+		return $batch;
+	}
 	
     public static function m_search($search)
 	{
