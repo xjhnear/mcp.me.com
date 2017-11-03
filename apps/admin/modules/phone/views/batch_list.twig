@@ -87,6 +87,26 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<!--榜单导入-->
+	<div id="dialog-down">
+		<div class="box-content">
+			<div class="control-group">
+				<label class="control-label">每个文件数据条数</label>
+				<div class="controls">
+					<input type="text" name="pageSize" class="input-large" value="" />
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<a href="javascript:void(0);" class="btn btn-primary down_">确定</a>
+					<p class="text-error card-line"></p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 <!-- 模态框（Modal） -->
 
 <!--{%endblock%}-->
@@ -128,27 +148,27 @@
 		});
 
 		$(".ajax-down").bind('click',function(){
-
 			var obj = $(this);
-			var batch_id = $(this).attr('batch_id');
-			$.ajax({
-				url: '/phone/batch/ajax-down-file',
-				dataType:"json",
-				data:{batch_id: batch_id},
-				type:'POST',
-				async:true,
-				beforeSend:function(){
-//					$("body").showLoading();
-				},//下面就是获取到的下载地址，直接通过document.location函数获取下载
-				success:function(output){
-//					$("body").hideLoading();
-					document.location.href =(output.url);
+			var html=$("#dialog-down").html();
+			$.dialog({id:'pop-daochu-html',title:'提示',padding:2,content:html,width:410,height:120});
+			$("a.down_").bind('click',function(){
+				var batch_id = obj.attr('batch_id');
+				var pageSize =  $("input[name='pageSize']").val();
+				$.ajax({
+					url:'/phone/batch/ajax-down-file',
+					type : 'post',
+					data:{batch_id: batch_id,pageSize: pageSize},
+					dataType : 'JSON',
+					success : function (data){
+						if(data.state){
+							document.location.href =(data.url);
+							setTimeout(function(){location.reload();},1000);
+						}else{
+							alertify.error(data.msg);
+						}
+					}
+				})
 
-				},
-				error: function(){
-//					$("body").hideLoading();
-//					sweetAlert("错误", "导出excel出错!", "error");
-				},
 			});
 
 		});

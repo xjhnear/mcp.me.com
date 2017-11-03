@@ -130,7 +130,6 @@ class BatchController extends BackendController
 		$search['batch_id'] = $info_batch['batch_id'];
 		$batch_code = $info_batch['batch_code'];
 		$pageIndex = 1;
-		$pageSize = 2;
 		if ($pageSize > 0) {
 			$info_num_count = PhoneNumbers::getCount($search);
 			$pages = ceil($info_num_count/$pageSize);
@@ -173,8 +172,7 @@ class BatchController extends BackendController
 			$zip->close(); //关闭处理的zip文件
 		}
 		$url = '/downloads/'.$zipname.'.zip';
-		$response = array( 'success'=>true, 'url'=>$url );
-		return json_encode($response);
+		return json_encode(array('state'=>1,'url'=>$url));
 	}
 
 	/**
