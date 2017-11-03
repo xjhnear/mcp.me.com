@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Paginator;
 use Youxiduo\Phone\Model\PhoneBatch;
 use Youxiduo\Phone\Model\PhoneNumbers;
 
+use Illuminate\Support\Facades\DB;
+
 class BatchController extends BackendController
 {
 	public function _initialize(){
@@ -63,6 +65,7 @@ class BatchController extends BackendController
 	}
 
 	public function postAjaxUploadFile(){
+		set_time_limit(0);
 		$batch_code = Input::get('batch_code');
 		if(!Input::hasFile('append_file'))
 			return json_encode(array('state'=>0,'msg'=>'文件不存在'));
@@ -357,6 +360,42 @@ class BatchController extends BackendController
 			}
 		}
 		@closedir($path);
+	}
+
+	public function getTest(){
+//2222
+//		echo date("H:i:s");
+//		$connect_mysql->query('BEGIN');
+//		$params = array('value'=>'50');
+//		for($i=0;$i<2000000;$i++){
+//		$connect_mysql->insert($params);
+//		if($i%100000==0){
+//		$connect_mysql->query('COMMIT');
+//		$connect_mysql->query('BEGIN');
+//		}
+//		}
+//		$connect_mysql->query('COMMIT');
+//		echo date("H:i:s");
+//3333
+//		$sql= "insert into twenty_million (value) values";
+//		for($i=0;$i<2000000;$i++){
+//			$sql.="('50'),";
+//		};
+//		$sql = substr($sql,0,strlen($sql)-1);
+//		$connect_mysql->query($sql);
+//
+
+		$student=DB::select("select * from m_phone_batch");
+		//返回一个二维数组  $student
+		print_r($student);
+		//以节点树的形式输出结果
+		//dd($student);
+		print_r("123");exit;
+
+//		DB::transaction(function () {
+//			DB::table('users')->update(['id' => 1]);
+//			DB::table('posts')->delete();
+//		});
 	}
 
 }

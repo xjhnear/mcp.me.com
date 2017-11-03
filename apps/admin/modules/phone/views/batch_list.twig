@@ -44,8 +44,8 @@
 						<td><!--{{item.batch_id}}--></td>
 						<td><!--{{item.batch_code}}--></td>
 						<td><!--{{item.count}}--></td>
-						<td><!--{{item.created_at}}--></td>
-						<td><!--{{item.updated_at}}--></td>
+						<td><!--{{item.created_at|date('Y-m-d H:i:s')}}--></td>
+						<td><!--{{item.updated_at|date('Y-m-d H:i:s')}}--></td>
 						<td>
 							<a href="<!--{{url('phone/batch/edit',{'admin_id':item.batch_id})}}-->" class="btn btn-primary">编辑</a>
 							<a href="<!--{{url('phone/batch/del',{'admin_id':item.batch_id})}}-->" class="btn btn-danger">删除</a>
