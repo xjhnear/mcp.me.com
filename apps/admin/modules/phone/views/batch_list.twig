@@ -138,18 +138,16 @@
 				type:'POST',
 				async:true,
 				beforeSend:function(){
-					$("body").showLoading();
+//					$("body").showLoading();
 				},//下面就是获取到的下载地址，直接通过document.location函数获取下载
 				success:function(output){
-
-					$("body").hideLoading();
-					alert(output.url);
-					document.location.href =("data/"+output.url);
+//					$("body").hideLoading();
+					document.location.href =(output.url);
 
 				},
 				error: function(){
-					$("body").hideLoading();
-					sweetAlert("错误", "导出excel出错!", "error");
+//					$("body").hideLoading();
+//					sweetAlert("错误", "导出excel出错!", "error");
 				},
 			});
 

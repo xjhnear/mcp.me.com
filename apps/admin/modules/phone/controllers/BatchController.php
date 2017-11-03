@@ -122,45 +122,59 @@ class BatchController extends BackendController
 	public function postAjaxDownFile(){
 		ini_set('max_execution_time', '0');
 		$batch_id = Input::get('batch_id');
+		$pageSize = Input::get('pageSize');
 		if(!$batch_id) return json_encode(array('state'=>0,'msg'=>'数据异常'));
 		$info_batch = PhoneBatch::getInfo($batch_id);
 		if(!$info_batch) return json_encode(array('state'=>0,'msg'=>'批次不存在'));
 		$search = array();
 		$search['batch_id'] = $info_batch['batch_id'];
-		$info_num = PhoneNumbers::getList($search);
-		if ($info_num) {
-			require_once base_path() . '/libraries/PHPExcel.php';
-			$excel = new \PHPExcel();
-			$excel->setActiveSheetIndex(0);
-			$excel->getDefaultStyle()->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
-			$excel->getDefaultStyle()->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
-			$excel->getActiveSheet()->setTitle('批次导出');
-			$excel->getActiveSheet()->getColumnDimension('A')->setWidth(30);
-			$excel->getActiveSheet()->setCellValue('A1','标题');
-			$excel->getActiveSheet()->freezePane('A2');
-			foreach($info_num as $index=>$row){
-				$phone_number = isset($row['phone_number'])?$row['phone_number']:'';
-
-				$excel->getActiveSheet()->setCellValue('A'.($index+2), $phone_number);
-
-			}
-			$filename = '批次导出--'. date('Y-m-d');
-			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-			header('Content-Disposition: attachment;filename="'. $filename.'.xlsx"');
-			header('Cache-Control: max-age=0');
-			$writer = \PHPExcel_IOFactory::createWriter($excel,'Excel2007');
-			function saveExcelToLocalFile($writer,$filename){
-				// make sure you have permission to write to directory
-				$filePath = 'tmp/'.$filename.'.xlsx';
-				$writer->save($filePath);
-				return $filePath;
-			}
-			$writer = new \PHPExcel_Writer_Excel2007($excel);
-			$url = self::saveExcelToLocalFile($writer,$filename);
-			$response = array( 'success'=>true, 'url'=>$url );
-			return json_encode($response);
+		$batch_code = $info_batch['batch_code'];
+		$pageIndex = 1;
+		$pageSize = 2;
+		if ($pageSize > 0) {
+			$info_num_count = PhoneNumbers::getCount($search);
+			$pages = ceil($info_num_count/$pageSize);
+		} else {
+			$pages = 1;
 		}
+		while($pageIndex<=$pages) {
+			$info_num = PhoneNumbers::getList($search,$pageIndex,$pageSize);
+			if ($info_num) {
+				require_once base_path() . '/libraries/PHPExcel.php';
+				$excel = new \PHPExcel();
+				$excel->setActiveSheetIndex(0);
+				$excel->getDefaultStyle()->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+				$excel->getDefaultStyle()->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
+				$excel->getActiveSheet()->setTitle($batch_code);
+				$excel->getActiveSheet()->getColumnDimension('A')->setWidth(30);
+				$excel->getActiveSheet()->setCellValue('A1','标题');
+				$excel->getActiveSheet()->freezePane('A2');
+				foreach($info_num as $index=>$row){
+					$phone_number = isset($row['phone_number'])?$row['phone_number']:'';
 
+					$excel->getActiveSheet()->setCellValue('A'.($index+2), $phone_number);
+
+				}
+				$filename = $batch_code .'--'. date('Ymd');
+//			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+//			header('Content-Disposition: attachment;filename="'. $filename.'.xlsx"');
+//			header('Cache-Control: max-age=0');
+//			$writer = \PHPExcel_IOFactory::createWriter($excel,'Excel2007');
+
+				$writer = new \PHPExcel_Writer_Excel2007($excel);
+				self::saveExcelToLocalFile($writer,$filename,$pageIndex);
+			}
+			$pageIndex++;
+		}
+		$zipname = $batch_code .'--'. date('Ymd');
+		$zip = new \ZipArchive();
+		if($zip->open(public_path().'/downloads/'.$zipname.'.zip', \ZipArchive::CREATE) === TRUE) {
+			self::addFileToZip(public_path().'/downloads/'.$filename, $zip); //调用方法，对要打包的根目录进行操作，并将ZipArchive的对象传递给方法
+			$zip->close(); //关闭处理的zip文件
+		}
+		$url = '/downloads/'.$zipname.'.zip';
+		$response = array( 'success'=>true, 'url'=>$url );
+		return json_encode($response);
 	}
 
 	/**
@@ -318,17 +332,33 @@ class BatchController extends BackendController
 		return $array_temp;
 	}
 
-	//生成xls文件
-	//  header('Content-Type: application/vnd.ms-excel');
-	//  header('Content-Disposition: attachment;filename="'.$filename.'.xls"');
-	//  header('Cache-Control: max-age=0');
-	//  $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-	//生成xlsx文件并存入当前文件目录
-	private function saveExcelToLocalFile($objWriter,$filename){
-		// make sure you have permission to write to directory
-		$filePath = 'tmp/'.$filename.'.xlsx';
-		$objWriter->save($filePath);
+	private function saveExcelToLocalFile($writer,$filename,$pageIndex=null){
+		$filePath = '/downloads/'.$filename.'/';
+		if(!is_dir(public_path() . $filePath)) {
+			mkdir(public_path() . $filePath,0777,true);
+		}
+		if ($pageIndex) {
+			$writer->save(public_path() . $filePath . $filename .'--'. $pageIndex.'.xlsx');
+		} else {
+			$writer->save(public_path() . $filePath . $filename .'.xlsx');
+		}
 		return $filePath;
+	}
+
+	private function addFileToZip($path,&$zip){
+		$handler=opendir($path); //打开当前文件夹由$path指定。
+		$i = 0;
+		while(($filename=readdir($handler))!==false){
+			if($filename != "." && $filename != ".."){//文件夹文件名字为'.'和‘..’，不要对他们进行操作
+				if(is_dir($path."/".$filename)){// 如果读取的某个对象是文件夹，则递归
+					self::addFileToZip($path."/".$filename, $zip);
+				}else{ //将文件加入zip对象
+					$zip->addFile($path."/".$filename,$filename);
+					$i++;
+				}
+			}
+		}
+		@closedir($path);
 	}
 
 }
