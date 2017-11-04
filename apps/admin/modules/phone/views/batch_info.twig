@@ -21,6 +21,26 @@
 						<!--{%endif%}-->
 					</div>
 				</div>
+				<!--{%if info.batch_id%}-->
+				<div class="control-group">
+					<label for="username" class="control-label">数据量</label>
+					<div class="controls">
+						<label><!--{{info.count}}--></label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="username" class="control-label">导出时间</label>
+					<div class="controls">
+						<label><!--{{info.down_at|date('Y-m-d H:i:s')}}--></label>
+					</div>
+				</div>
+				<div class="control-group">
+					<label for="username" class="control-label">质量系数</label>
+					<div class="controls">
+						<input name="coefficient" type="text" value="<!--{{info.coefficient}}-->" />
+					</div>
+				</div>
+				<!--{%endif%}-->
 
 				<div class="form-actions">
 					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
