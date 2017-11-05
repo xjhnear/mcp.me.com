@@ -67,7 +67,8 @@ class BatchController extends BackendController
 	}
 
 	public function postAjaxUploadFile(){
-		set_time_limit(0);
+		set_time_limit(90);
+		ini_set("memory_limit", "1024M");
 		$batch_code = Input::get('batch_code');
 		if(!Input::hasFile('append_file'))
 			return json_encode(array('state'=>0,'msg'=>'文件不存在'));
@@ -80,15 +81,6 @@ class BatchController extends BackendController
 		$newfilename = microtime() . '.' . $ext;
 		$target = $server_path . $newfilename;
 		$file->move($server_path,$newfilename);
-		require_once base_path() . '/libraries/PHPExcel.php';
-
-		$inputFileType = \PHPExcel_IOFactory::identify($target);
-		$objReader = \PHPExcel_IOFactory::createReader($inputFileType);
-		$objReader->setReadDataOnly(true);
-		$excel = $objReader->load($target,$encode='utf-8');
-
-		$arrExcel = $excel->getSheet(0)->toArray();
-
 		$input = array();
 		if($batch_code) {
 			$info_exists = PhoneBatch::getInfoByCode($batch_code);
@@ -102,18 +94,35 @@ class BatchController extends BackendController
 		}
 		$re_batch = PhoneBatch::save($input);
 
-		array_shift($arrExcel);
+		require_once base_path() . '/libraries/SpreadsheetReader/php-excel-reader/excel_reader2.php';
+		require_once base_path() . '/libraries/SpreadsheetReader/SpreadsheetReader.php';
+		$Reader = new \SpreadsheetReader($target);
+		$Sheets = $Reader -> Sheets();
 		$i = 0;
-		foreach ($arrExcel as $item) {
-			$data_tmp = array();
-			$data_tmp['batch_id'] = $re_batch;
-			$data_tmp['phone_number'] = isset($item[0])?$item[0]:'';
-			$data_tmp['operator'] = isset($item[1])?$item[1]:'';
-			$data_tmp['city'] = isset($item[2])?$item[2]:'';
-			$data_tmp['address'] = isset($item[3])?$item[3]:'';
-			$re_num = PhoneNumbers::save($data_tmp);
-			if ($re_num) $i++;
+		$sql="INSERT INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
+		foreach ($Sheets as $Index => $Name)
+		{
+			$Reader -> ChangeSheet($Index);
+			$j = 0;
+			foreach ($Reader as $Row)
+			{
+				if ($j > 0) {
+					$tmpstr = "'". $re_batch ."','". $Row[0] ."','". $Row[1] ."','". $Row[2] ."','". $Row[3] ."'";
+					$sql .= "(".$tmpstr."),";
+//					$data_tmp = array();
+//					$data_tmp['batch_id'] = $re_batch;
+//					$data_tmp['phone_number'] = isset($Row[0])?$Row[0]:'';
+//					$data_tmp['operator'] = isset($Row[1])?$Row[1]:'';
+//					$data_tmp['city'] = isset($Row[2])?$Row[2]:'';
+//					$data_tmp['address'] = isset($Row[3])?$Row[3]:'';
+//					$re_num = PhoneNumbers::save($data_tmp);
+					$i++;
+				}
+				$j++;
+			}
 		}
+		$sql = substr($sql,0,-1);   //去除最后的逗号
+		DB::insert($sql);
 
 		$data = array();
 		$data['batch_id'] = $re_batch;
@@ -129,6 +138,7 @@ class BatchController extends BackendController
 
 	public function postAjaxDownFile(){
 		ini_set('max_execution_time', '0');
+		ini_set("memory_limit", "1024M");
 		$batch_id = Input::get('batch_id');
 		$pageSize = Input::get('pageSize');
 		if(!$batch_id) return json_encode(array('state'=>0,'msg'=>'数据异常'));
