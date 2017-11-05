@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5859ff1-1d6d-4488-afaa-e4601347459e" name="默认的" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" />
     </list>
     <ignored path="mcp.me.com.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -36,7 +34,7 @@
       <file leaf-file-name="batch_list.twig" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-8.705882">
+            <state vertical-scroll-proportion="29.441177">
               <caret line="78" column="38" selection-start-line="78" selection-start-column="38" selection-end-line="78" selection-end-column="38" />
               <folding />
             </state>
@@ -46,12 +44,12 @@
       <file leaf-file-name="BatchController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.496799">
-              <caret line="68" column="41" selection-start-line="68" selection-start-column="41" selection-end-line="68" selection-end-column="41" />
+            <state vertical-scroll-proportion="1.6722151">
+              <caret line="215" column="48" selection-start-line="215" selection-start-column="48" selection-end-line="215" selection-end-column="48" />
               <folding>
                 <element signature="e#44#83#0#PHP" expanded="true" />
-                <marker date="1509854285612" expanded="true" signature="2901:2981" placeholder="INSERT INTO ${$usertable}... " />
-                <marker date="1509854285612" expanded="true" signature="8770:8797" placeholder="select * fro... m_phone_batch" />
+                <marker date="1509866201979" expanded="true" signature="2900:2980" placeholder="INSERT INTO ${$usertable}... " />
+                <marker date="1509866201979" expanded="true" signature="8769:8796" placeholder="select * fro... m_phone_batch" />
               </folding>
             </state>
           </provider>
@@ -589,8 +587,8 @@
           <caret line="48" column="65" selection-start-line="48" selection-start-column="54" selection-end-line="48" selection-end-column="65" />
           <folding>
             <element signature="e#44#83#0#PHP" expanded="true" />
-            <marker date="1509854285612" expanded="true" signature="2901:2981" placeholder="INSERT INTO ${$usertable}... " />
-            <marker date="1509854285612" expanded="true" signature="8770:8797" placeholder="select * fro... m_phone_batch" />
+            <marker date="1509866201979" expanded="true" signature="2900:2980" placeholder="INSERT INTO ${$usertable}... " />
+            <marker date="1509866201979" expanded="true" signature="8769:8796" placeholder="select * fro... m_phone_batch" />
           </folding>
         </state>
       </provider>
@@ -900,14 +898,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.705882">
-          <caret line="78" column="38" selection-start-line="78" selection-start-column="38" selection-end-line="78" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libraries/SpreadsheetReader/SpreadsheetReader.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="1.1818181">
@@ -934,14 +924,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="29.441177">
+          <caret line="78" column="38" selection-start-line="78" selection-start-column="38" selection-end-line="78" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.496799">
-          <caret line="68" column="41" selection-start-line="68" selection-start-column="41" selection-end-line="68" selection-end-column="41" />
+        <state vertical-scroll-proportion="1.6722151">
+          <caret line="215" column="48" selection-start-line="215" selection-start-column="48" selection-end-line="215" selection-end-column="48" />
           <folding>
             <element signature="e#44#83#0#PHP" expanded="true" />
-            <marker date="1509854285612" expanded="true" signature="2901:2981" placeholder="INSERT INTO ${$usertable}... " />
-            <marker date="1509854285612" expanded="true" signature="8770:8797" placeholder="select * fro... m_phone_batch" />
+            <marker date="1509866201979" expanded="true" signature="2900:2980" placeholder="INSERT INTO ${$usertable}... " />
+            <marker date="1509866201979" expanded="true" signature="8769:8796" placeholder="select * fro... m_phone_batch" />
           </folding>
         </state>
       </provider>
