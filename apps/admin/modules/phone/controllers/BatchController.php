@@ -76,7 +76,7 @@ class BatchController extends BackendController
 		$tmpfile = $file->getRealPath();
 		$filename = $file->getClientOriginalName();
 		$ext = $file->getClientOriginalExtension();
-		if(!in_array($ext,array('csv'))) return json_encode(array('state'=>0,'msg'=>'上传文件格式错误'));
+		if(!in_array($ext,array('csv','txt'))) return json_encode(array('state'=>0,'msg'=>'上传文件格式错误'));
 		$server_path = storage_path() . '/tmp/';
 		$newfilename = microtime() . '.' . $ext;
 		$target = $server_path . $newfilename;
@@ -105,10 +105,10 @@ class BatchController extends BackendController
 		$sql="INSERT INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
 
 		for ($j = 1; $j < $len_result; $j++) { //循环获取各字段值
-			$phone_number = $result[$j][0]; //中文转码
-			$operator = iconv('gb2312', 'utf-8', $result[$j][1]);
-			$city = iconv('gb2312', 'utf-8', $result[$j][2]);
-			$address = iconv('gb2312', 'utf-8', $result[$j][3]);
+			$phone_number = isset($result[$j][0])?$result[$j][0]:''; //中文转码
+			$operator = isset($result[$j][1])?$result[$j][1]:'';
+			$city = isset($result[$j][2])?$result[$j][2]:'';
+			$address = isset($result[$j][3])?$result[$j][3]:'';
 			$tmpstr = "'". $re_batch ."','". $phone_number ."','". $operator ."','". $city ."','". $address ."'";
 			$sql .= "(".$tmpstr."),";
 			$i++;

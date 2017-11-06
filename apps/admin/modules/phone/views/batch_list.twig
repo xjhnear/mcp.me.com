@@ -90,6 +90,14 @@
 					<p class="text-error card-line"></p>
 				</div>
 			</div>
+			<div id="InWaitDialog" style="display: none; height: 60px;width: 300px;">
+				<p style="text-align: center; vertical-align: central;">
+					请等待，正在导入数据  <img src="/static/img/loading_1.gif" />
+				</p>
+			</div>
+			<div class="progress" style="position:relative; margin-left:100px; margin-top:-24px;width:200px;padding: 1px; border-radius:3px; display:none">
+				<span class="bar" style="background-color: green; display:block; width:0%; height:20px;border-radius:3px;"></span><span class="percent" style="position:absolute; height:20px; display:inline-block;top:3px; left:2%; color:#fff">0%</span >
+			</div>
 		</div>
 	</div>
 </div>
@@ -110,18 +118,35 @@
 					<p class="text-error card-line"></p>
 				</div>
 			</div>
+			<div id="OutWaitDialog" style="display: none; height: 60px;width: 300px;">
+				<p style="text-align: center; vertical-align: central;">
+					请等待，正在导出数据  <img src="/static/img/loading_1.gif" />
+				</p>
+			</div>
 		</div>
 	</div>
 </div>
+
 <!-- 模态框（Modal） -->
 
 <!--{%endblock%}-->
-
+<!--{% block stylesheets %}-->
+<style type="text/css">
+	.progress{position:relative; margin-left:100px; margin-top:-24px;width:200px;padding: 1px; border-radius:3px; display:none}
+	.bar {background-color: green; display:block; width:0%; height:20px;border-radius:3px; }
+	.percent{position:absolute; height:20px; display:inline-block;top:3px; left:2%; color:#fff }
+</style>
+<!--{%endblock%}-->
 <!--{%block footer_js%}-->
+<script src="/static/js/jquery.form.js"></script>
 <script src="/static/js/laydate/laydate.js"></script>
 <script src="<!--{{asset('/static/js/ajaxfileupload.js')}}-->"></script>
 <script>
 	$(function(){
+		var bar = $('.bar');
+		var percent = $('.percent');
+		var progress = $(".progress");
+
 		$(".ajax-append").bind('click',function(){
 			var html=$("#dialog-append").html();
 			$.dialog({id:'pop-daoru-html',title:'提示',padding:2,content:html,width:410,height:120});
@@ -129,6 +154,7 @@
 			$("a.append_").bind('click',function(){
 				alertify.confirm('确认上传该文件？',function(e){
 					if(e && can_up){
+						$('#InWaitDialog').show();
 						var batch_code =  $("input[name='batch_code']").val();
 						can_up = false;
 						$.ajaxFileUpload({
@@ -137,8 +163,28 @@
 							secureuri :false,
 							fileElementId :'file_upload',
 							dataType : 'JSON',
-							success : function (data){
+						beforeSend: function() {
+							alert('12');
+							progress.show();
+							var percentVal = '0%';
+							bar.width(percentVal);
+							percent.html(percentVal);
+						},
+						progressall: function (e, data) {
+							progress.show();
+							var progress = parseInt(data.loaded / data.total * 100, 10);
+							bar.width(progress + '%');
+							percent.html(progress + '%');
+						},
+						uploadProgress: function(event, position, total, percentComplete) {
+							var percentVal = percentComplete + '%';
+							bar.width(percentVal);
+							percent.html(percentVal);
+						},
+
+						success : function (data){
 								can_up = true;
+								$('#InWaitDialog').hide();
 								data = eval("("+data+")");
 								if(data.state){
 									alertify.success(data.msg);
@@ -158,6 +204,7 @@
 			var html=$("#dialog-down").html();
 			$.dialog({id:'pop-daochu-html',title:'提示',padding:2,content:html,width:410,height:120});
 			$("a.down_").bind('click',function(){
+				$('#OutWaitDialog').show();
 				var batch_id = obj.attr('batch_id');
 				var pageSize =  $("input[name='pageSize']").val();
 				$.ajax({
@@ -166,6 +213,7 @@
 					data:{batch_id: batch_id,pageSize: pageSize},
 					dataType : 'JSON',
 					success : function (data){
+						$('#OutWaitDialog').hide();
 						if(data.state){
 							document.location.href =(data.url);
 							setTimeout(function(){location.reload();},1000);
