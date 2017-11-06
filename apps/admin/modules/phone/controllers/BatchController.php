@@ -76,7 +76,7 @@ class BatchController extends BackendController
 		$tmpfile = $file->getRealPath();
 		$filename = $file->getClientOriginalName();
 		$ext = $file->getClientOriginalExtension();
-		if(!in_array($ext,array('xls','xlsx','csv'))) return json_encode(array('state'=>0,'msg'=>'上传文件格式错误'));
+		if(!in_array($ext,array('csv'))) return json_encode(array('state'=>0,'msg'=>'上传文件格式错误'));
 		$server_path = storage_path() . '/tmp/';
 		$newfilename = microtime() . '.' . $ext;
 		$target = $server_path . $newfilename;
