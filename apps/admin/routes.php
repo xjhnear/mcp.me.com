@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\App;
 //Route::controller('home','HomeController');
 
 Route::get('/',function(){
-    return Redirect::to('/login');
+    return Redirect::to('/common/home/index');
 });
 
 Route::controller('login','LoginController');
