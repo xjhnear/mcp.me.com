@@ -69,6 +69,8 @@ class BatchController extends BackendController
 	public function postAjaxUploadFile(){
 		set_time_limit(0);
 		ini_set("memory_limit", "1024M");
+		ini_set("post_max_size", "100M");
+		ini_set("upload_max_filesize", "100M");
 		$batch_code = Input::get('batch_code');
 		if(!Input::hasFile('append_file'))
 			return json_encode(array('state'=>0,'msg'=>'文件不存在'));
