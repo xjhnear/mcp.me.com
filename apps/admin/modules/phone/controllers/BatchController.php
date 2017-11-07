@@ -60,7 +60,8 @@ class BatchController extends BackendController
 	{
 		$batch_id = Input::get('batch_id');
 		if($batch_id){
-			PhoneNumbers::delByBatchId($batch_id);
+			$sql="DELETE FROM m_phone_numbers WHERE batch_id=".$batch_id;
+			DB::delete($sql);
 			PhoneBatch::del($batch_id);
 		}
 		return json_encode(array('state'=>1,'msg'=>'批次删除成功'));
@@ -181,6 +182,45 @@ class BatchController extends BackendController
 
 		$url = '/downloads/'.$zipname.'.zip';
 		return json_encode(array('state'=>1,'url'=>$url));
+	}
+
+	public function postAjaxMerge(){
+		set_time_limit(0);
+		ini_set("memory_limit", "1024M");
+		$batch_code = Input::get('batch_code');
+		$ids = Input::get('ids');
+		$bids = Input::get('bids');
+
+		$input = array();
+		if($batch_code) {
+			$info_exists = PhoneBatch::getInfoByCode($batch_code);
+			if ($info_exists) {
+				return json_encode(array('state'=>0,'msg'=>'批次Code已存在'));
+			} else {
+				$input['batch_code'] = $batch_code;
+			}
+		} else {
+			return json_encode(array('state'=>0,'msg'=>'批次Code不能为空'));
+		}
+		$re_batch = PhoneBatch::save($input);
+		$i = 0;
+		foreach ($bids as $bid) {
+			$search['batch_id'] = $bid;
+			$i += PhoneNumbers::getCount($search);
+			$sql="UPDATE m_phone_numbers SET batch_id = ".$re_batch." WHERE batch_id=".$bid;
+			DB::update($sql);
+			PhoneBatch::del($bid);
+		}
+
+		$data = array();
+		$data['batch_id'] = $re_batch;
+		$data['count'] = $i;
+		$res = PhoneBatch::save($data);
+		if($res){
+			return json_encode(array("state"=>1,'msg'=>'批次合并成功'));
+		}else{
+			return json_encode(array('state'=>0,'msg'=>'批次合并失败'));
+		}
 	}
 
 	private function saveExcelToLocalFile($data,$filename,$pageIndex=null){
