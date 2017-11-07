@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b5859ff1-1d6d-4488-afaa-e4601347459e" name="默认的" comment="" />
+    <list default="true" id="b5859ff1-1d6d-4488-afaa-e4601347459e" name="默认的" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" />
+    </list>
     <ignored path="mcp.me.com.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -29,27 +32,31 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="batch_list.twig" pinned="false" current-in-tab="true">
+      <file leaf-file-name="batch_list.twig" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.48777506">
-              <caret line="98" column="22" selection-start-line="98" selection-start-column="22" selection-end-line="98" selection-end-column="22" />
+            <state vertical-scroll-proportion="-1.5465117">
+              <caret line="239" column="11" selection-start-line="239" selection-start-column="11" selection-end-line="239" selection-end-column="11" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BatchController.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="BatchController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.785714">
-              <caret line="160" column="72" selection-start-line="160" selection-start-column="72" selection-end-line="160" selection-end-column="72" />
+            <state vertical-scroll-proportion="0.32105264">
+              <caret line="169" column="47" selection-start-line="169" selection-start-column="47" selection-end-line="169" selection-end-column="47" />
               <folding>
                 <element signature="e#44#83#0#PHP" expanded="true" />
-                <marker date="1510026249601" expanded="true" signature="1467:1510" placeholder="DELETE FROM " />
-                <marker date="1510026249601" expanded="true" signature="2954:3034" placeholder="INSERT INTO m_phone_numbers... " />
-                <marker date="1510026249601" expanded="true" signature="6427:6494" placeholder="UPDATE m_pho... " />
-                <marker date="1510026249601" expanded="true" signature="9976:10056" placeholder="INSERT INTO m_phone_numbers... " />
+                <marker date="1510040781989" expanded="true" signature="1467:1510" placeholder="DELETE FROM " />
+                <marker date="1510040781989" expanded="true" signature="2954:3034" placeholder="INSERT INTO m_phone_numbers... " />
+                <marker date="1510040781989" expanded="true" signature="4907:4974" placeholder="UPDATE m_pho... " />
+                <marker date="1510040781989" expanded="true" signature="4907:5014" placeholder="UPDATE m_pho... " />
+                <marker date="1510040781989" expanded="true" signature="4907:5015" placeholder="UPDATE m_pho... " />
+                <marker date="1510040781989" expanded="true" signature="4907:5016" placeholder="UPDATE m_pho... " />
+                <marker date="1510040781989" expanded="true" signature="7637:7704" placeholder="UPDATE m_pho... " />
+                <marker date="1510040781989" expanded="true" signature="11186:11266" placeholder="INSERT INTO m_phone_numbers... " />
               </folding>
             </state>
           </provider>
@@ -58,11 +65,53 @@
       <file leaf-file-name="PhoneBatch.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/PhoneBatch.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.6785714">
               <caret line="16" column="27" selection-start-line="16" selection-start-column="27" selection-end-line="16" selection-end-column="27" />
               <folding>
                 <element signature="e#233#257#0#PHP" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="task-add.twig" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../task-add.twig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-7.137931">
+              <caret line="1796" column="28" selection-start-line="1796" selection-start-column="28" selection-end-line="1796" selection-end-column="28" />
+              <folding>
+                <marker date="1510026189825" expanded="true" signature="91937:91962" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="95636:95670" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="95873:95926" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="96654:96678" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="96867:96884" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="96950:97003" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="97352:97386" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="97589:97642" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="98370:98394" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="98578:98595" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="98693:98711" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="98735:98788" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="100093:100110" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="100300:100317" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="100508:100525" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="100765:100799" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="101000:101053" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="101794:101818" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="102001:102018" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="102114:102132" placeholder="..." />
+                <marker date="1510026189825" expanded="true" signature="102156:102209" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PhoneNumbers.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/PhoneNumbers.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-12.785714">
+              <caret line="31" column="35" selection-start-line="31" selection-start-column="29" selection-end-line="31" selection-end-column="35" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -566,14 +615,6 @@
     </PATH>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="53" column="50" selection-start-line="53" selection-start-column="39" selection-end-line="53" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -587,10 +628,14 @@
           <caret line="48" column="65" selection-start-line="48" selection-start-column="54" selection-end-line="48" selection-end-column="65" />
           <folding>
             <element signature="e#44#83#0#PHP" expanded="true" />
-            <marker date="1510026249601" expanded="true" signature="1467:1510" placeholder="DELETE FROM " />
-            <marker date="1510026249601" expanded="true" signature="2954:3034" placeholder="INSERT INTO m_phone_numbers... " />
-            <marker date="1510026249601" expanded="true" signature="6427:6494" placeholder="UPDATE m_pho... " />
-            <marker date="1510026249601" expanded="true" signature="9976:10056" placeholder="INSERT INTO m_phone_numbers... " />
+            <marker date="1510040781989" expanded="true" signature="1467:1510" placeholder="DELETE FROM " />
+            <marker date="1510040781989" expanded="true" signature="2954:3034" placeholder="INSERT INTO m_phone_numbers... " />
+            <marker date="1510040781989" expanded="true" signature="4907:4974" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="4907:5014" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="4907:5015" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="4907:5016" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="7637:7704" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="11186:11266" placeholder="INSERT INTO m_phone_numbers... " />
           </folding>
         </state>
       </provider>
@@ -886,13 +931,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/PhoneNumbers.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6171967">
-          <caret line="56" column="39" selection-start-line="56" selection-start-column="27" selection-end-line="56" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.53121316">
@@ -908,16 +946,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/PhoneBatch.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="27" selection-start-line="16" selection-start-column="27" selection-end-line="16" selection-end-column="27" />
-          <folding>
-            <element signature="e#233#257#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libraries/PHPExcel.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-2.909091">
@@ -926,25 +954,77 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php">
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/PhoneBatch.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.785714">
-          <caret line="160" column="72" selection-start-line="160" selection-start-column="72" selection-end-line="160" selection-end-column="72" />
+        <state vertical-scroll-proportion="-0.6785714">
+          <caret line="16" column="27" selection-start-line="16" selection-start-column="27" selection-end-line="16" selection-end-column="27" />
           <folding>
-            <element signature="e#44#83#0#PHP" expanded="true" />
-            <marker date="1510026249601" expanded="true" signature="1467:1510" placeholder="DELETE FROM " />
-            <marker date="1510026249601" expanded="true" signature="2954:3034" placeholder="INSERT INTO m_phone_numbers... " />
-            <marker date="1510026249601" expanded="true" signature="6427:6494" placeholder="UPDATE m_pho... " />
-            <marker date="1510026249601" expanded="true" signature="9976:10056" placeholder="INSERT INTO m_phone_numbers... " />
+            <element signature="e#233#257#0#PHP" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.48777506">
-          <caret line="98" column="22" selection-start-line="98" selection-start-column="22" selection-end-line="98" selection-end-column="22" />
+        <state vertical-scroll-proportion="-1.5465117">
+          <caret line="239" column="11" selection-start-line="239" selection-start-column="11" selection-end-line="239" selection-end-column="11" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../task-add.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.137931">
+          <caret line="1796" column="28" selection-start-line="1796" selection-start-column="28" selection-end-line="1796" selection-end-column="28" />
+          <folding>
+            <marker date="1510026189825" expanded="true" signature="91937:91962" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="95636:95670" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="95873:95926" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="96654:96678" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="96867:96884" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="96950:97003" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="97352:97386" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="97589:97642" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="98370:98394" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="98578:98595" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="98693:98711" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="98735:98788" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="100093:100110" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="100300:100317" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="100508:100525" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="100765:100799" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="101000:101053" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="101794:101818" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="102001:102018" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="102114:102132" placeholder="..." />
+            <marker date="1510026189825" expanded="true" signature="102156:102209" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/PhoneNumbers.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.785714">
+          <caret line="31" column="35" selection-start-line="31" selection-start-column="29" selection-end-line="31" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.32105264">
+          <caret line="169" column="47" selection-start-line="169" selection-start-column="47" selection-end-line="169" selection-end-column="47" />
+          <folding>
+            <element signature="e#44#83#0#PHP" expanded="true" />
+            <marker date="1510040781989" expanded="true" signature="1467:1510" placeholder="DELETE FROM " />
+            <marker date="1510040781989" expanded="true" signature="2954:3034" placeholder="INSERT INTO m_phone_numbers... " />
+            <marker date="1510040781989" expanded="true" signature="4907:4974" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="4907:5014" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="4907:5015" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="4907:5016" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="7637:7704" placeholder="UPDATE m_pho... " />
+            <marker date="1510040781989" expanded="true" signature="11186:11266" placeholder="INSERT INTO m_phone_numbers... " />
+          </folding>
         </state>
       </provider>
     </entry>

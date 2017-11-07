@@ -136,20 +136,58 @@ class BatchController extends BackendController
 		ini_set('max_execution_time', '0');
 		ini_set("memory_limit", "1024M");
 		$batch_id = Input::get('batch_id');
+		$downType = Input::get('downType');
 		$pageSize = Input::get('pageSize');
+		$batch_code_down = Input::get('batch_code_down');
 		if(!$batch_id) return json_encode(array('state'=>0,'msg'=>'数据异常'));
 		$info_batch = PhoneBatch::getInfo($batch_id);
 		if(!$info_batch) return json_encode(array('state'=>0,'msg'=>'批次不存在'));
 		$search = array();
-		$search['batch_id'] = $info_batch['batch_id'];
-		$batch_code = $info_batch['batch_code'];
 		$pageIndex = 1;
-		if ($pageSize > 0) {
-			$info_num_count = PhoneNumbers::getCount($search);
-			$pages = ceil($info_num_count/$pageSize);
+		$pages = 1;
+		$search['batch_id'] = $info_batch['batch_id'];
+		$info_num_count = PhoneNumbers::getCount($search);
+		if ($downType > 0) {
+			if($batch_code_down) {
+				$info_exists = PhoneBatch::getInfoByCode($batch_code_down);
+				if ($info_exists) {
+					return json_encode(array('state'=>0,'msg'=>'批次Code已存在'));
+				} else {
+					$input['batch_code'] = $batch_code_down;
+					$input['count'] = ($info_num_count>=$pageSize)?$pageSize:$info_num_count;
+				}
+			} else {
+				return json_encode(array('state'=>0,'msg'=>'批次Code不能为空'));
+			}
+			$re_batch = PhoneBatch::save($input);
+
+			$sql="UPDATE m_phone_numbers SET batch_id = ".$re_batch." WHERE batch_id=".$batch_id." ORDER BY num_id DESC LIMIT ".$pageSize;
+			DB::update($sql);
+			if ($info_num_count>$pageSize) {
+				$data = array();
+				$data['batch_id'] = $batch_id;
+				$data['count'] = $info_num_count-$pageSize;
+				$res = PhoneBatch::save($data);
+			} else {
+				PhoneBatch::del($batch_id);
+			}
+			$batch_id = $re_batch;
+			$search['batch_id'] = $re_batch;
+			$batch_code = $batch_code_down;
+
 		} else {
-			$pages = 1;
+			$pageSize = $info_num_count;
+			$search['batch_id'] = $info_batch['batch_id'];
+			$batch_code = $info_batch['batch_code'];
 		}
+
+//		if ($pageSize > 0) {
+//			$info_num_count = PhoneNumbers::getCount($search);
+//			$pages = ceil($info_num_count/$pageSize);
+//		} else {
+//			$pages = 1;
+//		}
+
 		while($pageIndex<=$pages) {
 			$info_num = PhoneNumbers::getList($search,$pageIndex,$pageSize);
 			if ($info_num) {
@@ -167,6 +205,7 @@ class BatchController extends BackendController
 			}
 			$pageIndex++;
 		}
+
 		$zipname = $batch_code .'--'. date('Ymd');
 		$zip = new \ZipArchive();
 		if($zip->open(public_path().'/downloads/'.$zipname.'.zip', \ZipArchive::CREATE) === TRUE) {

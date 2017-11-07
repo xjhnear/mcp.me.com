@@ -28,7 +28,7 @@
 			        <thead>
 						<tr>
 							<th class="col-20">
-								<input type="checkbox" name="all" value="" /><div class="btn-group">
+								<input class="ids" type="checkbox" name="all" value="" /><div class="btn-group">
 									<a data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></a>
 									<ul class="dropdown-menu">
 										<li><a href="javascript:void(0);" data-act="sgin" class="ajax-merge">合并</a></li>
@@ -48,7 +48,7 @@
 					<!--{%for item in datalist%}-->
 					<tr>
 						<td>
-							<input type="checkbox" name="ids" bid="<!--{{item.batch_id}}-->" />
+							<input class="ids" type="checkbox" name="ids" bid="<!--{{item.batch_id}}-->" />
 						</td>
 						<td><!--{{item.batch_id}}--></td>
 						<td><!--{{item.batch_code}}--></td>
@@ -112,9 +112,22 @@
 	<div id="dialog-down">
 		<div class="box-content">
 			<div class="control-group">
-				<label class="control-label">每个文件数据条数</label>
+				<label class="control-label">导出模式</label>
+				<div class="controls downType">
+					<input checked="checked" name="downType" type="radio" value="0">全部导出
+					<input name="downType" type="radio" value="1">拆分导出
+				</div>
+			</div>
+			<div class="control-group pageSize">
+				<label class="control-label">拆分数据条数</label>
 				<div class="controls">
 					<input type="text" name="pageSize" class="input-large" value="" />
+				</div>
+			</div>
+			<div class="control-group batch_code_down">
+				<label class="control-label">批次Code</label>
+				<div class="controls">
+					<input type="text" name="batch_code_down" class="input-large" value="" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -132,7 +145,7 @@
 	</div>
 </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<!--批次合并-->
 	<div id="dialog-merge">
 		<div class="box-content">
@@ -165,7 +178,7 @@
 <script src="<!--{{asset('/static/js/ajaxfileupload.js')}}-->"></script>
 <script>
 	$(function(){
-		$('input').iCheck({
+		$('input.ids').iCheck({
 			checkboxClass: 'icheckbox_square-orange',
 			radioClass: 'iradio_square-orange',
 			increaseArea: '20%' // optional
@@ -233,11 +246,13 @@
 			$("a.down_").bind('click',function(){
 				$('#OutWaitDialog').show();
 				var batch_id = obj.attr('batch_id');
+				var downType =  $('input:radio[name="downType"]:checked').val();
 				var pageSize =  $("input[name='pageSize']").val();
+				var batch_code_down =  $("input[name='batch_code_down']").val();
 				$.ajax({
 					url:'/phone/batch/ajax-down-file',
 					type : 'post',
-					data:{batch_id: batch_id,pageSize: pageSize},
+					data:{batch_id: batch_id,downType: downType,pageSize: pageSize,batch_code_down: batch_code_down},
 					dataType : 'JSON',
 					success : function (data){
 						$('#OutWaitDialog').hide();
