@@ -72,6 +72,7 @@ class BatchController extends BackendController
 		ini_set("memory_limit", "1024M");
 		ini_set("post_max_size", "100M");
 		ini_set("upload_max_filesize", "100M");
+		setlocale(LC_ALL, 'zh_CN');
 		$batch_code = Input::get('batch_code');
 		if(!Input::hasFile('append_file'))
 			return json_encode(array('state'=>0,'msg'=>'文件不存在'));
@@ -108,10 +109,11 @@ class BatchController extends BackendController
 		$sql="INSERT INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
 
 		for ($j = 1; $j < $len_result; $j++) { //循环获取各字段值
-			$phone_number = isset($result[$j][0])?$result[$j][0]:''; //中文转码
-			$operator = isset($result[$j][1])?$result[$j][1]:'';
-			$city = isset($result[$j][2])?$result[$j][2]:'';
-			$address = isset($result[$j][3])?$result[$j][3]:'';
+			$phone_number = isset($result[$j][0])?self::characet($result[$j][0]):''; //中文转码
+			$operator = isset($result[$j][1])?self::characet($result[$j][1]):'';
+			$city = isset($result[$j][2])?self::characet($result[$j][2]):'';
+			$address = isset($result[$j][3])?self::characet($result[$j][3]):'';
+			if ($phone_number==''&&$operator==''&&$city==''&&$address=='') continue;
 			$tmpstr = "'". $re_batch ."','". $phone_number ."','". $operator ."','". $city ."','". $address ."'";
 			$sql .= "(".$tmpstr."),";
 			$i++;
@@ -321,12 +323,21 @@ class BatchController extends BackendController
 				}
 			}
 			for ($i = 0; $i < $num; $i++) {
-				$data[$i] = trim($data[$i], "\xEF\xBB\xBF");
 				$out[$n][$i] = $data[$i];
 			}
 			$n++;
 		}
 		return $out;
+	}
+
+	private function characet($data){
+		if( !empty($data) ){
+			$fileType = mb_detect_encoding($data , array('UTF-8','GBK','LATIN1','BIG5')) ;
+			if( $fileType != 'UTF-8'){
+				 $data = mb_convert_encoding($data ,'utf-8' , $fileType.'//IGNORE');
+			}
+		}
+		return $data;
 	}
 
 	private function export_csv($filename,$data) {
