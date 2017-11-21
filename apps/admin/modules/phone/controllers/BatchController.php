@@ -106,7 +106,7 @@ class BatchController extends BackendController
 			return json_encode(array('state'=>0,'msg'=>'没有任何数据'));
 		}
 		$i = 0;
-		$sql="INSERT INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
+		$sql="INSERT IGNORE INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
 
 		for ($j = 1; $j < $len_result; $j++) { //循环获取各字段值
 			$phone_number = isset($result[$j][0])?self::characet($result[$j][0]):''; //中文转码
@@ -116,11 +116,15 @@ class BatchController extends BackendController
 			if ($phone_number==''&&$operator==''&&$city==''&&$address=='') continue;
 			$tmpstr = "'". $re_batch ."','". $phone_number ."','". $operator ."','". $city ."','". $address ."'";
 			$sql .= "(".$tmpstr."),";
-			$i++;
+			//$i++;
 		}
 		fclose($handle); //关闭指针
 		$sql = substr($sql,0,-1);   //去除最后的逗号
 		DB::insert($sql);
+
+		$search['batch_id'] = $re_batch;
+		$info_num_count = PhoneNumbers::getCount($search);
+		$i = $info_num_count;
 
 		$data = array();
 		$data['batch_id'] = $re_batch;

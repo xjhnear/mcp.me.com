@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-11-06 10:11:25
+Date: 2017-11-21 13:19:03
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -95,7 +95,7 @@ CREATE TABLE `m_phone_batch` (
   `is_new` int(6) NOT NULL DEFAULT '1' COMMENT '是否新批次',
   PRIMARY KEY (`batch_id`),
   UNIQUE KEY `index_batch_code` (`batch_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of m_phone_batch
@@ -115,8 +115,9 @@ CREATE TABLE `m_phone_numbers` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`num_id`),
+  UNIQUE KEY `index_phone_number` (`phone_number`) USING BTREE,
   KEY `index_batch_id` (`batch_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=22604 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=517551 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of m_phone_numbers
