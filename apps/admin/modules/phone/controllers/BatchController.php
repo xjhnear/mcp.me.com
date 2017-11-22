@@ -126,13 +126,17 @@ class BatchController extends BackendController
 		$info_num_count = PhoneNumbers::getCount($search);
 		$i = $info_num_count;
 
+		if ($i == 0) {
+			PhoneBatch::del($re_batch);
+			return json_encode(array('state'=>0,'msg'=>'批次添加失败,所有导入数据均已存在'));
+		}
 		$data = array();
 		$data['batch_id'] = $re_batch;
 		$data['count'] = $i;
 		$res = PhoneBatch::save($data);
 
 		if($res){
-			return json_encode(array("state"=>1,'msg'=>'批次添加成功'));
+			return json_encode(array("state"=>1,'msg'=>'批次添加成功,共导入数据'.$i.'条'));
 		}else{
 			return json_encode(array('state'=>0,'msg'=>'批次添加失败'));
 		}
