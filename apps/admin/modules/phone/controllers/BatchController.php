@@ -323,7 +323,7 @@ class BatchController extends BackendController
 		while ($data = fgetcsv($handle, 10000)) {
 			$num = count($data);
 			if ($num == 1) {
-				$data[0] = trim($data[0], "\xEF\xBB\xBF");
+				//$data[0] = trim($data[0], "\xEF\xBB\xBF");
 				if (strpos($data[0],"\t") > 0) {
 					$data[0] = preg_replace("/\t/",",",$data[0]);
 					$data = explode(',',$data[0]);
