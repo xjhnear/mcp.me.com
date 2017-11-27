@@ -28,6 +28,9 @@ class BatchController extends BackendController
 		$pager = Paginator::make(array(),$total,$pageSize);
 		$pager->appends($search);
 		$data['pagelinks'] = $pager->links();
+		$sql="SELECT DISTINCT category FROM m_phone_batch WHERE category <> ''";
+		$category_arr = DB::select($sql);
+		$data['category_arr'] = $category_arr;
 		return $this->display('batch_list',$data);
 	}
 	
@@ -46,7 +49,7 @@ class BatchController extends BackendController
 	
 	public function postSave()
 	{
-		$input = Input::only('batch_id','batch_code','coefficient');
+		$input = Input::only('batch_id','batch_code','coefficient','category');
 
 		$result = PhoneBatch::save($input);
 		if($result){
@@ -74,6 +77,7 @@ class BatchController extends BackendController
 		ini_set("upload_max_filesize", "100M");
 		setlocale(LC_ALL, 'zh_CN');
 		$batch_code = Input::get('batch_code');
+		$category = Input::get('category','');
 		if(!Input::hasFile('append_file'))
 			return json_encode(array('state'=>0,'msg'=>'文件不存在'));
 		$file = Input::file('append_file');
@@ -92,6 +96,7 @@ class BatchController extends BackendController
 				return json_encode(array('state'=>0,'msg'=>'批次Code已存在'));
 			} else {
 				$input['batch_code'] = $batch_code;
+				$input['category'] = $category;
 			}
 		} else {
 			return json_encode(array('state'=>0,'msg'=>'批次Code不能为空'));
@@ -238,6 +243,7 @@ class BatchController extends BackendController
 		set_time_limit(0);
 		ini_set("memory_limit", "1024M");
 		$batch_code = Input::get('batch_code');
+		$category = Input::get('category','');
 		$ids = Input::get('ids');
 		$bids = Input::get('bids');
 
@@ -248,6 +254,7 @@ class BatchController extends BackendController
 				return json_encode(array('state'=>0,'msg'=>'批次Code已存在'));
 			} else {
 				$input['batch_code'] = $batch_code;
+				$input['category'] = $category;
 			}
 		} else {
 			return json_encode(array('state'=>0,'msg'=>'批次Code不能为空'));

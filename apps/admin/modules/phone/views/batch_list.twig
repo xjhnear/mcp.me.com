@@ -37,6 +37,7 @@
 							</th>
 						    <th class="col-50">ID</th>
 							<th class="col-150">批次Code</th>
+							<th class="col-150">分类</th>
 							<th class="col-150">数据量</th>
 							<th class="col-150">创建时间</th>
 							<th class="col-150">导出时间</th>
@@ -52,6 +53,7 @@
 						</td>
 						<td><!--{{item.batch_id}}--></td>
 						<td><!--{{item.batch_code}}--></td>
+						<td><!--{{item.category}}--></td>
 						<td><!--{{item.count}}--></td>
 						<td><!--{{item.created_at|date('Y-m-d H:i:s')}}--></td>
 						<!--{%if item.is_new==1 %}-->
@@ -86,6 +88,17 @@
 				<label class="control-label">批次Code  <a href="/static/eg.csv" >点击下载格式样本</a></label>
 				<div class="controls">
 					<input type="text" name="batch_code" class="input-large" value="" />
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">分类</label>
+				<div class="controls">
+					<span style="margin-left:100px;width:18px;overflow:hidden;">
+					<select style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.value">
+						<!--{%for category in category_arr%}-->
+						<option value="<!--{{category.category}}-->"><!--{{category.category}}--></option>
+						<!--{%endfor%}-->
+					</select></span><input name="category" style="width:90px;position:absolute;left:62px;border: none;margin-top: 4px;">
 				</div>
 			</div>
 			<div class="control-group">
@@ -156,6 +169,17 @@
 				</div>
 			</div>
 			<div class="control-group">
+				<label class="control-label">分类</label>
+				<div class="controls">
+					<span style="margin-left:100px;width:18px;overflow:hidden;">
+					<select style="width:118px;margin-left:-100px" onchange="document.getElementsByName('category_m').value=this.value">
+						<!--{%for category in category_arr%}-->
+						<option value="<!--{{category.category}}-->"><!--{{category.category}}--></option>
+						<!--{%endfor%}-->
+					</select></span><input name="category_m" style="width:90px;position:absolute;left:125px;border: none;margin-top: 4px;">
+				</div>
+			</div>
+			<div class="control-group">
 				<div class="controls">
 					<a href="javascript:void(0);" class="btn btn-primary merge_">确定</a>
 					<p class="text-error card-line"></p>
@@ -186,7 +210,6 @@
 		var bar = $('.bar');
 		var percent = $('.percent');
 		var progress = $(".progress");
-
 		$(".ajax-append").bind('click',function(){
 			var html=$("#dialog-append").html();
 			$.dialog({id:'pop-daoru-html',title:'提示',padding:2,content:html,width:410,height:120});
@@ -196,9 +219,10 @@
 					if(e && can_up){
 						$('#InWaitDialog').show();
 						var batch_code =  $("input[name='batch_code']").val();
+						var category =  $("input[name='category']").val();
 						can_up = false;
 						$.ajaxFileUpload({
-							url:'/phone/batch/ajax-upload-file?batch_code='+batch_code,
+							url:'/phone/batch/ajax-upload-file?batch_code='+batch_code+'&category='+category,
 							type : 'post',
 							secureuri :false,
 							fileElementId :'file_upload',
@@ -306,10 +330,11 @@
 			$("a.merge_").bind('click',function(){
 				$('#MergeWaitDialog').show();
 				var batch_code =  $("input[name='batch_code_new']").val();
+				var category =  $("input[name='category_m']").val();
 				$.ajax({
 					url:'/phone/batch/ajax-merge',
 					type : 'post',
-					data:{ids: ids,bids: bids,batch_code: batch_code},
+					data:{ids: ids,bids: bids,batch_code: batch_code,category: category},
 					dataType : 'JSON',
 					success : function (data){
 						$('#MergeWaitDialog').hide();
