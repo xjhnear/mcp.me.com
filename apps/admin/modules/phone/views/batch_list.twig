@@ -228,7 +228,7 @@
 								data = eval("("+data+")");
 								if(data.state){
 									alertify.success(data.msg);
-									setTimeout(function(){location.reload();},1000);
+									setTimeout(function(){location.reload();},3000);
 								}else{
 									alertify.error(data.msg);
 								}

@@ -106,6 +106,7 @@ class BatchController extends BackendController
 			return json_encode(array('state'=>0,'msg'=>'没有任何数据'));
 		}
 		$i = 0;
+		$j = 0;
 		$sql="INSERT IGNORE INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
 
 		for ($j = 1; $j < $len_result; $j++) { //循环获取各字段值
@@ -116,7 +117,7 @@ class BatchController extends BackendController
 			if ($phone_number==''&&$operator==''&&$city==''&&$address=='') continue;
 			$tmpstr = "'". $re_batch ."','". $phone_number ."','". $operator ."','". $city ."','". $address ."'";
 			$sql .= "(".$tmpstr."),";
-			//$i++;
+			$j++;
 		}
 		fclose($handle); //关闭指针
 		$sql = substr($sql,0,-1);   //去除最后的逗号
@@ -136,7 +137,7 @@ class BatchController extends BackendController
 		$res = PhoneBatch::save($data);
 
 		if($res){
-			return json_encode(array("state"=>1,'msg'=>'批次添加成功,共导入数据'.$i.'条'));
+			return json_encode(array("state"=>1,'msg'=>'批次添加成功,文件读取数据'.$j.'条,共实际导入数据'.$i.'条'));
 		}else{
 			return json_encode(array('state'=>0,'msg'=>'批次添加失败'));
 		}
