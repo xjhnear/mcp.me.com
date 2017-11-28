@@ -19,7 +19,7 @@ class BatchController extends BackendController
 	public function getList()
 	{
 		$pageIndex = Input::get('page',1);
-		$search = Input::only('batch_code');
+		$search = Input::only('batch_code','category');
 		$pageSize = 10;
 		$data = array();
 		$data['datalist'] = PhoneBatch::getList($search,$pageIndex,$pageSize);
