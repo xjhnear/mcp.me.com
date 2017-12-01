@@ -30,7 +30,7 @@ final class PhoneBatch extends Model implements IModel
 		$tb = self::db();
 		if(isset($search['batch_code']) && !empty($search['batch_code'])) $tb = $tb->where('batch_code','like','%'.$search['batch_code'].'%');
 		if(isset($search['category']) && !empty($search['category'])) $tb = $tb->where('category','=',$search['category']);
-		return $tb->orderBy('is_new','desc')->orderBy('down_at','desc')->forPage($pageIndex,$pageSize)->get();
+		return $tb->orderBy('is_new','desc')->orderBy('down_at','desc')->orderBy('created_at','desc')->forPage($pageIndex,$pageSize)->get();
 	}
 
 	public static function getCount($search)
