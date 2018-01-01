@@ -1,0 +1,245 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+	<div class="span12">
+	    <div class="box box-color box-bordered">
+			<div class="box-title">
+				<h3>
+					<i class="icon-table"></i>
+					类别管理
+					<span class="badge badge-warning"><!--{{totalcount}}--></span>
+				</h3>
+				<div class="actions">
+				    <form action="<!--{{url('phone/category/list')}}-->" class="">
+				    <table class="table-filter">				        
+				        <tr>
+							<td><a class="btn btn-teal ajax-merge" href="javascript:void(0);">合并批次</a></td>
+				        </tr>
+				    </table>
+				    </form>
+				</div>
+			</div>
+			<div class="box-content nopadding">
+			    <table class="table table-hover table-nomargin">
+			        <thead>
+						<tr>
+							<th class="col-20">
+								<input class="ids" type="checkbox" name="all" value="" /><div class="btn-group">
+									<a data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></a>
+									<ul class="dropdown-menu">
+										<li><a href="javascript:void(0);" data-act="sgin" class="ajax-merge">合并</a></li>
+									</ul>
+								</div>
+							</th>
+						    <th class="col-50">ID</th>
+							<th class="col-150">批次Code</th>
+							<th class="col-150">分类</th>
+							<th class="col-150">数据量</th>
+							<th class="col-150">创建时间</th>
+							<th class="col-150">导出时间</th>
+							<th class="col-150">质量系数</th>
+							<th class="table-btn-group">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+					<!--{%for item in datalist%}-->
+					<tr>
+						<td>
+							<input class="ids" type="checkbox" name="ids" bid="<!--{{item.batch_id}}-->" />
+						</td>
+						<td><!--{{item.batch_id}}--></td>
+						<td><!--{{item.batch_code}}--></td>
+						<td><!--{{item.category}}--></td>
+						<td><!--{{item.count}}--></td>
+						<td><!--{{item.created_at|date('Y-m-d H:i:s')}}--></td>
+						<!--{%if item.is_new==1 %}-->
+						<td></td>
+						<!--{%else%}-->
+						<td><!--{{item.down_at|date('Y-m-d H:i:s')}}--></td>
+						<!--{%endif%}-->
+						<td><!--{{item.coefficient}}--></td>
+						<td>
+							<a href="<!--{{url('phone/batch/edit',{'admin_id':item.batch_id})}}-->" class="btn btn-primary">编辑</a>
+							<a class="btn btn-teal ajax-down" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">导出</a>
+						</td>
+					</tr>
+					<!--{%endfor%}-->
+					</tbody>
+			    </table>
+			    <div class="pagelink">
+			        <!--{{pagelinks}}-->
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<!--批次导出-->
+	<div id="dialog-down">
+		<div class="box-content">
+			<div class="control-group">
+				<label class="control-label">导出模式</label>
+				<div class="controls downType">
+					<input checked="checked" name="downType" type="radio" value="0">全部导出
+					<input name="downType" type="radio" value="1">拆分导出
+				</div>
+			</div>
+			<div class="control-group pageSize">
+				<label class="control-label">拆分数据条数</label>
+				<div class="controls">
+					<input type="text" name="pageSize" class="input-large" value="" />
+				</div>
+			</div>
+			<div class="control-group batch_code_down">
+				<label class="control-label">批次Code</label>
+				<div class="controls">
+					<input type="text" name="batch_code_down" class="input-large" value="" />
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<a href="javascript:void(0);" class="btn btn-primary down_">确定</a>
+					<p class="text-error card-line"></p>
+				</div>
+			</div>
+			<div id="OutWaitDialog" style="display: none; height: 60px;width: 300px;">
+				<p style="text-align: center; vertical-align: central;">
+					请等待，正在导出数据  <img src="/static/img/loading_1.gif" />
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<!--批次合并-->
+	<div id="dialog-merge">
+		<div class="box-content">
+			<div class="control-group">
+				<label class="control-label">批次Code</label>
+				<div class="controls">
+					<input type="text" name="batch_code_new" class="input-large" value="" />
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label">分类</label>
+				<div class="controls">
+					<span style="margin-left:100px;width:18px;overflow:hidden;">
+					<select style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.value">
+						<option value="">请选择</option>
+						<!--{%for category in category_arr%}-->
+						<option value="<!--{{category.category}}-->"><!--{{category.category}}--></option>
+						<!--{%endfor%}-->
+					</select></span><input name="category_m" style="width:90px;position:absolute;left:125px;border: none;margin-top: 4px;">
+				</div>
+			</div>
+			<div class="control-group">
+				<div class="controls">
+					<a href="javascript:void(0);" class="btn btn-primary merge_">确定</a>
+					<p class="text-error card-line"></p>
+				</div>
+			</div>
+			<div id="MergeWaitDialog" style="display: none; height: 60px;width: 300px;">
+				<p style="text-align: center; vertical-align: central;">
+					请等待，正在合并数据  <img src="/static/img/loading_1.gif" />
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 模态框（Modal） -->
+
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script src="<!--{{asset('/static/js/ajaxfileupload.js')}}-->"></script>
+<script>
+	$(function(){
+		$('input.ids').iCheck({
+			checkboxClass: 'icheckbox_square-orange',
+			radioClass: 'iradio_square-orange',
+			increaseArea: '20%' // optional
+		});
+		var bar = $('.bar');
+		var percent = $('.percent');
+		var progress = $(".progress");
+
+		$(".ajax-down").bind('click',function(){
+			var obj = $(this);
+			var html=$("#dialog-down").html();
+			$.dialog({id:'pop-daochu-html',title:'提示',padding:2,content:html,width:410,height:120});
+			$("a.down_").bind('click',function(){
+				$('#OutWaitDialog').show();
+				var batch_id = obj.attr('batch_id');
+				var downType =  $('input:radio[name="downType"]:checked').val();
+				var pageSize =  $("input[name='pageSize']").val();
+				var batch_code_down =  $("input[name='batch_code_down']").val();
+				$.ajax({
+					url:'/phone/batch/ajax-down-file',
+					type : 'post',
+					data:{batch_id: batch_id,downType: downType,pageSize: pageSize,batch_code_down: batch_code_down},
+					dataType : 'JSON',
+					success : function (data){
+						$('#OutWaitDialog').hide();
+						if(data.state){
+							document.location.href =(data.url);
+							setTimeout(function(){location.reload();},1000);
+						}else{
+							alertify.error(data.msg);
+						}
+					}
+				})
+
+			});
+
+		});
+
+		$(".ajax-merge").bind('click',function(){
+			var obj = $(this);
+			var ids = [];
+			var bids = [];
+			$('input[name="ids"]:checked').each(function(){
+				ids.push($(this).val());
+				bids.push($(this).attr('bid'));
+			});
+			if(ids.length==0) return false;
+			var html=$("#dialog-merge").html();
+			$.dialog({id:'pop-merge-html',title:'提示',padding:2,content:html,width:410,height:120});
+			$("a.merge_").bind('click',function(){
+				$('#MergeWaitDialog').show();
+				var batch_code =  $("input[name='batch_code_new']").val();
+				var category =  $("input[name='category_m']").val();
+				$.ajax({
+					url:'/phone/batch/ajax-merge',
+					type : 'post',
+					data:{ids: ids,bids: bids,batch_code: batch_code,category: category},
+					dataType : 'JSON',
+					success : function (data){
+						$('#MergeWaitDialog').hide();
+						if(data.state){
+							alertify.success(data.msg);
+							setTimeout(function(){location.reload();},1000);
+						}else{
+							alertify.error(data.msg);
+						}
+					}
+				})
+
+			});
+
+		});
+
+		$('input[name="all"]').on('ifChecked',function(event){
+			$('input[name="ids"]').iCheck('check');
+		});
+
+		$('input[name="all"]').on('ifUnchecked',function(event){
+			$('input[name="ids"]').iCheck('uncheck');
+		});
+
+	});
+</script>
+<!--{%endblock%}-->
