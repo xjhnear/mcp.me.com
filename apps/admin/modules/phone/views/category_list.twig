@@ -13,7 +13,7 @@
 				    <form action="<!--{{url('phone/category/list')}}-->" class="">
 				    <table class="table-filter">				        
 				        <tr>
-							<td><a class="btn btn-teal ajax-merge" href="javascript:void(0);">合并批次</a></td>
+							<td><a class="btn btn-teal ajax-merge" href="javascript:void(0);">合并分类</a></td>
 				        </tr>
 				    </table>
 				    </form>
@@ -32,12 +32,10 @@
 								</div>
 							</th>
 						    <th class="col-50">ID</th>
-							<th class="col-150">批次Code</th>
-							<th class="col-150">分类</th>
+							<th class="col-150">分类名</th>
 							<th class="col-150">数据量</th>
+							<th class="col-200">说明</th>
 							<th class="col-150">创建时间</th>
-							<th class="col-150">导出时间</th>
-							<th class="col-150">质量系数</th>
 							<th class="table-btn-group">操作</th>
 						</tr>
 					</thead>
@@ -45,22 +43,16 @@
 					<!--{%for item in datalist%}-->
 					<tr>
 						<td>
-							<input class="ids" type="checkbox" name="ids" bid="<!--{{item.batch_id}}-->" />
+							<input class="ids" type="checkbox" name="ids" bid="<!--{{item.category_id}}-->" />
 						</td>
-						<td><!--{{item.batch_id}}--></td>
-						<td><!--{{item.batch_code}}--></td>
-						<td><!--{{item.category}}--></td>
+						<td><!--{{item.category_id}}--></td>
+						<td><!--{{item.name}}--></td>
 						<td><!--{{item.count}}--></td>
+						<td>联通:<!--{{item.unicom}}-->移动:<!--{{item.mobile}}-->电信:<!--{{item.telecom}}--></td>
 						<td><!--{{item.created_at|date('Y-m-d H:i:s')}}--></td>
-						<!--{%if item.is_new==1 %}-->
-						<td></td>
-						<!--{%else%}-->
-						<td><!--{{item.down_at|date('Y-m-d H:i:s')}}--></td>
-						<!--{%endif%}-->
-						<td><!--{{item.coefficient}}--></td>
 						<td>
-							<a href="<!--{{url('phone/batch/edit',{'admin_id':item.batch_id})}}-->" class="btn btn-primary">编辑</a>
-							<a class="btn btn-teal ajax-down" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">导出</a>
+							<a href="<!--{{url('phone/batch/list?category=',{'id':'storeid','type':item.category_id})}}-->" class="btn btn-primary">查看详情</a>
+							<a class="btn btn-teal ajax-down" category_id="<!--{{item.category_id}}-->" href="javascript:void(0);">导出</a>
 						</td>
 					</tr>
 					<!--{%endfor%}-->
@@ -92,10 +84,10 @@
 					<input type="text" name="pageSize" class="input-large" value="" />
 				</div>
 			</div>
-			<div class="control-group batch_code_down">
+			<div class="control-group category_code_down">
 				<label class="control-label">批次Code</label>
 				<div class="controls">
-					<input type="text" name="batch_code_down" class="input-large" value="" />
+					<input type="text" name="category_code_down" class="input-large" value="" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -120,7 +112,7 @@
 			<div class="control-group">
 				<label class="control-label">批次Code</label>
 				<div class="controls">
-					<input type="text" name="batch_code_new" class="input-large" value="" />
+					<input type="text" name="category_code_new" class="input-large" value="" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -173,14 +165,14 @@
 			$.dialog({id:'pop-daochu-html',title:'提示',padding:2,content:html,width:410,height:120});
 			$("a.down_").bind('click',function(){
 				$('#OutWaitDialog').show();
-				var batch_id = obj.attr('batch_id');
+				var category_id = obj.attr('category_id');
 				var downType =  $('input:radio[name="downType"]:checked').val();
 				var pageSize =  $("input[name='pageSize']").val();
-				var batch_code_down =  $("input[name='batch_code_down']").val();
+				var category_code_down =  $("input[name='category_code_down']").val();
 				$.ajax({
-					url:'/phone/batch/ajax-down-file',
+					url:'/phone/category/ajax-down-file',
 					type : 'post',
-					data:{batch_id: batch_id,downType: downType,pageSize: pageSize,batch_code_down: batch_code_down},
+					data:{category_id: category_id,downType: downType,pageSize: pageSize,category_code_down: category_code_down},
 					dataType : 'JSON',
 					success : function (data){
 						$('#OutWaitDialog').hide();
@@ -210,12 +202,12 @@
 			$.dialog({id:'pop-merge-html',title:'提示',padding:2,content:html,width:410,height:120});
 			$("a.merge_").bind('click',function(){
 				$('#MergeWaitDialog').show();
-				var batch_code =  $("input[name='batch_code_new']").val();
+				var category_code =  $("input[name='category_code_new']").val();
 				var category =  $("input[name='category_m']").val();
 				$.ajax({
-					url:'/phone/batch/ajax-merge',
+					url:'/phone/category/ajax-merge',
 					type : 'post',
-					data:{ids: ids,bids: bids,batch_code: batch_code,category: category},
+					data:{ids: ids,bids: bids,category_code: category_code,category: category},
 					dataType : 'JSON',
 					success : function (data){
 						$('#MergeWaitDialog').hide();

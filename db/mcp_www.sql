@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50714
 File Encoding         : 65001
 
-Date: 2017-11-21 13:19:03
+Date: 2018-01-02 17:56:06
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -81,6 +81,26 @@ INSERT INTO `core_module` VALUES ('2', 'core', '高级管理', 'admin', '包括�
 INSERT INTO `core_module` VALUES ('4', 'all', '手机号码管理', 'phone', '包括手机号码管理、导入、导出管理等', '0', '9');
 
 -- ----------------------------
+-- Table structure for m_category
+-- ----------------------------
+DROP TABLE IF EXISTS `m_category`;
+CREATE TABLE `m_category` (
+  `category_id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '分类ID',
+  `name` varchar(50) DEFAULT NULL COMMENT '分类名',
+  `count` int(20) DEFAULT '0' COMMENT '数量',
+  `unicom` int(20) DEFAULT '0' COMMENT '联通',
+  `mobile` int(20) DEFAULT '0' COMMENT '移动',
+  `telecom` int(20) DEFAULT '0' COMMENT '电信',
+  `created_at` int(11) unsigned NOT NULL COMMENT '创建时间',
+  `updated_at` int(11) unsigned NOT NULL COMMENT '修改时间',
+  PRIMARY KEY (`category_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+-- Records of m_category
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for m_phone_batch
 -- ----------------------------
 DROP TABLE IF EXISTS `m_phone_batch`;
@@ -89,13 +109,17 @@ CREATE TABLE `m_phone_batch` (
   `batch_code` varchar(50) NOT NULL DEFAULT '' COMMENT '批次Code',
   `count` int(11) NOT NULL DEFAULT '0' COMMENT '数据量',
   `coefficient` varchar(50) NOT NULL DEFAULT '' COMMENT '系数',
+  `category` int(11) DEFAULT NULL COMMENT '分类',
   `created_at` int(11) unsigned NOT NULL COMMENT '创建时间',
   `updated_at` int(11) unsigned NOT NULL COMMENT '修改时间',
   `down_at` int(11) unsigned DEFAULT NULL COMMENT '导出时间',
   `is_new` int(6) NOT NULL DEFAULT '1' COMMENT '是否新批次',
+  `unicom` int(20) DEFAULT '0' COMMENT '联通',
+  `mobile` int(20) DEFAULT '0' COMMENT '移动',
+  `telecom` int(20) DEFAULT '0' COMMENT '电信',
   PRIMARY KEY (`batch_id`),
   UNIQUE KEY `index_batch_code` (`batch_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of m_phone_batch
@@ -115,9 +139,8 @@ CREATE TABLE `m_phone_numbers` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`num_id`),
-  UNIQUE KEY `index_phone_number` (`phone_number`) USING BTREE,
   KEY `index_batch_id` (`batch_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=517551 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=919538 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of m_phone_numbers

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Paginator;
 
 use Youxiduo\Phone\Model\PhoneBatch;
 use Youxiduo\Phone\Model\PhoneNumbers;
+use Youxiduo\Phone\Model\Category;
 
 use Illuminate\Support\Facades\DB;
 
@@ -28,8 +29,7 @@ class BatchController extends BackendController
 		$pager = Paginator::make(array(),$total,$pageSize);
 		$pager->appends($search);
 		$data['pagelinks'] = $pager->links();
-		$sql="SELECT DISTINCT category FROM m_phone_batch WHERE category <> ''";
-		$category_arr = DB::select($sql);
+		$category_arr = Category::getListAllName();
 		$data['category_arr'] = $category_arr;
 		return $this->display('batch_list',$data);
 	}
@@ -43,6 +43,8 @@ class BatchController extends BackendController
 	public function getEdit($batch_id)
 	{
 		$data = array();
+		$category_arr = Category::getListAllName();
+		$data['category_arr'] = $category_arr;
 		$data['info'] = PhoneBatch::getInfo($batch_id);
 		return $this->display('batch_info',$data);
 	}
@@ -50,7 +52,7 @@ class BatchController extends BackendController
 	public function postSave()
 	{
 		$input = Input::only('batch_id','batch_code','coefficient','category');
-
+		$input['batch_code'] = 'B'.time();
 		$result = PhoneBatch::save($input);
 		if($result){
 			return $this->redirect('phone/batch/list','批次保存成功');
@@ -76,8 +78,8 @@ class BatchController extends BackendController
 		ini_set("post_max_size", "100M");
 		ini_set("upload_max_filesize", "100M");
 		setlocale(LC_ALL, 'zh_CN');
-		$batch_code = Input::get('batch_code');
-		$category = Input::get('category','');
+		$batch_code = 'B'.time();
+		$category = Input::get('category');
 		if(!Input::hasFile('append_file'))
 			return json_encode(array('state'=>0,'msg'=>'文件不存在'));
 		$file = Input::file('append_file');
@@ -90,6 +92,21 @@ class BatchController extends BackendController
 		$target = $server_path . $newfilename;
 		$file->move($server_path,$newfilename);
 		$input = array();
+		$i_c = $unicom_c = $mobile_c = $telecom_c = 0;
+		if($category) {
+			$category_exists = Category::getInfoByName($category);
+			if ($category_exists) {
+				$category = $category_exists['category_id'];
+				$unicom_c = $category_exists['unicom'];
+				$mobile_c = $category_exists['mobile'];
+				$telecom_c = $category_exists['telecom'];
+				$i_c = $category_exists['count'];
+			} else {
+				$input['name'] = $category;
+				$re_category = Category::save($input);
+				$category = $re_category;
+			}
+		}
 		if($batch_code) {
 			$info_exists = PhoneBatch::getInfoByCode($batch_code);
 			if ($info_exists) {
@@ -112,11 +129,23 @@ class BatchController extends BackendController
 		}
 		$i = 0;
 		$j = 0;
+		$unicom = $mobile = $telecom = 0;
 		$sql="INSERT IGNORE INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
 
 		for ($j = 1; $j < $len_result; $j++) { //循环获取各字段值
 			$phone_number = isset($result[$j][0])?self::characet($result[$j][0]):''; //中文转码
 			$operator = isset($result[$j][1])?self::characet($result[$j][1]):'';
+			switch ($operator) {
+				case "联通":
+					$unicom++;
+					break;
+				case "移动":
+					$mobile++;
+					break;
+				case "电信":
+					$telecom++;
+					break;
+			}
 			$city = isset($result[$j][2])?self::characet($result[$j][2]):'';
 			$address = isset($result[$j][3])?self::characet($result[$j][3]):'';
 			if ($phone_number==''&&$operator==''&&$city==''&&$address=='') continue;
@@ -138,8 +167,18 @@ class BatchController extends BackendController
 		}
 		$data = array();
 		$data['batch_id'] = $re_batch;
+		$data['unicom'] = $unicom;
+		$data['mobile'] = $mobile;
+		$data['telecom'] = $telecom;
 		$data['count'] = $i;
 		$res = PhoneBatch::save($data);
+		$data_c = array();
+		$data_c['category_id'] = $category;
+		$data_c['count'] = $i_c + $i;
+		$data_c['unicom'] = $unicom_c + $unicom;
+		$data_c['mobile'] = $mobile_c + $mobile;
+		$data_c['telecom'] = $telecom_c + $telecom;
+		$res_c = Category::save($data_c);
 
 		if($res){
 			return json_encode(array("state"=>1,'msg'=>'批次添加成功,文件读取数据'.$j.'条,共实际导入数据'.$i.'条'));
@@ -154,7 +193,7 @@ class BatchController extends BackendController
 		$batch_id = Input::get('batch_id');
 		$downType = Input::get('downType');
 		$pageSize = Input::get('pageSize');
-		$batch_code_down = Input::get('batch_code_down');
+		$batch_code_down = 'B'.time();
 		if(!$batch_id) return json_encode(array('state'=>0,'msg'=>'数据异常'));
 		$info_batch = PhoneBatch::getInfo($batch_id);
 		if(!$info_batch) return json_encode(array('state'=>0,'msg'=>'批次不存在'));
@@ -242,12 +281,27 @@ class BatchController extends BackendController
 	public function postAjaxMerge(){
 		set_time_limit(0);
 		ini_set("memory_limit", "1024M");
-		$batch_code = Input::get('batch_code');
+		$batch_code = 'B'.time();
 		$category = Input::get('category','');
 		$ids = Input::get('ids');
 		$bids = Input::get('bids');
 
 		$input = array();
+		$i_c = $unicom_c = $mobile_c = $telecom_c = 0;
+		if($category) {
+			$category_exists = Category::getInfoByName($category);
+			if ($category_exists) {
+				$category = $category_exists['category_id'];
+				$unicom_c = $category_exists['unicom'];
+				$mobile_c = $category_exists['mobile'];
+				$telecom_c = $category_exists['telecom'];
+				$i_c = $category_exists['count'];
+			} else {
+				$input['name'] = $category;
+				$re_category = Category::save($input);
+				$category = $re_category;
+			}
+		}
 		if($batch_code) {
 			$info_exists = PhoneBatch::getInfoByCode($batch_code);
 			if ($info_exists) {
@@ -261,9 +315,21 @@ class BatchController extends BackendController
 		}
 		$re_batch = PhoneBatch::save($input);
 		$i = 0;
+		$unicom = $mobile = $telecom = 0;
 		foreach ($bids as $bid) {
-			$search['batch_id'] = $bid;
-			$i += PhoneNumbers::getCount($search);
+			$data_info = PhoneBatch::getInfo($bid);
+			$i += $data_info['count'];
+			$unicom += $data_info['unicom'];
+			$mobile += $data_info['mobile'];
+			$telecom += $data_info['telecom'];
+			$data_category = Category::getInfo($data_info['category']);
+			$update_arr = array();
+			$update_arr['category_id'] = $data_category['category_id'];
+			$update_arr['count'] = $data_category['count'] - $data_info['count'];
+			$update_arr['unicom'] = $data_category['unicom'] - $data_info['unicom'];
+			$update_arr['mobile'] = $data_category['mobile'] - $data_info['mobile'];
+			$update_arr['telecom'] = $data_category['telecom'] - $data_info['telecom'];
+			Category::save($update_arr);
 			$sql="UPDATE m_phone_numbers SET batch_id = ".$re_batch." WHERE batch_id=".$bid;
 			DB::update($sql);
 			PhoneBatch::del($bid);
@@ -271,8 +337,19 @@ class BatchController extends BackendController
 
 		$data = array();
 		$data['batch_id'] = $re_batch;
+		$data['unicom'] = $unicom;
+		$data['mobile'] = $mobile;
+		$data['telecom'] = $telecom;
 		$data['count'] = $i;
 		$res = PhoneBatch::save($data);
+		$data_c = array();
+		$data_c['category_id'] = $category;
+		$data_c['count'] = $i_c + $i;
+		$data_c['unicom'] = $unicom_c + $unicom;
+		$data_c['mobile'] = $mobile_c + $mobile;
+		$data_c['telecom'] = $telecom_c + $telecom;
+		$res_c = Category::save($data_c);
+
 		if($res){
 			return json_encode(array("state"=>1,'msg'=>'批次合并成功'));
 		}else{

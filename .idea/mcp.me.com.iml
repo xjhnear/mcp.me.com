@@ -51,7 +51,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
-      <library name="PHP" type="php">
+      <library name="PHP">
         <CLASSES>
           <root url="file://$MODULE_DIR$/vendor/apple/2.0" />
           <root url="file://$MODULE_DIR$/vendor/apple/ApnsPHP" />

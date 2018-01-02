@@ -1,6 +1,7 @@
 <?php
 namespace modules\phone\controllers;
 
+use Youxiduo\Phone\Model\Category;
 use Yxd\Modules\Core\BackendController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Paginator;
@@ -22,7 +23,7 @@ class CategoryController extends BackendController
 		$search = Input::only('batch_code','category');
 		$pageSize = 10;
 		$data = array();
-		$data['datalist'] = PhoneBatch::getList($search,$pageIndex,$pageSize);
+		$data['datalist'] = Category::getList($search,$pageIndex,$pageSize);
 		$data['search'] = $search;
 		$total = PhoneBatch::getCount($search);
 		$pager = Paginator::make(array(),$total,$pageSize);
