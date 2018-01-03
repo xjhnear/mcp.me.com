@@ -75,13 +75,6 @@
 				<label class="control-label">导出模式</label>
 				<div class="controls downType">
 					<input checked="checked" name="downType" type="radio" value="0">全部导出
-					<input name="downType" type="radio" value="1">拆分导出
-				</div>
-			</div>
-			<div class="control-group pageSize">
-				<label class="control-label">拆分数据条数</label>
-				<div class="controls">
-					<input type="text" name="pageSize" class="input-large" value="" />
 				</div>
 			</div>
 			<div class="control-group">
@@ -155,11 +148,10 @@
 				$('#OutWaitDialog').show();
 				var category_id = obj.attr('category_id');
 				var downType =  $('input:radio[name="downType"]:checked').val();
-				var pageSize =  $("input[name='pageSize']").val();
 				$.ajax({
 					url:'/phone/category/ajax-down-file',
 					type : 'post',
-					data:{category_id: category_id,downType: downType,pageSize: pageSize},
+					data:{category_id: category_id,downType: downType},
 					dataType : 'JSON',
 					success : function (data){
 						$('#OutWaitDialog').hide();
