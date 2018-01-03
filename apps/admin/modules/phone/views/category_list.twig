@@ -84,12 +84,6 @@
 					<input type="text" name="pageSize" class="input-large" value="" />
 				</div>
 			</div>
-			<div class="control-group category_code_down">
-				<label class="control-label">批次Code</label>
-				<div class="controls">
-					<input type="text" name="category_code_down" class="input-large" value="" />
-				</div>
-			</div>
 			<div class="control-group">
 				<div class="controls">
 					<a href="javascript:void(0);" class="btn btn-primary down_">确定</a>
@@ -109,12 +103,6 @@
 	<!--批次合并-->
 	<div id="dialog-merge">
 		<div class="box-content">
-			<div class="control-group">
-				<label class="control-label">批次Code</label>
-				<div class="controls">
-					<input type="text" name="category_code_new" class="input-large" value="" />
-				</div>
-			</div>
 			<div class="control-group">
 				<label class="control-label">分类</label>
 				<div class="controls">
@@ -168,11 +156,10 @@
 				var category_id = obj.attr('category_id');
 				var downType =  $('input:radio[name="downType"]:checked').val();
 				var pageSize =  $("input[name='pageSize']").val();
-				var category_code_down =  $("input[name='category_code_down']").val();
 				$.ajax({
 					url:'/phone/category/ajax-down-file',
 					type : 'post',
-					data:{category_id: category_id,downType: downType,pageSize: pageSize,category_code_down: category_code_down},
+					data:{category_id: category_id,downType: downType,pageSize: pageSize},
 					dataType : 'JSON',
 					success : function (data){
 						$('#OutWaitDialog').hide();
@@ -202,12 +189,11 @@
 			$.dialog({id:'pop-merge-html',title:'提示',padding:2,content:html,width:410,height:120});
 			$("a.merge_").bind('click',function(){
 				$('#MergeWaitDialog').show();
-				var category_code =  $("input[name='category_code_new']").val();
 				var category =  $("input[name='category_m']").val();
 				$.ajax({
 					url:'/phone/category/ajax-merge',
 					type : 'post',
-					data:{ids: ids,bids: bids,category_code: category_code,category: category},
+					data:{ids: ids,bids: bids,category: category},
 					dataType : 'JSON',
 					success : function (data){
 						$('#MergeWaitDialog').hide();

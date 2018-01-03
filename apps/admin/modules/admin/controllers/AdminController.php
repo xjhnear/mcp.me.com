@@ -74,6 +74,8 @@ class AdminController extends BackendController
 		$input = Input::only('id','username','authorname','realname','group_id','password');
 		if($input['id']){
 			unset($input['username']);
+		} else {
+			unset($input['id']);
 		}
 		if(AuthService::verifyNodeAuth('admin/admin/modify-pwd')==false || empty($input['password'])){
 			unset($input['password']);
