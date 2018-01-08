@@ -46,6 +46,9 @@ class BatchController extends BackendController
 		$category_arr = Category::getListAllName();
 		$data['category_arr'] = $category_arr;
 		$data['info'] = PhoneBatch::getInfo($batch_id);
+		$sql="SELECT count(DISTINCT phone_number) as unique_count FROM m_phone_numbers WHERE batch_id = '".$batch_id."'";
+		$unique_count = DB::select($sql);
+		$data['info']['unique_count'] = $unique_count[0]['unique_count'];
 		return $this->display('batch_info',$data);
 	}
 	
@@ -70,6 +73,44 @@ class BatchController extends BackendController
 			PhoneBatch::del($batch_id);
 		}
 		return json_encode(array('state'=>1,'msg'=>'批次删除成功'));
+	}
+
+	public function postAjaxUnique()
+	{
+		$batch_id = Input::get('batch_id');
+		if($batch_id){
+			$data_info = PhoneBatch::getInfo($batch_id);
+			$c = $unicom = $mobile = $telecom = 0;
+			$sql_1="SELECT operator,COUNT(*) as unique_count from (SELECT MIN(num_id) FROM m_phone_numbers WHERE batch_id = '".$batch_id."' GROUP BY phone_number HAVING COUNT(*) > 1) a GROUP BY operator";
+			$unique_count = DB::select($sql_1);
+			foreach ($unique_count as $item) {
+				switch ($item['operator']) {
+					case "联通":
+						$unicom = $item['unique_count'];
+						$c += $item['unique_count'];
+						break;
+					case "移动":
+						$mobile = $item['unique_count'];
+						$c += $item['unique_count'];
+						break;
+					case "电信":
+						$telecom = $item['unique_count'];
+						$c += $item['unique_count'];
+						break;
+				}
+			}
+			$sql="DELETE from m_phone_numbers WHERE num_id in (SELECT MIN(num_id) FROM m_phone_numbers WHERE batch_id = '".$batch_id."' GROUP BY phone_number HAVING COUNT(*) > 1)";
+			DB::delete($sql);
+			PhoneBatch::del($batch_id);
+			$data = array();
+			$data['batch_id'] = $batch_id;
+			$data['count'] = $data_info['count'] - $c;
+			$data['unicom'] = $data_info['unicom'] - $unicom;
+			$data['mobile'] = $data_info['mobile'] - $mobile;
+			$data['telecom'] = $data_info['telecom'] - $telecom;
+			$res = PhoneBatch::save($data);
+		}
+		return json_encode(array('state'=>1,'msg'=>'批次去重成功'));
 	}
 
 	public function postAjaxUploadFile(){

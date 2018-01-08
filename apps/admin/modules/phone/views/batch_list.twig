@@ -74,6 +74,7 @@
 							<a href="<!--{{url('phone/batch/edit',{'admin_id':item.batch_id})}}-->" class="btn btn-primary">编辑</a>
 							<a class="btn btn-danger ajax-del" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">删除</a>
 							<a class="btn btn-teal ajax-down" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">导出</a>
+							<a class="btn btn-danger ajax-unique" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">去重</a>
 						</td>
 					</tr>
 					<!--{%endfor%}-->
@@ -310,6 +311,29 @@
 					var batch_id = obj.attr('batch_id');
 					$.ajax({
 						url:'/phone/batch/ajax-del',
+						type : 'post',
+						data:{batch_id: batch_id},
+						dataType : 'JSON',
+						success : function (data){
+							if(data.state){
+								alertify.success(data.msg);
+								setTimeout(function(){location.reload();},1000);
+							}else{
+								alertify.error(data.msg);
+							}
+						}
+					})
+				}
+			});
+		});
+
+		$(".ajax-unique").bind('click',function(){
+			var obj = $(this);
+			alertify.confirm('确认对该批次去重？',function(e){
+				if(e){
+					var batch_id = obj.attr('batch_id');
+					$.ajax({
+						url:'/phone/batch/ajax-unique',
 						type : 'post',
 						data:{batch_id: batch_id},
 						dataType : 'JSON',
