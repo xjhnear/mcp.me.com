@@ -26,6 +26,7 @@
 				            <!--<td><a href="<!--{{url('phone/batch/add')}}-->" class="btn btn-teal">添加批次</a></td>-->
 							<td><a class="btn btn-teal ajax-append" href="javascript:void(0);">添加批次</a></td>
 							<td><a class="btn btn-teal ajax-merge" href="javascript:void(0);">合并批次</a></td>
+							<td><a class="btn btn-teal ajax-unique-all" href="javascript:void(0);">多批次去重</a></td>
 				        </tr>
 				    </table>
 				    </form>
@@ -40,6 +41,7 @@
 									<a data-toggle="dropdown" class="btn dropdown-toggle"><span class="caret"></span></a>
 									<ul class="dropdown-menu">
 										<li><a href="javascript:void(0);" data-act="sgin" class="ajax-merge">合并</a></li>
+										<li><a href="javascript:void(0);" data-act="sgin" class="ajax-unique-all">去重</a></li>
 									</ul>
 								</div>
 							</th>
@@ -74,7 +76,7 @@
 							<a href="<!--{{url('phone/batch/edit',{'admin_id':item.batch_id})}}-->" class="btn btn-primary">编辑</a>
 							<a class="btn btn-danger ajax-del" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">删除</a>
 							<a class="btn btn-teal ajax-down" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">导出</a>
-							<a class="btn btn-danger ajax-unique" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">去重</a>
+							<a class="btn btn-teal ajax-unique" batch_id="<!--{{item.batch_id}}-->" href="javascript:void(0);">去重</a>
 						</td>
 					</tr>
 					<!--{%endfor%}-->
@@ -103,7 +105,7 @@
 				<label class="control-label">分类  <a href="/static/eg.csv" >点击下载格式样本</a></label>
 				<div class="controls">
 					<span style="margin-left:100px;width:18px;overflow:hidden;">
-					<select style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.value">
+					<select style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.options[this.selectedIndex].text">
 						<option value="">请选择</option>
 						<!--{%for cid,category in category_arr%}-->
 						<option value="<!--{{cid}}-->"><!--{{category}}--></option>
@@ -336,6 +338,35 @@
 						url:'/phone/batch/ajax-unique',
 						type : 'post',
 						data:{batch_id: batch_id},
+						dataType : 'JSON',
+						success : function (data){
+							if(data.state){
+								alertify.success(data.msg);
+								setTimeout(function(){location.reload();},1000);
+							}else{
+								alertify.error(data.msg);
+							}
+						}
+					})
+				}
+			});
+		});
+
+		$(".ajax-unique-all").bind('click',function(){
+			var obj = $(this);
+			var ids = [];
+			var bids = [];
+			$('input[name="ids"]:checked').each(function(){
+				ids.push($(this).val());
+				bids.push($(this).attr('bid'));
+			});
+			if(ids.length==0) return false;
+			alertify.confirm('确认对所选批次去重？',function(e){
+				if(e){
+					$.ajax({
+						url:'/phone/batch/ajax-unique-all',
+						type : 'post',
+						data:{ids: ids,bids: bids},
 						dataType : 'JSON',
 						success : function (data){
 							if(data.state){

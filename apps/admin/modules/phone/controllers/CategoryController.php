@@ -29,6 +29,8 @@ class CategoryController extends BackendController
 		$pager = Paginator::make(array(),$total,$pageSize);
 		$pager->appends($search);
 		$data['pagelinks'] = $pager->links();
+		$category_arr = Category::getListAllName();
+		$data['category_arr'] = $category_arr;
 		return $this->display('category_list',$data);
 	}
 
@@ -107,6 +109,7 @@ class CategoryController extends BackendController
 				$input['name'] = $category;
 				$re_category = Category::save($input);
 				$category = $re_category;
+				unset($input['name']);
 			}
 		}
 		if($batch_code) {

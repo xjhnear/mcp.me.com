@@ -46,7 +46,7 @@ class BatchController extends BackendController
 		$category_arr = Category::getListAllName();
 		$data['category_arr'] = $category_arr;
 		$data['info'] = PhoneBatch::getInfo($batch_id);
-		$sql="SELECT count(DISTINCT phone_number) as unique_count FROM m_phone_numbers WHERE batch_id = '".$batch_id."'";
+		$sql="SELECT count(DISTINCT phone_number) as unique_count FROM m_phone_numbers WHERE batch_id = ".$batch_id;
 		$unique_count = DB::select($sql);
 		$data['info']['unique_count'] = $unique_count[0]['unique_count'];
 		return $this->display('batch_info',$data);
@@ -81,27 +81,36 @@ class BatchController extends BackendController
 		if($batch_id){
 			$data_info = PhoneBatch::getInfo($batch_id);
 			$c = $unicom = $mobile = $telecom = 0;
-			$sql_1="SELECT operator,COUNT(*) as unique_count from (SELECT MIN(num_id) FROM m_phone_numbers WHERE batch_id = '".$batch_id."' GROUP BY phone_number HAVING COUNT(*) > 1) a GROUP BY operator";
-			$unique_count = DB::select($sql_1);
-			foreach ($unique_count as $item) {
-				switch ($item['operator']) {
-					case "联通":
-						$unicom = $item['unique_count'];
-						$c += $item['unique_count'];
-						break;
-					case "移动":
-						$mobile = $item['unique_count'];
-						$c += $item['unique_count'];
-						break;
-					case "电信":
-						$telecom = $item['unique_count'];
-						$c += $item['unique_count'];
-						break;
+			$sql="SELECT phone_number,operator FROM m_phone_numbers WHERE batch_id = ".$batch_id." GROUP BY phone_number,operator HAVING COUNT(*) > 1";
+			$unique_number = DB::select($sql);
+			foreach ($unique_number as $item) {
+				$sql_1="SELECT num_id FROM m_phone_numbers WHERE batch_id = ".$batch_id." and phone_number = '".$item['phone_number']."' ORDER BY num_id desc";
+				$del_number = DB::select($sql_1);
+				$i = 0;
+				foreach ($del_number as $num) {
+					if ($i == 0) {
+						$i++;
+						continue;
+					}
+					$sql_2="DELETE from m_phone_numbers WHERE num_id =".$num['num_id'];
+					DB::delete($sql_2);
+					switch ($item['operator']) {
+						case "联通":
+							$unicom++;
+							$c++;
+							break;
+						case "移动":
+							$mobile++;
+							$c++;
+							break;
+						case "电信":
+							$telecom++;
+							$c++;
+							break;
+					}
+					$i++;
 				}
 			}
-			$sql="DELETE from m_phone_numbers WHERE num_id in (SELECT MIN(num_id) FROM m_phone_numbers WHERE batch_id = '".$batch_id."' GROUP BY phone_number HAVING COUNT(*) > 1)";
-			DB::delete($sql);
-			PhoneBatch::del($batch_id);
 			$data = array();
 			$data['batch_id'] = $batch_id;
 			$data['count'] = $data_info['count'] - $c;
@@ -109,6 +118,60 @@ class BatchController extends BackendController
 			$data['mobile'] = $data_info['mobile'] - $mobile;
 			$data['telecom'] = $data_info['telecom'] - $telecom;
 			$res = PhoneBatch::save($data);
+		}
+		return json_encode(array('state'=>1,'msg'=>'批次去重成功'));
+	}
+
+	public function postAjaxUniqueAll()
+	{
+		$ids = Input::get('ids');
+		$bids = Input::get('bids');
+		$batch_id_str = implode(',',$bids);
+		$count_arr = array();
+		if($batch_id_str){
+			$sql="SELECT phone_number,operator FROM m_phone_numbers WHERE batch_id in (".$batch_id_str.") GROUP BY phone_number,operator HAVING COUNT(*) > 1";
+			$unique_number = DB::select($sql);
+			foreach ($unique_number as $item) {
+				$sql_1="SELECT num_id,batch_id FROM m_phone_numbers WHERE batch_id in (".$batch_id_str.") and phone_number = '".$item['phone_number']."' ORDER BY num_id desc";
+				$del_number = DB::select($sql_1);
+				$i = 0;
+				foreach ($del_number as $num) {
+					if ($i == 0) {
+						$i++;
+						continue;
+					}
+					$sql_2="DELETE from m_phone_numbers WHERE num_id =".$num['num_id'];
+					DB::delete($sql_2);
+					if (!isset($count_arr[$num['batch_id']])) {
+						$count_arr[$num['batch_id']]['c'] = $count_arr[$num['batch_id']]['unicom'] = $count_arr[$num['batch_id']]['mobile'] = $count_arr[$num['batch_id']]['telecom'] = 0;
+					}
+					switch ($item['operator']) {
+						case "联通":
+							$count_arr[$num['batch_id']]['unicom']++;
+							$count_arr[$num['batch_id']]['c']++;
+							break;
+						case "移动":
+							$count_arr[$num['batch_id']]['mobile']++;
+							$count_arr[$num['batch_id']]['c']++;
+							break;
+						case "电信":
+							$count_arr[$num['batch_id']]['telecom']++;
+							$count_arr[$num['batch_id']]['c']++;
+							break;
+					}
+					$i++;
+				}
+			}
+			foreach ($count_arr as $batch_id=>$item_count) {
+				$data_info = PhoneBatch::getInfo($batch_id);
+				$data = array();
+				$data['batch_id'] = $batch_id;
+				$data['count'] = $data_info['count'] - $item_count['c'];
+				$data['unicom'] = $data_info['unicom'] - $item_count['unicom'];
+				$data['mobile'] = $data_info['mobile'] - $item_count['mobile'];
+				$data['telecom'] = $data_info['telecom'] - $item_count['telecom'];
+				$res = PhoneBatch::save($data);
+			}
 		}
 		return json_encode(array('state'=>1,'msg'=>'批次去重成功'));
 	}
@@ -146,6 +209,7 @@ class BatchController extends BackendController
 				$input['name'] = $category;
 				$re_category = Category::save($input);
 				$category = $re_category;
+				unset($input['name']);
 			}
 		}
 		if($batch_code) {
@@ -341,6 +405,7 @@ class BatchController extends BackendController
 				$input['name'] = $category;
 				$re_category = Category::save($input);
 				$category = $re_category;
+				unset($input['name']);
 			}
 		}
 		if($batch_code) {
