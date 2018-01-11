@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5859ff1-1d6d-4488-afaa-e4601347459e" name="默认的" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db/mcp_www.sql" afterPath="$PROJECT_DIR$/db/mcp_www.sql" />
     </list>
     <ignored path="mcp.me.com.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -79,21 +76,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="batch_list.twig" pinned="false" current-in-tab="false">
+      <file leaf-file-name="batch_list.twig" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-49.17857">
-              <caret line="121" column="88" selection-start-line="121" selection-start-column="88" selection-end-line="121" selection-end-column="88" />
-              <folding />
+            <state vertical-scroll-proportion="0.24704492">
+              <caret line="14" column="28" selection-start-line="14" selection-start-column="28" selection-end-line="14" selection-end-column="28" />
+              <folding>
+                <element signature="n#style#0;n#td#1;n#tr#0;n#table#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="category_list.twig" pinned="false" current-in-tab="true">
+      <file leaf-file-name="category_list.twig" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.73049647">
-              <caret line="214" column="42" selection-start-line="214" selection-start-column="42" selection-end-line="214" selection-end-column="42" />
+            <state vertical-scroll-proportion="-5.946429">
+              <caret line="199" column="0" selection-start-line="199" selection-start-column="0" selection-end-line="199" selection-end-column="0" />
               <folding>
                 <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
               </folding>
@@ -181,8 +182,8 @@
         <option value="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig" />
         <option value="$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php" />
         <option value="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" />
-        <option value="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" />
         <option value="$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" />
       </list>
     </option>
   </component>
@@ -249,8 +250,8 @@
   </component>
   <component name="PhpXdebugProxy" ide_key="phpStorm" host="localhost" port="80" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="301" />
-    <option name="width" value="1589" />
+    <option name="x" value="113" />
+    <option name="width" value="1777" />
     <option name="height" value="1040" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -551,7 +552,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="301" y="0" width="1589" height="1040" extended-state="0" />
+    <frame x="113" y="0" width="1777" height="1040" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32947975" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -993,20 +994,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-49.17857">
-          <caret line="121" column="88" selection-start-line="121" selection-start-column="88" selection-end-line="121" selection-end-column="88" />
-          <folding />
+        <state vertical-scroll-proportion="-5.946429">
+          <caret line="199" column="0" selection-start-line="199" selection-start-column="0" selection-end-line="199" selection-end-column="0" />
+          <folding>
+            <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig">
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.73049647">
-          <caret line="214" column="42" selection-start-line="214" selection-start-column="42" selection-end-line="214" selection-end-column="42" />
+        <state vertical-scroll-proportion="0.24704492">
+          <caret line="14" column="28" selection-start-line="14" selection-start-column="28" selection-end-line="14" selection-end-column="28" />
           <folding>
-            <element signature="n#style#0;n#input#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#1;n#tr#0;n#table#0;n#form#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
