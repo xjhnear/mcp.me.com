@@ -92,11 +92,11 @@ class CategoryController extends BackendController
 				$address = iconv('utf-8','gb2312',$row['address']);
 				$str .= $phone_number.",".$operator.",".$city.",".$address."\n"; //用引文逗号分开
 			}
-			$filename = $category_code .'--'. date('Ymd'); //设置文件名
+			$filename = $category_code .'--'. date('YmdHis'); //设置文件名
 			self::saveExcelToLocalFile($str,$filename,$pageIndex); //导出
 		}
 
-		$zipname = $category_code .'--'. date('Ymd');
+		$zipname = $category_code .'--'. date('YmdHis');
 		$zip = new \ZipArchive();
 		if($zip->open(public_path().'/downloads/'.$zipname.'.zip', \ZipArchive::CREATE) === TRUE) {
 			self::addFileToZip(public_path().'/downloads/'.$filename, $zip); //调用方法，对要打包的根目录进行操作，并将ZipArchive的对象传递给方法

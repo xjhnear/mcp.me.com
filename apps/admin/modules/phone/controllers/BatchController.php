@@ -360,39 +360,39 @@ class BatchController extends BackendController
 				$str = "手机号码,运营商,城市,地址\n";
 				$str = iconv('utf-8','gb2312',$str);
 				foreach($info_num as $index=>$row){
-//					if ($downType == 2) { // 筛选导出
-//						if (count($operator_arr)>0) {
-//							if (!in_array($row['operator'],$operator_arr)) {
-//								continue;
-//							}
-//						}
-//						if (count($city_arr)>0) {
-//							if (in_array('其他',$city_arr)) {
-//								if (in_array($row['city'],array('北京','上海','山东','广东'))) {
-//									if (!in_array($row['city'],$city_arr)) {
-//										continue;
-//									}
-//								}
-//							} else {
-//								if (!in_array($row['city'],$city_arr)) {
-//									continue;
-//								}
-//							}
-//						}
-//					}
+					if ($downType == 2) { // 筛选导出
+						if (count($operator_arr)>0) {
+							if (!in_array($row['operator'],$operator_arr)) {
+								continue;
+							}
+						}
+						if (count($city_arr)>0) {
+							if (in_array('其他',$city_arr)) {
+								if (in_array($row['city'],array('北京','上海','山东','广东'))) {
+									if (!in_array($row['city'],$city_arr)) {
+										continue;
+									}
+								}
+							} else {
+								if (!in_array($row['city'],$city_arr)) {
+									continue;
+								}
+							}
+						}
+					}
 					$phone_number = iconv('utf-8','gb2312',$row['phone_number']); //中文转码
 					$operator = iconv('utf-8','gb2312',$row['operator']); //中文转码
 					$city = iconv('utf-8','gb2312',$row['city']); //中文转码
 					$address = iconv('utf-8','gb2312',$row['address']);
 					$str .= $phone_number.",".$operator.",".$city.",".$address."\n"; //用引文逗号分开
 				}
-				$filename = $batch_code .'--'. date('Ymd'); //设置文件名
+				$filename = $batch_code .'--'. date('YmdHis'); //设置文件名
 				self::saveExcelToLocalFile($str,$filename,$pageIndex); //导出
 			}
 			$pageIndex++;
 		}
 
-		$zipname = $batch_code .'--'. date('Ymd');
+		$zipname = $batch_code .'--'. date('YmdHis');
 		$zip = new \ZipArchive();
 		if($zip->open(public_path().'/downloads/'.$zipname.'.zip', \ZipArchive::CREATE) === TRUE) {
 			self::addFileToZip(public_path().'/downloads/'.$filename, $zip); //调用方法，对要打包的根目录进行操作，并将ZipArchive的对象传递给方法
@@ -692,7 +692,7 @@ class BatchController extends BackendController
 					$excel->getActiveSheet()->setCellValue('D'.($index+2), $address);
 
 				}
-				$filename = $batch_code .'--'. date('Ymd');
+				$filename = $batch_code .'--'. date('YmdHis');
 //			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 //			header('Content-Disposition: attachment;filename="'. $filename.'.xlsx"');
 //			header('Cache-Control: max-age=0');
@@ -703,7 +703,7 @@ class BatchController extends BackendController
 			}
 			$pageIndex++;
 		}
-		$zipname = $batch_code .'--'. date('Ymd');
+		$zipname = $batch_code .'--'. date('YmdHis');
 		$zip = new \ZipArchive();
 		if($zip->open(public_path().'/downloads/'.$zipname.'.zip', \ZipArchive::CREATE) === TRUE) {
 			self::addFileToZip(public_path().'/downloads/'.$filename, $zip); //调用方法，对要打包的根目录进行操作，并将ZipArchive的对象传递给方法
