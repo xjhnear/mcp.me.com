@@ -387,17 +387,17 @@ class BatchController extends BackendController
 					$str .= $phone_number.",".$operator.",".$city.",".$address."\n"; //用引文逗号分开
 				}
 				$filename = $batch_code .'--'. date('YmdHis'); //设置文件名
-				self::saveExcelToLocalFile($str,$filename,$pageIndex); //导出
+				self::saveExcelToLocalFile($str,$filename); //导出
 			}
 			$pageIndex++;
 		}
 
-		$zipname = $batch_code .'--'. date('YmdHis');
-		$zip = new \ZipArchive();
-		if($zip->open(public_path().'/downloads/'.$zipname.'.zip', \ZipArchive::CREATE) === TRUE) {
-			self::addFileToZip(public_path().'/downloads/'.$filename, $zip); //调用方法，对要打包的根目录进行操作，并将ZipArchive的对象传递给方法
-			$zip->close(); //关闭处理的zip文件
-		}
+//		$zipname = $batch_code .'--'. date('YmdHis');
+//		$zip = new \ZipArchive();
+//		if($zip->open(public_path().'/downloads/'.$zipname.'.zip', \ZipArchive::CREATE) === TRUE) {
+//			self::addFileToZip(public_path().'/downloads/'.$filename, $zip); //调用方法，对要打包的根目录进行操作，并将ZipArchive的对象传递给方法
+//			$zip->close(); //关闭处理的zip文件
+//		}
 
 		$data_batch = array();
 		$data_batch['batch_id'] = $batch_id;
@@ -405,7 +405,7 @@ class BatchController extends BackendController
 		$data_batch['is_new'] = 0;
 		PhoneBatch::save($data_batch);
 
-		$url = '/downloads/'.$zipname.'.zip';
+		$url = '/downloads/'.$filename.'/'.$filename.'.csv';
 		return json_encode(array('state'=>1,'url'=>$url));
 	}
 
