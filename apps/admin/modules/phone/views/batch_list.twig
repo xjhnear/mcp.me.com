@@ -152,12 +152,35 @@
 				<div class="controls downType">
 					<input checked="checked" name="downType" type="radio" value="0">全部导出
 					<input name="downType" type="radio" value="1">拆分导出
+					<input name="downType" type="radio" value="2">筛选导出
 				</div>
 			</div>
-			<div class="control-group pageSize">
-				<label class="control-label">拆分数据条数</label>
-				<div class="controls">
-					<input type="text" name="pageSize" class="input-large" value="" />
+			<div class="downType_1" style="display: none;">
+				<div class="control-group pageSize">
+					<label class="control-label">拆分数据条数</label>
+					<div class="controls">
+						<input type="text" name="pageSize" class="input-large" value="" />
+					</div>
+				</div>
+			</div>
+			<div class="downType_2" style="display: none;">
+				<div class="control-group pageSize">
+					<label class="control-label">运营商</label>
+					<div class="controls">
+						<input type="checkbox" name="operator" value="联通" /> 联通
+						<input type="checkbox" name="operator" value="移动" /> 移动
+						<input type="checkbox" name="operator" value="电信" /> 电信
+					</div>
+				</div>
+				<div class="control-group pageSize">
+					<label class="control-label">地域</label>
+					<div class="controls">
+						<input type="checkbox" name="city" value="北京" /> 北京
+						<input type="checkbox" name="city" value="上海" /> 上海
+						<input type="checkbox" name="city" value="山东" /> 山东
+						<input type="checkbox" name="city" value="广东" /> 广东
+						<input type="checkbox" name="city" value="其他" /> 其他
+					</div>
 				</div>
 			</div>
 			<!--<div class="control-group batch_code_down">
@@ -296,11 +319,19 @@
 				var batch_id = obj.attr('batch_id');
 				var downType =  $('input:radio[name="downType"]:checked').val();
 				var pageSize =  $("input[name='pageSize']").val();
+				var operator = '';
+				var city = '';
+				$("input:checkbox[name='operator']:checked").each(function() {
+					operator += $(this).val() + ",";
+				});
+				$("input:checkbox[name='city']:checked").each(function() {
+					city += $(this).val() + ",";
+				});
 //				var batch_code_down =  $("input[name='batch_code_down']").val();
 				$.ajax({
 					url:'/phone/batch/ajax-down-file',
 					type : 'post',
-					data:{batch_id: batch_id,downType: downType,pageSize: pageSize},
+					data:{batch_id: batch_id,downType: downType,pageSize: pageSize,operator: operator,city: city},
 					dataType : 'JSON',
 					success : function (data){
 						$('#OutWaitDialog').hide();
@@ -425,6 +456,23 @@
 
 			});
 
+		});
+
+		$("input[name='downType']").live('click',function(){
+			var downType = $("input[name='downType']:checked").val();
+			switch(downType){
+				case '0' :
+					$(".downType_1").hide();
+					$(".downType_2").hide();
+					break;
+				case '1' :
+					$(".downType_1").show();
+					$(".downType_2").hide();
+					break;
+				case '2' :
+					$(".downType_1").hide();
+					$(".downType_2").show();
+			}
 		});
 
 		$(".ajax-category-tab").bind('click',function(){

@@ -75,6 +75,27 @@
 				<label class="control-label">导出模式</label>
 				<div class="controls downType">
 					<input checked="checked" name="downType" type="radio" value="0">全部导出
+					<input name="downType" type="radio" value="2">筛选导出
+				</div>
+			</div>
+			<div class="downType_2" style="display: none;">
+				<div class="control-group pageSize">
+					<label class="control-label">运营商</label>
+					<div class="controls">
+						<input type="checkbox" name="operator" value="unicom" /> 联通
+						<input type="checkbox" name="operator" value="mobile" /> 移动
+						<input type="checkbox" name="operator" value="telecom" /> 电信
+					</div>
+				</div>
+				<div class="control-group pageSize">
+					<label class="control-label">地域</label>
+					<div class="controls">
+						<input type="checkbox" name="city" value="北京" /> 北京
+						<input type="checkbox" name="city" value="上海" /> 上海
+						<input type="checkbox" name="city" value="山东" /> 山东
+						<input type="checkbox" name="city" value="广东" /> 广东
+						<input type="checkbox" name="city" value="其他" /> 其他
+					</div>
 				</div>
 			</div>
 			<div class="control-group">
@@ -148,10 +169,18 @@
 				$('#OutWaitDialog').show();
 				var category_id = obj.attr('category_id');
 				var downType =  $('input:radio[name="downType"]:checked').val();
+				var operator = '';
+				var city = '';
+				$("input:checkbox[name='operator']:checked").each(function() {
+					operator += $(this).val() + ",";
+				});
+				$("input:checkbox[name='city']:checked").each(function() {
+					city += $(this).val() + ",";
+				});
 				$.ajax({
 					url:'/phone/category/ajax-down-file',
 					type : 'post',
-					data:{category_id: category_id,downType: downType},
+					data:{category_id: category_id,downType: downType,operator: operator,city: city},
 					dataType : 'JSON',
 					success : function (data){
 						$('#OutWaitDialog').hide();
@@ -200,6 +229,17 @@
 
 			});
 
+		});
+
+		$("input[name='downType']").live('click',function(){
+			var downType = $("input[name='downType']:checked").val();
+			switch(downType){
+				case '0' :
+					$(".downType_2").hide();
+					break;
+				case '2' :
+					$(".downType_2").show();
+			}
 		});
 
 		$(".ajax-detail").bind('click',function(){

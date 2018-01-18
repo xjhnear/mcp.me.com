@@ -39,6 +39,12 @@ class CategoryController extends BackendController
 		ini_set("memory_limit", "1024M");
 		$category_id = Input::get('category_id');
 		$downType = Input::get('downType');
+		$operator_arr = Input::get('operator');
+		$operator_arr = explode(',',$operator_arr);
+		array_pop($operator_arr);
+		$city_arr = Input::get('city');
+		$city_arr = explode(',',$city_arr);
+		array_pop($city_arr);
 		if(!$category_id) return json_encode(array('state'=>0,'msg'=>'数据异常'));
 		$info_batch = PhoneBatch::getListByCategory($category_id);
 		if(!$info_batch) return json_encode(array('state'=>0,'msg'=>'分类不存在'));
@@ -60,6 +66,26 @@ class CategoryController extends BackendController
 			$str = "手机号码,运营商,城市,地址\n";
 			$str = iconv('utf-8','gb2312',$str);
 			foreach($info_num as $index=>$row){
+				if ($downType == 2) { // 筛选导出
+					if (count($operator_arr)>0) {
+						if (!in_array($row['operator'],$operator_arr)) {
+							continue;
+						}
+					}
+					if (count($city_arr)>0) {
+						if (in_array('其他',$city_arr)) {
+							if (in_array($row['city'],array('北京','上海','山东','广东'))) {
+								if (!in_array($row['city'],$city_arr)) {
+									continue;
+								}
+							}
+						} else {
+							if (!in_array($row['city'],$city_arr)) {
+								continue;
+							}
+						}
+					}
+				}
 				$phone_number = iconv('utf-8','gb2312',$row['phone_number']); //中文转码
 				$operator = iconv('utf-8','gb2312',$row['operator']); //中文转码
 				$city = iconv('utf-8','gb2312',$row['city']); //中文转码
