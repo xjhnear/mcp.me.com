@@ -16,7 +16,6 @@
 				            <td><input name="batch_code" type="text" class="input-small" placeholder="批次Code" value="<!--{{search.batch_code}}-->" /></td>
 							<td style="display:none">
 								<select name="category" style="width: 100%;margin-top: 10px;" >
-									<option value="">请选择</option>
 									<!--{%for cid,category in category_arr%}-->
 									<option value="<!--{{cid}}-->" <!--{%if search.category==cid %}-->selected<!--{%endif%}-->><!--{{category}}--></option>
 									<!--{%endfor%}-->
@@ -117,7 +116,6 @@
 				<div class="controls">
 					<span style="margin-left:100px;width:18px;overflow:hidden;">
 					<select style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.options[this.selectedIndex].text">
-						<option value="">请选择</option>
 						<!--{%for cid,category in category_arr%}-->
 						<option value="<!--{{cid}}-->"><!--{{category}}--></option>
 						<!--{%endfor%}-->
@@ -219,7 +217,6 @@
 				<div class="controls">
 					<span style="margin-left:100px;width:18px;overflow:hidden;">
 					<select style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.value">
-						<option value="">请选择</option>
 						<!--{%for cid,category in category_arr%}-->
 						<option value="<!--{{cid}}-->"><!--{{category}}--></option>
 						<!--{%endfor%}-->

@@ -4,9 +4,11 @@
     <list default="true" id="b5859ff1-1d6d-4488-afaa-e4601347459e" name="默认的" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig" afterPath="$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db/m_phone_batch.sql" afterPath="$PROJECT_DIR$/db/m_phone_batch.sql" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db/m_phone_numbers.sql" afterPath="$PROJECT_DIR$/db/m_phone_numbers.sql" />
     </list>
     <ignored path="mcp.me.com.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,55 +43,65 @@
       <file leaf-file-name="batch_list.twig" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.0930233">
-              <caret line="145" column="99" selection-start-line="145" selection-start-column="99" selection-end-line="145" selection-end-column="99" />
+            <state vertical-scroll-proportion="-2.0714285">
+              <caret line="453" column="15" selection-start-line="453" selection-start-column="15" selection-end-line="453" selection-end-column="15" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="batch_info.twig" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-5.523256">
+              <caret line="34" column="43" selection-start-line="34" selection-start-column="43" selection-end-line="34" selection-end-column="43" />
               <folding>
-                <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#2;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#select#0;n#div#0;n#div#1;n#form#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#input#0;n#div#0;n#div#1;n#form#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BatchController.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="BatchController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.7142856">
-              <caret line="362" column="0" selection-start-line="362" selection-start-column="0" selection-end-line="381" selection-end-column="21" />
+            <state vertical-scroll-proportion="0.40023613">
+              <caret line="69" column="84" selection-start-line="69" selection-start-column="84" selection-end-line="69" selection-end-column="84" />
               <folding>
                 <element signature="e#44#83#0#PHP" expanded="true" />
-                <marker date="1516267200155" expanded="true" signature="1293:1383" placeholder="SELECT DISTI... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="1293:1394" placeholder="SELECT DISTI... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="1949:1992" placeholder="DELETE FROM " />
-                <marker date="1516267200155" expanded="true" signature="2313:2320" placeholder="SELECT count... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="2313:2379" placeholder="SELECT phone... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="2313:2392" placeholder="SELECT phone... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="2313:2444" placeholder="SELECT opera... MIN" />
-                <marker date="1516267200155" expanded="true" signature="2536:2600" placeholder="SELECT num_i... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="2536:2648" placeholder="SELECT num_i... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="2536:2669" placeholder="SELECT num_i... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="2536:2670" placeholder="SELECT num_i... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="2826:2867" placeholder="DELETE from " />
-                <marker date="1516267200155" expanded="true" signature="2826:2868" placeholder="DELETE from " />
-                <marker date="1516267200155" expanded="true" signature="3713:3851" placeholder="SELECT phone... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="3943:4092" placeholder="SELECT num_i... m_phone_numbers" />
-                <marker date="1516267200155" expanded="true" signature="4249:4291" placeholder="DELETE from " />
-                <marker date="1516267200155" expanded="true" signature="10566:10674" placeholder="UPDATE m_pho... " />
-                <marker date="1516267200155" expanded="true" signature="15026:15093" placeholder="UPDATE m_pho... " />
-                <marker date="1516267200155" expanded="true" signature="19426:19506" placeholder="INSERT INTO m_phone_numbers... " />
+                <marker date="1516340754390" expanded="true" signature="1293:1383" placeholder="SELECT DISTI... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="1293:1394" placeholder="SELECT DISTI... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="3527:3570" placeholder="DELETE FROM " />
+                <marker date="1516340754390" expanded="true" signature="3891:3898" placeholder="SELECT count... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="3891:3957" placeholder="SELECT phone... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="3891:3970" placeholder="SELECT phone... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="3891:4022" placeholder="SELECT opera... MIN" />
+                <marker date="1516340754390" expanded="true" signature="4114:4178" placeholder="SELECT num_i... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="4114:4226" placeholder="SELECT num_i... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="4114:4247" placeholder="SELECT num_i... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="4114:4248" placeholder="SELECT num_i... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="4404:4445" placeholder="DELETE from " />
+                <marker date="1516340754390" expanded="true" signature="4404:4446" placeholder="DELETE from " />
+                <marker date="1516340754390" expanded="true" signature="5291:5429" placeholder="SELECT phone... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="5521:5670" placeholder="SELECT num_i... m_phone_numbers" />
+                <marker date="1516340754390" expanded="true" signature="5827:5869" placeholder="DELETE from " />
+                <marker date="1516340754390" expanded="true" signature="12144:12252" placeholder="UPDATE m_pho... " />
+                <marker date="1516340754390" expanded="true" signature="16626:16693" placeholder="UPDATE m_pho... " />
+                <marker date="1516340754390" expanded="true" signature="21026:21106" placeholder="INSERT INTO m_phone_numbers... " />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CategoryController.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="CategoryController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.18654074">
-              <caret line="68" column="45" selection-start-line="68" selection-start-column="45" selection-end-line="68" selection-end-column="45" />
+            <state vertical-scroll-proportion="-2.9107144">
+              <caret line="16" column="40" selection-start-line="16" selection-start-column="40" selection-end-line="16" selection-end-column="40" />
               <folding>
                 <element signature="e#44#78#0#PHP" expanded="true" />
-                <marker date="1516267274089" expanded="true" signature="5570:5637" placeholder="UPDATE m_pho... " />
+                <marker date="1516272207783" expanded="true" signature="5592:5659" placeholder="UPDATE m_pho... " />
               </folding>
             </state>
           </provider>
@@ -98,11 +110,21 @@
       <file leaf-file-name="category_list.twig" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.803571">
-              <caret line="178" column="19" selection-start-line="178" selection-start-column="19" selection-end-line="178" selection-end-column="19" />
+            <state vertical-scroll-proportion="-9.464286">
+              <caret line="136" column="88" selection-start-line="136" selection-start-column="88" selection-end-line="136" selection-end-column="88" />
               <folding>
                 <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#1;n#!!top" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Category.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/Category.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-8.035714">
+              <caret line="47" column="28" selection-start-line="47" selection-start-column="28" selection-end-line="47" selection-end-column="28" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -160,12 +182,12 @@
         <option value="$PROJECT_DIR$/services/Youxiduo/Phone/Model/Category.php" />
         <option value="$PROJECT_DIR$/services/Youxiduo/Phone/Model/PhoneBatch.php" />
         <option value="$PROJECT_DIR$/apps/admin/modules/admin/controllers/AdminController.php" />
-        <option value="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig" />
         <option value="E:/等额本息公式.txt" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php" />
         <option value="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig" />
         <option value="$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig" />
+        <option value="$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig" />
         <option value="$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php" />
-        <option value="$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php" />
       </list>
     </option>
   </component>
@@ -232,8 +254,8 @@
   </component>
   <component name="PhpXdebugProxy" ide_key="phpStorm" host="localhost" port="80" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="112" />
-    <option name="width" value="1778" />
+    <option name="x" value="74" />
+    <option name="width" value="1816" />
     <option name="height" value="1041" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -534,16 +556,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="112" y="0" width="1778" height="1041" extended-state="0" />
+    <frame x="74" y="0" width="1816" height="1041" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32947975" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16685584" sideWeight="0.49413735" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16333333" sideWeight="0.49413735" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996634" sideWeight="0.49451303" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1499472" sideWeight="0.5140625" order="12" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32875723" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32963374" sideWeight="0.49781388" order="13" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14018162" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" x="1020" y="127" width="316" height="769" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13722222" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" x="1020" y="127" width="316" height="769" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996634" sideWeight="0.49421966" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17413294" sideWeight="0.50586265" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -809,14 +831,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/Category.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34545454">
-          <caret line="70" column="27" selection-start-line="70" selection-start-column="27" selection-end-line="70" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://E:/users-list.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5216783">
@@ -835,22 +849,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="31" column="83" selection-start-line="31" selection-start-column="83" selection-end-line="31" selection-end-column="83" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="38" column="42" selection-start-line="38" selection-start-column="42" selection-end-line="38" selection-end-column="42" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/PhoneBatch.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="90" column="42" selection-start-line="90" selection-start-column="31" selection-end-line="90" selection-end-column="42" />
           <folding />
         </state>
       </provider>
@@ -953,8 +951,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/category_list.twig">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.803571">
-          <caret line="178" column="19" selection-start-line="178" selection-start-column="19" selection-end-line="178" selection-end-column="19" />
+        <state vertical-scroll-proportion="-9.464286">
+          <caret line="136" column="88" selection-start-line="136" selection-start-column="88" selection-end-line="136" selection-end-column="88" />
           <folding>
             <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#1;n#!!top" expanded="true" />
           </folding>
@@ -963,51 +961,75 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_list.twig">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.0930233">
-          <caret line="145" column="99" selection-start-line="145" selection-start-column="99" selection-end-line="145" selection-end-column="99" />
+        <state vertical-scroll-proportion="-2.0714285">
+          <caret line="453" column="15" selection-start-line="453" selection-start-column="15" selection-end-line="453" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/views/batch_info.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.523256">
+          <caret line="34" column="43" selection-start-line="34" selection-start-column="43" selection-end-line="34" selection-end-column="43" />
           <folding>
-            <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#2;n#div#0;n#div#0;n#div#2;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#select#0;n#div#0;n#div#1;n#form#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#input#0;n#div#0;n#div#1;n#form#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/PhoneBatch.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.344">
+          <caret line="43" column="27" selection-start-line="43" selection-start-column="27" selection-end-line="43" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/services/Youxiduo/Phone/Model/Category.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.035714">
+          <caret line="47" column="28" selection-start-line="47" selection-start-column="28" selection-end-line="47" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.9107144">
+          <caret line="16" column="40" selection-start-line="16" selection-start-column="40" selection-end-line="16" selection-end-column="40" />
+          <folding>
+            <element signature="e#44#78#0#PHP" expanded="true" />
+            <marker date="1516272207783" expanded="true" signature="5592:5659" placeholder="UPDATE m_pho... " />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/BatchController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.7142856">
-          <caret line="362" column="0" selection-start-line="362" selection-start-column="0" selection-end-line="381" selection-end-column="21" />
+        <state vertical-scroll-proportion="0.40023613">
+          <caret line="69" column="84" selection-start-line="69" selection-start-column="84" selection-end-line="69" selection-end-column="84" />
           <folding>
             <element signature="e#44#83#0#PHP" expanded="true" />
-            <marker date="1516267200155" expanded="true" signature="1293:1383" placeholder="SELECT DISTI... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="1293:1394" placeholder="SELECT DISTI... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="1949:1992" placeholder="DELETE FROM " />
-            <marker date="1516267200155" expanded="true" signature="2313:2320" placeholder="SELECT count... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="2313:2379" placeholder="SELECT phone... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="2313:2392" placeholder="SELECT phone... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="2313:2444" placeholder="SELECT opera... MIN" />
-            <marker date="1516267200155" expanded="true" signature="2536:2600" placeholder="SELECT num_i... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="2536:2648" placeholder="SELECT num_i... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="2536:2669" placeholder="SELECT num_i... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="2536:2670" placeholder="SELECT num_i... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="2826:2867" placeholder="DELETE from " />
-            <marker date="1516267200155" expanded="true" signature="2826:2868" placeholder="DELETE from " />
-            <marker date="1516267200155" expanded="true" signature="3713:3851" placeholder="SELECT phone... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="3943:4092" placeholder="SELECT num_i... m_phone_numbers" />
-            <marker date="1516267200155" expanded="true" signature="4249:4291" placeholder="DELETE from " />
-            <marker date="1516267200155" expanded="true" signature="10566:10674" placeholder="UPDATE m_pho... " />
-            <marker date="1516267200155" expanded="true" signature="15026:15093" placeholder="UPDATE m_pho... " />
-            <marker date="1516267200155" expanded="true" signature="19426:19506" placeholder="INSERT INTO m_phone_numbers... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/apps/admin/modules/phone/controllers/CategoryController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.18654074">
-          <caret line="68" column="45" selection-start-line="68" selection-start-column="45" selection-end-line="68" selection-end-column="45" />
-          <folding>
-            <element signature="e#44#78#0#PHP" expanded="true" />
-            <marker date="1516267274089" expanded="true" signature="5570:5637" placeholder="UPDATE m_pho... " />
+            <marker date="1516340754390" expanded="true" signature="1293:1383" placeholder="SELECT DISTI... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="1293:1394" placeholder="SELECT DISTI... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="3527:3570" placeholder="DELETE FROM " />
+            <marker date="1516340754390" expanded="true" signature="3891:3898" placeholder="SELECT count... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="3891:3957" placeholder="SELECT phone... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="3891:3970" placeholder="SELECT phone... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="3891:4022" placeholder="SELECT opera... MIN" />
+            <marker date="1516340754390" expanded="true" signature="4114:4178" placeholder="SELECT num_i... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="4114:4226" placeholder="SELECT num_i... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="4114:4247" placeholder="SELECT num_i... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="4114:4248" placeholder="SELECT num_i... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="4404:4445" placeholder="DELETE from " />
+            <marker date="1516340754390" expanded="true" signature="4404:4446" placeholder="DELETE from " />
+            <marker date="1516340754390" expanded="true" signature="5291:5429" placeholder="SELECT phone... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="5521:5670" placeholder="SELECT num_i... m_phone_numbers" />
+            <marker date="1516340754390" expanded="true" signature="5827:5869" placeholder="DELETE from " />
+            <marker date="1516340754390" expanded="true" signature="12144:12252" placeholder="UPDATE m_pho... " />
+            <marker date="1516340754390" expanded="true" signature="16626:16693" placeholder="UPDATE m_pho... " />
+            <marker date="1516340754390" expanded="true" signature="21026:21106" placeholder="INSERT INTO m_phone_numbers... " />
           </folding>
         </state>
       </provider>

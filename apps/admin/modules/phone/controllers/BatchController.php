@@ -54,8 +54,44 @@ class BatchController extends BackendController
 	
 	public function postSave()
 	{
-		$input = Input::only('batch_id','batch_code','coefficient','category');
-		$input['batch_code'] = 'B'.time();
+		$input = Input::only('batch_id','batch_code','coefficient','category_m');
+		$category = $input['category_m'];unset($input['category_m']);
+		$data_info = PhoneBatch::getInfo($input['batch_id']);
+		if (!$data_info) {
+			return $this->back('批次保存失败');
+		}
+		if($category) {
+			if ($data_info['category']) {
+				$category_info = Category::getInfo($data_info['category']);
+				$data_c = array();
+				$data_c['category_id'] = $data_info['category'];
+				$data_c['count'] = $category_info['count'] - $data_info['count'];
+				$data_c['unicom'] = $category_info['unicom'] - $data_info['unicom'];
+				$data_c['mobile'] = $category_info['mobile'] - $data_info['mobile'];
+				$data_c['telecom'] = $category_info['telecom'] - $data_info['telecom'];
+				$res_c = Category::save($data_c);
+			}
+			$category_exists = Category::getInfoByName($category);
+			if ($category_exists) {
+				$data_c = array();
+				$data_c['category_id'] = $category_exists['category_id'];
+				$data_c['count'] = $category_exists['count'] + $data_info['count'];
+				$data_c['unicom'] = $category_exists['unicom'] + $data_info['unicom'];
+				$data_c['mobile'] = $category_exists['mobile'] + $data_info['mobile'];
+				$data_c['telecom'] = $category_exists['telecom'] + $data_info['telecom'];
+				$res_c = Category::save($data_c);
+				$input['category'] = $category_exists['category_id'];
+			} else {
+				$data_c = array();
+				$data_c['name'] = $category;
+				$data_c['count'] = $data_info['count'];
+				$data_c['unicom'] = $data_info['unicom'];
+				$data_c['mobile'] = $data_info['mobile'];
+				$data_c['telecom'] = $data_info['telecom'];
+				$re_category = Category::save($input);
+				$input['category'] = $re_category;
+			}
+		}
 		$result = PhoneBatch::save($input);
 		if($result){
 			return $this->redirect('phone/batch/list','批次保存成功');
