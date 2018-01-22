@@ -298,7 +298,21 @@ class BatchController extends BackendController
 		$sql="INSERT IGNORE INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
 		for ($j = 1; $j < $len_result; $j++) { //循环获取各字段值
 			$phone_number = isset($result[$j][0])?self::characet($result[$j][0]):''; //中文转码
-			$operator = isset($result[$j][1])?self::characet($result[$j][1]):'';
+			$phone_number_7 =  substr($phone_number,0,7);
+			if (isset($result[$j][1]) && $result[$j][1]<>"") {
+				$operator = self::characet($result[$j][1]);
+			} elseif (Redis::exists("isp_".$phone_number_7)) {
+				$operator = Redis::get("isp_".$phone_number_7);
+			} else {
+				$operator = '';
+			}
+			if (isset($result[$j][2]) && $result[$j][2]<>"") {
+				$city = self::characet($result[$j][2]);
+			} elseif (Redis::exists("province_".$phone_number_7)) {
+				$city = Redis::get("province_".$phone_number_7);
+			} else {
+				$city = '';
+			}
 			switch ($operator) {
 				case "联通":
 					$unicom++;
@@ -319,7 +333,6 @@ class BatchController extends BackendController
 					$telecom++;
 					break;
 			}
-			$city = isset($result[$j][2])?self::characet($result[$j][2]):'';
 			$address = isset($result[$j][3])?self::characet($result[$j][3]):'';
 			if ($phone_number==''&&$operator==''&&$city==''&&$address=='') continue;
 			$tmpstr = "'". $re_batch ."','". $phone_number ."','". $operator ."','". $city ."','". $address ."'";
@@ -791,9 +804,6 @@ class BatchController extends BackendController
 
 	public function getUpdateRedis()
 	{
-
-		print_r(Redis::get("province_1391743"));exit;
-
 		set_time_limit(0);
 		ini_set("memory_limit", "1024M");
 		ini_set("post_max_size", "100M");
@@ -808,4 +818,20 @@ class BatchController extends BackendController
 		print_r("done!!!");exit;
 	}
 
+	public function getUpdateRedis()
+	{
+		set_time_limit(0);
+		ini_set("memory_limit", "1024M");
+		ini_set("post_max_size", "100M");
+		ini_set("upload_max_filesize", "100M");
+		setlocale(LC_ALL, 'zh_CN');
+		$sql="SELECT phone,province,isp FROM m_phone_model";
+		$number_model = DB::select($sql);
+		foreach ($number_model as $number_model_item) {
+			Redis::set("province_".$number_model_item['phone'],$number_model_item['province']);
+			Redis::set("isp_".$number_model_item['phone'],$number_model_item['isp']);
+		}
+		print_r("done!!!");exit;
+	}
+	
 }
