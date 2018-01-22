@@ -826,7 +826,7 @@ class BatchController extends BackendController
 		ini_set("upload_max_filesize", "100M");
 		setlocale(LC_ALL, 'zh_CN');
 
-		$sql="SELECT num_id,phone_number FROM m_phone_numbers WHERE city='' AND batch_id =".$batch_id." LIMIT 20000";
+		$sql="SELECT num_id,phone_number FROM m_phone_numbers WHERE  batch_id=".$batch_id;
 		$number_num = DB::select($sql);
 		$province_str = "";
 		$isp_str = "";
