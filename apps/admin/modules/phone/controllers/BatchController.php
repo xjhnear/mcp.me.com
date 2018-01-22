@@ -818,20 +818,38 @@ class BatchController extends BackendController
 		print_r("done!!!");exit;
 	}
 
-	public function getUpdateRedis()
+	public function getUpdateBatch($batch_id)
 	{
 		set_time_limit(0);
 		ini_set("memory_limit", "1024M");
 		ini_set("post_max_size", "100M");
 		ini_set("upload_max_filesize", "100M");
 		setlocale(LC_ALL, 'zh_CN');
-		$sql="SELECT phone,province,isp FROM m_phone_model";
-		$number_model = DB::select($sql);
-		foreach ($number_model as $number_model_item) {
-			Redis::set("province_".$number_model_item['phone'],$number_model_item['province']);
-			Redis::set("isp_".$number_model_item['phone'],$number_model_item['isp']);
+
+		$sql="SELECT num_id,phone_number FROM m_phone_numbers WHERE batch_id=".$batch_id;
+		$number_num = DB::select($sql);
+		$province_str = "";
+		$isp_str = "";
+		foreach ($number_num as $number_num_item) {
+			$phone_number_7 =  substr($number_num_item['phone_number'],0,7);
+			if (Redis::exists("isp_".$phone_number_7)) {
+				$operator = Redis::get("isp_".$phone_number_7);
+			} else {
+				$operator = '';
+			}
+			$isp_str .= 'WHEN '.$number_num_item['num_id'].' THEN "'.$operator.'" ';
+
+
+			if (Redis::exists("province_".$phone_number_7)) {
+				$city = Redis::get("province_".$phone_number_7);
+			} else {
+				$city = '';
+			}
+			$province_str .= 'WHEN '.$number_num_item['num_id'].' THEN "'.$city.'" ';
 		}
+		$sql_update = "UPDATE m_phone_numbers SET operator = CASE num_id ".$isp_str." END,city = CASE num_id ".$province_str." END WHERE batch_id=".$batch_id;
+		DB::update($sql_update);
 		print_r("done!!!");exit;
 	}
-	
+
 }
