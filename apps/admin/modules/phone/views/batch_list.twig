@@ -115,11 +115,11 @@
 				<label class="control-label">分类  <a href="/static/eg.csv" >点击下载格式样本</a></label>
 				<div class="controls">
 					<span style="margin-left:100px;width:18px;overflow:hidden;">
-					<select style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.options[this.selectedIndex].text">
+					<select id="category_1" style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.options[this.selectedIndex].text">
 						<!--{%for cid,category in category_arr%}-->
 						<option value="<!--{{cid}}-->"><!--{{category}}--></option>
 						<!--{%endfor%}-->
-					</select></span><input name="category_a" style="width:90px;position:absolute;left:62px;border: none;margin-top: 4px;">
+					</select></span><input name="category_a" style="width:90px;position:absolute;left:62px;border: none;margin-top: 4px;" value="">
 				</div>
 			</div>
 			<div class="control-group">
@@ -216,11 +216,11 @@
 				<label class="control-label">分类</label>
 				<div class="controls">
 					<span style="margin-left:100px;width:18px;overflow:hidden;">
-					<select style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.value">
+					<select id="category_2" style="width:118px;margin-left:-100px" onchange="this.parentNode.nextSibling.value=this.value">
 						<!--{%for cid,category in category_arr%}-->
 						<option value="<!--{{cid}}-->"><!--{{category}}--></option>
 						<!--{%endfor%}-->
-					</select></span><input name="category_m" style="width:90px;position:absolute;left:110px;border: none;margin-top: 4px;">
+					</select></span><input name="category_m" style="width:90px;position:absolute;left:160px;border: none;margin-top: 4px;" value="">
 				</div>
 			</div>
 			<div class="control-group">
@@ -257,6 +257,8 @@
 		$(".ajax-append").bind('click',function(){
 			var html=$("#dialog-append").html();
 			$.dialog({id:'pop-daoru-html',title:'提示',padding:2,content:html,width:410,height:120});
+			var category_1 = $("#category_1").find("option:selected").text();
+			$("input[name='category_a']").val(category_1);
 			var can_up = true;
 			$("a.append_").bind('click',function(){
 				alertify.confirm('确认上传该文件？',function(e){
@@ -431,6 +433,8 @@
 			if(ids.length==0) return false;
 			var html=$("#dialog-merge").html();
 			$.dialog({id:'pop-merge-html',title:'提示',padding:2,content:html,width:410,height:120});
+			var category_2 = $("#category_2").find("option:selected").text();
+			$("input[name='category_m']").val(category_2);
 			$("a.merge_").bind('click',function(){
 				$('#MergeWaitDialog').show();
 //				var batch_code =  $("input[name='batch_code_new']").val();

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Paginator;
 use Youxiduo\Phone\Model\PhoneBatch;
 use Youxiduo\Phone\Model\PhoneNumbers;
 use Youxiduo\Phone\Model\Category;
-
+use Redis;
 use Illuminate\Support\Facades\DB;
 
 class BatchController extends BackendController
@@ -143,6 +143,18 @@ class BatchController extends BackendController
 							$telecom++;
 							$c++;
 							break;
+						case "虚拟/联通":
+							$unicom++;
+							$c++;
+							break;
+						case "虚拟/移动":
+							$mobile++;
+							$c++;
+							break;
+						case "虚拟/电信":
+							$telecom++;
+							$c++;
+							break;
 					}
 					$i++;
 				}
@@ -191,6 +203,18 @@ class BatchController extends BackendController
 							$count_arr[$num['batch_id']]['c']++;
 							break;
 						case "电信":
+							$count_arr[$num['batch_id']]['telecom']++;
+							$count_arr[$num['batch_id']]['c']++;
+							break;
+						case "虚拟/联通":
+							$count_arr[$num['batch_id']]['unicom']++;
+							$count_arr[$num['batch_id']]['c']++;
+							break;
+						case "虚拟/移动":
+							$count_arr[$num['batch_id']]['mobile']++;
+							$count_arr[$num['batch_id']]['c']++;
+							break;
+						case "虚拟/电信":
 							$count_arr[$num['batch_id']]['telecom']++;
 							$count_arr[$num['batch_id']]['c']++;
 							break;
@@ -272,7 +296,6 @@ class BatchController extends BackendController
 		$j = 0;
 		$unicom = $mobile = $telecom = 0;
 		$sql="INSERT IGNORE INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
-
 		for ($j = 1; $j < $len_result; $j++) { //循环获取各字段值
 			$phone_number = isset($result[$j][0])?self::characet($result[$j][0]):''; //中文转码
 			$operator = isset($result[$j][1])?self::characet($result[$j][1]):'';
@@ -284,6 +307,15 @@ class BatchController extends BackendController
 					$mobile++;
 					break;
 				case "电信":
+					$telecom++;
+					break;
+				case "虚拟/联通":
+					$unicom++;
+					break;
+				case "虚拟/移动":
+					$mobile++;
+					break;
+				case "虚拟/电信":
 					$telecom++;
 					break;
 			}
@@ -756,5 +788,16 @@ class BatchController extends BackendController
 		return json_encode(array('state'=>1,'url'=>$url));
 	}
 
+
+	public function getUpdateRedis()
+	{
+		$sql_1="SELECT phone,province,isp FROM m_phone_model";
+		$number_model = DB::select($sql_1);
+		foreach ($number_model as $number_model_item) {
+			Redis::set("province_".$number_model_item['phone'],$number_model_item['province']);
+			Redis::set("isp_".$number_model_item['phone'],$number_model_item['isp']);
+		}
+		print_r("done!!!");exit;
+	}
 
 }
