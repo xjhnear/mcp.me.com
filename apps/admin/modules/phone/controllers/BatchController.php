@@ -791,8 +791,13 @@ class BatchController extends BackendController
 
 	public function getUpdateRedis()
 	{
-		$sql_1="SELECT phone,province,isp FROM m_phone_model";
-		$number_model = DB::select($sql_1);
+		set_time_limit(0);
+		ini_set("memory_limit", "1024M");
+		ini_set("post_max_size", "100M");
+		ini_set("upload_max_filesize", "100M");
+		setlocale(LC_ALL, 'zh_CN');
+		$sql="SELECT phone,province,isp FROM m_phone_model";
+		$number_model = DB::select($sql);
 		foreach ($number_model as $number_model_item) {
 			Redis::set("province_".$number_model_item['phone'],$number_model_item['province']);
 			Redis::set("isp_".$number_model_item['phone'],$number_model_item['isp']);
