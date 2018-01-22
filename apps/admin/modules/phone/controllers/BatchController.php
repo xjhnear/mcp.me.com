@@ -791,6 +791,9 @@ class BatchController extends BackendController
 
 	public function getUpdateRedis()
 	{
+
+		print_r(Redis::get("province_1391743"));exit;
+
 		set_time_limit(0);
 		ini_set("memory_limit", "1024M");
 		ini_set("post_max_size", "100M");
