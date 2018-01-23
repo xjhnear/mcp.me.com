@@ -298,6 +298,10 @@ class BatchController extends BackendController
 //		$sql="INSERT IGNORE INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES"; //过滤重复数据
 		$sql="INSERT INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
 		for ($j = 1; $j < $len_result; $j++) { //循环获取各字段值
+			if(self::validateMobile($result[$j][0])!==true) {
+				$j++;
+				continue;
+			}
 			$phone_number = isset($result[$j][0])?self::characet($result[$j][0]):''; //中文转码
 			$phone_number_7 =  substr($phone_number,0,7);
 			if (isset($result[$j][1]) && $result[$j][1]<>"") {
@@ -851,6 +855,15 @@ class BatchController extends BackendController
 		$sql_update = "UPDATE m_phone_numbers SET operator = CASE num_id ".$isp_str." END,city = CASE num_id ".$province_str." END WHERE batch_id=".$batch_id;
 		DB::update($sql_update);
 		print_r("done!!!");exit;
+	}
+
+	private function validateMobile($mobile)
+	{
+		if(!$mobile) return false;
+		if(preg_match("/^1[0-9]{2}[0-9]{8}$/",$mobile)){
+			return true;
+		}
+		return false;
 	}
 
 }
