@@ -34,6 +34,28 @@ class CategoryController extends BackendController
 		return $this->display('category_list',$data);
 	}
 
+	public function getEdit($category_id)
+	{
+		$data = array();
+		$data['info'] = Category::getInfo($category_id);
+		return $this->display('category_info',$data);
+	}
+
+	public function postSave()
+	{
+		$input = Input::only('category_id','name');
+		$data_info = Category::getInfo($input['category_id']);
+		if (!$data_info) {
+			return $this->back('类别保存失败');
+		}
+		$result = Category::save($input);
+		if($result){
+			return $this->redirect('phone/category/list','类别保存成功');
+		}else{
+			return $this->back('类别保存失败');
+		}
+	}
+
 	public function postAjaxDownFile(){
 		ini_set('max_execution_time', '0');
 		ini_set("memory_limit", "1024M");

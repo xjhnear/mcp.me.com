@@ -1,0 +1,35 @@
+<!--{%extends "base-layout.twig"%}-->
+<!--{%block main_content%}-->
+<div class="row-fluid">
+    <div class="span12">
+		<div class="box">
+			<div class="box-title">
+				<h3><i class="icon-edit"></i>类别信息</h3>
+			</div>
+			<div class="box-content">
+				<form id="category-edit" action="<!--{{url('phone/category/save')}}-->" method="POST" class='form-horizontal form-validate'>
+				<input name="category_id" type="hidden" value="<!--{{info.category_id}}-->" />
+				
+				<div class="control-group">
+					<label for="username" class="control-label">类别名</label>
+					<div class="controls">
+						<div class="controls">
+							<input name="name" type="text" value="<!--{{info.name}}-->" />
+						</div>
+					</div>
+				</div>
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary"><i class="icon-ok"></i>保存</button>
+				</div>    
+				</form>
+			</div>
+		</div>
+    </div>
+</div>
+<!--{%endblock%}-->
+<!--{%block footer_js%}-->
+<script src="/static/js/laydate/laydate.js"></script>
+<script>
+
+</script>
+<!--{%endblock%}-->

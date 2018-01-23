@@ -96,7 +96,7 @@ class BatchController extends BackendController
 		if($result){
 			return $this->redirect('phone/batch/list','批次保存成功');
 		}else{
-			return $this->back('批次保存成功');
+			return $this->back('批次保存失败');
 		}
 	}
 
