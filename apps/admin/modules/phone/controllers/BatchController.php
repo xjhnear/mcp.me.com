@@ -295,7 +295,8 @@ class BatchController extends BackendController
 		$i = 0;
 		$j = 0;
 		$unicom = $mobile = $telecom = 0;
-		$sql="INSERT IGNORE INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
+//		$sql="INSERT IGNORE INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES"; //过滤重复数据
+		$sql="INSERT INTO m_phone_numbers (batch_id,phone_number,operator,city,address) VALUES";
 		for ($j = 1; $j < $len_result; $j++) { //循环获取各字段值
 			$phone_number = isset($result[$j][0])?self::characet($result[$j][0]):''; //中文转码
 			$phone_number_7 =  substr($phone_number,0,7);
